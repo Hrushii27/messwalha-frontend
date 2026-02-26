@@ -1,0 +1,199 @@
+﻿[dotenv@17.3.1] injecting env (0) from .env -- tip: ΓÜÖ∩╕Å  override existing env vars with { override: true }
+Starting comprehensive batch seed process...
+Database cleared.
+node.exe : PrismaClie
+ntKnownRequestError: 
+At line:1 char:1
++ & "C:\Program Files
+\nodejs/node.exe" 
+"C:\Program 
+Files\nodejs/node_mo 
+...
++ ~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~
+    + CategoryInfo   
+           : NotSpe  
+  cified: (PrismaC   
+ lientKnownReques    
+tError: :String)     
+[], RemoteExcep    
+tion
+    + FullyQualified 
+   ErrorId : Native  
+  CommandError
+ 
+Invalid `prisma.mess.
+create()` invocation 
+in
+C:\Users\Admin\.gemin
+i\antigravity\playgro
+und\sonic-pinwheel\me
+sswalha\backend\seed-
+fixed.ts:117:40
+
+  114     data: { 
+email: ownerEmail, 
+password, name: 
+data.owner, role: 
+'OWNER' }
+  115 });
+  116 
+ΓåÆ 117 const mess = 
+await 
+prisma.mess.create(
+The column 
+`monthlyPrice` does 
+not exist in the 
+current database.
+    at zr.handleReque
+stError (C:\Users\Adm
+in\.gemini\antigravit
+y\playground\sonic-pi
+nwheel\messwalha\back
+end\node_modules\@pri
+sma\client\src\runtim
+e\RequestHandler.ts:2
+28:13)
+    at zr.handleAndLo
+gRequestError (C:\Use
+rs\Admin\.gemini\anti
+gravity\playground\so
+nic-pinwheel\messwalh
+a\backend\node_module
+s\@prisma\client\src\
+runtime\RequestHandle
+r.ts:174:12)
+    at zr.request (C:
+\Users\Admin\.gemini\
+antigravity\playgroun
+d\sonic-pinwheel\mess
+walha\backend\node_mo
+dules\@prisma\client\
+src\runtime\RequestHa
+ndler.ts:143:12)
+    at process.proces
+sTicksAndRejections (
+node:internal/process
+/task_queues:105:5)
+    at async a (C:\Us
+ers\Admin\.gemini\ant
+igravity\playground\s
+onic-pinwheel\messwal
+ha\backend\node_modul
+es\@prisma\client\src
+\runtime\getPrismaCli
+ent.ts:807:24)
+    at async main (C:
+\Users\Admin\.gemini\
+antigravity\playgroun
+d\sonic-pinwheel\mess
+walha\backend\seed-fi
+xed.ts:117:22) {
+  code: 'P2022',
+  meta: {
+    modelName: 
+'Mess',
+    
+driverAdapterError: 
+DriverAdapterError: 
+ColumnNotFound
+        at PrismaPgAd
+apter.onError (file:/
+//C:/Users/Admin/.gem
+ini/antigravity/playg
+round/sonic-pinwheel/
+messwalha/backend/nod
+e_modules/@prisma/ada
+pter-pg/dist/index.mj
+s:651:11)
+        at PrismaPgAd
+apter.performIO (file
+:///C:/Users/Admin/.g
+emini/antigravity/pla
+yground/sonic-pinwhee
+l/messwalha/backend/n
+ode_modules/@prisma/a
+dapter-pg/dist/index.
+mjs:646:12)
+        at process.pr
+ocessTicksAndRejectio
+ns (node:internal/pro
+cess/task_queues:105:
+5)
+        at async Pris
+maPgAdapter.queryRaw 
+(file:///C:/Users/Adm
+in/.gemini/antigravit
+y/playground/sonic-pi
+nwheel/messwalha/back
+end/node_modules/@pri
+sma/adapter-pg/dist/i
+ndex.mjs:566:30)
+        at async 
+e.interpretNode (C:\U
+sers\Admin\.gemini\an
+tigravity\playground\
+sonic-pinwheel\messwa
+lha\backend\node_modu
+les\@prisma\client-en
+gine-runtime\src\inte
+rpreter\query-interpr
+eter.ts:182:26)
+        at async 
+e.interpretNode (C:\U
+sers\Admin\.gemini\an
+tigravity\playground\
+sonic-pinwheel\messwa
+lha\backend\node_modu
+les\@prisma\client-en
+gine-runtime\src\inte
+rpreter\query-interpr
+eter.ts:209:41)
+        at async 
+e.interpretNode (C:\U
+sers\Admin\.gemini\an
+tigravity\playground\
+sonic-pinwheel\messwa
+lha\backend\node_modu
+les\@prisma\client-en
+gine-runtime\src\inte
+rpreter\query-interpr
+eter.ts:268:41)
+        at async 
+e.run (C:\Users\Admin
+\.gemini\antigravity\
+playground\sonic-pinw
+heel\messwalha\backen
+d\node_modules\@prism
+a\client-engine-runti
+me\src\interpreter\qu
+ery-interpreter.ts:93
+:23)
+        at async 
+e.execute (C:\Users\A
+dmin\.gemini\antigrav
+ity\playground\sonic-
+pinwheel\messwalha\ba
+ckend\node_modules\@p
+risma\client\src\runt
+ime\core\engines\clie
+nt\LocalExecutor.ts:8
+1:12)
+        at async 
+qt.request (C:\Users\
+Admin\.gemini\antigra
+vity\playground\sonic
+-pinwheel\messwalha\b
+ackend\node_modules\@
+prisma\client\src\run
+time\core\engines\cli
+ent\ClientEngine.ts:4
+92:22) {
+      cause: [Object]
+    }
+  },
+  clientVersion: 
+'7.4.0'
+}
