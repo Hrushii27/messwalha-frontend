@@ -1,18 +1,20 @@
 import axios from "axios";
 
-// 🔥 Use Vercel environment variable
+// ✅ Base URL (Production + Local support)
 const API_BASE_URL =
-  import.meta.env.VITE_API_URL || "http://localhost:5000";
+  import.meta.env.VITE_API_URL
+    ? `${import.meta.env.VITE_API_URL}/api`
+    : "http://localhost:5000/api";
 
 const api = axios.create({
   baseURL: API_BASE_URL,
-  withCredentials: true, // important if using cookies
+  withCredentials: false, // change to true only if using cookies
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-// ✅ REQUEST INTERCEPTOR
+// ✅ REQUEST INTERCEPTOR (Attach Token)
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
@@ -26,20 +28,17 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// ✅ RESPONSE INTERCEPTOR
+// ✅ RESPONSE INTERCEPTOR (Global Error Handling)
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (!error.response) {
-      console.error("Network error or backend not reachable");
+      console.error("Backend not reachable or network error");
     }
 
     if (error.response?.status === 401) {
-      console.warn("Unauthorized. Logging out...");
-
       localStorage.removeItem("token");
 
-      // Prevent infinite redirect loop
       if (window.location.pathname !== "/login") {
         window.location.href = "/login";
       }
@@ -48,7 +47,5 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-
-export default api;
 
 export default api;
