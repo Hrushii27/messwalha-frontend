@@ -67,11 +67,12 @@ app.get("/", (req, res) => {
   });
 });
 
-app.get("/health", (req, res) => {
-  res.status(200).json({
-    status: "OK",
-    message: "API is running",
-  });
+app.get('/api', (req, res) => {
+  res.status(200).json({ status: 'OK', message: 'MessWalha API endpoint is active. Use subroutes like /auth, /messes etc.' });
+});
+
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'OK', message: 'API is running' });
 });
 
 /* ===========================
