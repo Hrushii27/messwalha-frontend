@@ -7,8 +7,6 @@ import { Utensils } from 'lucide-react';
 import { useAppDispatch } from '../../hooks/redux';
 import { setCredentials } from '../../store/slices/authSlice';
 import api from '../api/axiosInstance';
-import { auth } from '../../firebase';
-import { signInWithEmailAndPassword } from 'firebase/auth';
 
 const LoginPage: React.FC = () => {
     const [email, setEmail] = useState('');
@@ -25,20 +23,14 @@ const LoginPage: React.FC = () => {
         setError('');
 
         try {
-            // 1. Sign in with Firebase
-            const userCredential = await signInWithEmailAndPassword(auth, email, password);
-            const idToken = await userCredential.user.getIdToken();
-
-            // 2. Verify token with backend and get user data
-            const response = await api.post('/auth/firebase-login', { idToken });
+            // Call backend directly for login
+            const response = await api.post('/auth/login', { email, password });
 
             dispatch(setCredentials(response.data));
             navigate('/');
         } catch (err: any) {
             console.error('Login error:', err);
-            setError(err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password'
-                ? 'Invalid email or password.'
-                : (err.response?.data?.message || 'Login failed. Please try again.'));
+            setError(err.response?.data?.message || 'Login failed. Please try again.');
         } finally {
             setIsLoading(false);
         }

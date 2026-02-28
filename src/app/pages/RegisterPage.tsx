@@ -7,8 +7,6 @@ import { Utensils, User, Building } from 'lucide-react';
 import { useAppDispatch } from '../../hooks/redux';
 import { setCredentials } from '../../store/slices/authSlice';
 import api from '../api/axiosInstance';
-import { auth } from '../../firebase';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
 
 const RegisterPage: React.FC = () => {
     const [formData, setFormData] = useState({
@@ -29,14 +27,11 @@ const RegisterPage: React.FC = () => {
         setError('');
 
         try {
-            // 1. Create user in Firebase
-            const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
-            const idToken = await userCredential.user.getIdToken();
-
-            // 2. Sync with backend (creates user in Prisma with role)
-            const response = await api.post('/auth/firebase-login', {
-                idToken,
+            // Call backend directly for registration
+            const response = await api.post('/auth/register', {
                 name: formData.name,
+                email: formData.email,
+                password: formData.password,
                 role: formData.role
             });
 
@@ -44,9 +39,7 @@ const RegisterPage: React.FC = () => {
             navigate('/');
         } catch (err: any) {
             console.error('Registration error:', err);
-            setError(err.code === 'auth/email-already-in-use'
-                ? 'An account with this email already exists.'
-                : (err.response?.data?.message || 'Registration failed. Please try again.'));
+            setError(err.response?.data?.message || 'Registration failed. Please try again.');
         } finally {
             setIsLoading(false);
         }
