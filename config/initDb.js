@@ -48,3 +48,4 @@ const createTables = async () => {
 };
 
 module.exports = { createTables };
+
