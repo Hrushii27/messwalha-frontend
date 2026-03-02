@@ -29,9 +29,9 @@ app.use(morgan("dev"));
 
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173", // local frontend
-      "https://messwalha-frontend.vercel.app", // production frontend
+    origin: process.env.NODE_ENV === 'development' ? true : [
+      "https://messwalha-frontend.vercel.app",
+      "https://messwala.vercel.app", // Common alternative
     ],
     credentials: true,
   })

@@ -37,8 +37,12 @@ const authController = {
                 }
             });
         } catch (err) {
-            console.error(err);
-            res.status(500).json({ success: false, message: 'Server error during registration' });
+            console.error('❌ Registration Error:', err);
+            res.status(500).json({
+                success: false,
+                message: 'Server error during registration',
+                error: err.message // Temporarily expose for debugging
+            });
         }
     },
 

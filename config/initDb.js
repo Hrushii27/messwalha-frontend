@@ -31,17 +31,26 @@ const createTables = async () => {
       location TEXT NOT NULL,
       price DECIMAL(10, 2) NOT NULL,
       description TEXT,
+      images TEXT[] DEFAULT '{}',
       is_active BOOLEAN DEFAULT TRUE,
+      verified BOOLEAN DEFAULT FALSE,
+      rating DECIMAL(3, 2) DEFAULT 0.0,
+      cuisine VARCHAR(100),
+      monthly_price DECIMAL(10, 2),
       created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
     );
+
+    ALTER TABLE mess_owners ADD COLUMN IF NOT EXISTS role VARCHAR(20) DEFAULT 'OWNER';
   `;
 
   try {
+    console.log("⏳ Initializing database tables...");
     await db.query(queryText);
     console.log("✅ Database tables initialized successfully");
   } catch (err) {
-    console.error("❌ Error initializing database tables", err);
+    console.error("❌ Error initializing database tables:", err.message);
+    console.error("Full Error:", err);
   }
 };
 
