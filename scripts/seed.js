@@ -26,34 +26,116 @@ const seed = async () => {
         // 3. Create Mess Listings
         const messes = [
             {
-                name: 'Nikam Mess',
-                location: 'Behind DYP College, Kasba Bawada, Kolhapur',
+                name: "Nikam Mess",
+                location: "Behind DYP College, Kasba Bawada, Kolhapur",
                 price: 2500,
-                description: 'Homely meals and great atmosphere near DYP College.',
-                images: ['/messes/thali.png', 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80'],
-                cuisine: 'Maharashtrian',
-                rating: 4.8,
-                verified: true
+                cuisine: "Maharashtrian",
+                description: "Homely meals near DYP College.",
+                images: ["/messes/thali.png", "https://images.unsplash.com/photo-1546069901-ba9599a7e63c"]
             },
             {
-                name: 'Annapurna Tiffin',
-                location: 'Kothrud, Pune',
+                name: "Wavare Mess",
+                location: "Kasba Bawada, Kolhapur",
                 price: 2200,
-                description: 'Authentic Maharashtrian taste with fresh ingredients.',
-                images: ['/messes/curry.png', 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=800&q=80'],
-                cuisine: 'Veg',
-                rating: 4.5,
-                verified: true
+                cuisine: "Maharashtrian",
+                description: "Traditional taste in Kasba Bawada.",
+                images: ["/messes/curry.png", "https://images.unsplash.com/photo-1512621776951-a57141f2eefd"]
             },
             {
-                name: 'Sai Palace Mess',
-                location: 'Dadar West, Mumbai',
+                name: "Yadhav Mess",
+                location: "Behind DYP College, Kolhapur",
+                price: 2400,
+                cuisine: "Veg",
+                description: "Student-friendly mess behind DYP.",
+                images: ["/messes/thali.png"]
+            },
+            {
+                name: "Sai Mess",
+                location: "Kasba Bawada, Kolhapur",
+                price: 2300,
+                cuisine: "Veg",
+                description: "Quality meals in Kasba Bawada.",
+                images: ["/messes/curry.png"]
+            },
+            {
+                name: "Shree Ganesh Mess",
+                location: "FC Road, Pune",
+                price: 2800,
+                cuisine: "Maharashtrian",
+                description: "Popular mess on FC Road.",
+                images: ["/messes/thali.png"]
+            },
+            {
+                name: "Om Sai Tiffin Services",
+                location: "Karve Nagar, Pune",
+                price: 2100,
+                cuisine: "Veg",
+                description: "Reliable tiffin service in Karve Nagar.",
+                images: ["/messes/curry.png"]
+            },
+            {
+                name: "Annapurna Mess",
+                location: "Kothrud, Pune",
+                price: 2600,
+                cuisine: "Maharashtrian",
+                description: "Delicious Kothrud specialty.",
+                images: ["/messes/thali.png"]
+            },
+            {
+                name: "Annapurna Mess (Mumbai)",
+                location: "Andheri East, Mumbai",
+                price: 3200,
+                cuisine: "North Indian",
+                description: "Authentic taste in Andheri.",
+                images: ["/messes/curry.png"]
+            },
+            {
+                name: "Maa Durga Tiffin Center",
+                location: "Dadar West, Mumbai",
+                price: 2900,
+                cuisine: "Veg",
+                description: "Dadar's favorite tiffin center.",
+                images: ["/messes/thali.png"]
+            },
+            {
+                name: "Shree Sai Mess",
+                location: "Vashi, Navi Mumbai",
                 price: 3000,
-                description: 'Quality vegetarian meals for students and office goers.',
-                images: ['https://images.unsplash.com/photo-1589302168068-964664d93dc0?auto=format&fit=crop&w=800&q=80'],
-                cuisine: 'North Indian',
-                rating: 4.2,
-                verified: true
+                cuisine: "Veg",
+                description: "Quality food in Vashi.",
+                images: ["/messes/curry.png"]
+            },
+            {
+                name: "Mahalaxmi Mess",
+                location: "Rajendra Nagar, Kolhapur",
+                price: 2400,
+                cuisine: "Maharashtrian",
+                description: "Serving Rajendra Nagar with pride.",
+                images: ["/messes/thali.png"]
+            },
+            {
+                name: "Shivneri Mess",
+                location: "Near Central Bus Stand, Kolhapur",
+                price: 2500,
+                cuisine: "Maharashtrian",
+                description: "Convenient location near CBS.",
+                images: ["/messes/curry.png"]
+            },
+            {
+                name: "South Spice Corner",
+                location: "Kothrud, Pune",
+                price: 2400,
+                cuisine: "South Indian",
+                description: "Best South Indian thalis and breakfast.",
+                images: ["/messes/thali.png"]
+            },
+            {
+                name: "Student Corner Mess",
+                location: "Model Colony, Pune",
+                price: 2200,
+                cuisine: "North Indian",
+                description: "Homemade quality for students.",
+                images: ["/messes/curry.png"]
             }
         ];
 
@@ -71,8 +153,8 @@ const seed = async () => {
                     mess.description,
                     mess.images,
                     mess.cuisine,
-                    mess.rating,
-                    mess.verified,
+                    4.0 + Math.random(),
+                    true,
                     true
                 ]
             );
