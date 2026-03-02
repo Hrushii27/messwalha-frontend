@@ -69,6 +69,39 @@ const messController = {
         } catch (err) {
             res.status(500).json({ message: 'Server error deleting listing' });
         }
+    },
+
+    getListingById: async (req, res) => {
+        const { id } = req.params;
+        try {
+            const l = await Listing.findById(id);
+            if (!l) {
+                return res.status(404).json({ success: false, message: 'Mess not found' });
+            }
+
+            const formattedListing = {
+                id: l.id,
+                name: l.name,
+                address: l.location,
+                description: l.description,
+                monthlyPrice: parseFloat(l.monthly_price),
+                images: l.images || [],
+                rating: parseFloat(l.rating) || 0,
+                verified: l.verified,
+                cuisine: l.cuisine,
+                contact: l.contact, // Make sure contact is available
+                owner: {
+                    name: l.owner_name,
+                    email: l.owner_email
+                },
+                createdAt: l.created_at
+            };
+
+            res.status(200).json({ success: true, data: formattedListing });
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ message: 'Server error fetching mess details' });
+        }
     }
 };
 

@@ -42,6 +42,16 @@ const Listing = {
 
     deactivateByOwnerId: async (ownerId) => {
         await db.query('UPDATE mess_listings SET is_active = FALSE WHERE mess_owner_id = $1', [ownerId]);
+    },
+
+    findById: async (id) => {
+        const result = await db.query(`
+            SELECT ml.*, mo.name as owner_name, mo.email as owner_email
+            FROM mess_listings ml
+            JOIN mess_owners mo ON ml.mess_owner_id = mo.id
+            WHERE ml.id = $1
+        `, [id]);
+        return result.rows[0];
     }
 };
 

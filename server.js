@@ -77,6 +77,35 @@ app.get('/health', (req, res) => {
   res.status(200).json({ status: 'OK', message: 'API is running' });
 });
 
+app.get("/diag", async (req, res) => {
+  try {
+    const tables = await createTables.db.query(`
+      SELECT table_name, column_name, data_type 
+      FROM information_schema.columns 
+      WHERE table_schema = 'public'
+      ORDER BY table_name, ordinal_position
+    `);
+    res.json({ status: "OK", schema: tables.rows });
+  } catch (err) {
+    res.status(500).json({ status: "ERROR", message: err.message });
+  }
+});
+
+app.get("/api/diag", async (req, res) => {
+  try {
+    const db = require("./config/db");
+    const tables = await db.query(`
+      SELECT table_name, column_name, data_type 
+      FROM information_schema.columns 
+      WHERE table_schema = 'public'
+      ORDER BY table_name, ordinal_position
+    `);
+    res.json({ status: "OK", schema: tables.rows });
+  } catch (err) {
+    res.status(500).json({ status: "ERROR", message: err.message });
+  }
+});
+
 /* ===========================
    404 HANDLER
 =========================== */
