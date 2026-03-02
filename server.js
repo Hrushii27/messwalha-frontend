@@ -31,7 +31,8 @@ app.use(
   cors({
     origin: process.env.NODE_ENV === 'development' ? true : [
       "https://messwalha-frontend.vercel.app",
-      "https://messwala.vercel.app", // Common alternative
+      "https://messwala.vercel.app",
+      "https://frontend-one-swart-57.vercel.app", // User's live domain
     ],
     credentials: true,
   })
