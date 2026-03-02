@@ -39,22 +39,55 @@ const messController = {
     getMyListings: async (req, res) => {
         try {
             const listings = await Listing.findByOwnerId(req.owner.id);
-            res.status(200).json(listings);
+            // Frontend expects a single object for the dashboard mess state
+            const l = listings[0] || {};
+            const formattedListing = {
+                id: l.id,
+                name: l.name,
+                address: l.location,
+                description: l.description,
+                monthlyPrice: parseFloat(l.monthly_price),
+                cuisine: l.cuisine,
+                contact: l.contact, // Add contact if not present in schema it might be null
+                images: l.images || [],
+                rating: parseFloat(l.rating) || 0,
+                menus: l.menus || []
+            };
+            res.status(200).json({ success: true, data: formattedListing });
         } catch (err) {
-            res.status(500).json({ message: 'Server error fetching listings' });
+            console.error(err);
+            res.status(500).json({ success: false, message: 'Server error fetching your mess' });
         }
     },
 
     updateListing: async (req, res) => {
         const { id } = req.params;
+        const { name, location, price, description, images, is_active, monthly_price, cuisine, contact } = req.body;
         try {
-            const listing = await Listing.update(id, req.owner.id, req.body);
-            if (!listing) {
-                return res.status(404).json({ message: 'Listing not found or unauthorized' });
-            }
-            res.status(200).json(listing);
+            const updated = await Listing.update(id, { name, location, price, description, images, is_active, monthly_price, cuisine, contact });
+            res.status(200).json({ success: true, data: updated });
         } catch (err) {
+            console.error(err);
             res.status(500).json({ message: 'Server error updating listing' });
+        }
+    },
+
+    updateMenu: async (req, res) => {
+        const ownerId = req.owner.id;
+        const { menus } = req.body;
+        try {
+            const db = require('../config/db');
+            const result = await db.query('SELECT id FROM mess_listings WHERE mess_owner_id = $1', [ownerId]);
+            if (result.rows.length === 0) {
+                return res.status(404).json({ success: false, message: 'Mess not found' });
+            }
+            const messId = result.rows[0].id;
+
+            await db.query('UPDATE mess_listings SET menus = $1 WHERE id = $2', [JSON.stringify(menus || []), messId]);
+            res.status(200).json({ success: true, message: 'Menu updated successfully' });
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ success: false, message: 'Server error updating menu' });
         }
     },
 
@@ -89,7 +122,8 @@ const messController = {
                 rating: parseFloat(l.rating) || 0,
                 verified: l.verified,
                 cuisine: l.cuisine,
-                contact: l.contact, // Make sure contact is available
+                contact: l.contact,
+                menus: l.menus || [], // Include menus
                 owner: {
                     name: l.owner_name,
                     email: l.owner_email
@@ -97,7 +131,17 @@ const messController = {
                 createdAt: l.created_at
             };
 
-            res.status(200).json({ success: true, data: formattedListing });
+            // Fetch latest reviews
+            const Review = require('../models/review');
+            const reviews = await Review.findByMessId(id);
+
+            res.status(200).json({
+                success: true,
+                data: {
+                    ...formattedListing,
+                    reviews: reviews || []
+                }
+            });
         } catch (err) {
             console.error(err);
             res.status(500).json({ message: 'Server error fetching mess details' });

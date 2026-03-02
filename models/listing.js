@@ -1,10 +1,11 @@
+```javascript
 const db = require('../config/db');
 
 const Listing = {
-    create: async (ownerId, name, location, price, description, images = [], cuisine = '', rating = 0, verified = false) => {
+    create: async (ownerId, name, location, price, description, images = [], cuisine = '', menus = []) => {
         const result = await db.query(
-            'INSERT INTO mess_listings (mess_owner_id, name, location, monthly_price, description, images, cuisine, rating, verified) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *',
-            [ownerId, name, location, price, description, images, cuisine, rating, verified]
+            'INSERT INTO mess_listings (mess_owner_id, name, location, monthly_price, description, images, cuisine, menus) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
+            [ownerId, name, location, price, description, images, cuisine, JSON.stringify(menus)]
         );
         return result.rows[0];
     },
@@ -15,23 +16,23 @@ const Listing = {
     },
 
     update: async (id, ownerId, data) => {
-        const { name, location, monthly_price, description, is_active, images, cuisine, rating, verified } = data;
+        const { name, location, price, description, images, cuisine, menus } = data;
         const result = await db.query(
-            'UPDATE mess_listings SET name = $1, location = $2, monthly_price = $3, description = $4, is_active = $5, images = $6, cuisine = $7, rating = $8, verified = $9, updated_at = CURRENT_TIMESTAMP WHERE id = $10 AND mess_owner_id = $11 RETURNING *',
-            [name, location, monthly_price, description, is_active, images, cuisine, rating, verified, id, ownerId]
+            'UPDATE mess_listings SET name = $1, location = $2, monthly_price = $3, description = $4, images = $5, cuisine = $6, menus = $7, updated_at = CURRENT_TIMESTAMP WHERE id = $8 AND mess_owner_id = $9 RETURNING *',
+            [name, location, price, description, images, cuisine, JSON.stringify(menus || []), id, ownerId]
         );
         return result.rows[0];
     },
 
     findAllActive: async () => {
         const result = await db.query(`
-            SELECT ml.*, mo.name as owner_name 
+            SELECT ml.*, mo.name as owner_name, ml.menus
             FROM mess_listings ml
             JOIN mess_owners mo ON ml.mess_owner_id = mo.id
             JOIN subscriptions s ON mo.id = s.mess_owner_id
-            WHERE ml.is_active = TRUE 
-            AND (s.status = 'active' OR s.status = 'trial')
-        `);
+            WHERE ml.is_active = TRUE
+AND(s.status = 'active' OR s.status = 'trial')
+    `);
         return result.rows;
     },
 
@@ -46,13 +47,14 @@ const Listing = {
 
     findById: async (id) => {
         const result = await db.query(`
-            SELECT ml.*, mo.name as owner_name, mo.email as owner_email
+            SELECT ml.*, mo.name as owner_name, mo.email as owner_email, ml.menus
             FROM mess_listings ml
             JOIN mess_owners mo ON ml.mess_owner_id = mo.id
             WHERE ml.id = $1
-        `, [id]);
+    `, [id]);
         return result.rows[0];
     }
 };
 
 module.exports = Listing;
+```

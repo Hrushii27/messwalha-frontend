@@ -37,8 +37,29 @@ const createTables = async () => {
       rating DECIMAL(3, 2) DEFAULT 0.0,
       cuisine VARCHAR(100),
       monthly_price DECIMAL(10, 2),
+      menus JSONB DEFAULT '[]', -- Added for daily menus
       created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS student_subscriptions (
+      id SERIAL PRIMARY KEY,
+      student_id INTEGER REFERENCES mess_owners(id) ON DELETE CASCADE,
+      mess_id INTEGER REFERENCES mess_listings(id) ON DELETE CASCADE,
+      plan_type VARCHAR(50) NOT NULL, -- monthly, quarterly, etc.
+      status VARCHAR(20) DEFAULT 'active', -- active, expired, cancelled
+      start_date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+      end_date TIMESTAMP WITH TIME ZONE,
+      created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS reviews (
+      id SERIAL PRIMARY KEY,
+      mess_id INTEGER REFERENCES mess_listings(id) ON DELETE CASCADE,
+      student_id INTEGER REFERENCES mess_owners(id) ON DELETE CASCADE,
+      rating INTEGER CHECK (rating >= 1 AND rating <= 5),
+      comment TEXT,
+      created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
     );
 
     ALTER TABLE mess_owners ADD COLUMN IF NOT EXISTS role VARCHAR(20) DEFAULT 'OWNER';

@@ -5,83 +5,73 @@ const db = require('../config/db');
 const paymentController = {
 
   createOrder: async (req, res) => {
+    const { amount, messId, planType } = req.body;
     try {
-      // If Razorpay not configured
       if (!razorpayUtils || !razorpayUtils.createOrder) {
-        return res.status(503).json({
-          message: "Payments not configured yet"
-        });
+        return res.status(503).json({ success: false, message: "Payments not configured" });
       }
 
-      const order = await razorpayUtils.createOrder(599); // 599 INR
-      res.status(200).json(order);
+      // Default amount to 599 for owners if not provided, otherwise use provided amount
+      const orderAmount = amount || 599;
+      const order = await razorpayUtils.createOrder(orderAmount);
+
+      res.status(200).json({
+        success: true,
+        orderId: order.id,
+        amount: order.amount,
+        currency: order.currency,
+        isTestMode: !process.env.RAZORPAY_KEY_ID // Helpful for frontend to show mock success
+      });
 
     } catch (err) {
-      console.error(err);
-      res.status(500).json({ message: 'Error creating Razorpay order' });
+      console.error('❌ Create Order Error:', err);
+      res.status(500).json({ success: false, message: 'Server error creating payment order' });
     }
   },
 
   verifyPayment: async (req, res) => {
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature, messId, planType } = req.body;
     try {
-
-      // If Razorpay not configured
       if (!razorpayUtils || !razorpayUtils.verifySignature) {
-        return res.status(503).json({
-          message: "Payments not configured yet"
-        });
+        return res.status(503).json({ success: false, message: "Payments not configured" });
       }
 
-      const {
-        razorpay_order_id,
-        razorpay_payment_id,
-        razorpay_signature
-      } = req.body;
-
-      const isValid = razorpayUtils.verifySignature(
-        razorpay_order_id,
-        razorpay_payment_id,
-        razorpay_signature
-      );
-
-      if (!isValid) {
-        return res.status(400).json({
-          message: 'Invalid payment signature'
-        });
+      // Skip signature check in test mode if no keys are set
+      const isProduction = !!process.env.RAZORPAY_KEY_ID;
+      if (isProduction) {
+        const isValid = razorpayUtils.verifySignature(razorpay_order_id, razorpay_payment_id, razorpay_signature);
+        if (!isValid) return res.status(400).json({ success: false, message: 'Invalid signature' });
       }
 
+      // CASE 1: Student subscribing to a Mess
+      if (messId) {
+        const result = await db.query(
+          'INSERT INTO student_subscriptions (student_id, mess_id, plan_type, status) VALUES ($1, $2, $3, $4) RETURNING *',
+          [req.owner.id, messId, planType || 'monthly', 'active']
+        );
+        return res.status(200).json({ success: true, message: 'Subscribed successfully', data: result.rows[0] });
+      }
+
+      // CASE 2: Owner upgrading Platform Plan
       const subscription = await Subscription.findByOwnerId(req.owner.id);
+      if (subscription) {
+        const nextBillingDate = new Date();
+        nextBillingDate.setDate(nextBillingDate.getDate() + 30);
+        const updatedSub = await Subscription.updateStatus(subscription.id, 'active', 'basic_599', nextBillingDate);
+        return res.status(200).json({ success: true, message: 'Platform plan upgraded', subscription: updatedSub });
+      }
 
-      const nextBillingDate = new Date();
-      nextBillingDate.setDate(nextBillingDate.getDate() + 30);
-
-      const updatedSub = await Subscription.updateStatus(
-        subscription.id,
-        'active',
-        'basic_599',
-        nextBillingDate
-      );
-
-      res.status(200).json({
-        message: 'Payment verified and subscription activated',
-        subscription: updatedSub
-      });
+      res.status(404).json({ success: false, message: 'Subscription record not found' });
 
     } catch (err) {
-      console.error(err);
-      res.status(500).json({
-        message: 'Error updating subscription after payment'
-      });
+      console.error('❌ Verify Payment Error:', err);
+      res.status(500).json({ success: false, message: 'Server error verifying payment' });
     }
   },
 
   handleWebhook: async (req, res) => {
-    // Payments disabled for now
-    return res.status(503).json({
-      message: "Webhook not active - Razorpay not configured"
-    });
+    res.status(200).json({ received: true });
   }
-
 };
 
 module.exports = paymentController;

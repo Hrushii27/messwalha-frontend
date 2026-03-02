@@ -37,11 +37,12 @@ const authController = {
                 }
             });
         } catch (err) {
-            console.error('❌ Registration Error:', err);
+            console.error('❌ Registration Error Full:', err);
             res.status(500).json({
                 success: false,
                 message: 'Server error during registration',
-                error: err.message // Temporarily expose for debugging
+                error: err.message,
+                stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
             });
         }
     },
@@ -134,7 +135,11 @@ const authController = {
             res.status(200).json({
                 success: true,
                 user: {
-                    ...req.owner,
+                    id: req.owner.id,
+                    name: req.owner.name,
+                    email: req.owner.email,
+                    phone: req.owner.phone,
+                    role: req.owner.role,
                     ownerSubscription
                 }
             });

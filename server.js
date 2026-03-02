@@ -13,6 +13,9 @@ const authRoutes = require("./routes/authRoutes");
 const messRoutes = require("./routes/messRoutes");
 const paymentRoutes = require("./routes/paymentRoutes");
 const adminRoutes = require("./routes/adminRoutes");
+const subscriptionRoutes = require("./routes/subscriptionRoutes");
+const userRoutes = require("./routes/userRoutes");
+const reviewRoutes = require("./routes/reviewRoutes");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -32,7 +35,9 @@ app.use(
     origin: process.env.NODE_ENV === 'development' ? true : [
       "https://messwalha-frontend.vercel.app",
       "https://messwala.vercel.app",
-      "https://frontend-one-swart-57.vercel.app", // User's live domain
+      "https://frontend-one-swart-57.vercel.app",
+      "https://www.messwala.me",
+      "https://messwala.me"
     ],
     credentials: true,
   })
@@ -57,6 +62,10 @@ app.use("/api/auth", authRoutes);
 app.use("/api/messes", messRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/subscriptions", subscriptionRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/reviews", reviewRoutes);
+app.use("/api/owner", messRoutes); // Alias for owner mess management
 
 /* ===========================
    HEALTH CHECK
@@ -94,13 +103,19 @@ app.get("/diag", async (req, res) => {
 app.get("/api/diag", async (req, res) => {
   try {
     const db = require("./config/db");
+    const ownersCount = await db.query("SELECT COUNT(*) FROM mess_owners");
     const tables = await db.query(`
       SELECT table_name, column_name, data_type 
       FROM information_schema.columns 
       WHERE table_schema = 'public'
       ORDER BY table_name, ordinal_position
     `);
-    res.json({ status: "OK", schema: tables.rows });
+    res.json({
+      status: "OK",
+      hasJwtSecret: !!process.env.JWT_SECRET,
+      ownersCount: ownersCount.rows[0].count,
+      schema: tables.rows
+    });
   } catch (err) {
     res.status(500).json({ status: "ERROR", message: err.message });
   }
