@@ -4,7 +4,7 @@ const Owner = {
     create: async (name, email, phone, passwordHash, role = 'OWNER') => {
         const result = await db.query(
             'INSERT INTO mess_owners (name, email, phone, password_hash, role) VALUES ($1, $2, $3, $4, $5) RETURNING id, name, email, phone, role, created_at',
-            [name, email, phone, passwordHash, role]
+            [name, email, phone || '', passwordHash, role]
         );
         return result.rows[0];
     },
