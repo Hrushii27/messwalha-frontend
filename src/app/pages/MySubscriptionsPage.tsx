@@ -87,8 +87,6 @@ const MySubscriptionsPage: React.FC = () => {
                                     const remaining = Math.max(0, Math.min(totalDays, totalDays - daysPast));
                                     const progress = Math.min(100, Math.max(0, (daysPast / totalDays) * 100));
 
-                                    console.log(`Subscription ${sub.id}:`, { start, end, now, totalDays, daysPast, remaining, progress });
-
                                     return (
                                         <div className="space-y-2">
                                             <div className="flex justify-between text-sm">

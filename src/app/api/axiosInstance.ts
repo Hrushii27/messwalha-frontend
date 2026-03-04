@@ -3,8 +3,10 @@ import axios from "axios";
 // ✅ Base URL (Production + Local support)
 const API_BASE_URL =
   import.meta.env.VITE_API_URL
-    ? `${import.meta.env.VITE_API_URL}/api`
-    : "http://localhost:5000/api";
+    ? (import.meta.env.VITE_API_URL.endsWith('/api') ? import.meta.env.VITE_API_URL : `${import.meta.env.VITE_API_URL}/api`)
+    : "https://messwalha-api-pg-360404ae0804.herokuapp.com/api";
+
+console.log('🚀 API_BASE_URL:', API_BASE_URL);
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -47,5 +49,13 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+export const getImageUrl = (path: string) => {
+  if (!path) return '';
+  if (path.startsWith('http')) return path;
+  // Prepend backend base URL (removing /api from the end if present)
+  const baseUrl = API_BASE_URL.replace(/\/api$/, '');
+  return `${baseUrl}${path.startsWith('/') ? '' : '/'}${path}`;
+};
 
 export default api;

@@ -2,14 +2,21 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '../common/Button.tsx';
 import { Utensils, Search, User as UserIcon, Languages } from 'lucide-react';
-import { useAppSelector } from '../../../hooks/redux';
+import { useAppSelector, useAppDispatch } from '../../../hooks/redux';
 import type { RootState } from '../../../store';
+import { logout } from '../../../store/slices/authSlice';
 import NotificationCenter from '../NotificationCenter';
 import { useTranslation } from 'react-i18next';
 
 export const Header: React.FC = () => {
     const { isAuthenticated, user } = useAppSelector((state: RootState) => state.auth);
+    const dispatch = useAppDispatch();
     const { i18n, t } = useTranslation();
+
+    const handleLogout = () => {
+        dispatch(logout());
+        window.location.href = '/login';
+    };
 
     const toggleLanguage = () => {
         const newLang = i18n.language === 'en' ? 'hi' : 'en';
@@ -68,6 +75,14 @@ export const Header: React.FC = () => {
                                     <UserIcon size={16} />
                                 </div>
                             </Link>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={handleLogout}
+                                className="text-white/70 hover:text-white"
+                            >
+                                Logout
+                            </Button>
                         </div>
                     ) : (
                         <div className="hidden sm:flex items-center space-x-2">

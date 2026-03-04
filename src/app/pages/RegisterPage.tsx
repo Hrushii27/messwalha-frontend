@@ -31,6 +31,7 @@ const RegisterPage: React.FC = () => {
             const response = await api.post('/auth/register', {
                 name: formData.name,
                 email: formData.email,
+                phone: '', // Added empty phone to prevent backend SQL errors
                 password: formData.password,
                 role: formData.role
             });
@@ -39,7 +40,8 @@ const RegisterPage: React.FC = () => {
             navigate('/');
         } catch (err: any) {
             console.error('Registration error:', err);
-            setError(err.response?.data?.message || 'Registration failed. Please try again.');
+            const errorMessage = err.response?.data?.message || err.response?.data?.error || 'Registration failed. Please try again.';
+            setError(errorMessage);
         } finally {
             setIsLoading(false);
         }

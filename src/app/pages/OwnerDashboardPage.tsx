@@ -8,8 +8,6 @@ import {
     Users,
     TrendingUp,
     Settings,
-    Plus,
-    Edit2,
     Save,
     Trash2,
     CircleCheck,
@@ -18,10 +16,12 @@ import {
     Image as ImageIcon,
     Clock,
     CreditCard,
-    Calendar
+    Calendar,
+    LogOut
 } from 'lucide-react';
-import { useAppSelector } from '../../hooks/redux';
+import { useAppSelector, useAppDispatch } from '../../hooks/redux';
 import type { RootState } from '../../store';
+import { logout } from '../../store/slices/authSlice';
 import api from '../api/axiosInstance';
 import { toast } from 'react-hot-toast';
 import { BillingHistoryModal } from '../components/dashboard/BillingHistoryModal';
@@ -36,8 +36,16 @@ const OwnerDashboardPage: React.FC = () => {
     const [menus, setMenus] = useState<any[]>([]);
     const [revenue, setRevenue] = useState<number>(0);
     const [loading, setLoading] = useState(true);
-    const [saving, setSaving] = useState(false);
+    const [updating, setUpdating] = useState(false);
+    const [savingMenu, setSavingMenu] = useState(false);
+    const [selectedDay, setSelectedDay] = useState('Monday');
     const [isBillingModalOpen, setIsBillingModalOpen] = useState(false);
+    const dispatch = useAppDispatch();
+
+    const handleLogout = () => {
+        dispatch(logout());
+        window.location.href = '/login';
+    };
 
     // Form states
     const [messForm, setMessForm] = useState({
@@ -59,6 +67,7 @@ const OwnerDashboardPage: React.FC = () => {
                 ]);
 
                 setMess(messRes.data.data);
+                setMenus(messRes.data.data.menus || []);
                 setSubscribers(subsRes.data.data);
                 setRevenue(subsRes.data.totalRevenue || 0);
                 setMessForm({
@@ -69,7 +78,6 @@ const OwnerDashboardPage: React.FC = () => {
                     contact: messRes.data.data.contact,
                     images: messRes.data.data.images || []
                 });
-                setMenus(messRes.data.data.menus || []);
             } catch (error) {
                 console.error('Error fetching owner data:', error);
                 toast.error('Failed to load dashboard data');
@@ -94,20 +102,86 @@ const OwnerDashboardPage: React.FC = () => {
     const handleUpdateMess = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            setSaving(true);
+            setUpdating(true);
             const response = await api.put('/messes/my', messForm);
             setMess(response.data.data);
             toast.success('Mess profile updated successfully');
         } catch (error) {
             toast.error('Failed to update mess profile');
         } finally {
-            setSaving(false);
+            setUpdating(false);
         }
+    };
+
+    const handleMenuSave = async () => {
+        try {
+            setSavingMenu(true);
+            await api.put('/messes/my/menu', { menus });
+            toast.success('Weekly menu updated successfully!');
+        } catch (error) {
+            console.error('Error saving menu:', error);
+            toast.error('Failed to save menu.');
+        } finally {
+            setSavingMenu(false);
+        }
+    };
+
+    const handleItemChange = (day: string, itemIndex: number, field: string, value: string) => {
+        setMenus(prevMenus => {
+            const newMenus = [...prevMenus];
+            const dayMenuIndex = newMenus.findIndex(m => m.day === day);
+
+            if (dayMenuIndex !== -1) {
+                const newItems = [...newMenus[dayMenuIndex].items];
+                newItems[itemIndex] = { ...newItems[itemIndex], [field]: value };
+                newMenus[dayMenuIndex] = { ...newMenus[dayMenuIndex], items: newItems };
+            } else {
+                // If day doesn't exist, create it and add the item
+                newMenus.push({
+                    day,
+                    items: [{ name: '', type: 'Veg', [field]: value }]
+                });
+            }
+            return newMenus;
+        });
+    };
+
+    const handleAddItem = (day: string) => {
+        setMenus(prevMenus => {
+            const newMenus = [...prevMenus];
+            const dayMenuIndex = newMenus.findIndex(m => m.day === day);
+
+            if (dayMenuIndex !== -1) {
+                newMenus[dayMenuIndex] = {
+                    ...newMenus[dayMenuIndex],
+                    items: [...newMenus[dayMenuIndex].items, { name: '', type: 'Veg' }]
+                };
+            } else {
+                newMenus.push({
+                    day,
+                    items: [{ name: '', type: 'Veg' }]
+                });
+            }
+            return newMenus;
+        });
+    };
+
+    const handleRemoveItem = (day: string, itemIndex: number) => {
+        setMenus(prevMenus => {
+            const newMenus = [...prevMenus];
+            const dayMenuIndex = newMenus.findIndex(m => m.day === day);
+
+            if (dayMenuIndex !== -1) {
+                const newItems = newMenus[dayMenuIndex].items.filter((_: any, idx: number) => idx !== itemIndex);
+                newMenus[dayMenuIndex] = { ...newMenus[dayMenuIndex], items: newItems };
+            }
+            return newMenus;
+        });
     };
 
     const handleUpgrade = async () => {
         try {
-            setSaving(true);
+            setUpdating(true);
             const orderRes = await api.post('/payments/owner/create-order');
             const { orderId, amount, currency, isTestMode } = orderRes.data;
 
@@ -156,7 +230,7 @@ const OwnerDashboardPage: React.FC = () => {
             console.error('Upgrade error:', error);
             toast.error('Failed to initiate upgrade');
         } finally {
-            setSaving(false);
+            setUpdating(false);
         }
     };
 
@@ -238,7 +312,7 @@ const OwnerDashboardPage: React.FC = () => {
                                     <Button
                                         className="rounded-xl px-8 shadow-lg shadow-primary/20"
                                         onClick={handleUpgrade}
-                                        isLoading={saving}
+                                        isLoading={updating}
                                     >
                                         Upgrade to Professional (₹599/mo)
                                     </Button>
@@ -290,28 +364,76 @@ const OwnerDashboardPage: React.FC = () => {
 
     const renderMenuManagement = () => (
         <div className="space-y-6">
-            <div className="flex justify-between items-center">
-                <h2 className="text-xl font-bold">Weekly Menu Schedule</h2>
-                <Button size="sm" className="rounded-lg"><Plus size={18} className="mr-2" /> Add/Update Day</Button>
+            <div className="flex justify-between items-center mb-10">
+                <div className="space-y-1">
+                    <h2 className="text-3xl font-black text-dark-900">Menu Schedule</h2>
+                    <p className="text-gray-500 text-sm font-medium uppercase tracking-widest">Manage your weekly specials</p>
+                </div>
+                <Button
+                    onClick={handleMenuSave}
+                    isLoading={savingMenu}
+                    className="bg-primary hover:bg-primary/90 px-10 py-6 rounded-2xl font-black uppercase tracking-widest"
+                >
+                    Save Weekly Menu
+                </Button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map(day => {
-                    const dayMenu = menus.find(m => m.day === day);
-                    return (
-                        <Card key={day} className="p-5 flex justify-between items-center group hover:border-primary transition-colors">
-                            <div>
-                                <h4 className="font-bold text-lg">{day}</h4>
-                                <p className="text-sm text-gray-400">
-                                    {dayMenu ? `${dayMenu.items.length} items listed` : 'No menu set for this day'}
-                                </p>
-                            </div>
-                            <Button variant="outline" size="sm" className="opacity-0 group-hover:opacity-100 transition-opacity">
-                                <Edit2 size={16} />
-                            </Button>
-                        </Card>
-                    );
-                })}
+            <div className="flex gap-3 overflow-x-auto pb-6 mb-10 scrollbar-hide">
+                {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map((day) => (
+                    <button
+                        key={day}
+                        onClick={() => setSelectedDay(day)}
+                        className={`px-8 py-4 rounded-2xl text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap border-2 ${selectedDay === day
+                            ? 'bg-primary text-white border-primary shadow-[0_0_30px_rgba(255,69,0,0.2)]'
+                            : 'bg-gray-50 text-gray-500 border-transparent hover:bg-gray-100 hover:text-gray-700'
+                            }`}
+                    >
+                        {day}
+                    </button>
+                ))}
+            </div>
+
+            <div className="space-y-6">
+                {menus.find(m => m.day === selectedDay)?.items.map((item: any, idx: number) => (
+                    <div key={idx} className="bg-white p-8 rounded-3xl flex flex-col md:flex-row gap-6 items-center group transition-all hover:bg-gray-50 relative border border-gray-100">
+                        <div className="flex-1 w-full space-y-3">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Item Name</label>
+                            <input
+                                type="text"
+                                value={item.name}
+                                onChange={(e) => handleItemChange(selectedDay, idx, 'name', e.target.value)}
+                                className="w-full bg-gray-50 border border-gray-100 p-6 rounded-2xl text-dark-900 outline-none focus:ring-2 focus:ring-primary transition-all"
+                                placeholder="Enter item name..."
+                            />
+                        </div>
+                        <div className="w-full md:w-64 space-y-3">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Category</label>
+                            <select
+                                value={item.type}
+                                onChange={(e) => handleItemChange(selectedDay, idx, 'type', e.target.value)}
+                                className="w-full bg-gray-50 border border-gray-100 p-6 rounded-2xl text-dark-900 outline-none focus:ring-2 focus:ring-primary transition-all appearance-none"
+                            >
+                                <option value="Veg" className="bg-white">Veg</option>
+                                <option value="Non-Veg" className="bg-white">Non-Veg</option>
+                            </select>
+                        </div>
+                        <div className="pt-6 md:pt-8 w-full md:w-auto">
+                            <button
+                                onClick={() => handleRemoveItem(selectedDay, idx)}
+                                className="w-full md:w-auto p-6 bg-red-500/10 text-red-500 rounded-2xl hover:bg-red-500 hover:text-white transition-all border border-red-500/20"
+                            >
+                                Remove
+                            </button>
+                        </div>
+                    </div>
+                ))}
+
+                <button
+                    onClick={() => handleAddItem(selectedDay)}
+                    className="w-full border-2 border-dashed border-gray-200 p-10 rounded-3xl text-sm font-black uppercase tracking-widest text-gray-400 hover:border-primary hover:text-primary hover:bg-primary/5 transition-all group"
+                >
+                    <span className="group-hover:scale-110 transition-transform inline-block">+ Add Item to {selectedDay}</span>
+                </button>
             </div>
         </div>
     );
@@ -429,7 +551,7 @@ const OwnerDashboardPage: React.FC = () => {
                     </div>
 
                     <div className="pt-6 border-t border-gray-100 flex justify-end">
-                        <Button type="submit" isLoading={saving} className="rounded-xl px-12">
+                        <Button type="submit" isLoading={updating} className="rounded-xl px-12">
                             <Save size={18} className="mr-2" /> Save Changes
                         </Button>
                     </div>
@@ -470,10 +592,11 @@ const OwnerDashboardPage: React.FC = () => {
                                 { id: 'menu', icon: <Utensils size={20} />, label: 'Menu Schedule' },
                                 { id: 'subscribers', icon: <Users size={20} />, label: 'Subscribers' },
                                 { id: 'settings', icon: <Settings size={20} />, label: 'Profile Settings' },
+                                { id: 'logout', icon: <LogOut size={20} />, label: 'Logout', isLogout: true },
                             ].map((item) => (
                                 <button
                                     key={item.id}
-                                    onClick={() => setActiveTab(item.id as Tab)}
+                                    onClick={() => item.isLogout ? handleLogout() : setActiveTab(item.id as Tab)}
                                     className={`w-full flex items-center space-x-3 px-5 py-4 rounded-xl transition-all font-bold text-sm ${activeTab === item.id
                                         ? 'bg-primary text-white shadow-xl shadow-primary/30'
                                         : 'text-gray-500 hover:bg-gray-50'

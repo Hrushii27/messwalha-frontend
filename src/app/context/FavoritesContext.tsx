@@ -27,7 +27,6 @@ export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({ chi
                 const response = await api.get('/favorites');
                 if (response.data.success) {
                     const ids = response.data.data.map((m: any) => String(m.id));
-                    console.log('📥 Loaded favorites:', ids);
                     setFavorites(ids);
                 }
             } catch (error) {
@@ -42,7 +41,6 @@ export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
     const toggleFavorite = async (messId: string) => {
         const id = String(messId);
-        console.log('🔄 Toggling favorite for:', id);
 
         if (!token) {
             alert('Please login to favorite messes!');

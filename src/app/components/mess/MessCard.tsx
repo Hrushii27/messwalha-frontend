@@ -5,6 +5,7 @@ import { Star, MapPin, Clock, CircleCheck, ChevronLeft, ChevronRight, Share2, He
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useFavorites } from '../../context/FavoritesContext';
+import { getImageUrl } from '../../api/axiosInstance';
 
 interface MessCardProps {
     mess: {
@@ -45,7 +46,7 @@ export const MessCard: React.FC<MessCardProps> = ({ mess }) => {
                 <AnimatePresence mode="wait">
                     <motion.img
                         key={currentImageIndex}
-                        src={images[currentImageIndex]}
+                        src={getImageUrl(images[currentImageIndex])}
                         alt={mess.name}
                         initial={{ opacity: 0, scale: 1.1 }}
                         animate={{ opacity: 1, scale: 1 }}
