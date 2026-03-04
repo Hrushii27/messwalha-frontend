@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Layout } from '../components/layout/Layout';
 import { Card } from '../components/common/Card';
 import { Button } from '../components/common/Button';
-import { CreditCard, History, User, Settings, Calendar, Utensils, Star, Bell } from 'lucide-react';
-import { useAppSelector } from '../../hooks/redux';
+import { CreditCard, History, User, Settings, Calendar, Utensils, Star, Bell, LogOut } from 'lucide-react';
+import { useAppSelector, useAppDispatch } from '../../hooks/redux';
 import type { RootState } from '../../store';
+import { logout } from '../../store/slices/authSlice';
 import api from '../api/axiosInstance';
 
 const StudentDashboardPage: React.FC = () => {
@@ -13,6 +14,12 @@ const StudentDashboardPage: React.FC = () => {
     const [recommendedMesses, setRecommendedMesses] = useState<any[]>([]);
     const [recentActivity, setRecentActivity] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const dispatch = useAppDispatch();
+
+    const handleLogout = () => {
+        dispatch(logout());
+        window.location.href = '/login';
+    };
 
     useEffect(() => {
         const fetchDashboardData = async () => {
@@ -80,9 +87,11 @@ const StudentDashboardPage: React.FC = () => {
                                 { icon: <CreditCard size={20} />, label: 'Subscriptions' },
                                 { icon: <History size={20} />, label: 'Order History' },
                                 { icon: <Settings size={20} />, label: 'Security' },
+                                { icon: <LogOut size={20} />, label: 'Logout', onClick: handleLogout },
                             ].map((item) => (
                                 <button
                                     key={item.label}
+                                    onClick={item.onClick}
                                     className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all font-medium ${item.active
                                         ? 'bg-primary text-white shadow-md shadow-primary/20'
                                         : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-dark-lighter'

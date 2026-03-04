@@ -4,7 +4,7 @@ import { Layout } from '../components/layout/Layout';
 import { Button } from '../components/common/Button';
 import { Card } from '../components/common/Card';
 import { Star, MapPin, Clock, Utensils, Info, CircleCheck, MessageSquare, ChevronRight, Share2, Heart, User as UserIcon, Phone } from 'lucide-react';
-import api from '../api/axiosInstance';
+import api, { getImageUrl } from '../api/axiosInstance';
 import { useAppSelector } from '../../hooks/redux';
 import type { RootState } from '../../store';
 import { useFavorites } from '../context/FavoritesContext';
@@ -17,6 +17,7 @@ const MessDetailsPage: React.FC = () => {
     const [selectedDay, setSelectedDay] = useState(new Date().toLocaleDateString('en-US', { weekday: 'long' }));
     const [selectedPlan, setSelectedPlan] = useState<any>(null);
     const [subscribing, setSubscribing] = useState(false);
+    const [reviewForm, setReviewForm] = useState({ rating: 5, comment: '', show: false });
     const { isFavorite, toggleFavorite } = useFavorites();
 
     useEffect(() => {
@@ -112,6 +113,27 @@ const MessDetailsPage: React.FC = () => {
         }
     };
 
+    const handleReviewSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        try {
+            const { data } = await api.post('/reviews', {
+                messId: id,
+                rating: reviewForm.rating,
+                comment: reviewForm.comment
+            });
+            if (data.success) {
+                alert('Review submitted successfully!');
+                setReviewForm({ rating: 5, comment: '', show: false });
+                // Refresh mess data
+                const response = await api.get(`/messes/${id}`);
+                setMess(response.data.data);
+            }
+        } catch (error) {
+            console.error('Review submission failed', error);
+            alert('Failed to submit review. Make sure you are logged in.');
+        }
+    };
+
     const { user } = useAppSelector((state: RootState) => state.auth);
 
     if (loading) {
@@ -143,7 +165,7 @@ const MessDetailsPage: React.FC = () => {
                 {/* Hero Section */}
                 <div className="relative h-[300px] md:h-[450px] rounded-[2.5rem] overflow-hidden mb-12 shadow-2xl group">
                     <img
-                        src={mess.images?.[0] || 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&q=80&w=1200'}
+                        src={getImageUrl(mess.images?.[0]) || 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&q=80&w=1200'}
                         className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
                         alt={mess.name}
                         onError={(e) => {
@@ -296,8 +318,47 @@ const MessDetailsPage: React.FC = () => {
                             <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
                                 <div className="flex justify-between items-center">
                                     <h3 className="text-2xl font-black">Customer Reviews</h3>
-                                    <Button variant="outline" className="rounded-xl font-black uppercase tracking-widest text-xs py-3 px-6">Write a Review</Button>
+                                    <Button
+                                        variant="outline"
+                                        className="rounded-xl font-black uppercase tracking-widest text-xs py-3 px-6"
+                                        onClick={() => setReviewForm(prev => ({ ...prev, show: !prev.show }))}
+                                    >
+                                        {reviewForm.show ? 'Cancel' : 'Write a Review'}
+                                    </Button>
                                 </div>
+
+                                {reviewForm.show && (
+                                    <Card className="p-8 border-primary-500/20 bg-primary-500/5 rounded-3xl animate-in slide-in-from-top-4 duration-300">
+                                        <form onSubmit={handleReviewSubmit} className="space-y-6">
+                                            <div className="space-y-3">
+                                                <label className="text-sm font-black uppercase tracking-widest text-text-muted">Your Rating</label>
+                                                <div className="flex gap-2">
+                                                    {[1, 2, 3, 4, 5].map((num) => (
+                                                        <button
+                                                            key={num}
+                                                            type="button"
+                                                            onClick={() => setReviewForm({ ...reviewForm, rating: num })}
+                                                            className={`p-2 rounded-lg transition-all ${reviewForm.rating >= num ? 'text-rating-color' : 'text-gray-300'}`}
+                                                        >
+                                                            <Star size={32} fill={reviewForm.rating >= num ? 'currentColor' : 'none'} />
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                            <div className="space-y-3">
+                                                <label className="text-sm font-black uppercase tracking-widest text-text-muted">Your Review</label>
+                                                <textarea
+                                                    required
+                                                    value={reviewForm.comment}
+                                                    onChange={(e) => setReviewForm({ ...reviewForm, comment: e.target.value })}
+                                                    placeholder="Tell others about your experience..."
+                                                    className="w-full p-6 rounded-2xl border-none ring-1 ring-gray-200 focus:ring-2 focus:ring-primary-500 outline-none transition-all dark:bg-dark-900 min-h-[120px]"
+                                                />
+                                            </div>
+                                            <Button type="submit" className="w-full rounded-2xl py-4 font-black uppercase tracking-widest">Submit Review</Button>
+                                        </form>
+                                    </Card>
+                                )}
 
                                 <div className="grid grid-cols-1 gap-6">
                                     {mess.reviews?.length > 0 ? mess.reviews.map((review: any) => (

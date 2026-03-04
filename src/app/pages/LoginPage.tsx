@@ -30,7 +30,8 @@ const LoginPage: React.FC = () => {
             navigate('/');
         } catch (err: any) {
             console.error('Login error:', err);
-            setError(err.response?.data?.message || 'Login failed. Please try again.');
+            const errorMessage = err.response?.data?.message || err.response?.data?.error || 'Login failed. Please try again.';
+            setError(errorMessage);
         } finally {
             setIsLoading(false);
         }
