@@ -16,19 +16,19 @@ import {
     Image as ImageIcon,
     Clock,
     CreditCard,
-    Calendar,
-    LogOut
+    Calendar
 } from 'lucide-react';
-import { useAppSelector, useAppDispatch } from '../../hooks/redux';
+import { useAppSelector } from '../../hooks/redux';
 import type { RootState } from '../../store';
-import { logout } from '../../store/slices/authSlice';
 import api from '../api/axiosInstance';
 import { toast } from 'react-hot-toast';
 import { BillingHistoryModal } from '../components/dashboard/BillingHistoryModal';
+import { useNavigate } from 'react-router-dom';
 
 type Tab = 'overview' | 'menu' | 'subscribers' | 'settings';
 
 const OwnerDashboardPage: React.FC = () => {
+    const navigate = useNavigate();
     const { user } = useAppSelector((state: RootState) => state.auth);
     const [activeTab, setActiveTab] = useState<Tab>('overview');
     const [mess, setMess] = useState<any>(null);
@@ -40,12 +40,8 @@ const OwnerDashboardPage: React.FC = () => {
     const [savingMenu, setSavingMenu] = useState(false);
     const [selectedDay, setSelectedDay] = useState('Monday');
     const [isBillingModalOpen, setIsBillingModalOpen] = useState(false);
-    const dispatch = useAppDispatch();
+    const [subscription, setSubscription] = useState<any>(null);
 
-    const handleLogout = () => {
-        dispatch(logout());
-        window.location.href = '/login';
-    };
 
     // Form states
     const [messForm, setMessForm] = useState({
@@ -61,22 +57,24 @@ const OwnerDashboardPage: React.FC = () => {
         const fetchOwnerData = async () => {
             try {
                 setLoading(true);
-                const [messRes, subsRes] = await Promise.all([
+                const [messRes, subsRes, subStatusRes] = await Promise.all([
                     api.get('/messes/my'),
-                    api.get('/subscriptions/subscribers')
+                    api.get('/subscriptions/subscribers'),
+                    api.get('/subscriptions/status')
                 ]);
 
                 setMess(messRes.data.data);
                 setMenus(messRes.data.data.menus || []);
                 setSubscribers(subsRes.data.data);
                 setRevenue(subsRes.data.totalRevenue || 0);
+                setSubscription(subStatusRes.data.data);
                 setMessForm({
-                    name: messRes.data.data.name,
-                    description: messRes.data.data.description,
-                    address: messRes.data.data.address,
-                    cuisine: messRes.data.data.cuisine,
-                    contact: messRes.data.data.contact,
-                    images: messRes.data.data.images || []
+                    name: messRes.data.data?.name || '',
+                    description: messRes.data.data?.description || '',
+                    address: messRes.data.data?.address || '',
+                    cuisine: messRes.data.data?.cuisine || '',
+                    contact: messRes.data.data?.contact || '',
+                    images: messRes.data.data?.images || []
                 });
             } catch (error) {
                 console.error('Error fetching owner data:', error);
@@ -179,60 +177,6 @@ const OwnerDashboardPage: React.FC = () => {
         });
     };
 
-    const handleUpgrade = async () => {
-        try {
-            setUpdating(true);
-            const orderRes = await api.post('/payments/owner/create-order');
-            const { orderId, amount, currency, isTestMode } = orderRes.data;
-
-            if (isTestMode) {
-                toast.loading('Mock payment processing...', { duration: 1500 });
-                setTimeout(async () => {
-                    await api.post('/payments/owner/verify', { razorpay_order_id: orderId });
-                    toast.success('Account upgraded! Please refresh.');
-                    window.location.reload();
-                }, 2000);
-                return;
-            }
-
-            const options = {
-                key: (window as any).RAZORPAY_KEY_ID || 'rzp_test_dummy_id',
-                amount,
-                currency,
-                name: 'MessWalha Pro',
-                description: 'Upgrade to Professional Plan',
-                order_id: orderId,
-                handler: async (response: any) => {
-                    try {
-                        await api.post('/payments/owner/verify', {
-                            razorpay_order_id: response.razorpay_order_id,
-                            razorpay_payment_id: response.razorpay_payment_id,
-                            razorpay_signature: response.razorpay_signature,
-                        });
-                        toast.success('Congratulations! Your account is now Professional');
-                        window.location.reload();
-                    } catch (error) {
-                        toast.error('Payment verification failed');
-                    }
-                },
-                prefill: {
-                    name: user?.name,
-                    email: user?.email,
-                },
-                theme: {
-                    color: '#FF4500',
-                },
-            };
-
-            const rzp = new (window as any).Razorpay(options);
-            rzp.open();
-        } catch (error) {
-            console.error('Upgrade error:', error);
-            toast.error('Failed to initiate upgrade');
-        } finally {
-            setUpdating(false);
-        }
-    };
 
     const renderOverview = () => (
         <div className="space-y-8">
@@ -261,8 +205,8 @@ const OwnerDashboardPage: React.FC = () => {
                 <Card className="p-6 overflow-hidden border-2 border-primary/20 bg-primary/5">
                     <div className="flex flex-col md:flex-row items-center justify-between gap-6">
                         <div className="flex items-center space-x-6">
-                            <div className={`p-4 rounded-2xl ${user?.ownerSubscription?.status === 'TRIAL' ? 'bg-orange-100 text-orange-600' :
-                                user?.ownerSubscription?.status === 'ACTIVE' ? 'bg-green-100 text-green-600' :
+                            <div className={`p-4 rounded-2xl ${subscription?.status === 'trial' ? 'bg-orange-100 text-orange-600' :
+                                subscription?.status === 'active' ? 'bg-green-100 text-green-600' :
                                     'bg-red-100 text-red-600'
                                 }`}>
                                 <CreditCard size={32} />
@@ -270,22 +214,22 @@ const OwnerDashboardPage: React.FC = () => {
                             <div>
                                 <div className="flex items-center space-x-3 mb-1">
                                     <h3 className="text-lg font-black uppercase tracking-tight">
-                                        {user?.ownerSubscription?.planName === 'FREE_TRIAL' ? '60-Day Free Trial' : 'Professional Plan'}
+                                        {subscription?.status === 'trial' ? '60-Day Free Trial' : 'Elite Listing Plan'}
                                     </h3>
-                                    <span className={`text-[10px] font-black px-2 py-1 rounded-lg uppercase ${user?.ownerSubscription?.status === 'TRIAL' ? 'bg-orange-500 text-white' :
-                                        user?.ownerSubscription?.status === 'ACTIVE' ? 'bg-green-500 text-white' :
+                                    <span className={`text-[10px] font-black px-2 py-1 rounded-lg uppercase ${subscription?.status === 'trial' ? 'bg-orange-500 text-white' :
+                                        subscription?.status === 'active' ? 'bg-green-500 text-white' :
                                             'bg-red-500 text-white'
                                         }`}>
-                                        {user?.ownerSubscription?.status}
+                                        {subscription?.status || 'No Plan'}
                                     </span>
                                 </div>
                                 <div className="flex items-center space-x-4 text-sm font-bold text-gray-500">
-                                    {user?.ownerSubscription?.status === 'TRIAL' && (
+                                    {subscription?.status === 'trial' && (
                                         <div className="flex items-center text-orange-600">
                                             <Clock size={16} className="mr-1" />
                                             <span>
                                                 {(() => {
-                                                    const end = new Date(user.ownerSubscription.trialEndDate);
+                                                    const end = new Date(subscription.trial_end_date);
                                                     const now = new Date();
                                                     const diff = Math.ceil((end.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
                                                     return `${Math.max(0, diff)} days remaining`;
@@ -293,37 +237,29 @@ const OwnerDashboardPage: React.FC = () => {
                                             </span>
                                         </div>
                                     )}
-                                    {user?.ownerSubscription?.nextBillingDate && (
+                                    {subscription?.subscription_end && (
                                         <div className="flex items-center">
                                             <Calendar size={16} className="mr-1" />
-                                            <span>Next billing: {new Date(user.ownerSubscription.nextBillingDate).toLocaleDateString()}</span>
+                                            <span>Next billing: {new Date(subscription.subscription_end).toLocaleDateString()}</span>
                                         </div>
                                     )}
                                     <div className="flex items-center">
                                         <CircleCheck size={16} className="mr-1 text-green-500" />
-                                        <span>Payment: {user?.ownerSubscription?.paymentStatus || 'PENDING'}</span>
+                                        <span>Status: {subscription?.status?.toUpperCase() || 'INACTIVE'}</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div className="flex space-x-3">
-                            {user?.ownerSubscription?.status !== 'ACTIVE' && (
+                            {subscription?.status !== 'active' && (
                                 <>
                                     <Button
                                         className="rounded-xl px-8 shadow-lg shadow-primary/20"
-                                        onClick={handleUpgrade}
+                                        onClick={() => navigate('/owner/subscribe')}
                                         isLoading={updating}
                                     >
-                                        Upgrade to Professional (₹599/mo)
+                                        Subscribe (₹499/mo)
                                     </Button>
-                                    <a
-                                        href="https://razorpay.me/@hrushikeshnandujagtap"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-xs text-primary font-bold hover:underline"
-                                    >
-                                        Alternate Payment Link &rarr;
-                                    </a>
                                 </>
                             )}
                             <Button
@@ -592,11 +528,10 @@ const OwnerDashboardPage: React.FC = () => {
                                 { id: 'menu', icon: <Utensils size={20} />, label: 'Menu Schedule' },
                                 { id: 'subscribers', icon: <Users size={20} />, label: 'Subscribers' },
                                 { id: 'settings', icon: <Settings size={20} />, label: 'Profile Settings' },
-                                { id: 'logout', icon: <LogOut size={20} />, label: 'Logout', isLogout: true },
                             ].map((item) => (
                                 <button
                                     key={item.id}
-                                    onClick={() => item.isLogout ? handleLogout() : setActiveTab(item.id as Tab)}
+                                    onClick={() => setActiveTab(item.id as Tab)}
                                     className={`w-full flex items-center space-x-3 px-5 py-4 rounded-xl transition-all font-bold text-sm ${activeTab === item.id
                                         ? 'bg-primary text-white shadow-xl shadow-primary/30'
                                         : 'text-gray-500 hover:bg-gray-50'

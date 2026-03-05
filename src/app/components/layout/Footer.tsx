@@ -4,57 +4,65 @@ import { Utensils, Github, Twitter, Instagram } from 'lucide-react';
 
 export const Footer: React.FC = () => {
     return (
-        <footer className="bg-gray-50 dark:bg-dark-lighter border-t border-gray-100 dark:border-dark-lighter">
-            <div className="container mx-auto px-4 py-12">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-                    <div className="col-span-1 md:col-span-1">
-                        <Link to="/" className="flex items-center space-x-2 mb-4">
-                            <div className="w-8 h-8 bg-primary rounded flex items-center justify-center text-white">
-                                <Utensils size={18} />
+        <footer className="bg-dark-900 text-white border-t border-white/5">
+            <div className="container mx-auto px-4 py-20">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16">
+                    <div className="space-y-6">
+                        <Link to="/" className="flex items-center space-x-3 group">
+                            <div className="w-10 h-10 bg-primary-500 rounded-xl flex items-center justify-center text-white shadow-lg shadow-primary-500/20 group-hover:scale-110 transition-transform">
+                                <Utensils size={20} />
                             </div>
-                            <span className="text-lg font-heading font-bold">MessWalha</span>
+                            <span className="text-xl font-heading font-black tracking-tighter">Mess<span className="text-primary-500">Walha</span></span>
                         </Link>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">
-                            Connecting students with the best local mess services. Healthy food, simplified subscriptions.
+                        <p className="text-sm text-white/50 leading-relaxed font-medium">
+                            The #1 digital ecosystem for student meal management. Empowering students with healthy food and mess owners with smart technology.
                         </p>
-                    </div>
-
-                    <div>
-                        <h4 className="font-heading font-semibold mb-4">Platform</h4>
-                        <ul className="space-y-2 text-sm text-gray-500 dark:text-gray-400">
-                            <li><Link to="/find-mess" className="hover:text-primary transition-colors">Find Mess</Link></li>
-                            <li><Link to="/how-it-works" className="hover:text-primary transition-colors">How it Works</Link></li>
-                            <li><Link to="/pricing" className="hover:text-primary transition-colors">Pricing</Link></li>
-                        </ul>
-                    </div>
-
-                    <div>
-                        <h4 className="font-heading font-semibold mb-4">Support</h4>
-                        <ul className="space-y-2 text-sm text-gray-500 dark:text-gray-400">
-                            <li><Link to="/faq" className="hover:text-primary transition-colors">FAQ</Link></li>
-                            <li><Link to="/contact" className="hover:text-primary transition-colors">Contact Us</Link></li>
-                            <li><Link to="/privacy" className="hover:text-primary transition-colors">Privacy Policy</Link></li>
-                        </ul>
-                    </div>
-
-                    <div>
-                        <h4 className="font-heading font-semibold mb-4">Connect</h4>
                         <div className="flex space-x-4">
-                            <a href="#" className="p-2 bg-white dark:bg-dark rounded-full shadow-sm hover:text-primary transition-colors">
-                                <Twitter size={18} />
-                            </a>
-                            <a href="#" className="p-2 bg-white dark:bg-dark rounded-full shadow-sm hover:text-primary transition-colors">
-                                <Instagram size={18} />
-                            </a>
-                            <a href="#" className="p-2 bg-white dark:bg-dark rounded-full shadow-sm hover:text-primary transition-colors">
-                                <Github size={18} />
-                            </a>
+                            {[Twitter, Instagram, Github].map((Icon, i) => (
+                                <a key={i} href="#" className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-primary-500 hover:text-white transition-all border border-white/5">
+                                    <Icon size={18} />
+                                </a>
+                            ))}
                         </div>
+                    </div>
+
+                    <div>
+                        <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-8">Platform</h4>
+                        <ul className="space-y-4 text-sm font-black uppercase tracking-widest text-white/60">
+                            <li><Link to="/find-mess" className="hover:text-primary-500 transition-colors">Find Mess</Link></li>
+                            <li><Link to="/how-it-works" className="hover:text-primary-500 transition-colors">How it Works</Link></li>
+                            <li><Link to="/pricing" className="hover:text-primary-500 transition-colors">Pricing</Link></li>
+                            <li><Link to="/blog" className="hover:text-primary-500 transition-colors">Blog</Link></li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-8">Business</h4>
+                        <ul className="space-y-4 text-sm font-black uppercase tracking-widest text-white/60">
+                            <li><Link to="/owner/register" className="hover:text-primary-500 transition-colors">Partner With Us</Link></li>
+                            <li><Link to="/careers" className="hover:text-primary-500 transition-colors">Careers</Link></li>
+                            <li><Link to="/contact" className="hover:text-primary-500 transition-colors">Contact Us</Link></li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-8">Legal</h4>
+                        <ul className="space-y-4 text-sm font-black uppercase tracking-widest text-white/60">
+                            <li><Link to="/terms" className="hover:text-primary-500 transition-colors">Terms & Conditions</Link></li>
+                            <li><Link to="/refund-policy" className="hover:text-primary-500 transition-colors">Refund Policy</Link></li>
+                            <li><Link to="/privacy" className="hover:text-primary-500 transition-colors">Privacy Policy</Link></li>
+                        </ul>
                     </div>
                 </div>
 
-                <div className="mt-12 pt-8 border-t border-gray-100 dark:border-dark-card text-center text-sm text-gray-500 dark:text-gray-400">
-                    © {new Date().getFullYear()} MessWalha. All rights reserved.
+                <div className="mt-20 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4">
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30">
+                        © {new Date().getFullYear()} MessWalha. All rights reserved. Made for students, by students.
+                    </p>
+                    <div className="flex items-center space-x-6">
+                        <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">System Status: Operational</span>
+                    </div>
                 </div>
             </div>
         </footer>
