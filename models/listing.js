@@ -1,4 +1,3 @@
-```javascript
 const db = require('../config/db');
 
 const Listing = {
@@ -57,4 +56,3 @@ AND(s.status = 'active' OR s.status = 'trial')
 };
 
 module.exports = Listing;
-```
