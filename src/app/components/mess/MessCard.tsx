@@ -147,7 +147,7 @@ export const MessCard: React.FC<MessCardProps> = ({ mess }) => {
                     </h3>
                     <div className="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-text-muted">
                         <MapPin size={14} className="text-primary-500" />
-                        <span className="line-clamp-1">{distance} KM from your college</span>
+                        <span className="line-clamp-1">{mess.address}</span>
                     </div>
                 </div>
 
