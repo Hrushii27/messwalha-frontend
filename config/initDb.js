@@ -39,6 +39,8 @@ const createTables = async () => {
       mess_image TEXT,
       menu_images TEXT[] DEFAULT '{}',
       is_active BOOLEAN DEFAULT TRUE,
+      rating NUMERIC(3,2) DEFAULT 0,
+      reviews_count INTEGER DEFAULT 0,
       created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
     );
  

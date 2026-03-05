@@ -32,13 +32,23 @@ app.use(morgan("dev"));
 
 app.use(
   cors({
-    origin: process.env.NODE_ENV === 'development' ? true : [
-      "https://messwalha-frontend.vercel.app",
-      "https://messwala.vercel.app",
-      "https://frontend-one-swart-57.vercel.app",
-      "https://www.messwala.me",
-      "https://messwala.me"
-    ],
+    origin: (origin, callback) => {
+      // Allow relative requests (like Postman or server-to-server) or development
+      if (!origin || process.env.NODE_ENV === 'development') return callback(null, true);
+
+      const allowedPatterns = [
+        /\.vercel\.app$/, // Any vercel subdomain
+        /localhost:\d+$/, // Localhost with any port
+        /messwala\.me$/    // Production domain
+      ];
+
+      const isAllowed = allowedPatterns.some(pattern => pattern.test(origin));
+      if (isAllowed) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
   })
 );
@@ -106,7 +116,7 @@ app.get("/diag", async (req, res) => {
 app.get("/api/diag", async (req, res) => {
   try {
     const db = require("./config/db");
-    const ownersCount = await db.query("SELECT COUNT(*) FROM mess_owners");
+    const usersCount = await db.query("SELECT COUNT(*) FROM users");
     const tables = await db.query(`
       SELECT table_name, column_name, data_type 
       FROM information_schema.columns 
@@ -116,7 +126,7 @@ app.get("/api/diag", async (req, res) => {
     res.json({
       status: "OK",
       hasJwtSecret: !!process.env.JWT_SECRET,
-      ownersCount: ownersCount.rows[0].count,
+      usersCount: usersCount.rows[0].count,
       schema: tables.rows
     });
   } catch (err) {

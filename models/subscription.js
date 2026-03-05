@@ -44,6 +44,21 @@ const Subscription = {
             return 'trial';
         }
         return 'expired';
+    },
+
+    findExpiredTrials: async () => {
+        const result = await db.query(
+            "SELECT * FROM owner_subscriptions WHERE status = 'trial' AND trial_end_date < CURRENT_TIMESTAMP"
+        );
+        return result.rows;
+    },
+
+    updateStatus: async (id, status) => {
+        const result = await db.query(
+            'UPDATE owner_subscriptions SET status = $1 WHERE id = $2 RETURNING *',
+            [status, id]
+        );
+        return result.rows[0];
     }
 };
 

@@ -1,6 +1,6 @@
 const cron = require('node-cron');
 const Subscription = require('../models/subscription');
-const Listing = require('../models/listing');
+const Mess = require('../models/mess');
 
 const startScheduler = () => {
     // Run every day at midnight (00:00)
@@ -14,9 +14,9 @@ const startScheduler = () => {
                 await Subscription.updateStatus(sub.id, 'expired');
 
                 // Deactivate all listings for this owner
-                await Listing.deactivateByOwnerId(sub.mess_owner_id);
+                await Mess.deactivateByOwnerId(sub.owner_id);
 
-                console.log(`✅ Expired trial for owner ID ${sub.mess_owner_id} and deactivated listings.`);
+                console.log(`✅ Expired trial for owner ID ${sub.owner_id} and deactivated listings.`);
             }
         } catch (err) {
             console.error('❌ Error in daily trial expiry check:', err);

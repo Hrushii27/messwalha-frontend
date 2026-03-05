@@ -11,9 +11,9 @@ const Review = {
 
     findByMessId: async (messId) => {
         const result = await db.query(`
-            SELECT r.*, mo.name as student_name
+            SELECT r.*, u.name as student_name
             FROM reviews r
-            JOIN mess_owners mo ON r.student_id = mo.id
+            JOIN users u ON r.student_id = u.id
             WHERE r.mess_id = $1
             ORDER BY r.created_at DESC
         `, [messId]);

@@ -4,7 +4,7 @@ const userController = {
     getProfile: async (req, res) => {
         try {
             const result = await db.query(
-                'SELECT id, name, email, phone, role, created_at, profile_image FROM mess_owners WHERE id = $1',
+                'SELECT id, name, email, phone, role, created_at, profile_image FROM users WHERE id = $1',
                 [req.owner.id]
             );
             if (result.rows.length === 0) {

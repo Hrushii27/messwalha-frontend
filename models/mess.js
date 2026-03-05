@@ -69,6 +69,10 @@ const Mess = {
     delete: async (id, ownerId) => {
         const result = await db.query('DELETE FROM messes WHERE id = $1 AND owner_id = $2 RETURNING id', [id, ownerId]);
         return result.rows[0];
+    },
+
+    deactivateByOwnerId: async (ownerId) => {
+        await db.query('UPDATE messes SET is_active = FALSE WHERE owner_id = $1', [ownerId]);
     }
 };
 

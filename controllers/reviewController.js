@@ -1,5 +1,4 @@
 const Review = require('../models/review');
-const Listing = require('../models/listing');
 const db = require('../config/db');
 
 const reviewController = {
@@ -10,9 +9,12 @@ const reviewController = {
         try {
             const review = await Review.create(messId, studentId, rating, comment);
 
-            // Update the average rating in mess_listings
+            // Update the average rating and reviews count in messes
             const avgRating = await Review.getAverageRating(messId);
-            await db.query('UPDATE mess_listings SET rating = $1 WHERE id = $2', [avgRating, messId]);
+            await db.query(
+                'UPDATE messes SET rating = $1, reviews_count = reviews_count + 1 WHERE id = $2',
+                [avgRating, messId]
+            );
 
             res.status(201).json({ success: true, data: review, averageRating: avgRating });
         } catch (err) {

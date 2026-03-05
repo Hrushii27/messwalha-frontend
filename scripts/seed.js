@@ -8,8 +8,8 @@ const seed = async () => {
         // 1. Create Owner
         const passwordHash = await bcrypt.hash('password123', 10);
         const ownerResult = await db.query(
-            'INSERT INTO mess_owners (name, email, phone, password_hash) VALUES ($1, $2, $3, $4) ON CONFLICT (email) DO UPDATE SET name = EXCLUDED.name RETURNING id',
-            ['Rajesh Kumar', 'owner@example.com', '9876543210', passwordHash]
+            'INSERT INTO users (name, email, phone, password, role) VALUES ($1, $2, $3, $4, $5) ON CONFLICT (email) DO UPDATE SET name = EXCLUDED.name RETURNING id',
+            ['Rajesh Kumar', 'owner@example.com', '9876543210', passwordHash, 'OWNER']
         );
         const ownerId = ownerResult.rows[0].id;
         console.log('✅ Owner created/updated');
@@ -18,8 +18,8 @@ const seed = async () => {
         const trialEnd = new Date();
         trialEnd.setDate(trialEnd.getDate() + 60);
         await db.query(
-            'INSERT INTO subscriptions (mess_owner_id, plan_type, trial_start, trial_end, status) VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING',
-            [ownerId, 'trial', new Date(), trialEnd, 'trial']
+            'INSERT INTO owner_subscriptions (owner_id, trial_start_date, trial_end_date, status) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING',
+            [ownerId, new Date(), trialEnd, 'trial']
         );
         console.log('✅ Subscription created');
 
@@ -56,105 +56,26 @@ const seed = async () => {
                 cuisine: "Veg",
                 description: "Quality meals in Kasba Bawada.",
                 images: ["/messes/curry.png"]
-            },
-            {
-                name: "Shree Ganesh Mess",
-                location: "FC Road, Pune",
-                price: 2800,
-                cuisine: "Maharashtrian",
-                description: "Popular mess on FC Road.",
-                images: ["/messes/thali.png"]
-            },
-            {
-                name: "Om Sai Tiffin Services",
-                location: "Karve Nagar, Pune",
-                price: 2100,
-                cuisine: "Veg",
-                description: "Reliable tiffin service in Karve Nagar.",
-                images: ["/messes/curry.png"]
-            },
-            {
-                name: "Annapurna Mess",
-                location: "Kothrud, Pune",
-                price: 2600,
-                cuisine: "Maharashtrian",
-                description: "Delicious Kothrud specialty.",
-                images: ["/messes/thali.png"]
-            },
-            {
-                name: "Annapurna Mess (Mumbai)",
-                location: "Andheri East, Mumbai",
-                price: 3200,
-                cuisine: "North Indian",
-                description: "Authentic taste in Andheri.",
-                images: ["/messes/curry.png"]
-            },
-            {
-                name: "Maa Durga Tiffin Center",
-                location: "Dadar West, Mumbai",
-                price: 2900,
-                cuisine: "Veg",
-                description: "Dadar's favorite tiffin center.",
-                images: ["/messes/thali.png"]
-            },
-            {
-                name: "Shree Sai Mess",
-                location: "Vashi, Navi Mumbai",
-                price: 3000,
-                cuisine: "Veg",
-                description: "Quality food in Vashi.",
-                images: ["/messes/curry.png"]
-            },
-            {
-                name: "Mahalaxmi Mess",
-                location: "Rajendra Nagar, Kolhapur",
-                price: 2400,
-                cuisine: "Maharashtrian",
-                description: "Serving Rajendra Nagar with pride.",
-                images: ["/messes/thali.png"]
-            },
-            {
-                name: "Shivneri Mess",
-                location: "Near Central Bus Stand, Kolhapur",
-                price: 2500,
-                cuisine: "Maharashtrian",
-                description: "Convenient location near CBS.",
-                images: ["/messes/curry.png"]
-            },
-            {
-                name: "South Spice Corner",
-                location: "Kothrud, Pune",
-                price: 2400,
-                cuisine: "South Indian",
-                description: "Best South Indian thalis and breakfast.",
-                images: ["/messes/thali.png"]
-            },
-            {
-                name: "Student Corner Mess",
-                location: "Model Colony, Pune",
-                price: 2200,
-                cuisine: "North Indian",
-                description: "Homemade quality for students.",
-                images: ["/messes/curry.png"]
             }
         ];
 
         for (const mess of messes) {
             await db.query(
-                `INSERT INTO mess_listings 
-                (mess_owner_id, name, location, monthly_price, price, description, images, cuisine, rating, verified, is_active) 
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
+                `INSERT INTO messes 
+                (owner_id, mess_name, owner_name, mobile, address, price_per_month, price_per_week, price_per_day, menu_text, mess_image, rating, is_active) 
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
                 [
                     ownerId,
                     mess.name,
+                    'Rajesh Kumar',
+                    '9876543210',
                     mess.location,
                     mess.price,
-                    mess.price,
+                    Math.round(mess.price / 4),
+                    Math.round(mess.price / 30),
                     mess.description,
-                    mess.images,
-                    mess.cuisine,
+                    mess.images[0],
                     4.0 + Math.random(),
-                    true,
                     true
                 ]
             );
