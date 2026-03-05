@@ -88,7 +88,8 @@ app.get('/health', (req, res) => {
 
 app.get("/diag", async (req, res) => {
   try {
-    const tables = await createTables.db.query(`
+    const db = require("./config/db");
+    const tables = await db.query(`
       SELECT table_name, column_name, data_type 
       FROM information_schema.columns 
       WHERE table_schema = 'public'

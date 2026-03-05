@@ -9,6 +9,7 @@ const createTables = async () => {
       phone VARCHAR(20),
       password_hash VARCHAR(255) NOT NULL,
       role VARCHAR(20) DEFAULT 'OWNER', -- STUDENT, OWNER
+      profile_image TEXT,
       created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
     );
 
