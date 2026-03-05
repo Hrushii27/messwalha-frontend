@@ -18,9 +18,15 @@ const ChatPage = lazy(() => import('./app/pages/ChatPage'));
 const OwnerDashboardPage = lazy(() => import('./app/pages/OwnerDashboardPage'));
 const AdminDashboardPage = lazy(() => import('./app/pages/AdminDashboardPage'));
 const AboutPage = lazy(() => import('./app/pages/AboutPage'));
+const TermsPage = lazy(() => import('./app/pages/TermsPage'));
+const RefundPolicyPage = lazy(() => import('./app/pages/RefundPolicyPage'));
 const ForgotPasswordPage = lazy(() => import('./app/pages/ForgotPasswordPage'));
 const InvoicePage = lazy(() => import('./app/pages/InvoicePage'));
 const FAQPage = lazy(() => import('./app/pages/FAQPage'));
+const ProfilePage = lazy(() => import('./app/pages/ProfilePage'));
+const TodayMenuPage = lazy(() => import('./app/pages/TodayMenuPage'));
+const AddMessPage = lazy(() => import('./app/pages/AddMessPage'));
+const SubscribePage = lazy(() => import('./app/pages/SubscribePage'));
 
 // Loading component for Suspense
 const PageLoader = () => (
@@ -39,6 +45,8 @@ const App: React.FC = () => {
               <Routes>
                 <Route path="/" element={<LandingPage />} />
                 <Route path="/about" element={<AboutPage />} />
+                <Route path="/terms" element={<TermsPage />} />
+                <Route path="/refund-policy" element={<RefundPolicyPage />} />
                 <Route path="/faq" element={<FAQPage />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
@@ -51,7 +59,14 @@ const App: React.FC = () => {
                 <Route path="/dashboard" element={<StudentDashboardPage />} />
                 <Route path="/subscriptions" element={<MySubscriptionsPage />} />
                 <Route path="/messages" element={<ChatPage />} />
+                <Route path="/profile" element={<ProfilePage />} />
+                <Route path="/profile/settings" element={<ProfilePage />} /> { /* Shared for now */}
+                <Route path="/security" element={<ProfilePage />} /> { /* Shared for now */}
+                <Route path="/menu/today" element={<TodayMenuPage />} />
+                <Route path="/orders" element={<MySubscriptionsPage />} /> { /* Shared for now */}
                 <Route path="/owner/dashboard" element={<OwnerDashboardPage />} />
+                <Route path="/owner/subscribe" element={<SubscribePage />} />
+                <Route path="/owner/add-mess" element={<AddMessPage />} />
                 <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>

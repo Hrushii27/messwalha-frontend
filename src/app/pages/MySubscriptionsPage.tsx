@@ -13,8 +13,8 @@ const MySubscriptionsPage: React.FC = () => {
     useEffect(() => {
         const fetchSubscriptions = async () => {
             try {
-                const response = await api.get('/subscriptions/my-subscriptions');
-                setSubscriptions(response.data.data);
+                const response = await api.get('/subscriptions');
+                setSubscriptions(response.data.subscriptions || []);
             } catch (error) {
                 console.error('Error fetching subscriptions:', error);
             } finally {
@@ -26,7 +26,7 @@ const MySubscriptionsPage: React.FC = () => {
     }, []);
 
     const filteredSubscriptions = subscriptions.filter((sub: any) =>
-        sub.mess.name.toLowerCase().includes(searchTerm.toLowerCase())
+        sub.plan_type?.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     return (
@@ -68,8 +68,8 @@ const MySubscriptionsPage: React.FC = () => {
                                             <RefreshCw size={24} />
                                         </div>
                                         <div>
-                                            <h3 className="font-bold text-lg">{sub.mess.name}</h3>
-                                            <p className="text-sm text-gray-400">{sub.planType} Plan</p>
+                                            <h3 className="font-bold text-lg">{sub.plan_type === 'trial' ? '60-Day Free Trial' : 'Professional Plan'}</h3>
+                                            <p className="text-sm text-gray-400">Status: {sub.status}</p>
                                         </div>
                                     </div>
                                     <span className={`px-3 py-1 rounded-full text-[10px] font-black tracking-widest uppercase ${sub.status === 'ACTIVE' ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-500'
@@ -79,8 +79,8 @@ const MySubscriptionsPage: React.FC = () => {
                                 </div>
 
                                 {(() => {
-                                    const start = new Date(sub.startDate);
-                                    const end = new Date(sub.endDate);
+                                    const start = new Date(sub.trial_start || sub.created_at);
+                                    const end = new Date(sub.trial_end || sub.next_billing_date);
                                     const now = new Date();
                                     const totalDays = Math.max(1, Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)));
                                     const daysPast = Math.ceil((now.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
@@ -97,8 +97,8 @@ const MySubscriptionsPage: React.FC = () => {
                                                 <div className="h-full bg-primary transition-all duration-1000" style={{ width: `${progress}%` }} />
                                             </div>
                                             <div className="flex justify-between text-[10px] text-gray-400 font-medium">
-                                                <span>Started: {sub.startDate ? new Date(sub.startDate).toLocaleDateString() : 'N/A'}</span>
-                                                <span>Expires: {sub.endDate ? new Date(sub.endDate).toLocaleDateString() : 'N/A'}</span>
+                                                <span>Started: {sub.trial_start ? new Date(sub.trial_start).toLocaleDateString() : 'N/A'}</span>
+                                                <span>Expires: {sub.trial_end ? new Date(sub.trial_end).toLocaleDateString() : 'N/A'}</span>
                                             </div>
                                         </div>
                                     );
@@ -129,9 +129,14 @@ const MySubscriptionsPage: React.FC = () => {
                         <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-300">
                             <RefreshCw size={40} />
                         </div>
-                        <h2 className="text-xl font-bold">No subscriptions found</h2>
-                        <p className="text-gray-500 mt-2">You don't have any active or past subscriptions.</p>
-                        <Button className="mt-6 rounded-full px-8">Find a Mess</Button>
+                        <h2 className="text-xl font-bold">Find a Mess</h2>
+                        <p className="text-gray-500 mt-2">Browse Available Mess Services</p>
+                        <Button
+                            className="mt-6 rounded-full px-8"
+                            onClick={() => window.location.href = '/find-mess'}
+                        >
+                            Find a Mess
+                        </Button>
                     </div>
                 )}
             </div>

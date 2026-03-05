@@ -10,11 +10,13 @@ console.log('🚀 API_BASE_URL:', API_BASE_URL);
 
 const api = axios.create({
   baseURL: API_BASE_URL,
-  withCredentials: false, // change to true only if using cookies
+  withCredentials: false,
   headers: {
     "Content-Type": "application/json",
   },
 });
+
+console.log('📡 Axios matches Base URL:', API_BASE_URL);
 
 // ✅ REQUEST INTERCEPTOR (Attach Token)
 api.interceptors.request.use(
