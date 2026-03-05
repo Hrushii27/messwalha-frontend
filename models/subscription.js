@@ -4,48 +4,46 @@ const Subscription = {
     createTrial: async (ownerId) => {
         const trialStart = new Date();
         const trialEnd = new Date();
-        trialEnd.setDate(trialEnd.getDate() + 60);
+        trialEnd.setDate(trialEnd.getDate() + 60); // 2 months trial
 
         const result = await db.query(
-            'INSERT INTO subscriptions (mess_owner_id, plan_type, trial_start, trial_end, status) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-            [ownerId, 'trial', trialStart, trialEnd, 'trial']
+            'INSERT INTO owner_subscriptions (owner_id, trial_start_date, trial_end_date, status) VALUES ($1, $2, $3, $4) RETURNING *',
+            [ownerId, trialStart, trialEnd, 'trial']
         );
         return result.rows[0];
     },
 
     findByOwnerId: async (ownerId) => {
-        const result = await db.query('SELECT * FROM subscriptions WHERE mess_owner_id = $1', [ownerId]);
+        const result = await db.query('SELECT * FROM owner_subscriptions WHERE owner_id = $1', [ownerId]);
         return result.rows[0];
     },
 
-    updateStatus: async (id, status, planType = null, nextBillingDate = null) => {
-        let query = 'UPDATE subscriptions SET status = $1, updated_at = CURRENT_TIMESTAMP';
-        const params = [status];
-        let count = 2;
+    updateSubscription: async (ownerId, durationDays = 30) => {
+        const start = new Date();
+        const end = new Date();
+        end.setDate(end.getDate() + durationDays);
 
-        if (planType) {
-            query += `, plan_type = $${count++}`;
-            params.push(planType);
-        }
-        if (nextBillingDate) {
-            query += `, next_billing_date = $${count++}`;
-            params.push(nextBillingDate);
-        }
-
-        query += ` WHERE id = $${count} RETURNING *`;
-        params.push(id);
-
-        const result = await db.query(query, params);
-        return result.rows[0];
-    },
-
-    findExpiredTrials: async () => {
-        const now = new Date();
         const result = await db.query(
-            "SELECT * FROM subscriptions WHERE plan_type = 'trial' AND status = 'trial' AND trial_end < $1",
-            [now]
+            'UPDATE owner_subscriptions SET subscription_start = $1, subscription_end = $2, status = $3 WHERE owner_id = $4 RETURNING *',
+            [start, end, 'active', ownerId]
         );
-        return result.rows;
+        return result.rows[0];
+    },
+
+    checkStatus: async (ownerId) => {
+        const result = await db.query('SELECT * FROM owner_subscriptions WHERE owner_id = $1', [ownerId]);
+        if (result.rows.length === 0) return null;
+
+        const sub = result.rows[0];
+        const now = new Date();
+
+        if (sub.status === 'active' && new Date(sub.subscription_end) > now) {
+            return 'active';
+        }
+        if (sub.status === 'trial' && new Date(sub.trial_end_date) > now) {
+            return 'trial';
+        }
+        return 'expired';
     }
 };
 

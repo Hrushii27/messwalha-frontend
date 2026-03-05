@@ -61,6 +61,7 @@ startScheduler();
 
 app.use("/api/auth", authRoutes);
 app.use("/api/messes", messRoutes);
+app.use("/api/mess", messRoutes); // User requested singular endpoint
 app.use("/api/payments", paymentRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/subscriptions", subscriptionRoutes);

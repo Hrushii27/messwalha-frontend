@@ -5,11 +5,11 @@ const subscriptionController = {
     getMySubscriptions: async (req, res) => {
         try {
             const result = await db.query(`
-        SELECT ss.*, ml.name as mess_name, ml.location as mess_address, ml.cuisine
+        SELECT ss.*, m.mess_name, m.address as mess_address, m.price_per_month
         FROM student_subscriptions ss
-        JOIN mess_listings ml ON ss.mess_id = ml.id
+        JOIN messes m ON ss.mess_id = m.id
         WHERE ss.student_id = $1
-      `, [req.owner.id]); // req.owner is the user object from authMiddleware
+      `, [req.owner.id]);
 
             res.status(200).json({
                 success: true,
@@ -23,7 +23,7 @@ const subscriptionController = {
                         id: row.mess_id,
                         name: row.mess_name,
                         address: row.mess_address,
-                        cuisine: row.cuisine
+                        monthlyPrice: row.price_per_month
                     }
                 }))
             });
@@ -37,11 +37,11 @@ const subscriptionController = {
     getSubscribers: async (req, res) => {
         try {
             const result = await db.query(`
-        SELECT ss.*, mo.name as student_name, mo.email as student_email
+        SELECT ss.*, u.name as student_name, u.email as student_email
         FROM student_subscriptions ss
-        JOIN mess_owners mo ON ss.student_id = mo.id
-        JOIN mess_listings ml ON ss.mess_id = ml.id
-        WHERE ml.mess_owner_id = $1
+        JOIN users u ON ss.student_id = u.id
+        JOIN messes m ON ss.mess_id = m.id
+        WHERE m.owner_id = $1
       `, [req.owner.id]);
 
             res.status(200).json({
@@ -56,7 +56,7 @@ const subscriptionController = {
                         email: row.student_email
                     }
                 })),
-                totalRevenue: result.rows.reduce((sum, row) => sum + 2500, 0) // Mock logic for revenue
+                totalRevenue: result.rows.reduce((sum, row) => sum + 2500, 0)
             });
         } catch (err) {
             console.error(err);
@@ -69,13 +69,27 @@ const subscriptionController = {
         const { messId, planType } = req.body;
         try {
             const result = await db.query(
-                'INSERT INTO student_subscriptions (student_id, mess_id, plan_type) VALUES ($1, $2, $3) RETURNING *',
-                [req.owner.id, messId, planType || 'monthly']
+                'INSERT INTO student_subscriptions (student_id, mess_id, plan_type, status) VALUES ($1, $2, $3, $4) RETURNING *',
+                [req.owner.id, messId, planType || 'monthly', 'active']
             );
             res.status(201).json({ success: true, data: result.rows[0] });
         } catch (err) {
             console.error(err);
             res.status(500).json({ success: false, message: 'Server error subscribing to mess' });
+        }
+    },
+
+    // GET /api/subscriptions/status (Owner)
+    getStatus: async (req, res) => {
+        try {
+            const sub = await db.query('SELECT * FROM owner_subscriptions WHERE owner_id = $1', [req.owner.id]);
+            if (sub.rows.length === 0) {
+                return res.status(200).json({ success: true, data: null });
+            }
+            res.status(200).json({ success: true, data: sub.rows[0] });
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ success: false, message: 'Server error fetching status' });
         }
     }
 };

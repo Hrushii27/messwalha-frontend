@@ -1,4 +1,4 @@
-const Owner = require('../models/owner');
+const User = require('../models/user');
 const Subscription = require('../models/subscription');
 const { hashPassword, comparePassword } = require('../utils/bcrypt');
 const { generateToken } = require('../utils/jwt');
@@ -7,31 +7,31 @@ const authController = {
     register: async (req, res) => {
         const { name, email, phone, password, role } = req.body;
         try {
-            const existingOwner = await Owner.findByEmail(email);
-            if (existingOwner) {
+            const existingUser = await User.findByEmail(email);
+            if (existingUser) {
                 return res.status(400).json({ success: false, message: 'User already exists' });
             }
 
             const passwordHash = await hashPassword(password);
             const userRole = role || 'OWNER';
-            const owner = await Owner.create(name, email, phone, passwordHash, userRole);
+            const user = await User.create(name, email, phone, passwordHash, userRole);
 
             // Automatically assign 60-day trial for owners
             let ownerSubscription = null;
             if (userRole === 'OWNER') {
-                ownerSubscription = await Subscription.createTrial(owner.id);
+                ownerSubscription = await Subscription.createTrial(user.id);
             }
 
-            const token = generateToken(owner.id, userRole);
+            const token = generateToken(user.id, userRole);
             res.status(201).json({
                 success: true,
                 message: 'Registration successful',
                 token,
                 user: {
-                    id: owner.id,
-                    name: owner.name,
-                    email: owner.email,
-                    phone: owner.phone,
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    phone: user.phone,
                     role: userRole,
                     ownerSubscription
                 }
@@ -50,32 +50,32 @@ const authController = {
     login: async (req, res) => {
         const { email, password } = req.body;
         try {
-            const owner = await Owner.findByEmail(email);
-            if (!owner) {
+            const user = await User.findByEmail(email);
+            if (!user) {
                 return res.status(401).json({ success: false, message: 'Invalid credentials' });
             }
 
-            const isMatch = await comparePassword(password, owner.password_hash);
+            const isMatch = await comparePassword(password, user.password);
             if (!isMatch) {
                 return res.status(401).json({ success: false, message: 'Invalid credentials' });
             }
 
-            const token = generateToken(owner.id, owner.role);
+            const token = generateToken(user.id, user.role);
 
             let ownerSubscription = null;
-            if (owner.role === 'OWNER') {
-                ownerSubscription = await Subscription.findByOwnerId(owner.id);
+            if (user.role === 'OWNER') {
+                ownerSubscription = await Subscription.findByOwnerId(user.id);
             }
 
             res.status(200).json({
                 success: true,
                 token,
                 user: {
-                    id: owner.id,
-                    name: owner.name,
-                    email: owner.email,
-                    phone: owner.phone,
-                    role: owner.role,
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    phone: user.phone,
+                    role: user.role,
                     ownerSubscription
                 }
             });
@@ -88,16 +88,10 @@ const authController = {
     firebaseAuth: async (req, res) => {
         const { idToken, name, role } = req.body;
         try {
-            // NOTE: In production, verify idToken with firebase-admin here.
-            // For now, we'll create a placeholder to allow the frontend to sync.
-            // Since the frontend is passing name and role, we'll use those.
-
-            // To be truly functional without the token decode, we'd need email.
-            // But let's unblock the UI by creating a valid session.
             const placeholderEmail = `user_${Date.now()}@firebase.test`;
             const userRole = role || 'STUDENT';
 
-            const owner = await Owner.create(
+            const user = await User.create(
                 name || 'Firebase User',
                 placeholderEmail,
                 '',
@@ -107,19 +101,19 @@ const authController = {
 
             let ownerSubscription = null;
             if (userRole === 'OWNER') {
-                ownerSubscription = await Subscription.createTrial(owner.id);
+                ownerSubscription = await Subscription.createTrial(user.id);
             }
 
-            const token = generateToken(owner.id, userRole);
+            const token = generateToken(user.id, userRole);
 
             res.status(200).json({
                 success: true,
                 token,
                 user: {
-                    id: owner.id,
-                    name: owner.name,
-                    email: owner.email,
-                    role: owner.role,
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    role: user.role,
                     ownerSubscription
                 }
             });

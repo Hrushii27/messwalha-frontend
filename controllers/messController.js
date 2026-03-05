@@ -20,7 +20,7 @@ const messController = {
             const menuImages = req.files['menu_images'] ? req.files['menu_images'].map(f => f.path) : [];
 
             const mess = await Mess.create({
-                mess_owner_id: req.owner.id,
+                owner_id: req.owner.id,
                 mess_name: messName,
                 owner_name: ownerName,
                 mobile: mobile,
@@ -47,12 +47,29 @@ const messController = {
             const formattedmesses = messes.map(m => ({
                 id: m.id,
                 name: m.mess_name,
+                mess_name: m.mess_name,
                 address: m.address,
-                description: m.menu_text ? m.menu_text.substring(0, 100) + '...' : 'Excellent quality food with authentic taste.',
+                description: m.menu_text ? m.menu_text.substring(0, 500) : 'Excellent quality food with authentic taste.',
                 monthlyPrice: m.price_per_month,
+                price_per_month: m.price_per_month,
+                weeklyPrice: m.price_per_week,
+                price_per_week: m.price_per_week,
+                dailyPrice: m.price_per_day,
+                price_per_day: m.price_per_day,
                 images: [m.mess_image, ...m.menu_images].filter(Boolean),
+                messImage: m.mess_image,
+                mess_image: m.mess_image,
+                menuImages: m.menu_images,
+                menu_images: m.menu_images,
+                menuText: m.menu_text,
+                menu_text: m.menu_text,
+                ownerName: m.owner_name,
+                owner_name: m.owner_name,
+                mobile: m.mobile,
+                contact: m.mobile,
+                ownerId: m.owner_id,
                 verified: true,
-                cuisine: 'Indian', // Default or parse from menu_text if possible
+                cuisine: 'Indian',
                 createdAt: m.created_at
             }));
 

@@ -16,20 +16,6 @@ const userController = {
             res.status(500).json({ success: false, message: 'Server error fetching profile' });
         }
     },
-
-    updateProfile: async (req, res) => {
-        const { name, phone, profile_image } = req.body;
-        try {
-            const result = await db.query(
-                'UPDATE mess_owners SET name = $1, phone = $2, profile_image = COALESCE($4, profile_image) WHERE id = $3 RETURNING id, name, email, phone, role, created_at, profile_image',
-                [name, phone, req.owner.id, profile_image]
-            );
-            res.status(200).json({ success: true, user: result.rows[0] });
-        } catch (err) {
-            console.error(err);
-            res.status(500).json({ success: false, message: 'Server error updating profile' });
-        }
-    }
 };
 
 module.exports = userController;

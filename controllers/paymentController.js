@@ -11,8 +11,9 @@ const paymentController = {
         return res.status(503).json({ success: false, message: "Payments not configured" });
       }
 
-      // Default amount to 599 for owners if not provided, otherwise use provided amount
-      const orderAmount = amount || 599;
+      // View first
+      // Default amount to 499 for owners if not provided, otherwise use provided amount
+      const orderAmount = amount || 499;
       const order = await razorpayUtils.createOrder(orderAmount);
 
       res.status(200).json({
@@ -52,13 +53,15 @@ const paymentController = {
         return res.status(200).json({ success: true, message: 'Subscribed successfully', data: result.rows[0] });
       }
 
-      // CASE 2: Owner upgrading Platform Plan
-      const subscription = await Subscription.findByOwnerId(req.owner.id);
-      if (subscription) {
-        const nextBillingDate = new Date();
-        nextBillingDate.setDate(nextBillingDate.getDate() + 30);
-        const updatedSub = await Subscription.updateStatus(subscription.id, 'active', 'basic_599', nextBillingDate);
-        return res.status(200).json({ success: true, message: 'Platform plan upgraded', subscription: updatedSub });
+      // CASE 2: Owner upgrading Platform Plan (₹499)
+      const currentSub = await Subscription.findByOwnerId(req.owner.id);
+      if (currentSub) {
+        const updatedSub = await Subscription.updateSubscription(req.owner.id, 30);
+        return res.status(200).json({
+          success: true,
+          message: 'Platform plan activated successfully for 30 days',
+          subscription: updatedSub
+        });
       }
 
       res.status(404).json({ success: false, message: 'Subscription record not found' });

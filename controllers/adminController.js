@@ -1,3 +1,5 @@
+const User = require('../models/user');
+const Mess = require('../models/mess');
 const db = require('../config/db');
 
 const adminController = {
@@ -5,11 +7,11 @@ const adminController = {
         try {
             const statsQuery = `
         SELECT 
-          (SELECT COUNT(*) FROM mess_owners) as total_owners,
-          (SELECT COUNT(*) FROM subscriptions WHERE status = 'active') as active_subscriptions,
-          (SELECT COUNT(*) FROM subscriptions WHERE status = 'trial') as trial_subscriptions,
-          (SELECT COUNT(*) FROM subscriptions WHERE status = 'expired') as expired_subscriptions,
-          (SELECT COALESCE(SUM(599), 0) FROM subscriptions WHERE status = 'active' AND plan_type = 'basic_599') as mrr
+          (SELECT COUNT(*) FROM users) as total_users,
+          (SELECT COUNT(*) FROM owner_subscriptions WHERE status = 'active') as active_subscriptions,
+          (SELECT COUNT(*) FROM owner_subscriptions WHERE status = 'trial') as trial_subscriptions,
+          (SELECT COUNT(*) FROM owner_subscriptions WHERE status = 'expired') as expired_subscriptions,
+          (SELECT COALESCE(SUM(price), 0) FROM owner_subscriptions WHERE status = 'active') as mrr
         ;
       `;
             const result = await db.query(statsQuery);

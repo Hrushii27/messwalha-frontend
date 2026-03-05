@@ -1,25 +1,22 @@
 const { verifyToken } = require('../utils/jwt');
-const Owner = require('../models/owner');
+const User = require('../models/user');
 
 const authMiddleware = async (req, res, next) => {
+    const token = req.header('Authorization')?.replace('Bearer ', '');
+    if (!token) {
+        return res.status(401).json({ message: 'No token, authorization denied' });
+    }
+
     try {
-        const authHeader = req.headers.authorization;
-        if (!authHeader || !authHeader.startsWith('Bearer ')) {
-            return res.status(401).json({ message: 'No token provided' });
-        }
-
-        const token = authHeader.split(' ')[1];
         const decoded = verifyToken(token);
-
-        const owner = await Owner.findById(decoded.id);
-        if (!owner) {
-            return res.status(401).json({ message: 'Invalid token' });
+        const user = await User.findById(decoded.id);
+        if (!user) {
+            return res.status(401).json({ message: 'Token is not valid' });
         }
-
-        req.owner = owner;
+        req.owner = user; // Keep it as req.owner for compatibility with existing controllers
         next();
     } catch (err) {
-        return res.status(401).json({ message: 'Unauthorized' });
+        res.status(401).json({ message: 'Token is not valid' });
     }
 };
 
