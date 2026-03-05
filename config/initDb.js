@@ -63,6 +63,23 @@ const createTables = async () => {
       created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
     );
 
+    CREATE TABLE IF NOT EXISTS messes (
+      id SERIAL PRIMARY KEY,
+      mess_owner_id INTEGER REFERENCES mess_owners(id) ON DELETE CASCADE,
+      mess_name TEXT NOT NULL,
+      owner_name TEXT,
+      mobile TEXT,
+      address TEXT,
+      price_per_month INTEGER,
+      price_per_week INTEGER,
+      price_per_day INTEGER,
+      menu_text TEXT,
+      mess_image TEXT,
+      menu_images TEXT[] DEFAULT '{}',
+      is_active BOOLEAN DEFAULT TRUE,
+      created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    );
+
     ALTER TABLE mess_owners ADD COLUMN IF NOT EXISTS role VARCHAR(20) DEFAULT 'OWNER';
     ALTER TABLE mess_owners ADD COLUMN IF NOT EXISTS profile_image TEXT;
   `;
