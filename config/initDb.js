@@ -64,6 +64,7 @@ const createTables = async () => {
     );
 
     ALTER TABLE mess_owners ADD COLUMN IF NOT EXISTS role VARCHAR(20) DEFAULT 'OWNER';
+    ALTER TABLE mess_owners ADD COLUMN IF NOT EXISTS profile_image TEXT;
   `;
 
   try {
