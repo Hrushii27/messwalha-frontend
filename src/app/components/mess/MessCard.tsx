@@ -48,7 +48,6 @@ export const MessCard: React.FC<MessCardProps> = ({ mess }) => {
 
     const rating = typeof mess.rating === 'number' ? mess.rating : 0;
     const isTopRated = rating >= 4.5;
-    const distance = (Math.random() * 2).toFixed(1); // Simulating distance for demo
 
     return (
         <Card isHoverable className="overflow-hidden flex flex-col h-full bg-white dark:bg-dark-800 border border-border-color shadow-xl hover:shadow-2xl transition-all duration-500 rounded-[2rem] group border-b-8 border-b-transparent hover:border-b-primary-500/50">
