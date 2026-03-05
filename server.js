@@ -32,21 +32,21 @@ app.use(morgan("dev"));
 
 app.use(
   cors({
-    origin: (origin, callback) => {
-      // Allow relative requests (like Postman or server-to-server) or development
-      if (!origin || process.env.NODE_ENV === 'development') return callback(null, true);
+    origin: function (origin, callback) {
+      // Allow if origin is undefined (local tools, mobile apps, etc.)
+      if (!origin) return callback(null, true);
 
-      const allowedPatterns = [
-        /\.vercel\.app$/, // Any vercel subdomain
-        /localhost:\d+$/, // Localhost with any port
-        /messwala\.me$/    // Production domain
-      ];
+      const isAllowed =
+        origin.includes("vercel.app") ||
+        origin.includes("messwala.me") ||
+        origin.includes("localhost");
 
-      const isAllowed = allowedPatterns.some(pattern => pattern.test(origin));
       if (isAllowed) {
         callback(null, true);
       } else {
-        callback(new Error('Not allowed by CORS'));
+        // Log the rejected origin for debugging
+        console.warn(`🛑 CORS blocked origin: ${origin}`);
+        callback(null, false); // Don't throw error, just don't allow
       }
     },
     credentials: true,
@@ -78,6 +78,11 @@ app.use("/api/subscriptions", subscriptionRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/owner", messRoutes); // Alias for owner mess management
+
+// Placeholder for missing frontend routes
+app.get("/api/favorites", (req, res) => {
+  res.status(200).json({ success: true, data: [] });
+});
 
 /* ===========================
    HEALTH CHECK
