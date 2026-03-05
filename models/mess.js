@@ -8,6 +8,8 @@ const Mess = {
             owner_name,
             mobile,
             address,
+            city,
+            cuisine,
             price_per_month,
             price_per_week,
             price_per_day,
@@ -19,11 +21,13 @@ const Mess = {
         const result = await db.query(
             `INSERT INTO messes (
                 owner_id, mess_name, owner_name, mobile, address, 
+                city, cuisine,
                 price_per_month, price_per_week, price_per_day, 
                 menu_text, mess_image, menu_images
-            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *`,
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING *`,
             [
                 owner_id, mess_name, owner_name, mobile, address,
+                city, cuisine,
                 price_per_month, price_per_week, price_per_day,
                 menu_text, mess_image, menu_images || []
             ]
@@ -31,10 +35,25 @@ const Mess = {
         return result.rows[0];
     },
 
-    findAllActive: async () => {
-        const result = await db.query(
-            'SELECT * FROM messes WHERE is_active = TRUE ORDER BY created_at DESC'
-        );
+    findAllActive: async (filters = {}) => {
+        const { cuisine, maxPrice } = filters;
+        let query = 'SELECT * FROM messes WHERE is_active = TRUE';
+        const values = [];
+        let index = 1;
+
+        if (cuisine && cuisine.toLowerCase() !== 'all') {
+            query += ` AND LOWER(cuisine) = $${index++}`;
+            values.push(cuisine.toLowerCase());
+        }
+
+        if (maxPrice) {
+            query += ` AND price_per_month <= $${index++}`;
+            values.push(parseInt(maxPrice));
+        }
+
+        query += ' ORDER BY city ASC, created_at DESC';
+
+        const result = await db.query(query, values);
         return result.rows;
     },
 

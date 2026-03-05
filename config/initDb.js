@@ -32,6 +32,8 @@ const createTables = async () => {
       owner_name TEXT,
       mobile TEXT,
       address TEXT,
+      city TEXT, -- New column
+      cuisine TEXT, -- New column
       price_per_month INTEGER,
       price_per_week INTEGER,
       price_per_day INTEGER,

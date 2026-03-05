@@ -9,6 +9,8 @@ const messController = {
                 ownerName,
                 mobile,
                 address,
+                city,
+                cuisine,
                 pricePerMonth,
                 pricePerWeek,
                 pricePerDay,
@@ -25,6 +27,8 @@ const messController = {
                 owner_name: ownerName,
                 mobile: mobile,
                 address: address,
+                city: city,
+                cuisine: cuisine,
                 price_per_month: parseInt(pricePerMonth),
                 price_per_week: parseInt(pricePerWeek),
                 price_per_day: parseInt(pricePerDay),
@@ -42,13 +46,15 @@ const messController = {
 
     getAllListings: async (req, res) => {
         try {
-            const messes = await Mess.findAllActive();
+            const messes = await Mess.findAllActive(req.query);
             // Map keys to match frontend expectations
             const formattedmesses = messes.map(m => ({
                 id: m.id,
                 name: m.mess_name,
                 mess_name: m.mess_name,
                 address: m.address,
+                city: m.city,
+                cuisine: m.cuisine,
                 description: m.menu_text ? m.menu_text.substring(0, 500) : 'Excellent quality food with authentic taste.',
                 monthlyPrice: m.price_per_month,
                 price_per_month: m.price_per_month,
@@ -69,7 +75,6 @@ const messController = {
                 contact: m.mobile,
                 ownerId: m.owner_id,
                 verified: true,
-                cuisine: 'Indian',
                 createdAt: m.created_at
             }));
 
