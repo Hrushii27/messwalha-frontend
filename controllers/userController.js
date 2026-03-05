@@ -3,7 +3,10 @@ const db = require('../config/db');
 const userController = {
     getProfile: async (req, res) => {
         try {
-            const result = await db.query('SELECT id, name, email, phone, role FROM mess_owners WHERE id = $1', [req.owner.id]);
+            const result = await db.query(
+                'SELECT id, name, email, phone, role, created_at, profile_image FROM mess_owners WHERE id = $1',
+                [req.owner.id]
+            );
             if (result.rows.length === 0) {
                 return res.status(404).json({ success: false, message: 'User not found' });
             }
@@ -15,11 +18,11 @@ const userController = {
     },
 
     updateProfile: async (req, res) => {
-        const { name, phone } = req.body;
+        const { name, phone, profile_image } = req.body;
         try {
             const result = await db.query(
-                'UPDATE mess_owners SET name = $1, phone = $2 WHERE id = $3 RETURNING id, name, email, phone, role',
-                [name, phone, req.owner.id]
+                'UPDATE mess_owners SET name = $1, phone = $2, profile_image = COALESCE($4, profile_image) WHERE id = $3 RETURNING id, name, email, phone, role, created_at, profile_image',
+                [name, phone, req.owner.id, profile_image]
             );
             res.status(200).json({ success: true, user: result.rows[0] });
         } catch (err) {
