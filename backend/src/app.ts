@@ -3,6 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import compression from 'compression';
 import { httpLogger } from './utils/logger.js';
+import { db } from './config/firebase.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
@@ -16,6 +17,7 @@ import chatRoutes from './routes/chatRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import notificationRoutes from './routes/notificationRoutes.js';
 import favoriteRoutes from './routes/favoriteRoutes.js';
+import userRoutes from './routes/userRoutes.js';
 import { trackVisitor } from './middleware/visitorTracker.js';
 
 import rateLimit from 'express-rate-limit';
@@ -103,6 +105,7 @@ app.use('/api/chats', chatRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/favorites', favoriteRoutes);
+app.use('/api/users', userRoutes);
 
 app.get('/', (req, res) => {
     res.status(200).json({ status: 'OK', message: 'MessWalha API is live. Use /api-docs for documentation.' });
@@ -110,6 +113,31 @@ app.get('/', (req, res) => {
 
 app.get('/health', (req, res) => {
     res.status(200).json({ status: 'OK', message: 'MessWalha API is running' });
+});
+
+app.get('/api/health/db', async (req, res) => {
+    try {
+        if (!db) {
+            return res.status(500).json({
+                status: 'ERROR',
+                message: 'Database (Firebase) not initialized. Check FIREBASE_SERVICE_ACCOUNT environment variable.'
+            });
+        }
+
+        // Try a simple operation to verify connection
+        await db.collection('system_health').doc('status').get();
+
+        res.status(200).json({
+            status: 'OK',
+            message: 'Database (Firebase) is connected and responsive.'
+        });
+    } catch (err: any) {
+        res.status(500).json({
+            status: 'ERROR',
+            message: 'Database connection failed',
+            error: err.message
+        });
+    }
 });
 
 // Error Handling

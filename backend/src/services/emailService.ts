@@ -93,6 +93,26 @@ class EmailService {
         `;
         return this.sendMail(email, subject, html);
     }
+
+    async sendResetPasswordEmail(email: string, token: string) {
+        const resetUrl = `${config.FRONTEND_URL}/reset-password/${token}`;
+        const subject = 'Password Reset Request - MessWalha';
+        const html = `
+            <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
+                <h2 style="color: #f97316;">Password Reset Request</h2>
+                <p>You are receiving this because you (or someone else) have requested the reset of the password for your account.</p>
+                <p>Please click on the following button to complete the process:</p>
+                <div style="margin: 30px 0;">
+                    <a href="${resetUrl}" style="background: #f97316; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-weight: bold;">Reset Password</a>
+                </div>
+                <p>If you did not request this, please ignore this email and your password will remain unchanged.</p>
+                <p>This link will expire in 1 hour.</p>
+                <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+                <p style="font-size: 12px; color: #666;">MessWalha - Digitalizing Local Messes</p>
+            </div>
+        `;
+        return this.sendMail(email, subject, html);
+    }
 }
 
 export const emailService = new EmailService();

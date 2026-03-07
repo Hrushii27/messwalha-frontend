@@ -151,7 +151,10 @@ const seedUserMesses = async () => {
                 rating: 4.0 + Math.random(),
                 verified: true,
                 monthlyPrice: 2000 + Math.floor(Math.random() * 1000),
-                images: ['https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=800&q=80'],
+                images: [
+                    Math.random() > 0.5 ? '/messes/thali.png' : '/messes/curry.png',
+                    'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=800&q=80'
+                ],
                 createdAt: new Date(),
                 updatedAt: new Date()
             });
