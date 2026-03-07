@@ -40,15 +40,23 @@ try {
             // Check multiple possible locations for the JSON file
             const possiblePaths = [
                 path.join(process.cwd(), 'firebase-service-account.json'),
-                path.join(process.cwd(), 'messwalha', 'backend', 'firebase-service-account.json'),
-                path.join(__dirname, '..', '..', 'firebase-service-account.json')
+                path.join(process.cwd(), 'backend', 'firebase-service-account.json'),
+                path.join(process.cwd(), 'app', 'backend', 'firebase-service-account.json'), // Common on Heroku/Docker
+                path.join(__dirname, '..', '..', 'firebase-service-account.json'),
+                path.join(__dirname, '..', '..', '..', 'firebase-service-account.json'),
+                '/app/backend/firebase-service-account.json', // Heroku absolute path
+                '/app/firebase-service-account.json'
             ];
+
+            console.log('Searching for Firebase service account file in paths:', possiblePaths.length);
 
             for (const filePath of possiblePaths) {
                 if (fs.existsSync(filePath)) {
                     serviceAccount = JSON.parse(fs.readFileSync(filePath, 'utf8'));
                     console.log(`✅ Loaded Firebase Service Account from local file: ${filePath}`);
                     break;
+                } else {
+                    // console.debug(`Path not found: ${filePath}`);
                 }
             }
         } catch (fileError) {
