@@ -14,53 +14,41 @@ try {
     const b64 = process.env.FIREBASE_SERVICE_ACCOUNT;
     let serviceAccount: any = null;
 
-    if (b64) {
-        console.log(`DEBUG: FIREBASE_SERVICE_ACCOUNT found in ENV, length: ${b64.length}`);
-        console.log(`DEBUG: Prefix: ${b64.substring(0, 10)}... Suffix: ...${b64.substring(b64.length - 10)}`);
+    // 1. Try local file first (most reliable on Heroku if committed)
+    try {
+        const possiblePaths = [
+            path.join(process.cwd(), 'firebase-service-account.json'),
+            path.join(process.cwd(), 'backend', 'firebase-service-account.json'),
+            path.join(__dirname, '..', '..', 'firebase-service-account.json'),
+            '/app/backend/firebase-service-account.json',
+            '/app/firebase-service-account.json'
+        ];
 
+        for (const filePath of possiblePaths) {
+            if (fs.existsSync(filePath)) {
+                serviceAccount = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+                console.log(`✅ Loaded Firebase Service Account from local file: ${filePath}`);
+                break;
+            }
+        }
+    } catch (fileError) {
+        console.warn('⚠️ Error checking local service account files:', fileError);
+    }
+
+    // 2. Fallback to Environment Variable
+    if (!serviceAccount && b64) {
+        console.log(`DEBUG: Falling back to ENV, length: ${b64.length}`);
         try {
-            // First try: Direct JSON parse (in case user pasted raw JSON)
             serviceAccount = JSON.parse(b64);
             console.log('✅ Loaded Firebase Service Account from environment (Raw JSON)');
         } catch (jsonError) {
             try {
-                // Second try: Base64 decode
                 const rawJson = Buffer.from(b64.trim(), 'base64').toString('utf8');
                 serviceAccount = JSON.parse(rawJson);
                 console.log('✅ Loaded Firebase Service Account from environment (Base64)');
             } catch (base64Error) {
-                console.warn('⚠️ Failed to parse FIREBASE_SERVICE_ACCOUNT from environment as either Raw JSON or Base64');
+                console.error('❌ Failed to parse FIREBASE_SERVICE_ACCOUNT from ENV');
             }
-        }
-    }
-
-    // Fallback to local file if env is missing or invalid
-    if (!serviceAccount) {
-        try {
-            // Check multiple possible locations for the JSON file
-            const possiblePaths = [
-                path.join(process.cwd(), 'firebase-service-account.json'),
-                path.join(process.cwd(), 'backend', 'firebase-service-account.json'),
-                path.join(process.cwd(), 'app', 'backend', 'firebase-service-account.json'), // Common on Heroku/Docker
-                path.join(__dirname, '..', '..', 'firebase-service-account.json'),
-                path.join(__dirname, '..', '..', '..', 'firebase-service-account.json'),
-                '/app/backend/firebase-service-account.json', // Heroku absolute path
-                '/app/firebase-service-account.json'
-            ];
-
-            console.log('Searching for Firebase service account file in paths:', possiblePaths.length);
-
-            for (const filePath of possiblePaths) {
-                if (fs.existsSync(filePath)) {
-                    serviceAccount = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-                    console.log(`✅ Loaded Firebase Service Account from local file: ${filePath}`);
-                    break;
-                } else {
-                    // console.debug(`Path not found: ${filePath}`);
-                }
-            }
-        } catch (fileError) {
-            console.error('❌ Failed to load service account file:', fileError);
         }
     }
 
