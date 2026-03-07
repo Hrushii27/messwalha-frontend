@@ -15,6 +15,8 @@ try {
     let serviceAccount: any = null;
 
     if (b64) {
+        console.log(`DEBUG: FIREBASE_SERVICE_ACCOUNT found in ENV, length: ${b64.length}`);
+        console.log(`DEBUG: Prefix: ${b64.substring(0, 10)}... Suffix: ...${b64.substring(b64.length - 10)}`);
         try {
             const rawJson = Buffer.from(b64.trim(), 'base64').toString('utf8');
             serviceAccount = JSON.parse(rawJson);
