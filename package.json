@@ -8,8 +8,8 @@
   },
   "scripts": {
     "start": "cd server && npm start",
-    "postinstall": "cd server && npm install",
-    "build": "echo 'No build step for server'",
+    "postinstall": "echo 'Skipping postinstall to avoid loop'",
+    "build": "cd server && npm install",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
