@@ -3,20 +3,31 @@ import { Link } from 'react-router-dom';
 import { Button } from '../components/common/Button';
 import { Input } from '../components/common/Input';
 import { Card } from '../components/common/Card';
-import { Utensils, ArrowLeft, CircleCheck } from 'lucide-react';
+import { Utensils, ArrowLeft, CircleCheck, AlertCircle } from 'lucide-react';
+import api from '../api/axiosInstance';
+import { toast } from 'react-hot-toast';
 
 const ForgotPasswordPage: React.FC = () => {
     const [email, setEmail] = useState('');
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        setIsSubmitted(true);
-        setIsLoading(false);
+        setError(null);
+
+        try {
+            await api.post('/auth/forgot-password', { email });
+            setIsSubmitted(true);
+        } catch (err: any) {
+            const message = err.response?.data?.message || 'Failed to send reset link. Please try again.';
+            setError(message);
+            toast.error(message);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     if (isSubmitted) {
@@ -48,6 +59,13 @@ const ForgotPasswordPage: React.FC = () => {
                     <h1 className="text-3xl font-heading font-bold">Forgot Password?</h1>
                     <p className="text-gray-500">Enter your email and we'll send you a link to reset your password.</p>
                 </div>
+
+                {error && (
+                    <div className="mb-6 p-4 bg-red-50 border border-red-100 rounded-xl flex items-start gap-3 text-red-600 animate-in fade-in slide-in-from-top-2">
+                        <AlertCircle className="shrink-0 mt-0.5" size={18} />
+                        <p className="text-sm font-medium">{error}</p>
+                    </div>
+                )}
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <Input

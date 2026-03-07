@@ -15,8 +15,11 @@ interface User {
     id: string;
     name: string;
     email: string;
+    phone?: string;
     role: 'STUDENT' | 'OWNER' | 'ADMIN';
     avatar?: string;
+    profile_image?: string;
+    created_at?: string;
     ownerSubscription?: OwnerSubscription;
 }
 
@@ -53,8 +56,13 @@ const authSlice = createSlice({
         setLoading: (state, action: PayloadAction<boolean>) => {
             state.isLoading = action.payload;
         },
+        updateAuthUser: (state, action: PayloadAction<Partial<User>>) => {
+            if (state.user) {
+                state.user = { ...state.user, ...action.payload };
+            }
+        },
     },
 });
 
-export const { setCredentials, logout, setLoading } = authSlice.actions;
+export const { setCredentials, logout, setLoading, updateAuthUser } = authSlice.actions;
 export default authSlice.reducer;

@@ -7,6 +7,9 @@
     "doc": "docs"
   },
   "scripts": {
+    "start": "cd backend && npm start",
+    "postinstall": "cd backend && npm install",
+    "build": "cd backend && npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

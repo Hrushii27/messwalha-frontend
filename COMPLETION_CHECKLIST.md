@@ -12,7 +12,7 @@
 
 ### 1.2 BACKEND INFRASTRUCTURE (90% Complete)
 ✅ Express server with TypeScript
-✅ Prisma ORM with PostgreSQL connection
+✅ Firebase Firestore integration
 ✅ Redis integration (dependencies installed, base config present)
 ✅ Error handling and Request logging
 ✅ Health check endpoints
@@ -21,10 +21,10 @@
 ✅ JWT token generation/validation (jsonwebtoken)
 ✅ Password hashing (bcrypt)
 ✅ Login/Register endpoints and pages
-✅ Google OAuth scaffolding (firebase-admin included)
+✅ Firebase Admin SDK integrated
 
 ### 1.4 DATABASE DESIGN (100% Complete)
-✅ Prisma schema with Users, Messes, Menus, Subscriptions, Payments, Reviews, Chats, Messages, Notifications.
+✅ Firebase Firestore collections for Users, Messes, Menus, Subscriptions, Payments, Reviews, Chats, Messages, Notifications.
 
 ### 1.5 FRONTEND FOUNDATION (90% Complete)
 ✅ React 18 with Vite and TypeScript
