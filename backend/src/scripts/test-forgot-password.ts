@@ -12,6 +12,7 @@ async function testForgotPassword() {
 
     try {
         // 1. Ensure test user exists in Firestore
+        if (!db) throw new Error('Database not initialized');
         console.log(`Checking if user ${TEST_EMAIL} exists...`);
         const userSnapshot = await db.collection('users').where('email', '==', TEST_EMAIL).limit(1).get();
 
@@ -59,6 +60,7 @@ async function testForgotPassword() {
 
         // 5. Verify Password Change (in a real scenario, we'd try to login, but here we check DB)
         console.log('Step 4: Verifying reset fields are cleared in DB...');
+        if (!db) throw new Error('Database not initialized');
         const finalUserDoc = await db.collection('users').doc(userId).get();
         const finalData = finalUserDoc.data();
 
