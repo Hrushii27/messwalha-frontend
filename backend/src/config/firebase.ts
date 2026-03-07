@@ -37,17 +37,28 @@ try {
 
     // 2. Fallback to Environment Variable
     if (!serviceAccount && b64) {
-        console.log(`DEBUG: Falling back to ENV, length: ${b64.length}`);
+        console.log(`DEBUG: FIREBASE_SERVICE_ACCOUNT found in ENV, length: ${b64.length}`);
+
         try {
+            // Attempt to parse directly first
             serviceAccount = JSON.parse(b64);
-            console.log('✅ Loaded Firebase Service Account from environment (Raw JSON)');
-        } catch (jsonError) {
+            console.log('✅ Loaded Firebase Service Account from environment (Direct JSON)');
+        } catch (jsonError: any) {
+            console.warn('⚠️ Direct JSON parse failed, trying repair for private_key newlines...');
             try {
-                const rawJson = Buffer.from(b64.trim(), 'base64').toString('utf8');
-                serviceAccount = JSON.parse(rawJson);
-                console.log('✅ Loaded Firebase Service Account from environment (Base64)');
-            } catch (base64Error) {
-                console.error('❌ Failed to parse FIREBASE_SERVICE_ACCOUNT from ENV');
+                // Heroku sometimes mangles newlines in JSON strings set via CLI
+                const repaired = b64.replace(/\\n/g, '\n');
+                serviceAccount = JSON.parse(repaired);
+                console.log('✅ Loaded Firebase Service Account from environment (Repaired JSON)');
+            } catch (repairError: any) {
+                console.warn('⚠️ Repair failed, trying Base64 decode...');
+                try {
+                    const decoded = Buffer.from(b64.trim(), 'base64').toString('utf8');
+                    serviceAccount = JSON.parse(decoded);
+                    console.log('✅ Loaded Firebase Service Account from environment (Base64)');
+                } catch (b64Error: any) {
+                    console.error('❌ ALL Firebase parsing methods failed:', b64Error.message);
+                }
             }
         }
     }
