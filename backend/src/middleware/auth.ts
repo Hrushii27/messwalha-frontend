@@ -40,6 +40,8 @@ export const protect = async (req: AuthRequest, res: Response, next: NextFunctio
     }
 };
 
+export const authenticate = protect;
+
 export const authorize = (...roles: string[]) => {
     return (req: AuthRequest, res: Response, next: NextFunction) => {
         if (!req.user || !roles.includes(req.user.role)) {
