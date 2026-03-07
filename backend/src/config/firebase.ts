@@ -17,21 +17,19 @@ try {
     if (b64) {
         console.log(`DEBUG: FIREBASE_SERVICE_ACCOUNT found in ENV, length: ${b64.length}`);
         console.log(`DEBUG: Prefix: ${b64.substring(0, 10)}... Suffix: ...${b64.substring(b64.length - 10)}`);
+
         try {
-            const rawJson = Buffer.from(b64.trim(), 'base64').toString('utf8');
-            serviceAccount = JSON.parse(rawJson);
-            console.log('✅ Loaded Firebase Service Account from environment');
-        } catch (e) {
-            console.warn('⚠️ Direct JSON parse from ENV failed, attempting structural repair...');
+            // First try: Direct JSON parse (in case user pasted raw JSON)
+            serviceAccount = JSON.parse(b64);
+            console.log('✅ Loaded Firebase Service Account from environment (Raw JSON)');
+        } catch (jsonError) {
             try {
+                // Second try: Base64 decode
                 const rawJson = Buffer.from(b64.trim(), 'base64').toString('utf8');
-                const repairedJson = rawJson.replace(/: "(.*?)"/gs, (match, p1) => {
-                    return `: "${p1.replace(/\n/g, '\\n')}"`;
-                });
-                serviceAccount = JSON.parse(repairedJson);
-                console.log('✅ Loaded Firebase Service Account from environment (with repair)');
-            } catch (repairError) {
-                console.warn('⚠️ Failed to parse FIREBASE_SERVICE_ACCOUNT from environment even after repair');
+                serviceAccount = JSON.parse(rawJson);
+                console.log('✅ Loaded Firebase Service Account from environment (Base64)');
+            } catch (base64Error) {
+                console.warn('⚠️ Failed to parse FIREBASE_SERVICE_ACCOUNT from environment as either Raw JSON or Base64');
             }
         }
     }
