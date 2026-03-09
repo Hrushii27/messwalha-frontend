@@ -1,0 +1,348 @@
+﻿git : remote: Updated 178 paths 
+from d3120f4        
+At line:1 char:126
++ ... ku build" ; git push heroku 
+main --force > push_output_2.txt 
+2>&1 ; G ...
++                 ~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSp 
+   ecified: (remote: Updated...d31  
+  20f4        :String) [], Remote   
+ Exception
+    + FullyQualifiedErrorId : Nativ 
+   eCommandError
+ 
+remote: Compressing source files... 
+done.        
+remote: Building source:        
+remote: 
+remote: -----> Building on the 
+Heroku-24 stack        
+remote: -----> Using buildpack: 
+heroku/nodejs        
+remote: -----> Node.js app detected 
+       
+remote:                
+remote: -----> Creating runtime 
+environment        
+remote:                
+remote:        
+NPM_CONFIG_LOGLEVEL=error        
+remote:        NODE_VERBOSE=false   
+     
+remote:        NODE_ENV=production  
+      
+remote:        
+NODE_MODULES_CACHE=true        
+remote:                
+remote: -----> Installing binaries  
+      
+remote:        engines.node 
+(package.json):   >=18.x        
+remote:        engines.npm 
+(package.json):    unspecified (use 
+default)        
+remote:                
+remote:        Resolving node 
+version >=18.x...        
+remote:                
+remote:        ! The requested 
+Node.js version is using a wide 
+range (>=18.x) that can resolve to 
+a Node.js major version        
+remote:          higher than you 
+intended. Limiting the requested 
+range to a major LTS range like 
+`24.x` is recommended.        
+remote:          https://devcenter.h
+eroku.com/articles/nodejs-support#sp
+ecifying-a-node-js-version        
+remote:                
+remote:        ! The resolved 
+Node.js version has been limited to 
+the Active LTS (24.14.0) for the 
+requested range of `>=18.x`.        
+remote:          To opt-out of this 
+behavior, set the following config 
+var: `NODEJS_ALLOW_WIDE_RANGE=true` 
+       
+remote:          https://devcenter.h
+eroku.com/articles/nodejs-support#su
+pported-node-js-versions        
+remote:                
+remote:        Downloading and 
+installing node 24.14.0...        
+remote:        Validating checksum  
+      
+remote:        Using default npm 
+version: 11.9.0        
+remote:                
+remote: -----> Restoring cache      
+  
+remote:        - npm cache        
+remote:                
+remote: -----> Installing 
+dependencies        
+remote:        Installing node 
+modules        
+remote:        npm error code 
+EUSAGE        
+remote:        npm error        
+remote:        npm error `npm ci` 
+can only install packages when your 
+package.json and package-lock.json 
+or npm-shrinkwrap.json are in sync. 
+Please update your lock file with 
+`npm install` before continuing.    
+    
+remote:        npm error        
+remote:        npm error Missing: 
+bcrypt@5.1.1 from lock file        
+remote:        npm error Missing: 
+dotenv@16.6.1 from lock file        
+remote:        npm error Missing: 
+node-cron@3.0.3 from lock file      
+  
+remote:        npm error Missing: 
+nodemailer@6.10.1 from lock file    
+    
+remote:        npm error Missing: 
+nodemon@3.1.14 from lock file       
+ 
+remote:        npm error Missing: 
+razorpay@2.9.6 from lock file       
+ 
+remote:        npm error Missing: 
+@mapbox/node-pre-gyp@1.0.11 from 
+lock file        
+remote:        npm error Missing: 
+node-addon-api@5.1.0 from lock file 
+       
+remote:        npm error Missing: 
+detect-libc@2.1.2 from lock file    
+    
+remote:        npm error Missing: 
+https-proxy-agent@5.0.1 from lock 
+file        
+remote:        npm error Missing: 
+nopt@5.0.0 from lock file        
+remote:        npm error Missing: 
+npmlog@5.0.1 from lock file        
+remote:        npm error Missing: 
+rimraf@3.0.2 from lock file        
+remote:        npm error Missing: 
+tar@6.2.1 from lock file        
+remote:        npm error Missing: 
+debug@4.4.3 from lock file        
+remote:        npm error Missing: 
+ignore-by-default@1.0.1 from lock 
+file        
+remote:        npm error Missing: 
+minimatch@10.2.4 from lock file     
+   
+remote:        npm error Missing: 
+pstree.remy@1.1.8 from lock file    
+    
+remote:        npm error Missing: 
+simple-update-notifier@2.0.0 from 
+lock file        
+remote:        npm error Missing: 
+supports-color@5.5.0 from lock file 
+       
+remote:        npm error Missing: 
+touch@3.1.1 from lock file        
+remote:        npm error Missing: 
+undefsafe@2.0.5 from lock file      
+  
+remote:        npm error Missing: 
+are-we-there-yet@2.0.0 from lock 
+file        
+remote:        npm error Missing: 
+console-control-strings@1.1.0 from 
+lock file        
+remote:        npm error Missing: 
+gauge@3.0.2 from lock file        
+remote:        npm error Missing: 
+set-blocking@2.0.0 from lock file   
+     
+remote:        npm error Missing: 
+delegates@1.0.0 from lock file      
+  
+remote:        npm error Missing: 
+readable-stream@3.6.2 from lock 
+file        
+remote:        npm error Missing: 
+aproba@2.1.0 from lock file        
+remote:        npm error Missing: 
+color-support@1.1.3 from lock file  
+      
+remote:        npm error Missing: 
+has-unicode@2.0.1 from lock file    
+    
+remote:        npm error Missing: 
+signal-exit@3.0.7 from lock file    
+    
+remote:        npm error Missing: 
+strip-ansi@6.0.1 from lock file     
+   
+remote:        npm error Missing: 
+wide-align@1.1.5 from lock file     
+   
+remote:        npm error Missing: 
+axios@1.13.6 from lock file        
+remote:        npm error Missing: 
+follow-redirects@1.15.11 from lock 
+file        
+remote:        npm error Missing: 
+agent-base@6.0.2 from lock file     
+   
+remote:        npm error Missing: 
+debug@4.4.3 from lock file        
+remote:        npm error Missing: 
+ms@2.1.3 from lock file        
+remote:        npm error Missing: 
+abbrev@1.1.1 from lock file        
+remote:        npm error Missing: 
+glob@7.2.3 from lock file        
+remote:        npm error Missing: 
+fs.realpath@1.0.0 from lock file    
+    
+remote:        npm error Missing: 
+inflight@1.0.6 from lock file       
+ 
+remote:        npm error Missing: 
+path-is-absolute@1.0.1 from lock 
+file        
+remote:        npm error Missing: 
+chownr@2.0.0 from lock file        
+remote:        npm error Missing: 
+fs-minipass@2.1.0 from lock file    
+    
+remote:        npm error Missing: 
+minipass@5.0.0 from lock file       
+ 
+remote:        npm error Missing: 
+minizlib@2.1.2 from lock file       
+ 
+remote:        npm error Missing: 
+mkdirp@1.0.4 from lock file        
+remote:        npm error Missing: 
+yallist@4.0.0 from lock file        
+remote:        npm error Missing: 
+minipass@3.3.6 from lock file       
+ 
+remote:        npm error Missing: 
+minipass@3.3.6 from lock file       
+ 
+remote:        npm error Missing: 
+ansi-regex@5.0.1 from lock file     
+   
+remote:        npm error Missing: 
+ms@2.1.3 from lock file        
+remote:        npm error Missing: 
+brace-expansion@5.0.4 from lock 
+file        
+remote:        npm error Missing: 
+balanced-match@4.0.4 from lock file 
+       
+remote:        npm error Missing: 
+has-flag@3.0.0 from lock file       
+ 
+remote:        npm error        
+remote:        npm error Clean 
+install a project        
+remote:        npm error        
+remote:        npm error Usage:     
+   
+remote:        npm error npm ci     
+   
+remote:        npm error        
+remote:        npm error Options:   
+     
+remote:        npm error 
+[--install-strategy 
+<hoisted|nested|shallow|linked>] 
+[--legacy-bundling]        
+remote:        npm error 
+[--global-style] [--omit 
+<dev|optional|peer> [--omit 
+<dev|optional|peer> ...]]        
+remote:        npm error [--include 
+<prod|dev|optional|peer> [--include 
+<prod|dev|optional|peer> ...]]      
+  
+remote:        npm error 
+[--strict-peer-deps] 
+[--foreground-scripts] 
+[--ignore-scripts]        
+remote:        npm error 
+[--allow-git <all|none|root>] 
+[--no-audit] [--no-bin-links] 
+[--no-fund]        
+remote:        npm error 
+[--dry-run]        
+remote:        npm error 
+[-w|--workspace <workspace-name> 
+[-w|--workspace <workspace-name> 
+...]]        
+remote:        npm error 
+[--workspaces] 
+[--include-workspace-root] 
+[--install-links]        
+remote:        npm error        
+remote:        npm error aliases: 
+clean-install, ic, install-clean, 
+isntall-clean        
+remote:        npm error        
+remote:        npm error Run "npm 
+help ci" for more info        
+remote:        npm error A complete 
+log of this run can be found in: /tm
+p/npmcache.7kxul/_logs/2026-03-07T06
+_48_06_013Z-debug-0.log        
+remote: 
+remote: -----> Build failed        
+remote:  !     npm lockfile is not 
+in sync        
+remote: 
+remote:        This error occurs 
+when the contents of `package.json` 
+contains a different        
+remote:        set of dependencies 
+that the contents of 
+`package-lock.json`. This can 
+happen        
+remote:        when a package is 
+added, modified, or removed but the 
+lockfile was not updated.        
+remote: 
+remote:        To fix this, run 
+`npm install` locally in your app 
+directory to regenerate the        
+remote:        lockfile, commit the 
+changes to `package-lock.json`, and 
+redeploy.        
+remote:               
+remote:        https://devcenter.her
+oku.com/articles/troubleshooting-nod
+e-deploys#make-sure-that-the-lockfil
+e-is-up-to-date        
+remote: 
+remote:  !     Push rejected, 
+failed to compile Node.js app.      
+  
+remote: 
+remote:  !     Push failed        
+remote: Verifying deploy...        
+remote: 
+remote: !	Push rejected to 
+messwalha-api-pg.        
+remote: 
+To https://git.heroku.com/messwalha-
+api-pg.git
+ ! [remote rejected] main -> main 
+(pre-receive hook declined)
+error: failed to push some refs to '
+https://git.heroku.com/messwalha-api
+-pg.git'
