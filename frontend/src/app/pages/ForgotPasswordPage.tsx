@@ -21,7 +21,8 @@ const ForgotPasswordPage: React.FC = () => {
         try {
             await api.post('/auth/forgot-password', { email });
             setIsSubmitted(true);
-        } catch (err: any) {
+        } catch (error) {
+            const err = error as { response?: { data?: { message?: string } } };
             const message = err.response?.data?.message || 'Failed to send reset link. Please try again.';
             setError(message);
             toast.error(message);

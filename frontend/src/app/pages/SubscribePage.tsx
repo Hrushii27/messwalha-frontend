@@ -7,6 +7,12 @@ import { motion } from 'framer-motion';
 import api from '../api/axiosInstance';
 import Seo from '../components/common/Seo';
 
+interface RazorpayResponse {
+    razorpay_payment_id: string;
+    razorpay_order_id: string;
+    razorpay_signature: string;
+}
+
 const SubscribePage: React.FC = () => {
     const [loading, setLoading] = useState(false);
 
@@ -28,21 +34,23 @@ const SubscribePage: React.FC = () => {
                 name: 'MessWalha',
                 description: 'Mess Listing Subscription',
                 order_id: orderId,
-                handler: async (response: any) => {
+                handler: async (response: RazorpayResponse) => {
                     try {
                         await api.post('/payments/verify', {
                             ...response,
                             planType: 'monthly'
                         });
                         window.location.href = '/owner/dashboard';
-                    } catch (err) {
+                    } catch (error) {
+                        console.error('Payment verification failed:', error);
                         alert('Payment verification failed');
                     }
                 },
                 theme: { color: '#F59E0B' }
             };
 
-            const rzp = new (window as any).Razorpay(options);
+            const Razorpay = window.Razorpay;
+            const rzp = new Razorpay(options);
             rzp.open();
         } catch (err) {
             console.error('Subscription failed:', err);

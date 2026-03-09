@@ -48,7 +48,7 @@ const AddMessPage: React.FC = () => {
                     setSubStatus('none');
                 }
             } catch (err) {
-                console.error('Failed to check subscription');
+                console.error('Failed to check subscription', err);
             } finally {
                 // Done check
             }
@@ -135,7 +135,8 @@ const AddMessPage: React.FC = () => {
             });
             setSuccess(true);
             setTimeout(() => navigate('/find-mess'), 3000);
-        } catch (err: any) {
+        } catch (error) {
+            const err = error as { response?: { data?: { message?: string } } };
             console.error('Registration failed:', err);
             setError(err.response?.data?.message || 'Failed to register mess. Please try again.');
         } finally {

@@ -24,6 +24,7 @@ import api from '../api/axiosInstance';
 import { toast } from 'react-hot-toast';
 import { BillingHistoryModal } from '../components/dashboard/BillingHistoryModal';
 import { useNavigate } from 'react-router-dom';
+import type { Mess, Subscription, Menu, MenuItem } from '../types/mess';
 
 type Tab = 'overview' | 'menu' | 'subscribers' | 'settings';
 
@@ -31,16 +32,16 @@ const OwnerDashboardPage: React.FC = () => {
     const navigate = useNavigate();
     const { user } = useAppSelector((state: RootState) => state.auth);
     const [activeTab, setActiveTab] = useState<Tab>('overview');
-    const [mess, setMess] = useState<any>(null);
-    const [subscribers, setSubscribers] = useState<any[]>([]);
-    const [menus, setMenus] = useState<any[]>([]);
+    const [mess, setMess] = useState<Mess | null>(null);
+    const [subscribers, setSubscribers] = useState<Subscription[]>([]);
+    const [menus, setMenus] = useState<Menu[]>([]);
     const [revenue, setRevenue] = useState<number>(0);
     const [loading, setLoading] = useState(true);
     const [updating, setUpdating] = useState(false);
     const [savingMenu, setSavingMenu] = useState(false);
     const [selectedDay, setSelectedDay] = useState('Monday');
     const [isBillingModalOpen, setIsBillingModalOpen] = useState(false);
-    const [subscription, setSubscription] = useState<any>(null);
+    const [subscription, setSubscription] = useState<Subscription | null>(null);
 
 
     // Form states
@@ -105,6 +106,7 @@ const OwnerDashboardPage: React.FC = () => {
             setMess(response.data.data);
             toast.success('Mess profile updated successfully');
         } catch (error) {
+            console.error('Failed to update mess profile:', error);
             toast.error('Failed to update mess profile');
         } finally {
             setUpdating(false);
@@ -170,7 +172,7 @@ const OwnerDashboardPage: React.FC = () => {
             const dayMenuIndex = newMenus.findIndex(m => m.day === day);
 
             if (dayMenuIndex !== -1) {
-                const newItems = newMenus[dayMenuIndex].items.filter((_: any, idx: number) => idx !== itemIndex);
+                const newItems = newMenus[dayMenuIndex].items.filter((_: MenuItem, idx: number) => idx !== itemIndex);
                 newMenus[dayMenuIndex] = { ...newMenus[dayMenuIndex], items: newItems };
             }
             return newMenus;
@@ -229,7 +231,8 @@ const OwnerDashboardPage: React.FC = () => {
                                             <Clock size={16} className="mr-1" />
                                             <span>
                                                 {(() => {
-                                                    const end = new Date(subscription.trial_end_date);
+                                                    if (!subscription?.trial_end) return '60 days remaining';
+                                                    const end = new Date(subscription.trial_end);
                                                     const now = new Date();
                                                     const diff = Math.ceil((end.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
                                                     return `${Math.max(0, diff)} days remaining`;
@@ -282,11 +285,11 @@ const OwnerDashboardPage: React.FC = () => {
                             <div key={sub.id} className="p-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
                                 <div className="flex items-center space-x-3">
                                     <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
-                                        {sub.user.name.charAt(0)}
+                                        {sub.user?.name.charAt(0) || '?'}
                                     </div>
                                     <div>
-                                        <p className="font-bold text-sm">{sub.user.name}</p>
-                                        <p className="text-xs text-gray-400">{sub.planType} Plan • {new Date(sub.createdAt).toLocaleDateString()}</p>
+                                        <p className="font-bold text-sm">{sub.user?.name || 'Unknown Student'}</p>
+                                        <p className="text-xs text-gray-400">{sub.plan_type} Plan • {sub.created_at ? new Date(sub.created_at).toLocaleDateString() : 'N/A'}</p>
                                     </div>
                                 </div>
                                 <span className="text-[10px] font-black uppercase text-green-500 bg-green-50 px-2 py-1 rounded-lg">Active</span>
@@ -330,7 +333,7 @@ const OwnerDashboardPage: React.FC = () => {
             </div>
 
             <div className="space-y-6">
-                {menus.find(m => m.day === selectedDay)?.items.map((item: any, idx: number) => (
+                {menus.find(m => m.day === selectedDay)?.items.map((item: MenuItem, idx: number) => (
                     <div key={idx} className="bg-white p-8 rounded-3xl flex flex-col md:flex-row gap-6 items-center group transition-all hover:bg-gray-50 relative border border-gray-100">
                         <div className="flex-1 w-full space-y-3">
                             <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Item Name</label>
@@ -395,16 +398,16 @@ const OwnerDashboardPage: React.FC = () => {
                                     <div className="flex items-center space-x-3">
                                         <div className="w-8 h-8 rounded-full bg-gray-200" />
                                         <div>
-                                            <p className="font-bold text-sm">{sub.user.name}</p>
-                                            <p className="text-xs text-gray-400">{sub.user.email}</p>
+                                            <p className="font-bold text-sm">{sub.user?.name || 'Unknown'}</p>
+                                            <p className="text-xs text-gray-400">{sub.user?.email || 'N/A'}</p>
                                         </div>
                                     </div>
                                 </td>
                                 <td className="px-6 py-4">
-                                    <p className="text-sm font-medium">{sub.planType}</p>
+                                    <p className="text-sm font-medium">{sub.plan_type}</p>
                                 </td>
                                 <td className="px-6 py-4 text-sm text-gray-500">
-                                    {new Date(sub.createdAt).toLocaleDateString()}
+                                    {sub.created_at ? new Date(sub.created_at).toLocaleDateString() : 'N/A'}
                                 </td>
                                 <td className="px-6 py-4">
                                     <span className="text-[10px] font-bold px-2 py-1 bg-green-100 text-green-600 rounded-lg uppercase">Active</span>

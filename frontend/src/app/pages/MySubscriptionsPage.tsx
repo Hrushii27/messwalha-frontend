@@ -4,9 +4,10 @@ import { Card } from '../components/common/Card';
 import { Button } from '../components/common/Button';
 import { Search, Filter, Download, Pause, XCircle, RefreshCw } from 'lucide-react';
 import api from '../api/axiosInstance';
+import type { Subscription } from '../types/mess';
 
 const MySubscriptionsPage: React.FC = () => {
-    const [subscriptions, setSubscriptions] = useState([]);
+    const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
 
@@ -25,7 +26,7 @@ const MySubscriptionsPage: React.FC = () => {
         fetchSubscriptions();
     }, []);
 
-    const filteredSubscriptions = subscriptions.filter((sub: any) =>
+    const filteredSubscriptions = subscriptions.filter((sub: Subscription) =>
         sub.plan_type?.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
@@ -60,7 +61,7 @@ const MySubscriptionsPage: React.FC = () => {
                     </div>
                 ) : filteredSubscriptions.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {filteredSubscriptions.map((sub: any) => (
+                        {filteredSubscriptions.map((sub: Subscription) => (
                             <Card key={sub.id} className="p-6 space-y-6">
                                 <div className="flex justify-between items-start">
                                     <div className="flex items-center space-x-4">
@@ -73,14 +74,14 @@ const MySubscriptionsPage: React.FC = () => {
                                         </div>
                                     </div>
                                     <span className={`px-3 py-1 rounded-full text-[10px] font-black tracking-widest uppercase ${sub.status === 'ACTIVE' ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-500'
-                                        }`}>
+                                        } `}>
                                         {sub.status}
                                     </span>
                                 </div>
 
                                 {(() => {
-                                    const start = new Date(sub.trial_start || sub.created_at);
-                                    const end = new Date(sub.trial_end || sub.next_billing_date);
+                                    const start = new Date(sub.trial_start || sub.created_at || '');
+                                    const end = new Date(sub.trial_end || sub.next_billing_date || '');
                                     const now = new Date();
                                     const totalDays = Math.max(1, Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)));
                                     const daysPast = Math.ceil((now.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));

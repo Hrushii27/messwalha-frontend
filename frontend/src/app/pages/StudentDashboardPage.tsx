@@ -6,6 +6,7 @@ import { CreditCard, History, User, Settings, Utensils, Star, Bell } from 'lucid
 import { useAppSelector } from '../../hooks/redux';
 import type { RootState } from '../../store';
 import api from '../api/axiosInstance';
+import type { Mess, Subscription, Activity } from '../types/mess';
 
 const DashboardSkeleton = () => (
     <div className="space-y-8 animate-pulse">
@@ -24,9 +25,9 @@ const DashboardSkeleton = () => (
 
 const StudentDashboardPage: React.FC = () => {
     const { user } = useAppSelector((state: RootState) => state.auth);
-    const [subscriptions, setSubscriptions] = useState<any[]>([]);
-    const [recommendedMesses, setRecommendedMesses] = useState<any[]>([]);
-    const [recentActivity, setRecentActivity] = useState<any[]>([]);
+    const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
+    const [recommendedMesses, setRecommendedMesses] = useState<Mess[]>([]);
+    const [recentActivity, setRecentActivity] = useState<Activity[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -51,9 +52,9 @@ const StudentDashboardPage: React.FC = () => {
         if (user) fetchDashboardData();
     }, [user]);
 
-    const getDaysRemaining = (sub: any) => {
-        if (!sub.endDate) return '30 Days';
-        const diff = new Date(sub.endDate).getTime() - new Date().getTime();
+    const getDaysRemaining = (sub: Subscription) => {
+        if (!sub.end_date) return '30 Days';
+        const diff = new Date(sub.end_date).getTime() - new Date().getTime();
         return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24))) + ' Days';
     };
 
@@ -151,7 +152,7 @@ const StudentDashboardPage: React.FC = () => {
                                             </div>
                                             {subscriptions.length > 0 ? (
                                                 <div className="space-y-4">
-                                                    {subscriptions.map((sub: any) => (
+                                                    {subscriptions.map((sub: Subscription) => (
                                                         <Card key={sub.id} className="p-6 flex flex-col md:flex-row justify-between items-center gap-6 hover:shadow-lg transition-shadow border-border-color shadow-xl bg-card dark:bg-dark-card">
                                                             <div className="flex items-center space-x-4">
                                                                 <div className="p-4 bg-primary/10 text-primary rounded-2xl">
@@ -167,7 +168,7 @@ const StudentDashboardPage: React.FC = () => {
                                                             <div className="flex items-center space-x-6">
                                                                 <div className="text-right hidden md:block">
                                                                     <p className="text-[10px] text-text-muted font-black uppercase tracking-widest">Plan Type</p>
-                                                                    <p className="font-black text-primary-500">{sub.planType || 'Monthly'}</p>
+                                                                    <p className="font-black text-primary-500">{sub.plan_type || 'Monthly'}</p>
                                                                 </div>
                                                                 <Button
                                                                     variant="outline"
@@ -206,7 +207,7 @@ const StudentDashboardPage: React.FC = () => {
                                                 <Button variant="ghost" size="sm" className="font-bold text-primary-500 uppercase tracking-widest text-[10px]" onClick={() => window.location.href = '/find-mess'}>View All</Button>
                                             </div>
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                                {recommendedMesses.map((mess: any) => (
+                                                {recommendedMesses.map((mess: Mess) => (
                                                     <Card key={mess.id} className="overflow-hidden group border-border-color shadow-xl bg-card dark:bg-dark-card hover:shadow-2xl transition-all duration-500 rounded-3xl">
                                                         <div className="h-40 bg-bg-section relative overflow-hidden">
                                                             {mess.imageUrl ? (
@@ -243,7 +244,7 @@ const StudentDashboardPage: React.FC = () => {
                                             <Card className="p-0 overflow-hidden border-border-color shadow-xl bg-card dark:bg-dark-card rounded-3xl">
                                                 <div className="divide-y divide-border-color">
                                                     {recentActivity.length > 0 ? (
-                                                        recentActivity.map((activity: any) => (
+                                                        recentActivity.map((activity: Activity) => (
                                                             <div key={activity.id} className="p-6 hover:bg-bg-section transition-colors group">
                                                                 <div className="flex justify-between items-start mb-2">
                                                                     <p className="text-sm font-black text-text-primary uppercase tracking-tight group-hover:text-primary-500 transition-colors">{activity.title}</p>

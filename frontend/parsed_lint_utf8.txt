@@ -1,0 +1,68 @@
+﻿File: C:\Users\Admin\.gemini\antigravity\playground\sonic-pinwheel\messwalha\frontend\src\app\components\NotificationCenter.tsx
+  Line 17:18 - @typescript-eslint/no-unused-vars - 'error' is defined but never used.
+  Line 23:9 - react-hooks/set-state-in-effect - Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\Admin\.gemini\antigravity\playground\sonic-pinwheel\messwalha\frontend\src\app\components\NotificationCenter.tsx:23:9
+  21 |
+  22 |     useEffect(() => {
+> 23 |         fetchNotifications();
+     |         ^^^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  24 |
+  25 |         // Polling as a fallback, or we could listen on the socket already established in individual pages
+  26 |         // but for global notifications, we might need a global socket context or separate listener
+  Line 39:18 - @typescript-eslint/no-unused-vars - 'error' is defined but never used.
+  Line 49:18 - @typescript-eslint/no-unused-vars - 'error' is defined but never used.
+File: C:\Users\Admin\.gemini\antigravity\playground\sonic-pinwheel\messwalha\frontend\src\app\context\FavoritesContext.tsx
+  Line 42:8 - react-hooks/exhaustive-deps - React Hook useEffect has a missing dependency: 'user'. Either include it or remove the dependency array.
+  Line 97:14 - react-refresh/only-export-components - Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components.
+File: C:\Users\Admin\.gemini\antigravity\playground\sonic-pinwheel\messwalha\frontend\src\app\pages\AddMessPage.tsx
+  Line 50:22 - @typescript-eslint/no-unused-vars - 'err' is defined but never used.
+  Line 138:23 - @typescript-eslint/no-explicit-any - Unexpected any. Specify a different type.
+File: C:\Users\Admin\.gemini\antigravity\playground\sonic-pinwheel\messwalha\frontend\src\app\pages\AdminDashboardPage.tsx
+  Line 26:40 - @typescript-eslint/no-explicit-any - Unexpected any. Specify a different type.
+  Line 27:40 - @typescript-eslint/no-explicit-any - Unexpected any. Specify a different type.
+  Line 28:42 - @typescript-eslint/no-explicit-any - Unexpected any. Specify a different type.
+  Line 43:18 - @typescript-eslint/no-unused-vars - 'error' is defined but never used.
+  Line 59:18 - @typescript-eslint/no-unused-vars - 'error' is defined but never used.
+  Line 70:18 - @typescript-eslint/no-unused-vars - 'error' is defined but never used.
+File: C:\Users\Admin\.gemini\antigravity\playground\sonic-pinwheel\messwalha\frontend\src\app\pages\ChatPage.tsx
+  Line 12:40 - @typescript-eslint/no-explicit-any - Unexpected any. Specify a different type.
+  Line 13:50 - @typescript-eslint/no-explicit-any - Unexpected any. Specify a different type.
+  Line 14:46 - @typescript-eslint/no-explicit-any - Unexpected any. Specify a different type.
+  Line 44:55 - @typescript-eslint/no-explicit-any - Unexpected any. Specify a different type.
+  Line 57:8 - react-hooks/exhaustive-deps - React Hook useEffect has a missing dependency: 'activeChat'. Either include it or remove the dependency array.
+  Line 88:35 - @typescript-eslint/no-explicit-any - Unexpected any. Specify a different type.
+File: C:\Users\Admin\.gemini\antigravity\playground\sonic-pinwheel\messwalha\frontend\src\app\pages\FindMessesPage.tsx
+  Line 62:42 - @typescript-eslint/no-explicit-any - Unexpected any. Specify a different type.
+File: C:\Users\Admin\.gemini\antigravity\playground\sonic-pinwheel\messwalha\frontend\src\app\pages\ForgotPasswordPage.tsx
+  Line 24:23 - @typescript-eslint/no-explicit-any - Unexpected any. Specify a different type.
+File: C:\Users\Admin\.gemini\antigravity\playground\sonic-pinwheel\messwalha\frontend\src\app\pages\LoginPage.tsx
+  Line 31:23 - @typescript-eslint/no-explicit-any - Unexpected any. Specify a different type.
+File: C:\Users\Admin\.gemini\antigravity\playground\sonic-pinwheel\messwalha\frontend\src\app\pages\MessDetailsPage.tsx
+  Line 93:38 - @typescript-eslint/no-explicit-any - Unexpected any. Specify a different type.
+  Line 124:64 - @typescript-eslint/no-explicit-any - Unexpected any. Specify a different type.
+  Line 267:75 - @typescript-eslint/no-explicit-any - Unexpected any. Specify a different type.
+  Line 407:91 - @typescript-eslint/no-explicit-any - Unexpected any. Specify a different type.
+  Line 477:62 - @typescript-eslint/no-unused-vars - 'err' is defined but never used.
+File: C:\Users\Admin\.gemini\antigravity\playground\sonic-pinwheel\messwalha\frontend\src\app\pages\OwnerDashboardPage.tsx
+  Line 108:18 - @typescript-eslint/no-unused-vars - 'error' is defined but never used.
+File: C:\Users\Admin\.gemini\antigravity\playground\sonic-pinwheel\messwalha\frontend\src\app\pages\ProfilePage.tsx
+  Line 42:8 - react-hooks/exhaustive-deps - React Hook useEffect has a missing dependency: 'fetchProfile'. Either include it or remove the dependency array.
+  Line 86:25 - @typescript-eslint/no-explicit-any - Unexpected any. Specify a different type.
+  Line 99:25 - @typescript-eslint/no-explicit-any - Unexpected any. Specify a different type.
+  Line 131:26 - @typescript-eslint/no-unused-vars - 'err' is defined but never used.
+File: C:\Users\Admin\.gemini\antigravity\playground\sonic-pinwheel\messwalha\frontend\src\app\pages\RegisterPage.tsx
+  Line 41:23 - @typescript-eslint/no-explicit-any - Unexpected any. Specify a different type.
+File: C:\Users\Admin\.gemini\antigravity\playground\sonic-pinwheel\messwalha\frontend\src\app\pages\ResetPasswordPage.tsx
+  Line 40:23 - @typescript-eslint/no-explicit-any - Unexpected any. Specify a different type.
+File: C:\Users\Admin\.gemini\antigravity\playground\sonic-pinwheel\messwalha\frontend\src\app\pages\SubscribePage.tsx
+  Line 44:30 - @typescript-eslint/no-unused-vars - 'err' is defined but never used.
+  Line 51:64 - @typescript-eslint/no-explicit-any - Unexpected any. Specify a different type.
+File: C:\Users\Admin\.gemini\antigravity\playground\sonic-pinwheel\messwalha\frontend\src\app\pages\TodayMenuPage.tsx
+  Line 9:38 - @typescript-eslint/no-explicit-any - Unexpected any. Specify a different type.

@@ -11,7 +11,7 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useFavorites } from '../../context/FavoritesContext';
+import { useFavorites } from '../../hooks/useFavorites';
 import { getImageUrl } from '../../api/axiosInstance';
 
 interface MessCardProps {
@@ -51,7 +51,7 @@ export const MessCard: React.FC<MessCardProps> = ({ mess }) => {
 
     return (
         <Card isHoverable className="overflow-hidden flex flex-col h-full bg-white dark:bg-dark-800 border border-border-color shadow-xl hover:shadow-2xl transition-all duration-500 rounded-[2rem] group border-b-8 border-b-transparent hover:border-b-primary-500/50">
-            <div className="relative h-72 overflow-hidden">
+            <div className="relative h-56 sm:h-72 overflow-hidden">
                 <div className="absolute inset-0 bg-bg-section dark:bg-dark-700 animate-pulse" />
                 <AnimatePresence mode="wait">
                     <motion.img
@@ -73,14 +73,14 @@ export const MessCard: React.FC<MessCardProps> = ({ mess }) => {
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-40 group-hover:opacity-60 transition-opacity duration-700 z-[11]" />
 
                 {/* Floating Badges */}
-                <div className="absolute top-6 left-6 flex flex-col gap-2 z-20">
+                <div className="absolute top-4 sm:top-6 left-4 sm:left-6 flex flex-col gap-2 z-20">
                     {mess.verified && (
                         <motion.div
                             initial={{ x: -20, opacity: 0 }}
                             animate={{ x: 0, opacity: 1 }}
-                            className="bg-primary-500 text-white px-4 py-2 rounded-full shadow-2xl flex items-center gap-2 text-[10px] font-black uppercase tracking-widest border border-white/20"
+                            className="bg-primary-500 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-full shadow-2xl flex items-center gap-2 text-[9px] sm:text-[10px] font-black uppercase tracking-widest border border-white/20"
                         >
-                            <CircleCheck size={14} />
+                            <CircleCheck className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                             Verified
                         </motion.div>
                     )}
@@ -89,16 +89,16 @@ export const MessCard: React.FC<MessCardProps> = ({ mess }) => {
                             initial={{ x: -20, opacity: 0 }}
                             animate={{ x: 0, opacity: 1 }}
                             transition={{ delay: 0.1 }}
-                            className="bg-rating-color text-white px-4 py-2 rounded-full shadow-2xl flex items-center gap-2 text-[10px] font-black uppercase tracking-widest border border-white/20"
+                            className="bg-rating-color text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-full shadow-2xl flex items-center gap-2 text-[9px] sm:text-[10px] font-black uppercase tracking-widest border border-white/20"
                         >
-                            <Star size={14} fill="currentColor" />
+                            <Star className="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="currentColor" />
                             Top Rated
                         </motion.div>
                     )}
                 </div>
 
                 {/* Like & Share */}
-                <div className="absolute top-6 right-6 flex flex-col gap-3 z-20">
+                <div className="absolute top-4 sm:top-6 right-4 sm:right-6 flex flex-col gap-3 z-20">
                     <motion.button
                         whileHover={{ scale: 1.1, rotate: 5 }}
                         whileTap={{ scale: 0.9 }}
@@ -107,49 +107,48 @@ export const MessCard: React.FC<MessCardProps> = ({ mess }) => {
                             e.stopPropagation();
                             toggleFavorite(mess.id);
                         }}
-                        className={`w-12 h-12 rounded-2xl backdrop-blur-xl border flex items-center justify-center transition-all shadow-2xl ${isFavorite(mess.id) ? 'bg-red-500 border-red-400 text-white' : 'bg-white/10 border-white/20 text-white hover:bg-white/30'}`}
+                        className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl backdrop-blur-xl border flex items-center justify-center transition-all shadow-2xl ${isFavorite(mess.id) ? 'bg-red-500 border-red-400 text-white' : 'bg-white/10 border-white/20 text-white hover:bg-white/30'}`}
                     >
-                        <Heart size={20} fill={isFavorite(mess.id) ? 'currentColor' : 'none'} />
+                        <Heart className="w-4.5 h-4.5 sm:w-5 sm:h-5" fill={isFavorite(mess.id) ? 'currentColor' : 'none'} />
                     </motion.button>
                 </div>
 
                 {/* Image Nav On Hover */}
                 {images.length > 1 && (
                     <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-4 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <button onClick={prevImage} className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white hover:bg-primary-500 transition-colors">
-                            <ChevronLeft size={20} />
+                        <button onClick={prevImage} className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white hover:bg-primary-500 transition-colors">
+                            <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
                         </button>
-                        <button onClick={nextImage} className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white hover:bg-primary-500 transition-colors">
-                            <ChevronRight size={20} />
+                        <button onClick={nextImage} className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white hover:bg-primary-500 transition-colors">
+                            <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
                         </button>
                     </div>
                 )}
 
                 {/* Bottom Stats Overlay */}
-                <div className="absolute bottom-6 left-6 right-6 flex justify-between items-end z-20">
+                <div className="absolute bottom-4 sm:bottom-6 left-4 sm:left-6 right-4 sm:right-6 flex justify-between items-end z-20">
                     <div className="flex gap-2">
-                        <div className="bg-white/10 backdrop-blur-xl border border-white/20 px-4 py-2 rounded-xl flex items-center shadow-2xl">
-                            <Star className="text-rating-color fill-rating-color mr-2" size={14} />
-                            <span className="text-xs font-black text-white italic">{rating.toFixed(1)}</span>
+                        <div className="bg-white/10 backdrop-blur-xl border border-white/20 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl flex items-center shadow-2xl">
+                            <Star className="text-rating-color fill-rating-color mr-2 w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                            <span className="text-[10px] sm:text-xs font-black text-white italic">{rating.toFixed(1)}</span>
                         </div>
                     </div>
-                    <div className="bg-primary-500 text-white px-5 py-2 rounded-xl text-[10px] font-black tracking-[0.2em] uppercase shadow-2xl border border-white/10">
+                    <div className="bg-primary-500 text-white px-4 sm:px-5 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-[9px] sm:text-[10px] font-black tracking-[0.2em] uppercase shadow-2xl border border-white/10">
                         ₹{mess.monthlyPrice || 2500}/Mo
                     </div>
                 </div>
             </div>
 
-            <div className="p-10 flex-grow flex flex-col space-y-6">
+            <div className="p-5 sm:p-10 flex-grow flex flex-col space-y-4 sm:space-y-6">
                 <div>
-                    <h3 className="text-3xl font-black text-text-primary dark:text-text-inverse line-clamp-1 group-hover:text-primary-500 transition-colors tracking-tighter italic mb-2 uppercase">
+                    <h3 className="text-2xl sm:text-3xl font-black text-text-primary dark:text-text-inverse line-clamp-1 group-hover:text-primary-500 transition-colors tracking-tighter italic mb-2 uppercase">
                         {mess.name}
                     </h3>
-                    <div className="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-text-muted">
-                        <MapPin size={14} className="text-primary-500" />
+                    <div className="flex items-center gap-2 sm:gap-3 text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-text-muted">
+                        <MapPin size={12} className="text-primary-500 sm:w-3.5 sm:h-3.5" />
                         <span className="line-clamp-1">{mess.address}</span>
                     </div>
                 </div>
-
                 <p className="text-text-muted text-sm font-medium leading-relaxed italic border-l-4 border-primary-500/20 pl-4 py-2 line-clamp-2">
                     "{mess.description || 'Excellent quality food with authentic taste and hygienic preparation.'}"
                 </p>
@@ -162,18 +161,18 @@ export const MessCard: React.FC<MessCardProps> = ({ mess }) => {
                     ))}
                 </div>
 
-                <div className="pt-6 mt-auto grid grid-cols-2 gap-4">
+                <div className="pt-4 sm:pt-6 mt-auto grid grid-cols-2 gap-3 sm:gap-4">
                     <Link to={`/mess/${mess.id}`}>
                         <Button
                             variant="outline"
-                            className="w-full rounded-2xl py-7 border-2 border-border-color hover:border-primary-500 font-black uppercase tracking-widest text-[9px]"
+                            className="w-full rounded-xl sm:rounded-2xl py-5 sm:py-7 border-2 border-border-color hover:border-primary-500 font-black uppercase tracking-widest text-[8px] sm:text-[9px]"
                         >
                             View Menu
                         </Button>
                     </Link>
                     <Link to={`/mess/${mess.id}`}>
                         <Button
-                            className="w-full rounded-2xl py-7 shadow-2xl shadow-primary-500/20 font-black uppercase tracking-widest text-[9px]"
+                            className="w-full rounded-xl sm:rounded-2xl py-5 sm:py-7 shadow-2xl shadow-primary-500/20 font-black uppercase tracking-widest text-[8px] sm:text-[9px]"
                         >
                             Subscribe
                         </Button>

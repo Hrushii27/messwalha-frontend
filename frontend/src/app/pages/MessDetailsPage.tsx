@@ -1,28 +1,62 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Layout } from '../components/layout/Layout';
 import { Button } from '../components/common/Button';
 import { Card } from '../components/common/Card';
-import { Star, MapPin, Clock, Utensils, Info, CircleCheck, MessageSquare, Share2, Heart, User as UserIcon, Phone } from 'lucide-react';
+import {
+    Star,
+    Clock,
+    Utensils,
+    CircleCheck,
+    MessageSquare,
+    Share2,
+    Heart,
+    User as UserIcon,
+    Phone,
+    Navigation,
+    ShieldCheck
+} from 'lucide-react';
 import api, { getImageUrl } from '../api/axiosInstance';
 import { useAppSelector } from '../../hooks/redux';
 import type { RootState } from '../../store';
-import { useFavorites } from '../context/FavoritesContext';
+import { useFavorites } from '../hooks/useFavorites';
 import { motion } from 'framer-motion';
+import type { Mess, Menu } from '../types/mess';
+
+// Razorpay is now globally declared in global.d.ts
+
+interface Plan {
+    title: string;
+    price: string;
+    priceValue: number;
+    type: string;
+    period: string;
+    desc: string;
+    popular?: boolean;
+}
+
+interface RazorpayResponse {
+    razorpay_payment_id: string;
+    razorpay_order_id: string;
+    razorpay_signature: string;
+}
 
 const MessDetailsPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
-    const [mess, setMess] = useState<any>(null);
+    const navigate = useNavigate();
+    const [mess, setMess] = useState<Mess | null>(null);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState<'menu' | 'reviews' | 'about'>('menu');
     const [selectedDay, setSelectedDay] = useState(new Date().toLocaleDateString('en-US', { weekday: 'long' }));
-    const [selectedPlan, setSelectedPlan] = useState<any>(null);
+    const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
     const [subscribing, setSubscribing] = useState(false);
     const [reviewForm, setReviewForm] = useState({ rating: 5, comment: '', show: false });
     const { isFavorite, toggleFavorite } = useFavorites();
+    const { user } = useAppSelector((state: RootState) => state.auth);
 
     useEffect(() => {
         const fetchDetails = async () => {
+            if (!id) return;
             try {
                 const response = await api.get(`/messes/${id}`);
                 setMess(response.data.data);
@@ -50,7 +84,6 @@ const MessDetailsPage: React.FC = () => {
                 amount: selectedPlan.priceValue
             });
 
-            // Development Bypass: If in test mode, immediately verify the mock payment
             if (data.isTestMode) {
                 try {
                     const verifyRes = await api.post('/payments/verify', {
@@ -62,7 +95,7 @@ const MessDetailsPage: React.FC = () => {
                     });
                     if (verifyRes.data.success) {
                         alert('Subscription successful (Test Mode)');
-                        window.location.href = '/subscriptions';
+                        navigate('/subscriptions');
                     }
                     return;
                 } catch (verifyErr) {
@@ -73,13 +106,13 @@ const MessDetailsPage: React.FC = () => {
             }
 
             const options = {
-                key: (import.meta as any).env.VITE_RAZORPAY_KEY_ID,
+                key: import.meta.env.VITE_RAZORPAY_KEY_ID,
                 amount: data.amount,
                 currency: data.currency,
                 name: 'MessWalha',
-                description: `Subscription for ${mess.name}`,
+                description: `Subscription for ${mess?.name}`,
                 order_id: data.orderId,
-                handler: async (response: any) => {
+                handler: async (response: RazorpayResponse) => {
                     try {
                         const verifyRes = await api.post('/payments/verify', {
                             razorpay_order_id: response.razorpay_order_id,
@@ -90,7 +123,7 @@ const MessDetailsPage: React.FC = () => {
                         });
                         if (verifyRes.data.success) {
                             alert('Subscription successful!');
-                            window.location.href = '/subscriptions';
+                            navigate('/subscriptions');
                         }
                     } catch (err) {
                         console.error('Verification failed', err);
@@ -98,13 +131,13 @@ const MessDetailsPage: React.FC = () => {
                     }
                 },
                 prefill: {
-                    name: (user as any)?.name,
-                    email: (user as any)?.email,
+                    name: user?.name || undefined,
+                    email: user?.email || undefined,
                 },
                 theme: { color: '#F97316' }
             };
 
-            const rzp = new (window as any).Razorpay(options);
+            const rzp = new window.Razorpay(options);
             rzp.open();
         } catch (error) {
             console.error('Checkout error', error);
@@ -125,7 +158,6 @@ const MessDetailsPage: React.FC = () => {
             if (data.success) {
                 alert('Review submitted successfully!');
                 setReviewForm({ rating: 5, comment: '', show: false });
-                // Refresh mess data
                 const response = await api.get(`/messes/${id}`);
                 setMess(response.data.data);
             }
@@ -135,29 +167,27 @@ const MessDetailsPage: React.FC = () => {
         }
     };
 
-    const { user } = useAppSelector((state: RootState) => state.auth);
-
     if (loading) {
         return (
             <Layout>
-                <div className="container mx-auto px-4 py-12 space-y-8 animate-pulse">
-                    <div className="h-64 bg-bg-section dark:bg-dark-800 rounded-xl" />
+                <div className="container mx-auto px-4 py-12 space-y-8 animate-pulse text-white">
+                    <div className="h-64 bg-white/5 rounded-xl" />
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         <div className="lg:col-span-2 space-y-6">
-                            <div className="h-10 w-1/2 bg-bg-section dark:bg-dark-800 rounded-md" />
-                            <div className="h-4 w-3/4 bg-bg-section dark:bg-dark-800 rounded-md" />
-                            <div className="h-48 bg-bg-section dark:bg-dark-800 rounded-xl" />
+                            <div className="h-10 w-1/2 bg-white/5 rounded-md" />
+                            <div className="h-4 w-3/4 bg-white/5 rounded-md" />
+                            <div className="h-48 bg-white/5 rounded-xl" />
                         </div>
-                        <div className="h-96 bg-bg-section dark:bg-dark-800 rounded-xl" />
+                        <div className="h-96 bg-white/5 rounded-xl" />
                     </div>
                 </div>
             </Layout>
         );
     }
 
-    if (!mess) return <Layout><div className="text-center py-20">Mess not found</div></Layout>;
+    if (!mess) return <Layout><div className="text-center py-20 text-white">Mess not found</div></Layout>;
 
-    const currentDayMenu = mess.menus?.find((m: any) => m.day === selectedDay);
+    const currentDayMenu = mess.menus?.find((m: Menu) => m.day === selectedDay);
     const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
     return (
@@ -182,11 +212,11 @@ const MessDetailsPage: React.FC = () => {
                                 if (navigator.share) {
                                     navigator.share({
                                         title: mess.name,
-                                        text: `Check out ${mess.name} on MessWalha! ${window.location.origin}/mess/${mess.id}`,
-                                        url: window.location.origin + `/mess/${mess.id}`,
+                                        text: `Check out ${mess.name} on MessWalha!`,
+                                        url: window.location.href,
                                     }).catch(console.error);
                                 } else {
-                                    navigator.clipboard.writeText(window.location.origin + `/mess/${mess.id}`);
+                                    navigator.clipboard.writeText(window.location.href);
                                     alert('Link copied to clipboard!');
                                 }
                             }}
@@ -211,7 +241,7 @@ const MessDetailsPage: React.FC = () => {
                                     {mess.cuisine || 'Multi-Cuisine'}
                                 </span>
                                 <span className="bg-success-500 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-md shadow-sm flex items-center">
-                                    <CircleCheck size={12} className="mr-1" /> Verified Asset
+                                    <CircleCheck size={12} className="mr-1" /> Shield Protocol Active
                                 </span>
                             </div>
                             <h1 className="text-4xl md:text-6xl font-black italic tracking-tighter uppercase">{mess.name}</h1>
@@ -226,8 +256,8 @@ const MessDetailsPage: React.FC = () => {
                                     <span className="text-white/60 text-xs font-bold uppercase tracking-widest">({mess.reviews?.length || 0} Signal Logs)</span>
                                 </div>
                                 <div className="flex items-center gap-2 text-white/80 font-bold uppercase tracking-widest text-xs">
-                                    <MapPin size={18} className="text-primary-500" />
-                                    <span>{mess.address}</span>
+                                    <Navigation size={18} className="text-primary-500" />
+                                    <span>{mess.location?.address || mess.address}</span>
                                 </div>
                             </div>
                         </div>
@@ -235,18 +265,17 @@ const MessDetailsPage: React.FC = () => {
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-                    {/* Left Column: Content */}
                     <div className="lg:col-span-8 space-y-12">
                         {/* Custom Tabs */}
                         <div className="flex gap-8 border-b border-white/5">
                             {[
                                 { id: 'menu', label: 'Menu Protocol', icon: Utensils },
                                 { id: 'reviews', label: 'Public Feed', icon: MessageSquare },
-                                { id: 'about', label: 'Asset Details', icon: Info },
+                                { id: 'about', label: 'Asset Details', icon: ShieldCheck },
                             ].map((tab) => (
                                 <button
                                     key={tab.id}
-                                    onClick={() => setActiveTab(tab.id as any)}
+                                    onClick={() => setActiveTab(tab.id as 'menu' | 'reviews' | 'about')}
                                     className={`flex items-center gap-2 pb-6 text-[10px] font-black uppercase tracking-[0.3em] transition-all relative ${activeTab === tab.id
                                         ? 'text-primary-500'
                                         : 'text-white/30 hover:text-white'
@@ -272,7 +301,7 @@ const MessDetailsPage: React.FC = () => {
                                     </Card>
                                 )}
 
-                                {mess.menuImages?.length > 0 && (
+                                {mess.menuImages && mess.menuImages.length > 0 && (
                                     <div className="space-y-6">
                                         <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary-500 italic">Menu Gallery</h3>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -289,60 +318,58 @@ const MessDetailsPage: React.FC = () => {
                                     </div>
                                 )}
 
-                                {mess.menus?.length > 0 && (
-                                    <div className="space-y-8">
-                                        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-                                            {days.map((day) => (
-                                                <button
-                                                    key={day}
-                                                    onClick={() => setSelectedDay(day)}
-                                                    className={`px-6 py-3 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all border ${selectedDay === day
-                                                        ? 'bg-primary-500 border-primary-500 text-white shadow-xl shadow-primary-500/20'
-                                                        : 'bg-white/5 border-white/5 text-white/30 hover:bg-white/10'
-                                                        }`}
-                                                >
-                                                    {day}
-                                                </button>
-                                            ))}
+                                <div className="space-y-8">
+                                    <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                                        {days.map((day) => (
+                                            <button
+                                                key={day}
+                                                onClick={() => setSelectedDay(day)}
+                                                className={`px-6 py-3 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all border ${selectedDay === day
+                                                    ? 'bg-primary-500 border-primary-500 text-white shadow-xl shadow-primary-500/20'
+                                                    : 'bg-white/5 border-white/5 text-white/30 hover:bg-white/10'
+                                                    }`}
+                                            >
+                                                {day}
+                                            </button>
+                                        ))}
+                                    </div>
+
+                                    <Card className="p-10 bg-white/5 backdrop-blur-3xl border-white/10 rounded-[3rem]">
+                                        <div className="flex items-center justify-between mb-10">
+                                            <h3 className="text-lg font-black uppercase tracking-widest italic text-white">{selectedDay}'s Protocol</h3>
+                                            <span className="bg-success-500/10 text-success-500 px-4 py-2 rounded-full text-[9px] font-black uppercase tracking-widest border border-success-500/20 italic">Fresh Logistics Verified</span>
                                         </div>
 
-                                        <Card className="p-10 bg-white/5 backdrop-blur-3xl border-white/10 rounded-[3rem]">
-                                            <div className="flex items-center justify-between mb-10">
-                                                <h3 className="text-xl font-black uppercase tracking-widest italic">{selectedDay}'s Protocol</h3>
-                                                <span className="bg-success-500/10 text-success-500 px-4 py-2 rounded-full text-[9px] font-black uppercase tracking-widest border border-success-500/20 italic">Fresh Logistics Verified</span>
-                                            </div>
-
-                                            {currentDayMenu ? (
-                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                                    {(currentDayMenu.items as any[]).map((item, idx) => (
-                                                        <div key={idx} className="bg-white/5 p-6 rounded-2xl flex items-center gap-6 border border-white/5 hover:border-primary-500/30 transition-all group">
-                                                            <div className="w-14 h-14 rounded-xl bg-primary-500/10 flex items-center justify-center text-primary-500 group-hover:scale-110 transition-transform">
-                                                                <Utensils size={20} />
-                                                            </div>
-                                                            <div className="flex-1">
-                                                                <h4 className="font-black text-white text-[11px] uppercase tracking-widest mb-1">{item.name}</h4>
-                                                                <span className={`text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full border ${item.type === 'Non-Veg' ? 'border-red-500/20 bg-red-500/10 text-red-500' : 'border-success-500/20 bg-success-500/10 text-success-500'}`}>
-                                                                    {item.type}
-                                                                </span>
-                                                            </div>
+                                        {currentDayMenu ? (
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                {currentDayMenu.items.map((item, idx) => (
+                                                    <div key={idx} className="bg-white/5 p-6 rounded-2xl flex items-center gap-6 border border-white/5 hover:border-primary-500/30 transition-all group">
+                                                        <div className="w-14 h-14 rounded-xl bg-primary-500/10 flex items-center justify-center text-primary-500 group-hover:scale-110 transition-transform">
+                                                            <Utensils size={20} />
                                                         </div>
-                                                    ))}
-                                                </div>
-                                            ) : (
-                                                <div className="text-center py-20 bg-white/5 rounded-[2.5rem] border-2 border-dashed border-white/5">
-                                                    <p className="text-white/20 font-black uppercase tracking-[0.2em] text-[10px] italic">No digital menu log detected for this day</p>
-                                                </div>
-                                            )}
-                                        </Card>
-                                    </div>
-                                )}
+                                                        <div className="flex-1">
+                                                            <h4 className="font-black text-white text-[11px] uppercase tracking-widest mb-1">{item.name}</h4>
+                                                            <span className={`text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full border ${item.type === 'Non-Veg' ? 'border-red-500/20 bg-red-500/10 text-red-500' : 'border-success-500/20 bg-success-500/10 text-success-500'}`}>
+                                                                {item.type}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <div className="text-center py-20 bg-white/5 rounded-[2.5rem] border-2 border-dashed border-white/5">
+                                                <p className="text-white/20 font-black uppercase tracking-[0.2em] text-[10px] italic">No digital menu log detected for this day</p>
+                                            </div>
+                                        )}
+                                    </Card>
+                                </div>
                             </div>
                         )}
 
                         {activeTab === 'reviews' && (
                             <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                                <div className="flex justify-between items-center">
-                                    <h3 className="text-xl font-black uppercase tracking-widest italic">Public Feed</h3>
+                                <div className="flex justify-between items-center px-4">
+                                    <h3 className="text-xl font-black uppercase tracking-widest italic text-white">Public Feed</h3>
                                     <Button
                                         variant="outline"
                                         className="rounded-full font-black uppercase tracking-widest text-[9px] py-4 px-8 bg-white/5 border-white/10 hover:bg-white/10 text-white/60 hover:text-white"
@@ -386,26 +413,30 @@ const MessDetailsPage: React.FC = () => {
                                 )}
 
                                 <div className="grid grid-cols-1 gap-8">
-                                    {mess.reviews?.length > 0 ? mess.reviews.map((review: any) => (
-                                        <Card key={review.id} className="p-8 bg-white/5 backdrop-blur-3xl border-white/10 rounded-[2.5rem] group hover:border-primary-500/30 transition-all">
-                                            <div className="flex justify-between items-start mb-6">
-                                                <div className="flex items-center gap-4">
-                                                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary-500 to-indigo-600 flex items-center justify-center text-white font-black text-xs shadow-2xl">
-                                                        {review.user?.name?.[0] || 'U'}
+                                    {mess.reviews && mess.reviews.length > 0 ? (
+                                        mess.reviews.map((review) => (
+                                            <Card key={review.id} className="p-8 bg-white/5 backdrop-blur-3xl border-white/10 rounded-[2.5rem] group hover:border-primary-500/30 transition-all">
+                                                <div className="flex justify-between items-start mb-6">
+                                                    <div className="flex items-center gap-4">
+                                                        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary-500 to-indigo-600 flex items-center justify-center text-white font-black text-xs shadow-2xl">
+                                                            {review.user?.name?.[0] || review.user_name?.[0] || 'U'}
+                                                        </div>
+                                                        <div>
+                                                            <h4 className="font-black text-white text-[11px] uppercase tracking-widest">{review.user?.name || review.user_name}</h4>
+                                                            <p className="text-[9px] text-white/30 font-black uppercase tracking-[0.2em]">
+                                                                {review.createdAt ? new Date(review.createdAt).toLocaleDateString() : review.created_at ? new Date(review.created_at).toLocaleDateString() : 'Unknown Date'}
+                                                            </p>
+                                                        </div>
                                                     </div>
-                                                    <div>
-                                                        <h4 className="font-black text-white text-[11px] uppercase tracking-widest">{review.user?.name}</h4>
-                                                        <p className="text-[9px] text-white/30 font-black uppercase tracking-[0.2em]">{new Date(review.createdAt).toLocaleDateString()}</p>
+                                                    <div className="flex bg-primary-500/10 px-4 py-2 rounded-full items-center gap-2 border border-primary-500/20">
+                                                        <Star size={14} className="text-primary-500 fill-primary-500" />
+                                                        <span className="text-[10px] font-black text-primary-500 uppercase tracking-widest">{review.rating}.0</span>
                                                     </div>
                                                 </div>
-                                                <div className="flex bg-primary-500/10 px-4 py-2 rounded-full items-center gap-2 border border-primary-500/20">
-                                                    <Star size={14} className="text-primary-500 fill-primary-500" />
-                                                    <span className="text-[10px] font-black text-primary-500 uppercase tracking-widest">{review.rating}.0</span>
-                                                </div>
-                                            </div>
-                                            <p className="text-white/60 font-medium leading-relaxed italic pr-12">"{review.comment}"</p>
-                                        </Card>
-                                    )) : (
+                                                <p className="text-white/60 font-medium leading-relaxed italic pr-12">"{review.comment}"</p>
+                                            </Card>
+                                        ))
+                                    ) : (
                                         <div className="text-center py-24 opacity-20 text-white">
                                             <MessageSquare size={80} strokeWidth={1} className="mx-auto mb-6" />
                                             <p className="font-black uppercase tracking-[0.4em] text-[10px] italic">No signal logs detected in this sector</p>
@@ -419,9 +450,9 @@ const MessDetailsPage: React.FC = () => {
                             <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                     <Card className="p-10 bg-white/5 backdrop-blur-3xl border-white/10 rounded-[3rem] space-y-8">
-                                        <h4 className="font-black uppercase tracking-[0.4em] text-primary-500 italic text-[10px]">Verification Metadata</h4>
+                                        <h4 className="font-black uppercase tracking-[0.4em] text-primary-500 italic text-[10px]">Shield Protocol</h4>
                                         <div className="space-y-4">
-                                            {['Supply Chain Verified', 'Hygiene Protocol Active', 'Unlimited Meal Logic', 'Student Subsidized', 'Digital Payments Supported'].map(f => (
+                                            {['Supply Chain Integrity', 'Hygiene Protocol', 'Unlimited Meal Access', 'Student Subsidies', 'Digital Payments'].map(f => (
                                                 <div key={f} className="flex items-center gap-4 text-white/50 text-[10px] font-black uppercase tracking-widest italic group">
                                                     <CircleCheck size={18} className="text-primary-500 group-hover:scale-125 transition-transform" />
                                                     {f}
@@ -430,14 +461,14 @@ const MessDetailsPage: React.FC = () => {
                                         </div>
                                     </Card>
                                     <Card className="p-10 bg-white/5 backdrop-blur-3xl border-white/10 rounded-[3rem] space-y-8">
-                                        <h4 className="font-black uppercase tracking-[0.4em] text-primary-500 italic text-[10px]">Asset Control</h4>
+                                        <h4 className="font-black uppercase tracking-[0.4em] text-primary-500 italic text-[10px]">Asset Operator</h4>
                                         <div className="space-y-6">
                                             <div className="flex items-center gap-5 group">
                                                 <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center text-primary-500 border border-white/10 group-hover:scale-110 transition-transform shadow-2xl">
                                                     <UserIcon size={20} />
                                                 </div>
                                                 <div>
-                                                    <p className="font-black text-white/20 uppercase tracking-[0.2em] text-[8px] mb-1">Asset Owner</p>
+                                                    <p className="font-black text-white/20 uppercase tracking-[0.2em] text-[8px] mb-1">Operator Name</p>
                                                     <p className="text-xs font-black text-white uppercase tracking-widest">{mess.ownerName || mess.owner?.name}</p>
                                                 </div>
                                             </div>
@@ -446,7 +477,7 @@ const MessDetailsPage: React.FC = () => {
                                                     <Phone size={20} />
                                                 </div>
                                                 <div>
-                                                    <p className="font-black text-white/20 uppercase tracking-[0.2em] text-[8px] mb-1">Comm Signal</p>
+                                                    <p className="font-black text-white/20 uppercase tracking-[0.2em] text-[8px] mb-1">Contact Signal</p>
                                                     <p className="text-xs font-black text-white uppercase tracking-widest">{mess.contact || mess.mobile}</p>
                                                 </div>
                                             </div>
@@ -455,8 +486,9 @@ const MessDetailsPage: React.FC = () => {
                                                 onClick={async () => {
                                                     try {
                                                         await api.post('/chats', { ownerId: mess.ownerId });
-                                                        window.location.href = `/messages`;
+                                                        navigate('/messages');
                                                     } catch (err) {
+                                                        console.error('Chat error:', err);
                                                         alert('Shield error: Failed to initialize encrypted comms');
                                                     }
                                                 }}
@@ -490,7 +522,7 @@ const MessDetailsPage: React.FC = () => {
                                     <button
                                         key={plan.title}
                                         onClick={() => setSelectedPlan(plan)}
-                                        className={`w-full p-6 p-y-8 rounded-[1.5rem] border-2 text-left transition-all relative group ${selectedPlan?.title === plan.title
+                                        className={`w-full p-6 py-8 rounded-[1.5rem] border-2 text-left transition-all relative group ${selectedPlan?.title === plan.title
                                             ? 'border-primary-500 bg-primary-500/10 shadow-xl shadow-primary-500/20'
                                             : 'border-white/5 bg-white/[0.03] hover:border-white/20'
                                             }`}

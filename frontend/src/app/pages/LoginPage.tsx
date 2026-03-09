@@ -28,7 +28,8 @@ const LoginPage: React.FC = () => {
 
             dispatch(setCredentials(response.data));
             navigate('/');
-        } catch (err: any) {
+        } catch (error) {
+            const err = error as { response?: { data?: { message?: string; error?: string } } };
             console.error('Login error:', err);
             const errorMessage = err.response?.data?.message || err.response?.data?.error || 'Login failed. Please try again.';
             setError(errorMessage);

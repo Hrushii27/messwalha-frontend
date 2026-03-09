@@ -6,7 +6,12 @@ import api from '../api/axiosInstance';
 import Seo from '../components/common/Seo';
 
 const TodayMenuPage: React.FC = () => {
-    const [menu, setMenu] = useState<any>(null);
+    const [menu, setMenu] = useState<{
+        breakfast: string;
+        lunch: string;
+        dinner: string;
+        messName: string;
+    } | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -51,9 +56,9 @@ const TodayMenuPage: React.FC = () => {
                     ) : (
                         <div className="grid grid-cols-1 gap-8">
                             {[
-                                { title: 'Breakfast', time: '08:00 AM - 10:00 AM', items: menu.breakfast, icon: '🍳', color: 'bg-yellow-500/10 text-yellow-500' },
-                                { title: 'Lunch', time: '12:30 PM - 02:30 PM', items: menu.lunch, icon: '🍱', color: 'bg-primary-500/10 text-primary-500' },
-                                { title: 'Dinner', time: '08:00 PM - 10:00 PM', items: menu.dinner, icon: '🍛', color: 'bg-red-500/10 text-red-500' },
+                                { title: 'Breakfast', time: '08:00 AM - 10:00 AM', items: menu?.breakfast || 'Not available', icon: '🍳', color: 'bg-yellow-500/10 text-yellow-500' },
+                                { title: 'Lunch', time: '12:30 PM - 02:30 PM', items: menu?.lunch || 'Not available', icon: '🍱', color: 'bg-primary-500/10 text-primary-500' },
+                                { title: 'Dinner', time: '08:00 PM - 10:00 PM', items: menu?.dinner || 'Not available', icon: '🍛', color: 'bg-red-500/10 text-red-500' },
                             ].map((meal, index) => (
                                 <Card key={index} className="p-8 md:p-12 bg-card dark:bg-dark-card border-border-color shadow-xl group hover:shadow-2xl transition-all duration-500 overflow-hidden relative">
                                     <div className="absolute top-0 right-0 p-8 text-8xl opacity-[0.03] group-hover:opacity-[0.05] transition-opacity pointer-events-none">
@@ -86,7 +91,7 @@ const TodayMenuPage: React.FC = () => {
                                         <Utensils size={32} />
                                     </div>
                                     <div>
-                                        <h4 className="text-xl font-black italic tracking-tight">{menu.messName}</h4>
+                                        <h4 className="text-xl font-black italic tracking-tight">{menu?.messName}</h4>
                                         <p className="text-sm font-bold uppercase tracking-widest opacity-80">Provider of your daily meals</p>
                                     </div>
                                 </div>

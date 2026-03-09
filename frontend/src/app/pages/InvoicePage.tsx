@@ -3,12 +3,13 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Printer, FileText } from 'lucide-react';
 import api from '../api/axiosInstance';
 import { Button } from '../components/common/Button';
+import type { Subscription } from '../types/mess';
 
 const InvoicePage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
-    const [subscription, setSubscription] = useState<any>(null);
+    const [subscription, setSubscription] = useState<Subscription | null>(null);
 
     useEffect(() => {
         const fetchSubscription = async () => {
@@ -17,7 +18,7 @@ const InvoicePage: React.FC = () => {
                 // For now, let's assume we can find it in the list for simplicity,
                 // or better, we can rely on a specific endpoint if it exists.
                 const response = await api.get('/subscriptions/my-subscriptions');
-                const sub = response.data.data.find((s: any) => s.id === id);
+                const sub = response.data.data.find((s: Subscription) => s.id === id);
                 if (sub) {
                     setSubscription(sub);
                 }
@@ -95,7 +96,7 @@ const InvoicePage: React.FC = () => {
                         </div>
                         <div className="text-right">
                             <h3 className="text-xs font-black uppercase tracking-[0.2em] text-gray-400 mb-4">Invoice Details</h3>
-                            <p className="text-sm font-bold text-gray-900">Date: {new Date(subscription.createdAt).toLocaleDateString()}</p>
+                            <p className="text-sm font-bold text-gray-900">Date: {subscription.createdAt ? new Date(subscription.createdAt).toLocaleDateString() : 'N/A'}</p>
                             <p className="text-sm font-bold text-gray-900">Status: {subscription.status}</p>
                         </div>
                     </div>
@@ -116,7 +117,7 @@ const InvoicePage: React.FC = () => {
                                         <p className="text-xs text-gray-500 italic">{subscription.planType} Meal Subscription</p>
                                     </td>
                                     <td className="py-6 text-center text-sm text-gray-700">
-                                        {new Date(subscription.startDate).toLocaleDateString()} - {new Date(subscription.endDate).toLocaleDateString()}
+                                        {subscription.startDate ? new Date(subscription.startDate).toLocaleDateString() : 'N/A'} - {subscription.endDate ? new Date(subscription.endDate).toLocaleDateString() : 'N/A'}
                                     </td>
                                     <td className="py-6 text-right font-black text-gray-900">
                                         ₹{subscription.amount || (subscription.planType === 'MONTHLY' ? '2500' : subscription.planType === 'QUARTERLY' ? '7000' : '25000')}

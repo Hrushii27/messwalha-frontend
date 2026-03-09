@@ -1,41 +1,46 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Bell, Check, Trash2 } from 'lucide-react';
 import api from '../api/axiosInstance';
 import { toast } from 'react-hot-toast';
+import type { Notification } from '../types/mess';
 
 const NotificationCenter: React.FC = () => {
-    const [notifications, setNotifications] = useState<any[]>([]);
+    const [notifications, setNotifications] = useState<Notification[]>([]);
     const [isOpen, setIsOpen] = useState(false);
     const [unreadCount, setUnreadCount] = useState(0);
 
-    const fetchNotifications = async () => {
+    const fetchNotifications = useCallback(async () => {
         try {
             const response = await api.get('/notifications');
             setNotifications(response.data.data);
-            setUnreadCount(response.data.data.filter((n: any) => !n.read).length);
-        } catch (error) {
-            console.error('Failed to fetch notifications');
+            setUnreadCount(response.data.data.filter((n: Notification) => !n.read).length);
+        } catch (err) {
+            console.error('Failed to fetch notifications', err);
         }
-    };
+    }, []);
 
     useEffect(() => {
-        fetchNotifications();
+        let mounted = true;
+        const loadNotifications = async () => {
+            if (mounted) {
+                await fetchNotifications();
+            }
+        };
+        loadNotifications();
 
-        // Polling as a fallback, or we could listen on the socket already established in individual pages
-        // but for global notifications, we might need a global socket context or separate listener
-        const interval = setInterval(fetchNotifications, 30000);
-        return () => clearInterval(interval);
-    }, []);
+        const interval = setInterval(fetchNotifications, 60000);
+        return () => {
+            mounted = false;
+            clearInterval(interval);
+        };
+    }, [fetchNotifications]);
 
     const markAsRead = async (id: string) => {
         try {
-            await api.patch(`/notifications/${id}/read`);
-            setNotifications(prev => prev.map(n =>
-                (id === 'all' || n.id === id) ? { ...n, read: true } : n
-            ));
-            if (id === 'all') setUnreadCount(0);
-            else setUnreadCount(prev => Math.max(0, prev - 1));
-        } catch (error) {
+            await api.put(`/notifications/${id}/read`);
+            fetchNotifications();
+        } catch (err) {
+            console.error('Failed to mark notification as read', err);
             toast.error('Failed to mark as read');
         }
     };
@@ -43,9 +48,10 @@ const NotificationCenter: React.FC = () => {
     const deleteNotification = async (id: string) => {
         try {
             await api.delete(`/notifications/${id}`);
-            setNotifications(prev => prev.filter(n => n.id !== id));
+            fetchNotifications();
             toast.success('Notification deleted');
-        } catch (error) {
+        } catch (err) {
+            console.error('Failed to delete notification', err);
             toast.error('Failed to delete notification');
         }
     };
@@ -95,7 +101,7 @@ const NotificationCenter: React.FC = () => {
                                             <p className="text-sm font-bold text-gray-900 leading-tight">{n.title}</p>
                                             <p className="text-xs text-gray-500 mt-1">{n.message}</p>
                                             <p className="text-[10px] text-gray-400 font-medium mt-2">
-                                                {new Date(n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                {n.created_at ? new Date(n.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'N/A'}
                                             </p>
                                         </div>
                                         <div className="opacity-0 group-hover:opacity-100 transition-opacity flex flex-col gap-2">

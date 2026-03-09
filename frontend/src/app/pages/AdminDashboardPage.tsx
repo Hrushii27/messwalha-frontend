@@ -18,14 +18,26 @@ import {
 } from 'lucide-react';
 import api from '../api/axiosInstance';
 import { toast } from 'react-hot-toast';
+import type { Mess, User } from '../types/mess';
 
 type AdminTab = 'overview' | 'users' | 'messes' | 'settings';
 
 const AdminDashboardPage: React.FC = () => {
     const [activeTab, setActiveTab] = useState<AdminTab>('overview');
-    const [stats, setStats] = useState<any>(null);
-    const [users, setUsers] = useState<any[]>([]);
-    const [messes, setMesses] = useState<any[]>([]);
+    const [stats, setStats] = useState<{
+        users: number;
+        messes: number;
+        activeSubscriptions: number;
+        totalRevenue: number;
+        totalVisits: number;
+        ownerStats: {
+            trial: number;
+            active: number;
+            expired: number;
+        };
+    } | null>(null);
+    const [users, setUsers] = useState<User[]>([]);
+    const [messes, setMesses] = useState<Mess[]>([]);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
 
@@ -41,6 +53,7 @@ const AdminDashboardPage: React.FC = () => {
             setUsers(usersRes.data.data);
             setMesses(messesRes.data.data);
         } catch (error) {
+            console.error('Failed to load admin data:', error);
             toast.error('Failed to load admin data');
         } finally {
             setLoading(false);
@@ -57,6 +70,7 @@ const AdminDashboardPage: React.FC = () => {
             setMesses(prev => prev.map(m => m.id === id ? { ...m, verified: !currentStatus } : m));
             toast.success('Mess verification status updated');
         } catch (error) {
+            console.error('Failed to update verification status:', error);
             toast.error('Failed to update verification status');
         }
     };
@@ -67,8 +81,8 @@ const AdminDashboardPage: React.FC = () => {
             await api.delete(`/admin/users/${id}`);
             setUsers(prev => prev.filter(u => u.id !== id));
             toast.success('User deleted successfully');
-        } catch (error) {
-            toast.error('Failed to delete user');
+        } catch (err) {
+            console.error('Error fetching stats:', err);
         }
     };
 
@@ -137,7 +151,7 @@ const AdminDashboardPage: React.FC = () => {
                                             <p className="text-xs text-gray-400">{u.role}</p>
                                         </div>
                                     </div>
-                                    <span className="text-[10px] text-gray-400">{new Date(u.createdAt).toLocaleDateString()}</span>
+                                    <span className="text-[10px] text-gray-400">{u.createdAt ? new Date(u.createdAt).toLocaleDateString() : 'N/A'}</span>
                                 </div>
                             ))}
                         </div>
@@ -154,7 +168,7 @@ const AdminDashboardPage: React.FC = () => {
                                 <div key={m.id} className="p-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
                                     <div>
                                         <p className="font-bold text-sm">{m.name}</p>
-                                        <p className="text-xs text-gray-400">Owner: {m.owner.name}</p>
+                                        <p className="text-xs text-gray-400">Owner: {m.owner?.name || 'N/A'}</p>
                                     </div>
                                     <Button
                                         variant="outline"
@@ -217,7 +231,7 @@ const AdminDashboardPage: React.FC = () => {
                                     </span>
                                 </td>
                                 <td className="px-6 py-4 text-xs font-medium text-gray-500">
-                                    {new Date(u.createdAt).toLocaleDateString()}
+                                    {u.createdAt ? new Date(u.createdAt).toLocaleDateString() : 'N/A'}
                                 </td>
                                 <td className="px-6 py-4 text-right">
                                     <Button variant="ghost" size="sm" className="text-red-500 hover:bg-red-50" onClick={() => handleDeleteUser(u.id)}>
@@ -257,24 +271,24 @@ const AdminDashboardPage: React.FC = () => {
                                 {m.verified && <CircleCheck size={14} className="text-green-500" />}
                             </div>
                             <p className="text-xs text-gray-400 font-bold uppercase tracking-wider">{m.cuisine} • {m.address}</p>
-                            <p className="text-[10px] text-gray-500 font-medium mt-1">Owner: {m.owner.name} ({m.owner.email})</p>
+                            <p className="text-[10px] text-gray-500 font-medium mt-1">Owner: {m.owner?.name || 'N/A'} ({m.owner?.email || 'N/A'})</p>
                         </div>
                     </div>
                     <div className="flex items-center gap-12 text-center">
                         <div>
                             <p className="text-[10px] font-black text-gray-400 uppercase">Subs</p>
-                            <p className="text-lg font-black">{m._count.subscriptions}</p>
+                            <p className="text-lg font-black">{m._count?.subscriptions || 0}</p>
                         </div>
                         <div>
                             <p className="text-[10px] font-black text-gray-400 uppercase">Reviews</p>
-                            <p className="text-lg font-black">{m._count.reviews}</p>
+                            <p className="text-lg font-black">{m._count?.reviews || 0}</p>
                         </div>
                         <div className="flex gap-2">
                             <Button
                                 variant={m.verified ? "outline" : "primary"}
                                 size="sm"
                                 className="rounded-xl px-6 text-[10px] font-black uppercase"
-                                onClick={() => handleVerifyMess(m.id, m.verified)}
+                                onClick={() => handleVerifyMess(m.id, m.verified || false)}
                             >
                                 {m.verified ? 'Revoke' : 'Verify'}
                             </Button>

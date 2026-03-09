@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Layout } from '../components/layout/Layout';
 import { Card } from '../components/common/Card';
 import { Button } from '../components/common/Button';
@@ -14,6 +14,8 @@ import Seo from '../components/common/Seo';
 import { motion, AnimatePresence } from 'framer-motion';
 import api, { getImageUrl } from '../api/axiosInstance';
 import { updateAuthUser } from '../../store/slices/authSlice';
+import type { Activity } from '../types/mess';
+import { AxiosError } from 'axios';
 
 type ActiveTab = 'personal' | 'security' | 'activity';
 
@@ -31,21 +33,11 @@ const ProfilePage: React.FC = () => {
         newPassword: '',
         confirmPassword: ''
     });
-    const [activities, setActivities] = useState<any[]>([]);
+    const [activities, setActivities] = useState<Activity[]>([]);
     const [loadingActivities, setLoadingActivities] = useState(false);
     const [message, setMessage] = useState({ type: '', text: '' });
 
-    useEffect(() => {
-        fetchProfile();
-    }, []);
-
-    useEffect(() => {
-        if (activeTab === 'activity') {
-            fetchActivity();
-        }
-    }, [activeTab]);
-
-    const fetchProfile = async () => {
+    const fetchProfile = useCallback(async () => {
         try {
             const response = await api.get('/users/profile');
             if (response.data.success) {
@@ -59,19 +51,29 @@ const ProfilePage: React.FC = () => {
         } catch (error) {
             console.error('Error fetching profile:', error);
         }
-    };
+    }, [dispatch]);
 
-    const fetchActivity = async () => {
+    const fetchActivity = useCallback(async () => {
         setLoadingActivities(true);
         try {
             const response = await api.get('/users/activity');
             setActivities(response.data.data);
-        } catch (error) {
+        } catch (error) { // Changed 'err' to 'error' for consistency and removed 'toast.error' as it's not imported
             console.error('Error fetching activity:', error);
         } finally {
             setLoadingActivities(false);
         }
-    };
+    }, []);
+
+    useEffect(() => {
+        fetchProfile();
+    }, [fetchProfile]);
+
+    useEffect(() => {
+        if (activeTab === 'activity') {
+            fetchActivity();
+        }
+    }, [activeTab, fetchActivity]);
 
     const handleSave = async () => {
         try {
@@ -81,7 +83,8 @@ const ProfilePage: React.FC = () => {
                 setMessage({ type: 'success', text: 'Profile updated successfully!' });
                 setIsEditing(false);
             }
-        } catch (error: any) {
+        } catch (err) {
+            const error = err as { response?: { data?: { message?: string } } };
             setMessage({ type: 'error', text: error.response?.data?.message || 'Update failed' });
         }
     };
@@ -94,7 +97,8 @@ const ProfilePage: React.FC = () => {
             await api.post('/users/change-password', passwordData);
             setMessage({ type: 'success', text: 'Password changed successfully!' });
             setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
-        } catch (error: any) {
+        } catch (err) {
+            const error = err as AxiosError<{ message: string }>;
             setMessage({ type: 'error', text: error.response?.data?.message || 'Password change failed' });
         }
     };
@@ -103,8 +107,9 @@ const ProfilePage: React.FC = () => {
         const input = document.createElement('input');
         input.type = 'file';
         input.accept = 'image/*';
-        input.onchange = async (e: any) => {
-            const file = e.target.files[0];
+        input.onchange = async (e: Event) => {
+            const target = e.target as HTMLInputElement;
+            const file = target.files?.[0];
             if (file) {
                 const formData = new FormData();
                 formData.append('avatar', file);
@@ -125,7 +130,8 @@ const ProfilePage: React.FC = () => {
                             setMessage({ type: 'success', text: 'Avatar updated!' });
                         }
                     }
-                } catch (err) {
+                } catch (error) {
+                    console.error('Upload failed:', error);
                     setMessage({ type: 'error', text: 'Upload failed' });
                 }
             }
@@ -335,7 +341,7 @@ const ProfilePage: React.FC = () => {
                                                                 <input
                                                                     type="text"
                                                                     disabled={field.disabled || !isEditing}
-                                                                    value={field.value || (field.key === 'email' ? user?.email : (formData as any)[field.key])}
+                                                                    value={field.value || (field.key === 'email' ? user?.email : (formData as Record<string, string>)[field.key])}
                                                                     onChange={e => setFormData({ ...formData, [field.key]: e.target.value })}
                                                                     placeholder={field.placeholder}
                                                                     className="w-full bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-[2rem] pl-16 pr-8 py-5 text-white font-black uppercase tracking-widest text-[10px] focus:ring-2 focus:ring-primary-500/40 focus:bg-white/[0.07] outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed group-hover:border-white/20"
@@ -410,7 +416,7 @@ const ProfilePage: React.FC = () => {
                                                                     <label className="text-[9px] font-black uppercase text-white/30 ml-2 tracking-widest">{p.label}</label>
                                                                     <input
                                                                         type={p.type}
-                                                                        value={(passwordData as any)[p.key]}
+                                                                        value={(passwordData as Record<string, string>)[p.key]}
                                                                         onChange={e => setPasswordData({ ...passwordData, [p.key]: e.target.value })}
                                                                         className="w-full bg-dark-900 border border-white/10 rounded-2xl px-6 py-4 text-white text-xs font-black focus:ring-1 focus:ring-primary-500 outline-none transition-all"
                                                                         placeholder="••••••••"
@@ -488,14 +494,14 @@ const ProfilePage: React.FC = () => {
                                                                 <div className="absolute left-6 top-10 w-[2px] h-20 bg-white/5 group-hover:bg-primary-500/20 transition-colors" />
                                                             )}
                                                             <div className="absolute left-0 top-0 w-12 h-12 bg-dark-900 border-2 border-white/5 rounded-2xl flex items-center justify-center text-primary-500 z-10 group-hover:border-primary-500/30 transition-all group-hover:scale-110">
-                                                                {act.type === 'LOGIN' ? <Zap size={20} /> : <User size={20} />}
+                                                                {act.title.includes('LOGIN') ? <Zap size={20} /> : <User size={20} />}
                                                             </div>
                                                             <div className="p-8 bg-white/[0.02] border border-white/5 rounded-[2.5rem] space-y-3 group-hover:bg-white/[0.04] group-hover:border-white/10 transition-all">
                                                                 <div className="flex justify-between items-center">
-                                                                    <p className="text-[10px] font-black uppercase tracking-widest text-primary-500">{act.type}</p>
-                                                                    <p className="text-[10px] text-white/20 font-medium italic">{new Date(act.createdAt).toLocaleString()}</p>
+                                                                    <p className="text-[10px] font-black uppercase tracking-widest text-primary-500">{act.title}</p>
+                                                                    <p className="text-[10px] text-white/20 font-medium italic">{act.created_at ? new Date(act.created_at).toLocaleString() : act.time}</p>
                                                                 </div>
-                                                                <p className="text-xl font-black text-white tracking-tight italic">"{act.message}"</p>
+                                                                <p className="text-xl font-black text-white tracking-tight italic">"{act.desc}"</p>
                                                                 <div className="flex items-center gap-3 pt-2 text-white/30">
                                                                     <span className="text-[9px] font-black uppercase tracking-widest">Protocol Version: 1.0.4</span>
                                                                     <ExternalLink size={12} className="opacity-40" />

@@ -7,6 +7,7 @@ import { Utensils, User, Building } from 'lucide-react';
 import { useAppDispatch } from '../../hooks/redux';
 import { setCredentials } from '../../store/slices/authSlice';
 import api from '../api/axiosInstance';
+import { toast } from 'react-hot-toast';
 
 const RegisterPage: React.FC = () => {
     const [formData, setFormData] = useState({
@@ -38,10 +39,9 @@ const RegisterPage: React.FC = () => {
 
             dispatch(setCredentials(response.data));
             navigate('/');
-        } catch (err: any) {
-            console.error('Registration error:', err);
-            const errorMessage = err.response?.data?.message || err.response?.data?.error || 'Registration failed. Please try again.';
-            setError(errorMessage);
+        } catch (error) {
+            const err = error as { response?: { data?: { message?: string } } };
+            toast.error(err.response?.data?.message || 'Registration failed');
         } finally {
             setIsLoading(false);
         }

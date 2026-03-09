@@ -6,15 +6,21 @@ import { useAppSelector } from '../../hooks/redux';
 import type { RootState } from '../../store';
 import api from '../api/axiosInstance';
 import { io, Socket } from 'socket.io-client';
+import type { Chat, ChatMessage } from '../types/mess';
 
 const ChatPage: React.FC = () => {
     const { user } = useAppSelector((state: RootState) => state.auth);
-    const [chats, setChats] = useState<any[]>([]);
-    const [activeChat, setActiveChat] = useState<any>(null);
-    const [messages, setMessages] = useState<any[]>([]);
+    const [chats, setChats] = useState<Chat[]>([]);
+    const [activeChat, setActiveChat] = useState<Chat | null>(null);
+    const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [newMessage, setNewMessage] = useState('');
     const socketRef = useRef<Socket | null>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const activeChatRef = useRef<Chat | null>(null);
+
+    useEffect(() => {
+        activeChatRef.current = activeChat;
+    }, [activeChat]);
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -41,13 +47,13 @@ const ChatPage: React.FC = () => {
             auth: { token: localStorage.getItem('token') }
         });
 
-        socketRef.current.on('new_message', (message: any) => {
-            if (activeChat && message.chatId === activeChat.id) {
+        socketRef.current.on('new_message', (message: ChatMessage) => {
+            if (activeChatRef.current && message.chatId === activeChatRef.current.id) {
                 setMessages(prev => [...prev, message]);
             }
             // Update chat list summary
             setChats(prev => prev.map(c =>
-                c.id === message.chatId ? { ...c, messages: [message], updatedAt: new Date() } : c
+                c.id === message.chatId ? { ...c, messages: [message], updatedAt: new Date().toISOString() } : c
             ).sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()));
         });
 
@@ -85,7 +91,7 @@ const ChatPage: React.FC = () => {
         setNewMessage('');
     };
 
-    const getChatPartner = (chat: any) => {
+    const getChatPartner = (chat: Chat) => {
         return user?.id === chat.studentId ? chat.owner : chat.student;
     };
 

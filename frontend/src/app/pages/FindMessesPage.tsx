@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Layout } from '../components/layout/Layout';
 import { MessCard } from '../components/mess/MessCard';
 import {
@@ -8,13 +8,16 @@ import {
     CircleCheck,
     MapPin,
     Utensils,
-    ArrowRight
+    ArrowRight,
+    X,
+    ShieldCheck
 } from 'lucide-react';
 import api from '../api/axiosInstance';
 import { Button } from '../components/common/Button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import Seo from '../components/common/Seo';
+import type { Mess } from '../types/mess';
 
 /*
 const FALLBACK_MESSES = [
@@ -39,7 +42,7 @@ const FALLBACK_MESSES = [
 
 const FindMessesPage: React.FC = () => {
     useTranslation();
-    const [messes, setMesses] = useState<any[]>([]);
+    const [messes, setMesses] = useState<Mess[]>([]);
     const [loading, setLoading] = useState(true);
     const [locationTerm, setLocationTerm] = useState('');
     const [mealType, setMealType] = useState('');
@@ -53,10 +56,10 @@ const FindMessesPage: React.FC = () => {
         sort: 'Best Rated'
     });
 
-    const fetchMesses = async () => {
+    const fetchMesses = useCallback(async () => {
         setLoading(true);
         try {
-            const params: any = {};
+            const params: Record<string, string | number | boolean> = {};
             if (filters.cuisine && filters.cuisine !== 'All Signals') {
                 params.cuisine = filters.cuisine;
             }
@@ -65,29 +68,22 @@ const FindMessesPage: React.FC = () => {
             }
 
             const response = await api.get('/mess', { params });
-            let data = response.data.data || [];
-
-            // If no data and no active filters, we might want to show fallback, 
-            // but for now let's stick to real DB data as we just seeded it.
-            if (data.length === 0 && !filters.cuisine && filters.maxPrice === 6000) {
-                // data = FALLBACK_MESSES; // We can keep this if needed, but DB should have data now
-            }
+            const data = response.data.data || [];
 
             setMesses(data);
         } catch (error) {
             console.error('Error fetching messes:', error);
-            // setMesses(FALLBACK_MESSES);
         } finally {
             setLoading(false);
         }
-    };
+    }, [filters.cuisine, filters.maxPrice]);
 
     useEffect(() => {
         fetchMesses();
-    }, [filters.cuisine, filters.maxPrice]); // Refetch on server-side filters
+    }, [fetchMesses]); // Refetch on server-side filters
 
     const filteredMesses = messes
-        .filter((mess: any) => {
+        .filter((mess: Mess) => {
             const locationLower = locationTerm.toLowerCase().trim();
 
             const matchesLocation = !locationTerm ||
@@ -103,7 +99,7 @@ const FindMessesPage: React.FC = () => {
 
             return matchesLocation && matchesMealType && matchesVerified && matchesRating;
         })
-        .sort((a: any, b: any) => {
+        .sort((a: Mess, b: Mess) => {
             if (filters.sort === 'Best Rated') return (b.rating || 0) - (a.rating || 0);
             if (filters.sort === 'Price: Low to High') return (a.monthlyPrice || 0) - (b.monthlyPrice || 0);
             if (filters.sort === 'Newest First') return new Date(b.createdAt || '').getTime() - new Date(a.createdAt || '').getTime();
@@ -111,7 +107,7 @@ const FindMessesPage: React.FC = () => {
         });
 
     // Grouping by city
-    const groupedMesses = filteredMesses.reduce((acc: any, mess: any) => {
+    const groupedMesses = filteredMesses.reduce((acc: Record<string, Mess[]>, mess: Mess) => {
         const city = mess.city || 'Other';
         if (!acc[city]) acc[city] = [];
         acc[city].push(mess);
@@ -141,28 +137,28 @@ const FindMessesPage: React.FC = () => {
             <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="grad-dark py-32 relative overflow-hidden"
+                className="grad-dark py-20 sm:py-32 relative overflow-hidden"
             >
-                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary-500/10 rounded-full blur-[150px] -mr-32 -mt-32 pointer-events-none" />
-                <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-indigo-500/10 rounded-full blur-[120px] -ml-32 -mb-32 pointer-events-none" />
+                <div className="absolute top-0 right-0 w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] bg-primary-500/10 rounded-full blur-[100px] sm:blur-[150px] -mr-32 -mt-32 pointer-events-none" />
+                <div className="absolute bottom-0 left-0 w-[200px] sm:w-[400px] h-[200px] sm:h-[400px] bg-indigo-500/10 rounded-full blur-[80px] sm:blur-[120px] -ml-32 -mb-32 pointer-events-none" />
 
                 <div className="container mx-auto px-4 relative z-10">
-                    <div className="max-w-5xl mx-auto space-y-12">
+                    <div className="max-w-5xl mx-auto space-y-8 sm:space-y-12">
                         <div className="text-center space-y-4">
                             <motion.h1
                                 initial={{ y: 20, opacity: 0 }}
                                 animate={{ y: 0, opacity: 1 }}
-                                className="text-6xl md:text-8xl font-black tracking-tighter text-white italic"
+                                className="text-3xl sm:text-5xl md:text-8xl font-black tracking-tighter text-white italic"
                             >
                                 Find Your <span className="text-primary-500">Perfect Mess</span>
                             </motion.h1>
-                            <p className="text-white/40 font-black uppercase tracking-[0.4em] text-[10px] md:text-xs">
+                            <p className="text-white/40 font-black uppercase tracking-[0.3em] sm:tracking-[0.4em] text-[9px] sm:text-xs">
                                 Discover verified mess services near your college terminal
                             </p>
                         </div>
 
                         {/* Features Badges */}
-                        <div className="flex flex-wrap justify-center gap-6 pt-4">
+                        <div className="flex flex-wrap justify-center gap-3 sm:gap-6 pt-2 sm:pt-4">
                             {[
                                 { icon: CircleCheck, text: 'Verified Owners' },
                                 { icon: Utensils, text: 'Clean & Hygienic' },
@@ -173,10 +169,10 @@ const FindMessesPage: React.FC = () => {
                                     initial={{ y: 10, opacity: 0 }}
                                     animate={{ y: 0, opacity: 1 }}
                                     transition={{ delay: 0.1 * i }}
-                                    className="flex items-center gap-3 px-6 py-3 bg-white/5 rounded-full border border-white/10 backdrop-blur-md"
+                                    className="flex items-center gap-2 sm:gap-3 px-4 sm:px-6 py-2 sm:py-3 bg-white/5 rounded-full border border-white/10 backdrop-blur-md"
                                 >
-                                    <feature.icon size={14} className="text-primary-500" />
-                                    <span className="text-[10px] font-black text-white/60 uppercase tracking-widest">{feature.text}</span>
+                                    <feature.icon size={12} className="text-primary-500 sm:w-3.5 sm:h-3.5" />
+                                    <span className="text-[9px] sm:text-[10px] font-black text-white/60 uppercase tracking-widest">{feature.text}</span>
                                 </motion.div>
                             ))}
                         </div>
@@ -186,23 +182,23 @@ const FindMessesPage: React.FC = () => {
                             initial={{ scale: 0.95, opacity: 0 }}
                             animate={{ scale: 1, opacity: 1 }}
                             transition={{ delay: 0.2 }}
-                            className="bg-white/10 backdrop-blur-3xl p-4 rounded-[2.5rem] md:rounded-full border border-white/20 shadow-3xl mt-12"
+                            className="bg-white/10 backdrop-blur-3xl p-3 sm:p-4 rounded-[2rem] md:rounded-full border border-white/20 shadow-3xl mt-8 sm:mt-12"
                         >
-                            <div className="flex flex-col md:flex-row items-center gap-3">
+                            <div className="flex flex-col md:flex-row items-center gap-2 sm:gap-3">
                                 <div className="flex-1 w-full relative group">
-                                    <MapPin className="absolute left-8 top-1/2 -translate-y-1/2 text-primary-500 z-10" size={20} />
+                                    <MapPin className="absolute left-6 sm:left-8 top-1/2 -translate-y-1/2 text-primary-500 z-10" size={18} />
                                     <input
                                         type="text"
                                         placeholder="📍 Enter City / Area / Mess..."
-                                        className="w-full bg-white/[0.03] border-none text-white pl-16 pr-8 py-6 rounded-full focus:ring-2 focus:ring-primary-500/50 transition-all font-black uppercase tracking-widest text-xs outline-none"
+                                        className="w-full bg-white/[0.03] border-none text-white pl-14 sm:pl-16 pr-6 py-5 sm:py-6 rounded-full focus:ring-2 focus:ring-primary-500/50 transition-all font-black uppercase tracking-widest text-[10px] sm:text-xs outline-none"
                                         value={locationTerm}
                                         onChange={(e) => setLocationTerm(e.target.value)}
                                     />
                                 </div>
                                 <div className="flex-1 w-full relative group">
-                                    <Utensils className="absolute left-8 top-1/2 -translate-y-1/2 text-primary-500 z-10" size={20} />
+                                    <Utensils className="absolute left-6 sm:left-8 top-1/2 -translate-y-1/2 text-primary-500 z-10" size={18} />
                                     <select
-                                        className="w-full bg-white/[0.03] border-none text-white pl-16 pr-12 py-6 rounded-full focus:ring-2 focus:ring-primary-500/50 transition-all font-black uppercase tracking-widest text-xs appearance-none cursor-pointer outline-none"
+                                        className="w-full bg-white/[0.03] border-none text-white pl-14 sm:pl-16 pr-10 sm:pr-12 py-5 sm:py-6 rounded-full focus:ring-2 focus:ring-primary-500/50 transition-all font-black uppercase tracking-widest text-[10px] sm:text-xs appearance-none cursor-pointer outline-none"
                                         value={mealType}
                                         onChange={(e) => setMealType(e.target.value)}
                                     >
@@ -214,10 +210,10 @@ const FindMessesPage: React.FC = () => {
                                 <Button
                                     size="lg"
                                     onClick={() => setShowFilters(!showFilters)}
-                                    className={`w-full md:w-auto h-20 md:px-12 rounded-full font-black uppercase tracking-[0.2em] text-xs flex items-center justify-center gap-3 shadow-2xl transition-all duration-500 ${showFilters ? 'bg-white/10 border border-white/20 text-white' : 'bg-primary-500 text-white shadow-primary-500/40'}`}
+                                    className={`w-full md:w-auto h-16 sm:h-20 md:px-12 rounded-full font-black uppercase tracking-[0.2em] text-[10px] sm:text-xs flex items-center justify-center gap-3 shadow-2xl transition-all duration-500 ${showFilters ? 'bg-white/10 border border-white/20 text-white' : 'bg-primary-500 text-white shadow-primary-500/40'}`}
                                 >
-                                    <Filter size={20} />
-                                    <SearchIcon size={20} className="md:hidden" />
+                                    <Filter size={18} />
+                                    <SearchIcon size={18} className="md:hidden" />
                                     <span className="hidden md:inline">{showFilters ? 'Hide' : 'Search Options'}</span>
                                 </Button>
                             </div>
@@ -226,7 +222,7 @@ const FindMessesPage: React.FC = () => {
                 </div>
             </motion.div>
 
-            <div className="container mx-auto px-4 py-24">
+            <div className="container mx-auto px-4 py-16 sm:py-24">
                 <div className="flex flex-col lg:flex-row gap-16">
                     {/* Advanced Filter Sidebar */}
                     <AnimatePresence>
@@ -235,13 +231,21 @@ const FindMessesPage: React.FC = () => {
                                 initial={{ x: -40, opacity: 0 }}
                                 animate={{ x: 0, opacity: 1 }}
                                 exit={{ x: -40, opacity: 0 }}
-                                className="lg:w-96 space-y-10 shrink-0"
+                                className="w-full lg:w-96 space-y-6 sm:space-y-10 shrink-0"
                             >
-                                <div className="p-12 bg-white/5 backdrop-blur-3xl rounded-[3rem] shadow-3xl border border-white/10 sticky top-32">
-                                    <h3 className="font-black text-[10px] uppercase tracking-[0.4em] text-primary-500 mb-10 italic">Filter Registry</h3>
+                                <div className="p-6 sm:p-12 bg-white/5 backdrop-blur-3xl rounded-[2rem] sm:rounded-[3rem] shadow-3xl border border-white/10 sticky top-32">
+                                    <div className="flex items-center justify-between mb-8 sm:mb-10">
+                                        <h3 className="font-black text-[10px] uppercase tracking-[0.4em] text-primary-500 italic">Filter Registry</h3>
+                                        <button
+                                            onClick={() => setShowFilters(false)}
+                                            className="lg:hidden p-2 text-white/40 hover:text-white"
+                                        >
+                                            <X size={20} />
+                                        </button>
+                                    </div>
 
-                                    <div className="space-y-12">
-                                        <div className="space-y-6">
+                                    <div className="space-y-10 sm:space-y-12">
+                                        <div className="space-y-4 sm:space-y-6">
                                             <h4 className="text-[10px] font-black uppercase tracking-widest text-white/40">Cuisine Selection</h4>
                                             <div className="grid grid-cols-2 gap-3">
                                                 <button
@@ -280,18 +284,18 @@ const FindMessesPage: React.FC = () => {
                                             </div>
                                         </div>
 
-                                        <div className="space-y-6">
+                                        <div className="space-y-4 sm:space-y-6">
                                             <h4 className="text-[10px] font-black uppercase tracking-widest text-white/40">Network Trust</h4>
                                             <button
                                                 onClick={() => setFilters({ ...filters, verified: !filters.verified })}
-                                                className={`w-full flex items-center justify-between p-6 rounded-[1.5rem] border-2 transition-all duration-500 ${filters.verified ? 'border-primary-500 bg-primary-500/10 text-white' : 'border-white/5 bg-white/5 text-white/30 hover:border-white/20'}`}
+                                                className={`w-full flex items-center justify-between p-5 sm:p-6 rounded-[1.5rem] border-2 transition-all duration-500 ${filters.verified ? 'border-primary-500 bg-primary-500/10 text-white' : 'border-white/5 bg-white/5 text-white/30 hover:border-white/20'}`}
                                             >
                                                 <div className="flex items-center gap-4">
-                                                    <CircleCheck size={20} className={filters.verified ? 'text-primary-500' : 'text-white/20'} />
+                                                    <ShieldCheck size={20} className={filters.verified ? 'text-primary-500' : 'text-white/20'} />
                                                     <span className="text-[10px] font-black uppercase tracking-widest">Verified Assets</span>
                                                 </div>
-                                                <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${filters.verified ? 'bg-primary-500 border-primary-500' : 'border-white/20'}`}>
-                                                    {filters.verified && <CircleCheck size={14} className="text-white" />}
+                                                <div className={`w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 flex items-center justify-center transition-all ${filters.verified ? 'bg-primary-500 border-primary-500' : 'border-white/20'}`}>
+                                                    {filters.verified && <CircleCheck size={12} className="text-white" />}
                                                 </div>
                                             </button>
                                         </div>
@@ -328,11 +332,11 @@ const FindMessesPage: React.FC = () => {
 
                     <main className="flex-1 space-y-16">
                         {/* Status Bar */}
-                        <div className="flex flex-col md:flex-row justify-between items-center bg-white/5 backdrop-blur-3xl p-10 rounded-[2.5rem] border border-white/10 shadow-3xl relative overflow-hidden group">
+                        <div className="flex flex-col md:flex-row justify-between items-center bg-white/5 backdrop-blur-3xl p-6 sm:p-10 rounded-[2rem] sm:rounded-[2.5rem] border border-white/10 shadow-3xl relative overflow-hidden group">
                             <div className="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-primary-500 to-indigo-600"></div>
-                            <div className="space-y-2">
+                            <div className="space-y-2 text-center md:text-left">
                                 <p className="text-[9px] text-white/30 font-black uppercase tracking-[0.4em]">Signal Detected</p>
-                                <h2 className="text-3xl font-black italic tracking-tighter text-white">
+                                <h2 className="text-2xl sm:text-3xl font-black italic tracking-tighter text-white">
                                     Found <span className="text-primary-500">{filteredMesses.length}</span> Premium <span className="text-white/40">Messes</span>
                                 </h2>
                             </div>
@@ -373,8 +377,8 @@ const FindMessesPage: React.FC = () => {
                                             </h3>
                                             <div className="h-0.5 flex-1 bg-gradient-to-r from-white/10 to-transparent"></div>
                                         </div>
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                                            {groupedMesses[city].map((mess: any) => (
+                                        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 sm:gap-12">
+                                            {groupedMesses[city].map((mess: Mess) => (
                                                 <motion.div
                                                     key={mess.id}
                                                     initial={{ opacity: 0, y: 30 }}

@@ -37,7 +37,8 @@ const ResetPasswordPage: React.FC = () => {
             await api.post('/auth/reset-password', { token, password });
             toast.success('Password reset successfully! Please login with your new password.');
             navigate('/login');
-        } catch (err: any) {
+        } catch (error) {
+            const err = error as { response?: { data?: { message?: string } } };
             const message = err.response?.data?.message || 'Failed to reset password. The link may be invalid or expired.';
             setError(message);
             toast.error(message);

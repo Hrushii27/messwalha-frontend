@@ -5,8 +5,8 @@ import { Utensils, Github, Twitter, Instagram } from 'lucide-react';
 export const Footer: React.FC = () => {
     return (
         <footer className="bg-dark-900 text-white border-t border-white/5">
-            <div className="container mx-auto px-4 py-20">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16">
+            <div className="container mx-auto px-4 py-12 sm:py-20">
+                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-12 sm:gap-16">
                     <div className="space-y-6">
                         <Link to="/" className="flex items-center space-x-3 group">
                             <div className="w-10 h-10 bg-primary-500 rounded-xl flex items-center justify-center text-white shadow-lg shadow-primary-500/20 group-hover:scale-110 transition-transform">
@@ -27,7 +27,7 @@ export const Footer: React.FC = () => {
                     </div>
 
                     <div>
-                        <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-8">Platform</h4>
+                        <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-6 sm:mb-8">Platform</h4>
                         <ul className="space-y-4 text-sm font-black uppercase tracking-widest text-white/60">
                             <li><Link to="/find-mess" className="hover:text-primary-500 transition-colors">Find Mess</Link></li>
                             <li><Link to="/how-it-works" className="hover:text-primary-500 transition-colors">How it Works</Link></li>
@@ -37,7 +37,7 @@ export const Footer: React.FC = () => {
                     </div>
 
                     <div>
-                        <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-8">Business</h4>
+                        <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-6 sm:mb-8">Business</h4>
                         <ul className="space-y-4 text-sm font-black uppercase tracking-widest text-white/60">
                             <li><Link to="/owner/register" className="hover:text-primary-500 transition-colors">Partner With Us</Link></li>
                             <li><Link to="/careers" className="hover:text-primary-500 transition-colors">Careers</Link></li>
@@ -46,7 +46,7 @@ export const Footer: React.FC = () => {
                     </div>
 
                     <div>
-                        <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-8">Legal</h4>
+                        <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-6 sm:mb-8">Legal</h4>
                         <ul className="space-y-4 text-sm font-black uppercase tracking-widest text-white/60">
                             <li><Link to="/terms" className="hover:text-primary-500 transition-colors">Terms & Conditions</Link></li>
                             <li><Link to="/refund-policy" className="hover:text-primary-500 transition-colors">Refund Policy</Link></li>
@@ -55,9 +55,9 @@ export const Footer: React.FC = () => {
                     </div>
                 </div>
 
-                <div className="mt-20 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4">
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30">
-                        © {new Date().getFullYear()} MessWalha. All rights reserved. Made for students, by students.
+                <div className="mt-12 sm:mt-20 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4">
+                    <p className="text-[9px] font-black uppercase tracking-[0.2em] text-white/30 text-center md:text-left">
+                        © {new Date().getFullYear()} MessWalha. All rights reserved.
                     </p>
                     <div className="flex items-center space-x-6">
                         <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>

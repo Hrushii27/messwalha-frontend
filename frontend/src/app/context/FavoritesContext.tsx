@@ -1,24 +1,19 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import api from '../api/axiosInstance';
+import type { Mess } from '../types/mess';
 import { useAppSelector } from '../../hooks/redux';
+import type { RootState } from '../../store';
 
-interface FavoritesContextType {
-    favorites: string[];
-    toggleFavorite: (messId: string) => Promise<boolean>;
-    isFavorite: (messId: string) => boolean;
-    loading: boolean;
-}
+import { FavoritesContext } from './FavoritesContextType';
 
-const FavoritesContext = createContext<FavoritesContextType | undefined>(undefined);
-
-export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export function FavoritesProvider({ children }: { children: React.ReactNode }) {
     const [favorites, setFavorites] = useState<string[]>([]);
     const [loading, setLoading] = useState(false);
-    const { token } = useAppSelector((state) => (state as any).auth);
+    const { token, user } = useAppSelector((state: RootState) => state.auth);
 
     useEffect(() => {
         const fetchFavorites = async () => {
-            if (!token) {
+            if (!token || !user) { // Check for user as well
                 setFavorites([]);
                 return;
             }
@@ -26,7 +21,7 @@ export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({ chi
             try {
                 const response = await api.get('/favorites');
                 if (response.data.success) {
-                    const ids = response.data.data.map((m: any) => String(m.id));
+                    const ids = response.data.data.map((m: Mess) => String(m.id)); // Use Mess type
                     setFavorites(ids);
                 }
             } catch (error) {
@@ -37,7 +32,7 @@ export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         };
 
         fetchFavorites();
-    }, [token]);
+    }, [token, user]);
 
     const toggleFavorite = async (messId: string) => {
         const id = String(messId);
@@ -90,12 +85,5 @@ export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({ chi
             {children}
         </FavoritesContext.Provider>
     );
-};
+}
 
-export const useFavorites = () => {
-    const context = useContext(FavoritesContext);
-    if (context === undefined) {
-        throw new Error('useFavorites must be used within a FavoritesProvider');
-    }
-    return context;
-};
