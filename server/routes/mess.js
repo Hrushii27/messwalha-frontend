@@ -14,6 +14,20 @@ router.get('/', async (req, res) => {
     }
 });
 
+// Get single mess by ID
+router.get('/:id', async (req, res) => {
+    try {
+        const mess = await Mess.findById(req.params.id);
+        if (!mess) {
+            return res.status(404).json({ message: 'Mess not found' });
+        }
+        res.json({ data: mess });
+    } catch (err) {
+        console.error('Error fetching mess by ID:', err);
+        res.status(500).json({ message: 'Error fetching mess details' });
+    }
+});
+
 // Protected CRUD for mess owners
 router.post('/', async (req, res) => {
     const { ownerId, name, address, monthlyPrice, description, cuisine } = req.body;

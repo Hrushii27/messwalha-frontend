@@ -37,6 +37,28 @@ const Mess = {
             WHERE is_active = TRUE
         `);
         return result.rows;
+    },
+    findById: async (id) => {
+        const result = await db.query(`
+            SELECT 
+                ml.id, 
+                ml.name, 
+                ml.address, 
+                ml.city,
+                ml.cuisine, 
+                ml.monthly_price as "monthlyPrice", 
+                ml.description, 
+                ml.rating, 
+                ml.verified, 
+                ml.image_url as "imageUrl", 
+                ml.is_active as "isActive",
+                mo.name as "ownerName",
+                mo.phone as "mobile"
+            FROM mess_listings ml
+            LEFT JOIN mess_owners mo ON ml.mess_owner_id = mo.id
+            WHERE ml.id = $1
+        `, [id]);
+        return result.rows[0];
     }
 };
 
