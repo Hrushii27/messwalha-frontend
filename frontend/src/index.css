@@ -22,8 +22,8 @@
   --color-border-color: #E2E8F0;
 
   --color-text-primary: #0F172A;
-  --color-text-secondary: #475569;
-  --color-text-muted: #64748B;
+  --color-text-secondary: #334155;
+  --color-text-muted: #475569;
   --color-text-inverse: #FFFFFF;
 
   --color-success-500: #22C55E;
@@ -93,6 +93,12 @@
 }
 
 @layer base {
+
+  html,
+  body {
+    @apply overflow-x-hidden;
+  }
+
   body {
     @apply font-sans antialiased transition-colors duration-300;
     background: var(--color-bg-main);
@@ -160,7 +166,7 @@
     background: white;
     border-radius: var(--radius-lg);
     padding: var(--spacing-6);
-    box-shadow: var(--shadow-md);
+    box-shadow: var(--shadow-sm);
     border: 1px solid var(--color-border-color);
     @apply transition-all duration-300;
   }

@@ -151,14 +151,14 @@ const AddMessPage: React.FC = () => {
                     <motion.div
                         initial={{ scale: 0.9, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
-                        className="text-center space-y-8 p-12 bg-white/5 backdrop-blur-3xl rounded-[3rem] border border-white/10 shadow-3xl max-w-lg w-full"
+                        className="text-center space-y-8 p-12 bg-bg-section dark:bg-white/5 backdrop-blur-3xl rounded-[3rem] border border-border-color dark:border-white/10 shadow-3xl max-w-lg w-full"
                     >
                         <div className="w-24 h-24 bg-primary-500/20 rounded-full flex items-center justify-center mx-auto">
                             <CheckCircle2 size={48} className="text-primary-500" />
                         </div>
                         <div className="space-y-4">
-                            <h2 className="text-4xl font-black italic tracking-tighter text-white uppercase">Mess Registered!</h2>
-                            <p className="text-white/40 font-bold uppercase tracking-widest text-xs">Your mess has been added to the network successfully. Redirecting to exploration page...</p>
+                            <h2 className="text-4xl font-black italic tracking-tighter text-text-primary dark:text-white uppercase">Mess Registered!</h2>
+                            <p className="text-text-muted dark:text-white/40 font-bold uppercase tracking-widest text-xs">Your mess has been added to the network successfully. Redirecting to exploration page...</p>
                         </div>
                     </motion.div>
                 </div>
@@ -210,7 +210,7 @@ const AddMessPage: React.FC = () => {
                     )}
 
                     {/* Section 1: Basic Details */}
-                    <Card className="p-12 space-y-10 bg-white/5 backdrop-blur-3xl border-white/10 rounded-[3rem]">
+                    <Card className="p-12 space-y-10 bg-bg-section dark:bg-white/5 backdrop-blur-3xl border-border-color dark:border-white/10 rounded-[3rem]">
                         <div className="flex items-center gap-4 text-primary-500">
                             <Utensils size={24} />
                             <h3 className="text-xl font-black uppercase tracking-widest italic">Basic Details</h3>
@@ -218,7 +218,7 @@ const AddMessPage: React.FC = () => {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div className="space-y-3">
-                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 ml-2">Mess Name</label>
+                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted dark:text-white/40 ml-2">Mess Name</label>
                                 <div className="relative group">
                                     <Utensils size={16} className="absolute left-6 top-1/2 -translate-y-1/2 text-primary-500" />
                                     <input
@@ -226,14 +226,14 @@ const AddMessPage: React.FC = () => {
                                         name="messName"
                                         required
                                         placeholder="E.G. SAI DARBAR MESS"
-                                        className="w-full bg-white/[0.03] border border-white/10 text-white pl-14 pr-6 py-5 rounded-2xl focus:ring-2 focus:ring-primary-500/50 outline-none transition-all font-bold tracking-widest text-xs"
+                                        className="w-full bg-bg-main dark:bg-white/[0.03] border border-border-color dark:border-white/10 text-text-primary dark:text-white pl-14 pr-6 py-5 rounded-2xl focus:ring-2 focus:ring-primary-500/50 outline-none transition-all font-bold tracking-widest text-xs"
                                         value={formData.messName}
                                         onChange={handleInputChange}
                                     />
                                 </div>
                             </div>
                             <div className="space-y-3">
-                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 ml-2">Owner Name</label>
+                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted dark:text-white/40 ml-2">Owner Name</label>
                                 <div className="relative group">
                                     <User size={16} className="absolute left-6 top-1/2 -translate-y-1/2 text-primary-500" />
                                     <input
@@ -241,14 +241,14 @@ const AddMessPage: React.FC = () => {
                                         name="ownerName"
                                         required
                                         placeholder="FULL NAME"
-                                        className="w-full bg-white/[0.03] border border-white/10 text-white pl-14 pr-6 py-5 rounded-2xl focus:ring-2 focus:ring-primary-500/50 outline-none transition-all font-bold tracking-widest text-xs"
+                                        className="w-full bg-bg-main dark:bg-white/[0.03] border border-border-color dark:border-white/10 text-text-primary dark:text-white pl-14 pr-6 py-5 rounded-2xl focus:ring-2 focus:ring-primary-500/50 outline-none transition-all font-bold tracking-widest text-xs"
                                         value={formData.ownerName}
                                         onChange={handleInputChange}
                                     />
                                 </div>
                             </div>
                             <div className="space-y-3">
-                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 ml-2">Mobile Number</label>
+                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted dark:text-white/40 ml-2">Mobile Number</label>
                                 <div className="relative group">
                                     <Phone size={16} className="absolute left-6 top-1/2 -translate-y-1/2 text-primary-500" />
                                     <input
@@ -256,14 +256,14 @@ const AddMessPage: React.FC = () => {
                                         name="mobile"
                                         required
                                         placeholder="10 DIGIT NUMBER"
-                                        className="w-full bg-white/[0.03] border border-white/10 text-white pl-14 pr-6 py-5 rounded-2xl focus:ring-2 focus:ring-primary-500/50 outline-none transition-all font-bold tracking-widest text-xs"
+                                        className="w-full bg-bg-main dark:bg-white/[0.03] border border-border-color dark:border-white/10 text-text-primary dark:text-white pl-14 pr-6 py-5 rounded-2xl focus:ring-2 focus:ring-primary-500/50 outline-none transition-all font-bold tracking-widest text-xs"
                                         value={formData.mobile}
                                         onChange={handleInputChange}
                                     />
                                 </div>
                             </div>
                             <div className="space-y-3">
-                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 ml-2">Mess Address</label>
+                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted dark:text-white/40 ml-2">Mess Address</label>
                                 <div className="relative group">
                                     <MapPin size={16} className="absolute left-6 top-1/2 -translate-y-1/2 text-primary-500" />
                                     <input
@@ -271,7 +271,7 @@ const AddMessPage: React.FC = () => {
                                         name="address"
                                         required
                                         placeholder="AREA / NEAR COLLEGE"
-                                        className="w-full bg-white/[0.03] border border-white/10 text-white pl-14 pr-6 py-5 rounded-2xl focus:ring-2 focus:ring-primary-500/50 outline-none transition-all font-bold tracking-widest text-xs"
+                                        className="w-full bg-bg-main dark:bg-white/[0.03] border border-border-color dark:border-white/10 text-text-primary dark:text-white pl-14 pr-6 py-5 rounded-2xl focus:ring-2 focus:ring-primary-500/50 outline-none transition-all font-bold tracking-widest text-xs"
                                         value={formData.address}
                                         onChange={handleInputChange}
                                     />
@@ -281,7 +281,7 @@ const AddMessPage: React.FC = () => {
                     </Card>
 
                     {/* Section 2: Pricing */}
-                    <Card className="p-12 space-y-10 bg-white/5 backdrop-blur-3xl border-white/10 rounded-[3rem]">
+                    <Card className="p-12 space-y-10 bg-bg-section dark:bg-white/5 backdrop-blur-3xl border-border-color dark:border-white/10 rounded-[3rem]">
                         <div className="flex items-center gap-4 text-primary-500">
                             <IndianRupee size={24} />
                             <h3 className="text-xl font-black uppercase tracking-widest italic">Pricing Details</h3>
@@ -289,7 +289,7 @@ const AddMessPage: React.FC = () => {
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                             <div className="space-y-3">
-                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 ml-2">Cost Per Month</label>
+                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted dark:text-white/40 ml-2">Cost Per Month</label>
                                 <div className="relative group">
                                     <IndianRupee size={16} className="absolute left-6 top-1/2 -translate-y-1/2 text-primary-500" />
                                     <input
@@ -297,14 +297,14 @@ const AddMessPage: React.FC = () => {
                                         name="pricePerMonth"
                                         required
                                         placeholder="₹ 3000"
-                                        className="w-full bg-white/[0.03] border border-white/10 text-white pl-14 pr-6 py-5 rounded-2xl focus:ring-2 focus:ring-primary-500/50 outline-none transition-all font-bold tracking-widest text-xs"
+                                        className="w-full bg-bg-main dark:bg-white/[0.03] border border-border-color dark:border-white/10 text-text-primary dark:text-white pl-14 pr-6 py-5 rounded-2xl focus:ring-2 focus:ring-primary-500/50 outline-none transition-all font-bold tracking-widest text-xs"
                                         value={formData.pricePerMonth}
                                         onChange={handleInputChange}
                                     />
                                 </div>
                             </div>
                             <div className="space-y-3">
-                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 ml-2">Cost Per Week</label>
+                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted dark:text-white/40 ml-2">Cost Per Week</label>
                                 <div className="relative group">
                                     <IndianRupee size={16} className="absolute left-6 top-1/2 -translate-y-1/2 text-primary-500" />
                                     <input
@@ -312,14 +312,14 @@ const AddMessPage: React.FC = () => {
                                         name="pricePerWeek"
                                         required
                                         placeholder="₹ 800"
-                                        className="w-full bg-white/[0.03] border border-white/10 text-white pl-14 pr-6 py-5 rounded-2xl focus:ring-2 focus:ring-primary-500/50 outline-none transition-all font-bold tracking-widest text-xs"
+                                        className="w-full bg-bg-main dark:bg-white/[0.03] border border-border-color dark:border-white/10 text-text-primary dark:text-white pl-14 pr-6 py-5 rounded-2xl focus:ring-2 focus:ring-primary-500/50 outline-none transition-all font-bold tracking-widest text-xs"
                                         value={formData.pricePerWeek}
                                         onChange={handleInputChange}
                                     />
                                 </div>
                             </div>
                             <div className="space-y-3">
-                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 ml-2">Cost Per Day</label>
+                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted dark:text-white/40 ml-2">Cost Per Day</label>
                                 <div className="relative group">
                                     <IndianRupee size={16} className="absolute left-6 top-1/2 -translate-y-1/2 text-primary-500" />
                                     <input
@@ -327,7 +327,7 @@ const AddMessPage: React.FC = () => {
                                         name="pricePerDay"
                                         required
                                         placeholder="₹ 120"
-                                        className="w-full bg-white/[0.03] border border-white/10 text-white pl-14 pr-6 py-5 rounded-2xl focus:ring-2 focus:ring-primary-500/50 outline-none transition-all font-bold tracking-widest text-xs"
+                                        className="w-full bg-bg-main dark:bg-white/[0.03] border border-border-color dark:border-white/10 text-text-primary dark:text-white pl-14 pr-6 py-5 rounded-2xl focus:ring-2 focus:ring-primary-500/50 outline-none transition-all font-bold tracking-widest text-xs"
                                         value={formData.pricePerDay}
                                         onChange={handleInputChange}
                                     />
@@ -337,7 +337,7 @@ const AddMessPage: React.FC = () => {
                     </Card>
 
                     {/* Section 3: Menu & Photos */}
-                    <Card className="p-12 space-y-12 bg-white/5 backdrop-blur-3xl border-white/10 rounded-[4rem]">
+                    <Card className="p-12 space-y-12 bg-bg-section dark:bg-white/5 backdrop-blur-3xl border-border-color dark:border-white/10 rounded-[4rem]">
                         <div className="flex items-center gap-4 text-primary-500">
                             <FileText size={24} />
                             <h3 className="text-xl font-black uppercase tracking-widest italic">Menu & Media</h3>
@@ -347,14 +347,14 @@ const AddMessPage: React.FC = () => {
                             {/* Text Menu */}
                             <div className="space-y-4">
                                 <div className="flex items-center justify-between">
-                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 ml-2">Menu Description (Optional)</label>
+                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted dark:text-white/40 ml-2">Menu Description (Optional)</label>
                                     <span className="text-[8px] font-black uppercase tracking-widest text-primary-500/60 bg-primary-500/5 px-3 py-1 rounded-full border border-primary-500/10">Text Option</span>
                                 </div>
                                 <textarea
                                     name="menuText"
                                     placeholder="MONDAY: POHA, DAL RICE..."
                                     rows={4}
-                                    className="w-full bg-white/[0.03] border border-white/10 text-white px-8 py-6 rounded-3xl focus:ring-2 focus:ring-primary-500/50 outline-none transition-all font-bold tracking-widest text-xs"
+                                    className="w-full bg-bg-main dark:bg-white/[0.03] border border-border-color dark:border-white/10 text-text-primary dark:text-white px-8 py-6 rounded-3xl focus:ring-2 focus:ring-primary-500/50 outline-none transition-all font-bold tracking-widest text-xs"
                                     value={formData.menuText}
                                     onChange={handleInputChange}
                                 />
@@ -362,18 +362,18 @@ const AddMessPage: React.FC = () => {
 
                             {/* Main Image */}
                             <div className="space-y-6">
-                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 ml-2">Mess Display Photo (Plate Image)</label>
+                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted dark:text-white/40 ml-2">Mess Display Photo (Plate Image)</label>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                     <div
                                         onClick={() => document.getElementById('messImageInput')?.click()}
-                                        className="h-64 border-2 border-dashed border-white/10 rounded-[2rem] flex flex-col items-center justify-center gap-4 hover:border-primary-500/50 hover:bg-white/5 cursor-pointer transition-all group overflow-hidden relative"
+                                        className="h-64 border-2 border-dashed border-border-color dark:border-white/10 rounded-[2rem] flex flex-col items-center justify-center gap-4 hover:border-primary-500/50 hover:bg-bg-main dark:hover:bg-white/5 cursor-pointer transition-all group overflow-hidden relative"
                                     >
                                         {previews.mess ? (
                                             <img src={previews.mess} className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700" alt="Preview" />
                                         ) : (
                                             <>
-                                                <Upload size={32} className="text-white/10 group-hover:text-primary-500 transition-colors" />
-                                                <span className="text-[9px] font-black uppercase tracking-widest text-white/20">Click to Upload</span>
+                                                <Upload size={32} className="text-text-muted dark:text-white/10 group-hover:text-primary-500 transition-colors" />
+                                                <span className="text-[9px] font-black uppercase tracking-widest text-text-muted dark:text-white/20">Click to Upload</span>
                                             </>
                                         )}
                                         <input
@@ -389,7 +389,7 @@ const AddMessPage: React.FC = () => {
                                             <ImageIcon size={16} />
                                             <h4 className="text-[10px] font-black uppercase tracking-widest">Main Display Signal</h4>
                                         </div>
-                                        <p className="text-[10px] font-medium leading-relaxed text-white/30 italic">
+                                        <p className="text-[10px] font-medium leading-relaxed text-text-muted dark:text-white/30 italic">
                                             This will be the first image students see when browsing. We recommend a clear photo of your special meal plate.
                                         </p>
                                     </div>
@@ -399,12 +399,12 @@ const AddMessPage: React.FC = () => {
                             {/* Menu Images */}
                             <div className="space-y-6">
                                 <div className="flex items-center justify-between">
-                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 ml-2">Gallery / Menu Board Photos (Max 5)</label>
+                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted dark:text-white/40 ml-2">Gallery / Menu Board Photos (Max 5)</label>
                                     <span className="text-[8px] font-black uppercase tracking-widest text-primary-500/60 bg-primary-500/5 px-3 py-1 rounded-full border border-primary-500/10">Image Option</span>
                                 </div>
                                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-6">
                                     {previews.menus.map((url, i) => (
-                                        <div key={i} className="aspect-square rounded-2xl overflow-hidden relative group border border-white/10">
+                                        <div key={i} className="aspect-square rounded-2xl overflow-hidden relative group border border-border-color dark:border-white/10">
                                             <img src={url} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt={`Menu ${i}`} />
                                             <button
                                                 type="button"
@@ -418,10 +418,10 @@ const AddMessPage: React.FC = () => {
                                     {menuImages.length < 5 && (
                                         <div
                                             onClick={() => document.getElementById('menuImagesInput')?.click()}
-                                            className="aspect-square border-2 border-dashed border-white/10 rounded-2xl flex flex-col items-center justify-center gap-2 hover:border-primary-500/50 hover:bg-white/5 cursor-pointer transition-all group"
+                                            className="aspect-square border-2 border-dashed border-border-color dark:border-white/10 rounded-2xl flex flex-col items-center justify-center gap-2 hover:border-primary-500/50 hover:bg-bg-main dark:hover:bg-white/5 cursor-pointer transition-all group"
                                         >
-                                            <Upload size={20} className="text-white/10 group-hover:text-primary-500" />
-                                            <span className="text-[8px] font-black uppercase tracking-widest text-white/20">Add</span>
+                                            <Upload size={20} className="text-text-muted dark:text-white/10 group-hover:text-primary-500" />
+                                            <span className="text-[8px] font-black uppercase tracking-widest text-text-muted dark:text-white/20">Add</span>
                                             <input
                                                 id="menuImagesInput"
                                                 type="file"

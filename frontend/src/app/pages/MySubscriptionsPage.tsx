@@ -27,7 +27,9 @@ const MySubscriptionsPage: React.FC = () => {
     }, []);
 
     const filteredSubscriptions = subscriptions.filter((sub: Subscription) =>
-        sub.plan_type?.toLowerCase().includes(searchTerm.toLowerCase())
+        sub.plan_type?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        sub.mess_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        sub.mess?.name?.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     return (

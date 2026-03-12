@@ -6,7 +6,7 @@ export const Footer: React.FC = () => {
     return (
         <footer className="bg-dark-900 text-white border-t border-white/5">
             <div className="container mx-auto px-4 py-12 sm:py-20">
-                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-12 sm:gap-16">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10 sm:gap-16">
                     <div className="space-y-6">
                         <Link to="/" className="flex items-center space-x-3 group">
                             <div className="w-10 h-10 bg-primary-500 rounded-xl flex items-center justify-center text-white shadow-lg shadow-primary-500/20 group-hover:scale-110 transition-transform">
@@ -59,9 +59,11 @@ export const Footer: React.FC = () => {
                     <p className="text-[9px] font-black uppercase tracking-[0.2em] text-white/30 text-center md:text-left">
                         © {new Date().getFullYear()} MessWalha. All rights reserved.
                     </p>
-                    <div className="flex items-center space-x-6">
-                        <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">System Status: Operational</span>
+                    <div className="flex flex-wrap items-center justify-center md:justify-end gap-4 sm:gap-6">
+                        <div className="flex items-center space-x-2">
+                            <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">System Status: Operational</span>
+                        </div>
                     </div>
                 </div>
             </div>

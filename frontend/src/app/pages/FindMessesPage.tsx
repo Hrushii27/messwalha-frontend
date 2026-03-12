@@ -67,7 +67,7 @@ const FindMessesPage: React.FC = () => {
                 params.maxPrice = filters.maxPrice;
             }
 
-            const response = await api.get('/mess', { params });
+            const response = await api.get('/messes', { params });
             const data = response.data.data || [];
 
             setMesses(data);
@@ -152,7 +152,7 @@ const FindMessesPage: React.FC = () => {
                             >
                                 Find Your <span className="text-primary-500">Perfect Mess</span>
                             </motion.h1>
-                            <p className="text-white/40 font-black uppercase tracking-[0.3em] sm:tracking-[0.4em] text-[9px] sm:text-xs">
+                            <p className="text-white/80 font-black uppercase tracking-[0.3em] sm:tracking-[0.4em] text-[9px] sm:text-xs">
                                 Discover verified mess services near your college terminal
                             </p>
                         </div>
@@ -172,7 +172,7 @@ const FindMessesPage: React.FC = () => {
                                     className="flex items-center gap-2 sm:gap-3 px-4 sm:px-6 py-2 sm:py-3 bg-white/5 rounded-full border border-white/10 backdrop-blur-md"
                                 >
                                     <feature.icon size={12} className="text-primary-500 sm:w-3.5 sm:h-3.5" />
-                                    <span className="text-[9px] sm:text-[10px] font-black text-white/60 uppercase tracking-widest">{feature.text}</span>
+                                    <span className="text-[9px] sm:text-[10px] font-black text-white/90 uppercase tracking-widest">{feature.text}</span>
                                 </motion.div>
                             ))}
                         </div>
@@ -233,7 +233,7 @@ const FindMessesPage: React.FC = () => {
                                 exit={{ x: -40, opacity: 0 }}
                                 className="w-full lg:w-96 space-y-6 sm:space-y-10 shrink-0"
                             >
-                                <div className="p-6 sm:p-12 bg-white/5 backdrop-blur-3xl rounded-[2rem] sm:rounded-[3rem] shadow-3xl border border-white/10 sticky top-32">
+                                <div className="p-6 sm:p-12 bg-dark-900/95 backdrop-blur-3xl rounded-[2rem] sm:rounded-[3rem] shadow-3xl border border-white/10 sticky top-32">
                                     <div className="flex items-center justify-between mb-8 sm:mb-10">
                                         <h3 className="font-black text-[10px] uppercase tracking-[0.4em] text-primary-500 italic">Filter Registry</h3>
                                         <button
@@ -332,12 +332,12 @@ const FindMessesPage: React.FC = () => {
 
                     <main className="flex-1 space-y-16">
                         {/* Status Bar */}
-                        <div className="flex flex-col md:flex-row justify-between items-center bg-white/5 backdrop-blur-3xl p-6 sm:p-10 rounded-[2rem] sm:rounded-[2.5rem] border border-white/10 shadow-3xl relative overflow-hidden group">
+                        <div className="flex flex-col md:flex-row justify-between items-center bg-dark-900/90 backdrop-blur-3xl p-6 sm:p-10 rounded-[2rem] sm:rounded-[2.5rem] border border-white/10 shadow-3xl relative overflow-hidden group">
                             <div className="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-primary-500 to-indigo-600"></div>
                             <div className="space-y-2 text-center md:text-left">
-                                <p className="text-[9px] text-white/30 font-black uppercase tracking-[0.4em]">Signal Detected</p>
+                                <p className="text-[9px] text-white/60 font-black uppercase tracking-[0.4em]">Signal Detected</p>
                                 <h2 className="text-2xl sm:text-3xl font-black italic tracking-tighter text-white">
-                                    Found <span className="text-primary-500">{filteredMesses.length}</span> Premium <span className="text-white/40">Messes</span>
+                                    Found <span className="text-primary-500">{filteredMesses.length}</span> Premium <span className="text-white/60">Messes</span>
                                 </h2>
                             </div>
                             <div className="flex items-center gap-8 mt-6 md:mt-0">
@@ -371,9 +371,9 @@ const FindMessesPage: React.FC = () => {
                                 {sortedCities.map((city) => (
                                     <div key={city} className="space-y-10">
                                         <div className="flex items-center gap-6">
-                                            <h3 className="text-2xl font-black italic text-white flex items-center gap-4 uppercase tracking-tighter">
+                                            <h3 className="text-2xl font-black italic text-dark-900 dark:text-white flex items-center gap-4 uppercase tracking-tighter">
                                                 <MapPin className="text-primary-500" size={24} />
-                                                {city} <span className="text-white/20">Mess</span>
+                                                {city} <span className="text-dark-900/30 dark:text-white/20">Mess</span>
                                             </h3>
                                             <div className="h-0.5 flex-1 bg-gradient-to-r from-white/10 to-transparent"></div>
                                         </div>

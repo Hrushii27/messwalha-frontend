@@ -144,12 +144,12 @@ export const MessCard: React.FC<MessCardProps> = ({ mess }) => {
                     <h3 className="text-2xl sm:text-3xl font-black text-text-primary dark:text-text-inverse line-clamp-1 group-hover:text-primary-500 transition-colors tracking-tighter italic mb-2 uppercase">
                         {mess.name}
                     </h3>
-                    <div className="flex items-center gap-2 sm:gap-3 text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-text-muted">
+                    <div className="flex items-center gap-2 sm:gap-3 text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-text-secondary">
                         <MapPin size={12} className="text-primary-500 sm:w-3.5 sm:h-3.5" />
                         <span className="line-clamp-1">{mess.address}</span>
                     </div>
                 </div>
-                <p className="text-text-muted text-sm font-medium leading-relaxed italic border-l-4 border-primary-500/20 pl-4 py-2 line-clamp-2">
+                <p className="text-text-primary text-sm font-medium leading-relaxed italic border-l-4 border-primary-500/20 pl-4 py-2 line-clamp-2">
                     "{mess.description || 'Excellent quality food with authentic taste and hygienic preparation.'}"
                 </p>
 
@@ -162,7 +162,7 @@ export const MessCard: React.FC<MessCardProps> = ({ mess }) => {
                 </div>
 
                 <div className="pt-4 sm:pt-6 mt-auto grid grid-cols-2 gap-3 sm:gap-4">
-                    <Link to={`/mess/${mess.id}`}>
+                    <Link to={`/mess/${mess.id}/menu`}>
                         <Button
                             variant="outline"
                             className="w-full rounded-xl sm:rounded-2xl py-5 sm:py-7 border-2 border-border-color hover:border-primary-500 font-black uppercase tracking-widest text-[8px] sm:text-[9px]"
@@ -170,7 +170,7 @@ export const MessCard: React.FC<MessCardProps> = ({ mess }) => {
                             View Menu
                         </Button>
                     </Link>
-                    <Link to={`/mess/${mess.id}`}>
+                    <Link to={`/mess/${mess.id}/about`}>
                         <Button
                             className="w-full rounded-xl sm:rounded-2xl py-5 sm:py-7 shadow-2xl shadow-primary-500/20 font-black uppercase tracking-widest text-[8px] sm:text-[9px]"
                         >

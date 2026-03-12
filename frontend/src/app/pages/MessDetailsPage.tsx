@@ -42,11 +42,13 @@ interface RazorpayResponse {
 }
 
 const MessDetailsPage: React.FC = () => {
-    const { id } = useParams<{ id: string }>();
+    const { id, section } = useParams<{ id: string, section?: string }>();
     const navigate = useNavigate();
     const [mess, setMess] = useState<Mess | null>(null);
+    const [notifications, setNotifications] = useState<any[]>([]);
+    const [reviews, setReviews] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState<'menu' | 'reviews' | 'about'>('menu');
+    const [activeTab, setActiveTab] = useState<'menu' | 'reviews' | 'about'>((section as any) || 'menu');
     const [selectedDay, setSelectedDay] = useState(new Date().toLocaleDateString('en-US', { weekday: 'long' }));
     const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
     const [subscribing, setSubscribing] = useState(false);
@@ -58,8 +60,14 @@ const MessDetailsPage: React.FC = () => {
         const fetchDetails = async () => {
             if (!id) return;
             try {
-                const response = await api.get(`/messes/${id}`);
-                setMess(response.data.data);
+                const [messRes, notifRes, reviewsRes] = await Promise.all([
+                    api.get(`/messes/${id}`),
+                    api.get(`/notifications/${id}`),
+                    api.get(`/reviews/${id}`)
+                ]);
+                setMess(messRes.data.data);
+                setNotifications(notifRes.data.data || []);
+                setReviews(reviewsRes.data.data || []);
             } catch (error) {
                 console.error('Error fetching details:', error);
             } finally {
@@ -69,6 +77,12 @@ const MessDetailsPage: React.FC = () => {
 
         fetchDetails();
     }, [id]);
+
+    useEffect(() => {
+        if (section && (section === 'menu' || section === 'reviews' || section === 'about')) {
+            setActiveTab(section as any);
+        }
+    }, [section]);
 
     const handleSubscribe = async () => {
         if (!selectedPlan) {
@@ -151,15 +165,16 @@ const MessDetailsPage: React.FC = () => {
         e.preventDefault();
         try {
             const { data } = await api.post('/reviews', {
-                messId: id,
+                mess_id: id,
                 rating: reviewForm.rating,
                 comment: reviewForm.comment
             });
             if (data.success) {
                 alert('Review submitted successfully!');
                 setReviewForm({ rating: 5, comment: '', show: false });
-                const response = await api.get(`/messes/${id}`);
-                setMess(response.data.data);
+                // Fetch fresh reviews
+                const reviewsRes = await api.get(`/reviews/${id}`);
+                setReviews(reviewsRes.data.data || []);
             }
         } catch (error) {
             console.error('Review submission failed', error);
@@ -193,6 +208,33 @@ const MessDetailsPage: React.FC = () => {
     return (
         <Layout>
             <div className="container mx-auto px-4 py-8 max-w-7xl">
+                {/* Mess Owner Notices */}
+                {notifications.length > 0 && (
+                    <div className="mb-8 space-y-4">
+                        {notifications.map((notif) => (
+                            <motion.div
+                                initial={{ opacity: 0, y: -20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                key={notif.id}
+                                className="bg-orange-500/10 border-2 border-orange-500/50 rounded-3xl p-6 flex items-start gap-4 shadow-xl shadow-orange-500/10"
+                            >
+                                <div className="p-3 bg-orange-500 rounded-2xl text-white">
+                                    <ShieldCheck size={24} />
+                                </div>
+                                <div className="flex-1">
+                                    <h4 className="font-black text-orange-500 uppercase tracking-widest text-xs mb-1 italic">⚠ Notice from Mess Owner</h4>
+                                    <p className="text-orange-900 dark:text-orange-200 font-bold leading-relaxed">
+                                        {notif.message}
+                                    </p>
+                                    <p className="text-orange-500/50 text-[10px] font-black uppercase tracking-widest mt-2 italic">
+                                        Transmitted {new Date(notif.created_at).toLocaleString()}
+                                    </p>
+                                </div>
+                            </motion.div>
+                        ))}
+                    </div>
+                )}
+
                 {/* Hero Section */}
                 <div className="relative h-[300px] md:h-[450px] rounded-[2.5rem] overflow-hidden mb-12 shadow-2xl group">
                     <img
@@ -253,9 +295,9 @@ const MessDetailsPage: React.FC = () => {
                                         ))}
                                     </div>
                                     <span className="font-black text-white">{(mess.rating || 4.5).toFixed(1)}</span>
-                                    <span className="text-white/60 text-xs font-bold uppercase tracking-widest">({mess.reviews?.length || 0} Signal Logs)</span>
+                                    <span className="text-white/90 text-xs font-bold uppercase tracking-widest">({mess.reviews?.length || 0} Signal Logs)</span>
                                 </div>
-                                <div className="flex items-center gap-2 text-white/80 font-bold uppercase tracking-widest text-xs">
+                                <div className="flex items-center gap-2 text-white font-bold uppercase tracking-widest text-xs">
                                     <Navigation size={18} className="text-primary-500" />
                                     <span>{mess.location?.address || mess.address}</span>
                                 </div>
@@ -278,7 +320,7 @@ const MessDetailsPage: React.FC = () => {
                                     onClick={() => setActiveTab(tab.id as 'menu' | 'reviews' | 'about')}
                                     className={`flex items-center gap-2 pb-6 text-[10px] font-black uppercase tracking-[0.3em] transition-all relative ${activeTab === tab.id
                                         ? 'text-primary-500'
-                                        : 'text-white/30 hover:text-white'
+                                        : 'text-text-muted dark:text-white/60 hover:text-text-primary dark:hover:text-white'
                                         }`}
                                 >
                                     <tab.icon size={16} />
@@ -293,9 +335,9 @@ const MessDetailsPage: React.FC = () => {
                         {activeTab === 'menu' && (
                             <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
                                 {mess.description && (
-                                    <Card className="p-10 bg-white/5 backdrop-blur-3xl border-white/10 rounded-[3rem] space-y-6">
+                                    <Card className="p-10 bg-bg-section dark:bg-white/5 backdrop-blur-3xl border-border-color dark:border-white/10 rounded-[3rem] space-y-6">
                                         <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary-500 italic">Menu Description</h3>
-                                        <p className="text-white/60 font-medium leading-relaxed italic border-l-4 border-primary-500/20 pl-6 py-2">
+                                        <p className="text-text-secondary dark:text-white/60 font-medium leading-relaxed italic border-l-4 border-primary-500/20 pl-6 py-2">
                                             "{mess.description}"
                                         </p>
                                     </Card>
@@ -334,21 +376,21 @@ const MessDetailsPage: React.FC = () => {
                                         ))}
                                     </div>
 
-                                    <Card className="p-10 bg-white/5 backdrop-blur-3xl border-white/10 rounded-[3rem]">
+                                    <Card className="p-10 bg-bg-section dark:bg-white/5 backdrop-blur-3xl border-border-color dark:border-white/10 rounded-[3rem]">
                                         <div className="flex items-center justify-between mb-10">
-                                            <h3 className="text-lg font-black uppercase tracking-widest italic text-white">{selectedDay}'s Protocol</h3>
+                                            <h3 className="text-lg font-black uppercase tracking-widest italic text-text-primary dark:text-white">{selectedDay}'s Protocol</h3>
                                             <span className="bg-success-500/10 text-success-500 px-4 py-2 rounded-full text-[9px] font-black uppercase tracking-widest border border-success-500/20 italic">Fresh Logistics Verified</span>
                                         </div>
 
                                         {currentDayMenu ? (
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                                 {currentDayMenu.items.map((item, idx) => (
-                                                    <div key={idx} className="bg-white/5 p-6 rounded-2xl flex items-center gap-6 border border-white/5 hover:border-primary-500/30 transition-all group">
+                                                    <div key={idx} className="bg-bg-main dark:bg-white/5 p-6 rounded-2xl flex items-center gap-6 border border-border-color dark:border-white/5 hover:border-primary-500/30 transition-all group">
                                                         <div className="w-14 h-14 rounded-xl bg-primary-500/10 flex items-center justify-center text-primary-500 group-hover:scale-110 transition-transform">
                                                             <Utensils size={20} />
                                                         </div>
                                                         <div className="flex-1">
-                                                            <h4 className="font-black text-white text-[11px] uppercase tracking-widest mb-1">{item.name}</h4>
+                                                            <h4 className="font-black text-text-primary dark:text-white text-[11px] uppercase tracking-widest mb-1">{item.name}</h4>
                                                             <span className={`text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full border ${item.type === 'Non-Veg' ? 'border-red-500/20 bg-red-500/10 text-red-500' : 'border-success-500/20 bg-success-500/10 text-success-500'}`}>
                                                                 {item.type}
                                                             </span>
@@ -369,10 +411,10 @@ const MessDetailsPage: React.FC = () => {
                         {activeTab === 'reviews' && (
                             <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
                                 <div className="flex justify-between items-center px-4">
-                                    <h3 className="text-xl font-black uppercase tracking-widest italic text-white">Public Feed</h3>
+                                    <h3 className="text-xl font-black uppercase tracking-widest italic text-text-primary dark:text-white">Public Feed</h3>
                                     <Button
                                         variant="outline"
-                                        className="rounded-full font-black uppercase tracking-widest text-[9px] py-4 px-8 bg-white/5 border-white/10 hover:bg-white/10 text-white/60 hover:text-white"
+                                        className="rounded-full font-black uppercase tracking-widest text-[9px] py-4 px-8 bg-bg-section dark:bg-white/5 border-border-color dark:border-white/10 hover:bg-bg-main dark:hover:bg-white/10 text-text-primary dark:text-white/60 hover:text-primary-500 transition-all font-black"
                                         onClick={() => setReviewForm(prev => ({ ...prev, show: !prev.show }))}
                                     >
                                         {reviewForm.show ? 'Cancel Log' : 'Post Signal Log'}
@@ -407,24 +449,24 @@ const MessDetailsPage: React.FC = () => {
                                                     className="w-full bg-white/[0.03] border border-white/10 text-white px-8 py-6 rounded-3xl focus:ring-2 focus:ring-primary-500/50 outline-none transition-all font-bold tracking-widest text-xs min-h-[150px]"
                                                 />
                                             </div>
-                                            <Button type="submit" className="w-full h-20 rounded-[1.5rem] font-black uppercase tracking-[0.3em] text-xs shadow-3xl shadow-primary-500/40">Transmit Log</Button>
+                                            <Button type="submit" className="w-full h-20 rounded-[1.5rem] font-black uppercase tracking-[0.3em] text-xs shadow-3xl shadow-primary-500/40 bg-primary-500 text-white">Transmit Log</Button>
                                         </form>
                                     </Card>
                                 )}
 
                                 <div className="grid grid-cols-1 gap-8">
-                                    {mess.reviews && mess.reviews.length > 0 ? (
-                                        mess.reviews.map((review) => (
+                                    {reviews && reviews.length > 0 ? (
+                                        reviews.map((review) => (
                                             <Card key={review.id} className="p-8 bg-white/5 backdrop-blur-3xl border-white/10 rounded-[2.5rem] group hover:border-primary-500/30 transition-all">
                                                 <div className="flex justify-between items-start mb-6">
                                                     <div className="flex items-center gap-4">
                                                         <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary-500 to-indigo-600 flex items-center justify-center text-white font-black text-xs shadow-2xl">
-                                                            {review.user?.name?.[0] || review.user_name?.[0] || 'U'}
+                                                            {review.user_name?.[0] || 'U'}
                                                         </div>
                                                         <div>
-                                                            <h4 className="font-black text-white text-[11px] uppercase tracking-widest">{review.user?.name || review.user_name}</h4>
-                                                            <p className="text-[9px] text-white/30 font-black uppercase tracking-[0.2em]">
-                                                                {review.createdAt ? new Date(review.createdAt).toLocaleDateString() : review.created_at ? new Date(review.created_at).toLocaleDateString() : 'Unknown Date'}
+                                                            <h4 className="font-black text-text-primary dark:text-white text-[11px] uppercase tracking-widest">{review.user_name}</h4>
+                                                            <p className="text-[9px] text-text-muted dark:text-white/30 font-black uppercase tracking-[0.2em]">
+                                                                {new Date(review.created_at).toLocaleDateString()}
                                                             </p>
                                                         </div>
                                                     </div>
@@ -433,12 +475,12 @@ const MessDetailsPage: React.FC = () => {
                                                         <span className="text-[10px] font-black text-primary-500 uppercase tracking-widest">{review.rating}.0</span>
                                                     </div>
                                                 </div>
-                                                <p className="text-white/60 font-medium leading-relaxed italic pr-12">"{review.comment}"</p>
+                                                <p className="text-text-secondary dark:text-white/60 font-medium leading-relaxed italic pr-12">"{review.comment}"</p>
                                             </Card>
                                         ))
                                     ) : (
-                                        <div className="text-center py-24 opacity-20 text-white">
-                                            <MessageSquare size={80} strokeWidth={1} className="mx-auto mb-6" />
+                                        <div className="text-center py-24 text-text-muted">
+                                            <MessageSquare size={80} strokeWidth={1} className="mx-auto mb-6 opacity-20" />
                                             <p className="font-black uppercase tracking-[0.4em] text-[10px] italic">No signal logs detected in this sector</p>
                                         </div>
                                     )}
@@ -453,7 +495,7 @@ const MessDetailsPage: React.FC = () => {
                                         <h4 className="font-black uppercase tracking-[0.4em] text-primary-500 italic text-[10px]">Shield Protocol</h4>
                                         <div className="space-y-4">
                                             {['Supply Chain Integrity', 'Hygiene Protocol', 'Unlimited Meal Access', 'Student Subsidies', 'Digital Payments'].map(f => (
-                                                <div key={f} className="flex items-center gap-4 text-white/50 text-[10px] font-black uppercase tracking-widest italic group">
+                                                <div key={f} className="flex items-center gap-4 text-text-muted dark:text-white/50 text-[10px] font-black uppercase tracking-widest italic group">
                                                     <CircleCheck size={18} className="text-primary-500 group-hover:scale-125 transition-transform" />
                                                     {f}
                                                 </div>
@@ -468,8 +510,8 @@ const MessDetailsPage: React.FC = () => {
                                                     <UserIcon size={20} />
                                                 </div>
                                                 <div>
-                                                    <p className="font-black text-white/20 uppercase tracking-[0.2em] text-[8px] mb-1">Operator Name</p>
-                                                    <p className="text-xs font-black text-white uppercase tracking-widest">{mess.ownerName || mess.owner?.name}</p>
+                                                    <p className="font-black text-text-muted dark:text-white/20 uppercase tracking-[0.2em] text-[8px] mb-1">Operator Name</p>
+                                                    <p className="text-xs font-black text-text-primary dark:text-white uppercase tracking-widest">{mess.ownerName || mess.owner?.name}</p>
                                                 </div>
                                             </div>
                                             <div className="flex items-center gap-5 group">
@@ -477,8 +519,8 @@ const MessDetailsPage: React.FC = () => {
                                                     <Phone size={20} />
                                                 </div>
                                                 <div>
-                                                    <p className="font-black text-white/20 uppercase tracking-[0.2em] text-[8px] mb-1">Contact Signal</p>
-                                                    <p className="text-xs font-black text-white uppercase tracking-widest">{mess.contact || mess.mobile}</p>
+                                                    <p className="font-black text-text-muted dark:text-white/20 uppercase tracking-[0.2em] text-[8px] mb-1">Contact Signal</p>
+                                                    <p className="text-xs font-black text-text-primary dark:text-white uppercase tracking-widest">{mess.contact || mess.mobile}</p>
                                                 </div>
                                             </div>
                                             <Button
@@ -508,9 +550,9 @@ const MessDetailsPage: React.FC = () => {
                             <div className="absolute top-0 right-0 w-32 h-32 bg-primary-500/10 rounded-full blur-3xl -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-1000" />
 
                             <div className="text-center space-y-4 mb-12">
-                                <h3 className="text-2xl font-black italic tracking-tighter uppercase text-white">Subscription</h3>
+                                <h3 className="text-2xl font-black italic tracking-tighter uppercase text-text-primary dark:text-white">Subscription</h3>
                                 <div className="h-1 w-12 bg-primary-500 mx-auto rounded-full" />
-                                <p className="text-white/20 text-[9px] font-black uppercase tracking-[0.3em]">Select Protocol Level</p>
+                                <p className="text-text-muted dark:text-white/20 text-[9px] font-black uppercase tracking-[0.3em]">Select Protocol Level</p>
                             </div>
 
                             <div className="space-y-4 mb-12">
@@ -524,7 +566,7 @@ const MessDetailsPage: React.FC = () => {
                                         onClick={() => setSelectedPlan(plan)}
                                         className={`w-full p-6 py-8 rounded-[1.5rem] border-2 text-left transition-all relative group ${selectedPlan?.title === plan.title
                                             ? 'border-primary-500 bg-primary-500/10 shadow-xl shadow-primary-500/20'
-                                            : 'border-white/5 bg-white/[0.03] hover:border-white/20'
+                                            : 'border-border-color dark:border-white/5 bg-bg-section dark:bg-white/[0.03] hover:border-primary-500/30'
                                             }`}
                                     >
                                         {plan.popular && (
@@ -533,12 +575,12 @@ const MessDetailsPage: React.FC = () => {
                                             </div>
                                         )}
                                         <div className="flex justify-between items-center mb-1">
-                                            <span className="font-black text-white text-[11px] uppercase tracking-widest italic">{plan.title}</span>
+                                            <span className="font-black text-text-primary dark:text-white text-[11px] uppercase tracking-widest italic">{plan.title}</span>
                                             <div className="flex items-baseline">
                                                 <span className="text-lg font-black text-primary-500 italic">{plan.price}</span>
                                             </div>
                                         </div>
-                                        <p className="text-[8px] text-white/30 font-black uppercase tracking-widest">{plan.desc}</p>
+                                        <p className="text-[8px] text-text-muted dark:text-white/30 font-black uppercase tracking-widest">{plan.desc}</p>
                                     </button>
                                 ))}
                             </div>
@@ -558,23 +600,23 @@ const MessDetailsPage: React.FC = () => {
                             </div>
                         </Card>
 
-                        <Card className="p-10 bg-[#0f172a] border border-white/10 rounded-[3rem] shadow-3xl text-white relative overflow-hidden">
+                        <Card className="p-10 bg-bg-section dark:bg-[#0f172a] border border-border-color dark:border-white/10 rounded-[3rem] shadow-3xl text-text-primary dark:text-white relative overflow-hidden">
                             <div className="absolute top-0 left-0 w-2 h-full bg-primary-500" />
                             <div className="flex items-center gap-6 mb-8">
-                                <div className="p-4 bg-white/5 rounded-2xl border border-white/10 text-primary-500 shadow-2xl">
+                                <div className="p-4 bg-bg-main dark:bg-white/5 rounded-2xl border border-border-color dark:border-white/10 text-primary-500 shadow-2xl">
                                     <Clock size={24} />
                                 </div>
                                 <div className="space-y-1">
-                                    <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40 italic">Operational Status</h4>
-                                    <p className="text-2xl font-black italic tracking-tighter">SEC <span className="text-primary-500">ACTIVE</span></p>
+                                    <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-text-muted dark:text-white/40 italic">Operational Status</h4>
+                                    <p className="text-2xl font-black italic tracking-tighter text-text-primary dark:text-white">SEC <span className="text-primary-500">ACTIVE</span></p>
                                 </div>
                             </div>
                             <div className="space-y-4">
-                                <div className="flex justify-between items-center bg-white/5 p-5 rounded-2xl border border-white/5">
-                                    <span className="text-[9px] font-black uppercase tracking-widest text-white/40 italic">Logistics Cycle</span>
+                                <div className="flex justify-between items-center bg-bg-main dark:bg-white/5 p-5 rounded-2xl border border-border-color dark:border-white/5">
+                                    <span className="text-[9px] font-black uppercase tracking-widest text-text-muted dark:text-white/40 italic">Logistics Cycle</span>
                                     <span className="text-[10px] font-black uppercase tracking-widest">Daily 11:00 - 22:00</span>
                                 </div>
-                                <p className="text-[9px] font-black uppercase tracking-[0.2em] text-center text-white/20 italic pt-2">Zero Latency Meal Supply Guaranteed</p>
+                                <p className="text-[9px] font-black uppercase tracking-[0.2em] text-center text-text-muted dark:text-white/20 italic pt-2">Zero Latency Meal Supply Guaranteed</p>
                             </div>
                         </Card>
                     </div>

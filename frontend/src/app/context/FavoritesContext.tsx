@@ -52,7 +52,7 @@ export function FavoritesProvider({ children }: { children: React.ReactNode }) {
         }
 
         try {
-            const response = await api.post(`/favorites/toggle/${id}`);
+            const response = await api.post('/favorites', { mess_id: id });
             if (response.data.success) {
                 // Keep the sync with server just in case
                 if (response.data.isFavorite) {

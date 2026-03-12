@@ -24,7 +24,7 @@ const AboutPage: React.FC = () => {
                         animate={{ y: 0, opacity: 1 }}
                         className="max-w-4xl"
                     >
-                        <h1 className="text-6xl md:text-8xl font-black tracking-tighter text-white mb-8">
+                        <h1 className="text-4xl md:text-8xl font-black tracking-tighter text-white mb-8 leading-[0.85]">
                             REVOLUTIONIZING <br />
                             <span className="text-primary-500 italic">STUDENT DINING</span>
                         </h1>
@@ -123,7 +123,7 @@ const AboutPage: React.FC = () => {
                     <div className="py-24 space-y-12">
                         <div className="text-center space-y-4">
                             <h2 className="text-xs font-black uppercase tracking-[0.4em] text-primary-500">Simple Process</h2>
-                            <h3 className="text-4xl md:text-5xl font-black tracking-tighter dark:text-white uppercase italic">How MessWalha Works</h3>
+                            <h3 className="text-4xl md:text-5xl font-black tracking-tighter text-text-primary dark:text-white uppercase italic">How MessWalha Works</h3>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                             {[
@@ -131,10 +131,10 @@ const AboutPage: React.FC = () => {
                                 { step: '2', title: 'Compare', desc: 'Compare mess services, menus, and prices to find your fit.' },
                                 { step: '3', title: 'Subscribe', desc: 'Subscribe to a monthly meal plan and enjoy healthy food.' }
                             ].map((item, i) => (
-                                <div key={i} className="bg-white/5 p-10 rounded-[2.5rem] border border-white/10 relative overflow-hidden group hover:bg-white/10 transition-all">
-                                    <span className="absolute top-4 right-8 text-8xl font-black text-white/5 group-hover:text-primary-500/10 transition-colors">{item.step}</span>
-                                    <h4 className="text-xl font-black text-white uppercase tracking-tight mb-4">{item.title}</h4>
-                                    <p className="text-white/40 text-sm font-medium italic">{item.desc}</p>
+                                <div key={i} className="bg-bg-section dark:bg-white/5 p-10 rounded-[2.5rem] border border-border-color dark:border-white/10 relative overflow-hidden group hover:shadow-xl transition-all">
+                                    <span className="absolute top-4 right-8 text-8xl font-black text-dark-900/5 dark:text-white/5 group-hover:text-primary-500/10 transition-colors">{item.step}</span>
+                                    <h4 className="text-xl font-black text-text-primary dark:text-white uppercase tracking-tight mb-4">{item.title}</h4>
+                                    <p className="text-text-muted dark:text-white/40 text-sm font-medium italic">{item.desc}</p>
                                 </div>
                             ))}
                         </div>

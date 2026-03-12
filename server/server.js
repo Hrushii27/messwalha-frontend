@@ -15,6 +15,7 @@ const userRoutes = require('./routes/user');
 const activityRoutes = require('./routes/activity');
 const menuRoutes = require('./routes/menu');
 const orderRoutes = require('./routes/order');
+const reviewsRoutes = require('./routes/reviews');
 
 console.log('🚀 Server starting process...');
 const app = express();
@@ -34,6 +35,7 @@ const allowedOrigins = [
 
 app.use(cors({
     origin: function (origin, callback) {
+        console.log('🔍 Incoming Origin:', origin);
         // allow requests with no origin (like mobile apps or curl requests)
         if (!origin) return callback(null, true);
         if (allowedOrigins.indexOf(origin) !== -1) {
@@ -49,7 +51,7 @@ app.use(cors({
 }));
 
 // Handle preflight globally
-app.options('*', cors());
+
 
 // Global Request Logger (Definitive check if request hits Heroku)
 app.use((req, res, next) => {
@@ -121,6 +123,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/activity', activityRoutes);
 app.use('/api/menu', menuRoutes);
 app.use('/api/orders', orderRoutes);
+app.use('/api/reviews', reviewsRoutes);
 
 // Basic Route
 app.get('/', (req, res) => {

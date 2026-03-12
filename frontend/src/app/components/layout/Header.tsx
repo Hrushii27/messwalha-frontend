@@ -44,7 +44,7 @@ export const Header: React.FC = () => {
 
     return (
         <header className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 ${isScrolled ? 'py-4 translate-y-0' : 'py-6'}`}>
-            <div className={`container mx-auto px-4 h-20 flex items-center justify-between transition-all duration-500 ${isScrolled ? 'bg-dark-900/80 backdrop-blur-3xl rounded-[2rem] border border-white/10 shadow-3xl' : 'bg-transparent border-transparent'}`}>
+            <div className={`container mx-auto px-4 h-20 flex items-center justify-between transition-all duration-500 ${isScrolled ? 'bg-dark-900/90 backdrop-blur-3xl rounded-[2rem] border border-white/10 shadow-3xl' : 'bg-dark-900/40 backdrop-blur-md rounded-[2rem] border border-white/5'}`}>
                 <div className="flex items-center space-x-2 sm:space-x-4">
                     <button
                         onClick={() => setIsMenuOpen(true)}
@@ -178,7 +178,7 @@ export const Header: React.FC = () => {
                             animate={{ x: 0 }}
                             exit={{ x: '-100%' }}
                             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                            className="fixed top-0 left-0 bottom-0 w-[300px] bg-dark-900 border-r border-white/10 z-[120] p-8 flex flex-col"
+                            className="fixed top-0 left-0 bottom-0 w-[300px] bg-dark-900 border-r border-white/10 z-[120] p-8 flex flex-col overflow-y-auto overflow-x-hidden"
                         >
                             <div className="flex items-center justify-between mb-12">
                                 <Link to="/" onClick={() => setIsMenuOpen(false)} className="flex items-center space-x-3">

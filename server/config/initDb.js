@@ -38,12 +38,19 @@ const createTables = async () => {
         created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
       );
 
+      CREATE TABLE IF NOT EXISTS reviews (
+        id SERIAL PRIMARY KEY,
+        mess_id INTEGER REFERENCES mess_listings(id) ON DELETE CASCADE,
+        user_id INTEGER REFERENCES mess_owners(id) ON DELETE CASCADE,
+        rating INTEGER CHECK (rating >= 1 AND rating <= 5),
+        comment TEXT,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      );
+
       CREATE TABLE IF NOT EXISTS notifications (
         id SERIAL PRIMARY KEY,
-        user_id INTEGER REFERENCES mess_owners(id) ON DELETE CASCADE,
-        title VARCHAR(255) NOT NULL,
+        mess_id INTEGER REFERENCES mess_listings(id) ON DELETE CASCADE,
         message TEXT NOT NULL,
-        is_read BOOLEAN DEFAULT FALSE,
         created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
       );
 
@@ -69,6 +76,51 @@ const createTables = async () => {
           END IF;
           IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='mess_owners' AND column_name='reset_password_expires') THEN
               ALTER TABLE mess_owners ADD COLUMN reset_password_expires TIMESTAMP WITH TIME ZONE;
+          END IF;
+
+          -- mess_listings Migrations
+          -- Handle legacy columns that might block inserts using exception handling for robustness
+          BEGIN
+              EXECUTE 'ALTER TABLE mess_listings ALTER COLUMN location DROP NOT NULL';
+          EXCEPTION WHEN undefined_column THEN
+              NULL; -- Column doesn't exist, ignore
+          END;
+
+          BEGIN
+              EXECUTE 'ALTER TABLE mess_listings ALTER COLUMN city DROP NOT NULL';
+          EXCEPTION WHEN undefined_column THEN
+              NULL; -- Column doesn't exist, ignore
+          END;
+
+          BEGIN
+              EXECUTE 'ALTER TABLE mess_listings ALTER COLUMN price DROP NOT NULL';
+          EXCEPTION WHEN undefined_column THEN
+              NULL; -- Column doesn't exist, ignore
+          END;
+
+          IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='mess_listings' AND column_name='address') THEN
+              ALTER TABLE mess_listings ADD COLUMN address TEXT NOT NULL DEFAULT '';
+          END IF;
+          IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='mess_listings' AND column_name='cuisine') THEN
+              ALTER TABLE mess_listings ADD COLUMN cuisine VARCHAR(100);
+          END IF;
+          IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='mess_listings' AND column_name='monthly_price') THEN
+              ALTER TABLE mess_listings ADD COLUMN monthly_price DECIMAL(10, 2) NOT NULL DEFAULT 0.00;
+          END IF;
+          IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='mess_listings' AND column_name='description') THEN
+              ALTER TABLE mess_listings ADD COLUMN description TEXT;
+          END IF;
+          IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='mess_listings' AND column_name='rating') THEN
+              ALTER TABLE mess_listings ADD COLUMN rating DECIMAL(3, 2) DEFAULT 0.0;
+          END IF;
+          IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='mess_listings' AND column_name='verified') THEN
+              ALTER TABLE mess_listings ADD COLUMN verified BOOLEAN DEFAULT FALSE;
+          END IF;
+          IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='mess_listings' AND column_name='image_url') THEN
+              ALTER TABLE mess_listings ADD COLUMN image_url TEXT;
+          END IF;
+          IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='mess_listings' AND column_name='is_active') THEN
+              ALTER TABLE mess_listings ADD COLUMN is_active BOOLEAN DEFAULT TRUE;
           END IF;
       END $$;
     `;

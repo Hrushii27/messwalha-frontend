@@ -71,9 +71,9 @@ const LandingPage: React.FC = () => {
                                 initial={{ opacity: 0, scale: 0.9 }}
                                 animate={{ opacity: 1, scale: 1 }}
                                 transition={{ duration: 0.8, delay: 0.2 }}
-                                className="bg-white/5 backdrop-blur-3xl p-3 sm:p-4 rounded-[2rem] sm:rounded-[3rem] md:rounded-full border border-white/10 shadow-[0_32px_100px_-20px_rgba(0,0,0,0.5)] max-w-4xl mx-auto group hover:border-primary-500/30 transition-all duration-700"
+                                className="bg-white/5 backdrop-blur-3xl p-4 sm:p-5 rounded-[2.5rem] sm:rounded-[3rem] md:rounded-full border border-white/10 shadow-[0_32px_100px_-20px_rgba(0,0,0,0.5)] max-w-4xl mx-auto group hover:border-primary-500/30 transition-all duration-700"
                             >
-                                <div className="flex flex-col md:flex-row items-center gap-2 sm:gap-3">
+                                <div className="flex flex-col md:flex-row items-center gap-3 sm:gap-4">
                                     <div className="flex-1 w-full relative group/input text-left">
                                         <MapPin className="absolute left-6 top-1/2 -translate-y-1/2 text-primary-500 z-10 group-hover/input:scale-110 transition-transform" size={16} />
                                         <input

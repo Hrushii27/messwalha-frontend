@@ -42,6 +42,8 @@ const OwnerDashboardPage: React.FC = () => {
     const [selectedDay, setSelectedDay] = useState('Monday');
     const [isBillingModalOpen, setIsBillingModalOpen] = useState(false);
     const [subscription, setSubscription] = useState<Subscription | null>(null);
+    const [announcement, setAnnouncement] = useState('');
+    const [sendingAnnouncement, setSendingAnnouncement] = useState(false);
 
 
     // Form states
@@ -110,6 +112,28 @@ const OwnerDashboardPage: React.FC = () => {
             toast.error('Failed to update mess profile');
         } finally {
             setUpdating(false);
+        }
+    };
+
+    const handleSendAnnouncement = async () => {
+        if (!mess?.id || !announcement.trim()) {
+            toast.error('Please enter an announcement message');
+            return;
+        }
+
+        try {
+            setSendingAnnouncement(true);
+            await api.post('/notifications', {
+                mess_id: mess.id,
+                message: announcement
+            });
+            toast.success('Announcement sent to all students!');
+            setAnnouncement('');
+        } catch (error) {
+            console.error('Failed to send announcement:', error);
+            toast.error('Failed to send announcement');
+        } finally {
+            setSendingAnnouncement(false);
         }
     };
 
@@ -295,6 +319,30 @@ const OwnerDashboardPage: React.FC = () => {
                                 <span className="text-[10px] font-black uppercase text-green-500 bg-green-50 px-2 py-1 rounded-lg">Active</span>
                             </div>
                         ))}
+                    </div>
+                </Card>
+            </section>
+
+            <section className="space-y-4">
+                <h2 className="text-xl font-bold">Send Announcement</h2>
+                <Card className="p-6 border-2 border-primary/10 bg-primary/5">
+                    <div className="space-y-4">
+                        <p className="text-sm text-gray-500 font-medium">Send a quick notice to all students viewing your mess page (e.g., "Closed today due to festival").</p>
+                        <textarea
+                            value={announcement}
+                            onChange={(e) => setAnnouncement(e.target.value)}
+                            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all min-h-[100px]"
+                            placeholder="Type your message here..."
+                        />
+                        <div className="flex justify-end">
+                            <Button
+                                onClick={handleSendAnnouncement}
+                                isLoading={sendingAnnouncement}
+                                className="rounded-xl px-8 shadow-lg shadow-primary/20"
+                            >
+                                Send to All Students
+                            </Button>
+                        </div>
                     </div>
                 </Card>
             </section>
