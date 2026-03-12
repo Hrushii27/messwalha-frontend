@@ -2,6 +2,7 @@ const db = require('./db');
 
 const createTables = async () => {
     const queryText = `
+    -- Core tables
     CREATE TABLE IF NOT EXISTS mess_owners (
       id SERIAL PRIMARY KEY,
       name VARCHAR(255) NOT NULL,
@@ -38,6 +39,16 @@ const createTables = async () => {
       created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
     );
 
+    -- Special handling for reviews (recreate if broken)
+    DO $$ 
+    BEGIN 
+        IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'reviews') THEN
+            IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'reviews' AND column_name = 'student_id') THEN
+                DROP TABLE reviews;
+            END IF;
+        END IF;
+    END $$;
+
     CREATE TABLE IF NOT EXISTS reviews (
       id SERIAL PRIMARY KEY,
       mess_id INTEGER REFERENCES mess_listings(id) ON DELETE CASCADE,
@@ -46,6 +57,16 @@ const createTables = async () => {
       comment TEXT,
       created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
     );
+
+    -- Special handling for notifications (recreate if broken/legacy)
+    DO $$ 
+    BEGIN 
+        IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'notifications') THEN
+            IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'notifications' AND column_name = 'title') THEN
+                DROP TABLE notifications;
+            END IF;
+        END IF;
+    END $$;
 
     CREATE TABLE IF NOT EXISTS notifications (
       id SERIAL PRIMARY KEY,
@@ -62,13 +83,10 @@ const createTables = async () => {
       UNIQUE(user_id, mess_id)
     );
 
-    -- Migrations and Schema Repairs
+    -- Additional Migrations
     DO $$ 
     BEGIN 
-        -- mess_owners migrations
-        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='mess_owners' AND column_name='role') THEN
-            ALTER TABLE mess_owners ADD COLUMN role VARCHAR(20) DEFAULT 'STUDENT';
-        END IF;
+        -- owners metadata
         IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='mess_owners' AND column_name='profile_image') THEN
             ALTER TABLE mess_owners ADD COLUMN profile_image TEXT;
         END IF;
@@ -78,25 +96,14 @@ const createTables = async () => {
         IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='mess_owners' AND column_name='reset_password_expires') THEN
             ALTER TABLE mess_owners ADD COLUMN reset_password_expires TIMESTAMP WITH TIME ZONE;
         END IF;
-
-        -- notifications repair
-        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='notifications' AND column_name='mess_id') THEN
-            ALTER TABLE notifications ADD COLUMN mess_id INTEGER REFERENCES mess_listings(id) ON DELETE CASCADE;
-        END IF;
-
-        -- reviews check (handle case where user_id might be missing or wrongly named)
-        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='reviews' AND column_name='user_id') THEN
-             -- If table exists but missing user_id, it's likely broken, recreate or fix
-             NULL; 
-        END IF;
     END $$;
     `;
 
     try {
         await db.query(queryText);
-        console.log("✅ Database schema verified and updated successfully");
+        console.log("✅ Database schema verified and synchronized successfully");
     } catch (err) {
-        console.error("❌ Error initializing/repairing database schema:", err);
+        console.error("❌ Database initialization error:", err);
         throw err;
     }
 };
