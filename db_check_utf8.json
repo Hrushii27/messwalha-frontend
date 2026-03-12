@@ -1,0 +1,176 @@
+﻿{
+  "tables": [
+    "pg_stat_statements_info",
+    "pg_stat_statements",
+    "student_subscriptions",
+    "reviews",
+    "mess_listings",
+    "subscriptions",
+    "mess_owners",
+    "notifications",
+    "favorites",
+    "users",
+    "owner_subscriptions",
+    "messes"
+  ],
+  "reviews": [
+    {
+      "column_name": "id",
+      "data_type": "integer"
+    },
+    {
+      "column_name": "mess_id",
+      "data_type": "integer"
+    },
+    {
+      "column_name": "student_id",
+      "data_type": "integer"
+    },
+    {
+      "column_name": "rating",
+      "data_type": "integer"
+    },
+    {
+      "column_name": "created_at",
+      "data_type": "timestamp with time zone"
+    },
+    {
+      "column_name": "comment",
+      "data_type": "text"
+    }
+  ],
+  "notifications": [
+    {
+      "column_name": "created_at",
+      "data_type": "timestamp with time zone"
+    },
+    {
+      "column_name": "mess_id",
+      "data_type": "integer"
+    },
+    {
+      "column_name": "user_id",
+      "data_type": "integer"
+    },
+    {
+      "column_name": "id",
+      "data_type": "integer"
+    },
+    {
+      "column_name": "is_read",
+      "data_type": "boolean"
+    },
+    {
+      "column_name": "message",
+      "data_type": "text"
+    },
+    {
+      "column_name": "title",
+      "data_type": "character varying"
+    }
+  ],
+  "mess_listings": [
+    {
+      "column_name": "id",
+      "data_type": "integer"
+    },
+    {
+      "column_name": "mess_owner_id",
+      "data_type": "integer"
+    },
+    {
+      "column_name": "price",
+      "data_type": "numeric"
+    },
+    {
+      "column_name": "is_active",
+      "data_type": "boolean"
+    },
+    {
+      "column_name": "created_at",
+      "data_type": "timestamp with time zone"
+    },
+    {
+      "column_name": "monthly_price",
+      "data_type": "numeric"
+    },
+    {
+      "column_name": "rating",
+      "data_type": "numeric"
+    },
+    {
+      "column_name": "verified",
+      "data_type": "boolean"
+    },
+    {
+      "column_name": "address",
+      "data_type": "text"
+    },
+    {
+      "column_name": "name",
+      "data_type": "character varying"
+    },
+    {
+      "column_name": "location",
+      "data_type": "text"
+    },
+    {
+      "column_name": "cuisine",
+      "data_type": "character varying"
+    },
+    {
+      "column_name": "description",
+      "data_type": "text"
+    },
+    {
+      "column_name": "city",
+      "data_type": "character varying"
+    },
+    {
+      "column_name": "image_url",
+      "data_type": "text"
+    }
+  ],
+  "mess_owners": [
+    {
+      "column_name": "id",
+      "data_type": "integer"
+    },
+    {
+      "column_name": "created_at",
+      "data_type": "timestamp with time zone"
+    },
+    {
+      "column_name": "reset_password_expires",
+      "data_type": "timestamp with time zone"
+    },
+    {
+      "column_name": "phone",
+      "data_type": "character varying"
+    },
+    {
+      "column_name": "password_hash",
+      "data_type": "character varying"
+    },
+    {
+      "column_name": "role",
+      "data_type": "character varying"
+    },
+    {
+      "column_name": "reset_password_token",
+      "data_type": "character varying"
+    },
+    {
+      "column_name": "profile_image",
+      "data_type": "text"
+    },
+    {
+      "column_name": "name",
+      "data_type": "character varying"
+    },
+    {
+      "column_name": "email",
+      "data_type": "character varying"
+    }
+  ]
+}
