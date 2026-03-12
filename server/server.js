@@ -23,6 +23,7 @@ const PORT = process.env.PORT || 5000;
 console.log('✅ Express initialized. Port:', PORT);
 
 // Middleware
+// Proper CORS configuration as requested by user
 app.use(
   cors({
     origin: [
@@ -95,7 +96,7 @@ app.get('/', (req, res) => {
     res.json({
         status: 'OK',
         message: 'MessWalha Production API is LIVE 🚀',
-        version: '1.2.0',
+        version: '1.2.1',
         timestamp: new Date().toISOString()
     });
 });
