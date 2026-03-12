@@ -30,17 +30,39 @@ router.get('/:id', async (req, res) => {
 
 // Protected CRUD for mess owners
 router.post('/', async (req, res) => {
-    const { ownerId, name, address, monthlyPrice, description, cuisine } = req.body;
     try {
+        if (!req.user) {
+            return res.status(401).json({ message: 'Unauthorized. Please login again.' });
+        }
+
+        // Map frontend fields (FormData) to backend expectations
+        const {
+            messName,
+            address,
+            pricePerMonth,
+            pricePerWeek,
+            pricePerDay,
+            menuText,
+            cuisine
+        } = req.body;
+
+        const ownerId = req.user.id;
+
         const sub = await Subscription.findByOwnerId(ownerId);
         if (!sub || (sub.status !== 'trial' && sub.status !== 'active')) {
             return res.status(403).json({ message: 'Subscription expired or inactive. Please pay ₹599 to activate.' });
         }
-        const mess = await Mess.create(ownerId, name, address, monthlyPrice, description, cuisine);
-        res.status(201).json(mess);
+
+        // Using fallbacks or renaming for model compatibility
+        const name = messName;
+        const monthlyPrice = pricePerMonth;
+        const description = menuText || '';
+
+        const mess = await Mess.create(ownerId, name, address, monthlyPrice, description, cuisine || 'Indian');
+        res.status(201).json({ success: true, data: mess });
     } catch (err) {
         console.error('Error creating mess:', err);
-        res.status(500).json({ message: 'Error creating mess listing' });
+        res.status(500).json({ message: 'Error creating mess listing: ' + err.message });
     }
 });
 

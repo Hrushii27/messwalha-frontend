@@ -82,8 +82,8 @@ try {
 
 // --- API Routes ---
 app.use('/api/auth', authRoutes);
-app.use('/api/subscription', subscriptionRoutes);
-app.use('/api/messes', messRoutes);
+app.use('/api/subscriptions', subscriptionRoutes);
+app.use('/api/mess', messRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/favorites', favoritesRoutes);
 app.use('/api/notifications', notificationsRoutes);
