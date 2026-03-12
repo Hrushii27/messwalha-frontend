@@ -86,7 +86,7 @@ app.use('/api/auth', authRoutes);
 // Dual support for singular/plural endpoints to avoid frontend breakage
 app.use(['/api/subscription', '/api/subscriptions'], subscriptionRoutes);
 app.use(['/api/mess', '/api/messes'], messRoutes);
-app.use('/api/notifications', notificationsRoutes);
+app.use(['/api/notification', '/api/notifications'], notificationsRoutes);
 
 app.use('/api/admin', adminRoutes);
 app.use('/api/favorites', favoritesRoutes);
