@@ -23,6 +23,9 @@ const PORT = process.env.PORT || 5000;
 console.log('✅ Express initialized. Port:', PORT);
 
 // Middleware
+const authenticateToken = require('./middleware/auth');
+app.use(authenticateToken);
+
 app.use(
   cors({
     origin: [
