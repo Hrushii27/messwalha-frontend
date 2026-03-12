@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const { sendNotification, getNotificationsByMess } = require('../controllers/notificationController');
+const { sendNotification, getNotificationsByMess, getAllNotifications } = require('../controllers/notificationController');
 
+router.get('/', getAllNotifications);
 router.post('/', (req, res, next) => {
   if (!req.user || (req.user.role !== 'OWNER' && req.user.role !== 'ADMIN')) {
     return res.status(403).json({ message: 'Only mess owners can post notices' });

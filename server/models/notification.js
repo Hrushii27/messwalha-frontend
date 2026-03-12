@@ -14,6 +14,10 @@ const Notification = {
             [messId]
         );
         return result.rows;
+    },
+    findAll: async () => {
+        const result = await db.query('SELECT * FROM notifications ORDER BY created_at DESC LIMIT 50');
+        return result.rows;
     }
 };
 
