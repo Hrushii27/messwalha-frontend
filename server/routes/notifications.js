@@ -1,3 +1,5 @@
+const express = require('express');
+const router = express.Router();
 const { sendNotification, getNotificationsByMess } = require('../controllers/notificationController');
 
 router.post('/', (req, res, next) => {

@@ -20,9 +20,10 @@ const reviewsRoutes = require('./routes/reviews');
 console.log('🚀 Server starting process...');
 const app = express();
 const PORT = process.env.PORT || 5000;
-console.log('✅ Express initialized');
+console.log('✅ Express initialized. Port:', PORT);
 
 // Middleware
+console.log('🛠️ Setting up CORS...');
 const allowedOrigins = [
     "http://localhost:5173",
     "http://localhost:3000",
@@ -49,6 +50,8 @@ app.use(cors({
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
     credentials: true
 }));
+
+console.log('🛠️ CORS setup complete.');
 
 // Handle preflight globally
 
