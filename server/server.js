@@ -30,7 +30,9 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      "https://frontend-one-swart-57.vercel.app"
+      "https://frontend-one-swart-57.vercel.app",
+      "https://findmess.me",
+      "https://www.findmess.me"
     ],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
