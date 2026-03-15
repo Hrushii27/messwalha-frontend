@@ -8,7 +8,6 @@ const { body, validationResult } = require('express-validator');
 const { verifyRecaptcha } = require('../utils/securityUtils');
 const { logSecurityEvent } = require('../middleware/activityLogger');
 
-const { verifyRecaptcha } = require('../utils/securityUtils');
 
 const authController = {
     register: async (req, res) => {
