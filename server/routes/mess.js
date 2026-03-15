@@ -2,6 +2,16 @@ const express = require('express');
 const router = express.Router();
 const Mess = require('../models/mess');
 const Subscription = require('../models/subscription');
+const { validateRequest } = require('../middleware/validation');
+
+const messValidation = [
+    body('messName').trim().notEmpty().escape().withMessage('Mess name is required'),
+    body('address').trim().notEmpty().escape().withMessage('Address is required'),
+    body('pricePerMonth').isNumeric().withMessage('Invalid monthly price'),
+    body('pricePerWeek').optional().isNumeric(),
+    body('pricePerDay').optional().isNumeric(),
+    body('menuText').optional().trim().escape()
+];
 
 // Public route to get all active messes
 router.get('/', async (req, res) => {
@@ -29,10 +39,18 @@ router.get('/:id', async (req, res) => {
 });
 
 // Protected CRUD for mess owners
-router.post('/', async (req, res) => {
+router.post('/', messValidation, validateRequest, async (req, res) => {
     try {
         if (!req.user) {
             return res.status(401).json({ message: 'Unauthorized. Please login again.' });
+        }
+
+        const { recaptchaToken } = req.body;
+        const { verifyRecaptcha } = require('../utils/securityUtils');
+        const isHuman = await verifyRecaptcha(recaptchaToken);
+        
+        if (!isHuman && process.env.NODE_ENV === 'production') {
+            return res.status(403).json({ message: 'reCAPTCHA verification failed. Please try again.' });
         }
 
         // Map frontend fields (FormData) to backend expectations

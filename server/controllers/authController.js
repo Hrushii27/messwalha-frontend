@@ -4,10 +4,28 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const { sendResetPasswordEmail } = require('../utils/emailService');
+const { body, validationResult } = require('express-validator');
+const { verifyRecaptcha } = require('../utils/securityUtils');
+const { logSecurityEvent } = require('../middleware/activityLogger');
+
+const { verifyRecaptcha } = require('../utils/securityUtils');
 
 const authController = {
     register: async (req, res) => {
-        const { name, email, phone, password, role } = req.body;
+        const { name, email, phone, password, role, recaptchaToken } = req.body;
+        
+        // 1. Check for Validation Errors
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ status: 'ERROR', errors: errors.array() });
+        }
+
+        // 2. Verify reCAPTCHA
+        const isHuman = await verifyRecaptcha(recaptchaToken);
+        if (!isHuman && process.env.NODE_ENV === 'production') {
+            return res.status(403).json({ status: 'ERROR', message: 'reCAPTCHA verification failed' });
+        }
+
         console.log(`📝 Attempting registration for: ${email}, role: ${role || 'STUDENT'}`);
         try {
             // Check if user exists
@@ -46,7 +64,20 @@ const authController = {
         }
     },
     login: async (req, res) => {
-        const { email, password } = req.body;
+        const { email, password, recaptchaToken } = req.body;
+
+        // 1. Check for Validation Errors
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ status: 'ERROR', errors: errors.array() });
+        }
+
+        // 2. Verify reCAPTCHA
+        const isHuman = await verifyRecaptcha(recaptchaToken);
+        if (!isHuman && process.env.NODE_ENV === 'production') {
+            return res.status(403).json({ status: 'ERROR', message: 'reCAPTCHA verification failed' });
+        }
+
         console.log(`🔑 Login attempt for: ${email}`);
         try {
             const owner = await Owner.findByEmail(email);
@@ -59,6 +90,7 @@ const authController = {
             const isPasswordValid = await bcrypt.compare(password, owner.password_hash);
             if (!isPasswordValid) {
                 console.warn('❌ Login failed: Incorrect password');
+                logSecurityEvent('AUTH_FAILURE', { email, reason: 'WRONG_PASSWORD', ip: req.ip });
                 return res.status(400).json({ message: 'Invalid credentials - password' });
             }
 

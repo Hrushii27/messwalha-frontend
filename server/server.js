@@ -17,15 +17,20 @@ const menuRoutes = require('./routes/menu');
 const orderRoutes = require('./routes/order');
 const reviewsRoutes = require('./routes/reviews');
 
+const helmet = require('helmet');
+const { setupSecurity } = require('./middleware/security');
+const authenticateToken = require('./middleware/auth');
+const { activityLogger } = require('./middleware/activityLogger');
+
 console.log('🚀 Server starting process...');
 const app = express();
 const PORT = process.env.PORT || 5000;
 console.log('✅ Express initialized. Port:', PORT);
 
-// Middleware
-const authenticateToken = require('./middleware/auth');
-app.use(authenticateToken);
+// --- 1. Security Headers (Helmet) ---
+app.use(helmet());
 
+// --- 2. CORS Configuration ---
 app.use(
   cors({
     origin: [
@@ -40,7 +45,17 @@ app.use(
   })
 );
 
-app.use(express.json());
+// --- 3. Custom Security Layer (Rate Limiting, XSS, HPP) ---
+setupSecurity(app);
+
+// --- 4. Activity Logger (Monitor failed/suspicious requests) ---
+app.use(activityLogger);
+
+// --- 5. Authentication (Soft Auth) ---
+app.use(authenticateToken);
+
+// --- 6. Body Parser ---
+app.use(express.json({ limit: '10kb' })); 
 
 // Global Request Logger
 app.use((req, res, next) => {

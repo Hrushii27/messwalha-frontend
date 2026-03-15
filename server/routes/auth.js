@@ -1,10 +1,31 @@
 const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authController');
+const { body } = require('express-validator');
+const { validateRequest } = require('../middleware/validation');
 
-router.post('/register', authController.register);
-router.post('/login', authController.login);
-router.post('/forgot-password', authController.forgotPassword);
-router.post('/reset-password', authController.resetPassword);
+const registerValidation = [
+    body('email').isEmail().normalizeEmail().withMessage('Invalid email address'),
+    body('password').isLength({ min: 8 }).withMessage('Password must be at least 8 characters long'),
+    body('name').trim().notEmpty().withMessage('Name is required'),
+    body('phone').matches(/^[0-9]{10}$/).withMessage('Invalid phone number (10 digits required)')
+];
+
+const loginValidation = [
+    body('email').isEmail().normalizeEmail().withMessage('Invalid email address'),
+    body('password').notEmpty().withMessage('Password is required')
+];
+
+router.post('/register', registerValidation, validateRequest, authController.register);
+router.post('/login', loginValidation, validateRequest, authController.login);
+router.post('/forgot-password', [
+    body('email').isEmail().normalizeEmail(),
+    validateRequest
+], authController.forgotPassword);
+router.post('/reset-password', [
+    body('token').notEmpty(),
+    body('password').isLength({ min: 8 }),
+    validateRequest
+], authController.resetPassword);
 
 module.exports = router;
