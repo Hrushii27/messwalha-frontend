@@ -1,6 +1,7 @@
 import React from 'react';
 import { Layout } from '../components/layout/Layout';
 import { motion } from 'framer-motion';
+import { FAQSection } from '../components/common/FAQSection';
 import { Shield, Target, Award, Users, Utensils, Heart, TrendingUp, Zap, Globe } from 'lucide-react';
 import { Card } from '../components/common/Card';
 import Seo from '../components/common/Seo';
@@ -9,8 +10,8 @@ const AboutPage: React.FC = () => {
     return (
         <Layout>
             <Seo
-                title="Our Story & Impact | MessWalha"
-                description="Learn how MessWalha is transforming the student meal experience through technology, trust, and community."
+                title="Our Story & Impact | FindMess"
+                description="Learn how FindMess is transforming the student meal experience through technology, trust, and community."
             />
 
             {/* Hero Section */}
@@ -28,7 +29,7 @@ const AboutPage: React.FC = () => {
                             REVOLUTIONIZING <br />
                             <span className="text-primary-500 italic">STUDENT DINING</span>
                         </h1>
-                        <p className="text-xl md:text-2xl text-white/60 font-medium leading-relaxed max-w-2xl italic">
+                        <p className="text-xl md:text-2xl text-white/80 font-medium leading-relaxed max-w-2xl italic">
                             MessWalha was born from a simple observation: students spend too much time worrying about their next meal and not enough time on their studies. We're here to bridge that gap with technology and trust.
                         </p>
                     </motion.div>
@@ -60,7 +61,7 @@ const AboutPage: React.FC = () => {
                                     {item.icon}
                                 </div>
                                 <h3 className="text-2xl font-black mb-4 uppercase tracking-tighter dark:text-white">{item.title}</h3>
-                                <p className="text-text-muted dark:text-white/50 font-medium leading-relaxed italic">{item.desc}</p>
+                                <p className="text-text-muted dark:text-white/70 font-medium leading-relaxed italic">{item.desc}</p>
                             </Card>
                         </motion.div>
                     ))}
@@ -134,7 +135,7 @@ const AboutPage: React.FC = () => {
                                 <div key={i} className="bg-bg-section dark:bg-white/5 p-10 rounded-[2.5rem] border border-border-color dark:border-white/10 relative overflow-hidden group hover:shadow-xl transition-all">
                                     <span className="absolute top-4 right-8 text-8xl font-black text-dark-900/5 dark:text-white/5 group-hover:text-primary-500/10 transition-colors">{item.step}</span>
                                     <h4 className="text-xl font-black text-text-primary dark:text-white uppercase tracking-tight mb-4">{item.title}</h4>
-                                    <p className="text-text-muted dark:text-white/40 text-sm font-medium italic">{item.desc}</p>
+                                    <p className="text-text-muted dark:text-white/70 text-sm font-medium italic">{item.desc}</p>
                                 </div>
                             ))}
                         </div>
@@ -149,7 +150,7 @@ const AboutPage: React.FC = () => {
                         <div className="p-12 bg-dark-800 rounded-[3rem] text-white space-y-4 border border-white/5 shadow-2xl">
                             <Award size={32} className="text-primary-500 mb-4" />
                             <h4 className="text-2xl font-black uppercase tracking-tighter italic">Certified Quality</h4>
-                            <p className="text-white/40 font-medium italic">We perform regular surprise audits to ensure food quality never drops.</p>
+                            <p className="text-white/70 font-medium italic">We perform regular surprise audits to ensure food quality never drops.</p>
                         </div>
                         <div className="p-12 bg-indigo-500 rounded-[3rem] text-white space-y-4 shadow-2xl shadow-indigo-500/20">
                             <Users size={32} className="mb-4" />
@@ -159,6 +160,7 @@ const AboutPage: React.FC = () => {
                     </div>
                 </div>
             </div>
+            <FAQSection />
         </Layout>
     );
 };

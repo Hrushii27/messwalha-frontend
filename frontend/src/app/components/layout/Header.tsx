@@ -49,6 +49,7 @@ export const Header: React.FC = () => {
                     <button
                         onClick={() => setIsMenuOpen(true)}
                         className="lg:hidden p-2 text-white/70 hover:text-primary-500 transition-colors"
+                        aria-label="Open menu"
                     >
                         <Menu size={24} />
                     </button>
@@ -64,7 +65,7 @@ export const Header: React.FC = () => {
 
                 <nav className="hidden lg:flex items-center space-x-12 px-4">
                     {navLinks.map(link => (
-                        <Link key={link.path} to={link.path} className="text-[10px] font-black uppercase tracking-[0.3em] text-white/50 hover:text-primary-500 transition-all">{link.label}</Link>
+                        <Link key={link.path} to={link.path} className="text-[10px] font-black uppercase tracking-[0.3em] text-white/70 hover:text-primary-500 transition-all">{link.label}</Link>
                     ))}
                 </nav>
 
@@ -73,12 +74,16 @@ export const Header: React.FC = () => {
                         <button
                             onClick={toggleLanguage}
                             className="p-3 hover:bg-white/5 rounded-2xl transition-all flex items-center gap-3 group border border-transparent hover:border-white/10"
+                            aria-label={`Change language, current: ${i18n.language}`}
                         >
                             <Languages size={18} className="group-hover:text-primary-500 text-white/40 transition-colors" />
                             <span className="text-[10px] font-black uppercase text-white/40 tracking-widest">{i18n.language}</span>
                         </button>
 
-                        <button className="p-3 hover:bg-white/5 rounded-2xl transition-all group border border-transparent hover:border-white/10">
+                        <button 
+                            className="p-3 hover:bg-white/5 rounded-2xl transition-all group border border-transparent hover:border-white/10"
+                            aria-label="Search"
+                        >
                             <Search size={18} className="text-white/40 group-hover:text-white transition-colors" />
                         </button>
                     </div>
@@ -123,7 +128,7 @@ export const Header: React.FC = () => {
                                                     <Link
                                                         key={item.label}
                                                         to={item.path}
-                                                        className="flex items-center gap-4 px-6 py-4 text-[10px] font-black text-white/40 hover:text-white hover:bg-white/5 rounded-2xl transition-all uppercase tracking-[0.2em] group"
+                                                        className="flex items-center gap-4 px-6 py-4 text-[10px] font-black text-white/70 hover:text-white hover:bg-white/5 rounded-2xl transition-all uppercase tracking-[0.2em] group"
                                                         onClick={() => setIsProfileOpen(false)}
                                                     >
                                                         <item.icon size={16} className="group-hover:text-primary-500 transition-colors" />
@@ -189,7 +194,11 @@ export const Header: React.FC = () => {
                                         MESS<span className="text-primary-500">WALHA</span>
                                     </span>
                                 </Link>
-                                <button onClick={() => setIsMenuOpen(false)} className="p-2 text-white/40 hover:text-white">
+                                <button 
+                                    onClick={() => setIsMenuOpen(false)} 
+                                    className="p-2 text-white/40 hover:text-white"
+                                    aria-label="Close menu"
+                                >
                                     <X size={24} />
                                 </button>
                             </div>
@@ -200,7 +209,7 @@ export const Header: React.FC = () => {
                                         key={link.path}
                                         to={link.path}
                                         onClick={() => setIsMenuOpen(false)}
-                                        className="py-4 px-6 text-[11px] font-black uppercase tracking-[0.3em] text-white/50 hover:text-primary-500 hover:bg-white/5 rounded-2xl transition-all"
+                                        className="py-4 px-6 text-[11px] font-black uppercase tracking-[0.3em] text-white/70 hover:text-primary-500 hover:bg-white/5 rounded-2xl transition-all"
                                     >
                                         {link.label}
                                     </Link>
@@ -210,7 +219,7 @@ export const Header: React.FC = () => {
                             <div className="pt-8 border-t border-white/10 space-y-4">
                                 <button
                                     onClick={toggleLanguage}
-                                    className="w-full flex items-center justify-between p-6 rounded-2xl bg-white/5 text-white/40 hover:text-white transition-all"
+                                    className="w-full flex items-center justify-between p-6 rounded-2xl bg-white/5 text-white/70 hover:text-white transition-all"
                                 >
                                     <span className="text-[10px] font-black uppercase tracking-widest italic">Signal Protocol</span>
                                     <div className="flex items-center gap-3">

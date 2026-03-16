@@ -1,6 +1,7 @@
 import React from 'react';
 import { Layout } from '../components/layout/Layout';
 import { motion } from 'framer-motion';
+import { FAQSection } from '../components/common/FAQSection';
 
 const RefundPolicyPage: React.FC = () => {
     return (
@@ -32,6 +33,7 @@ const RefundPolicyPage: React.FC = () => {
                     </section>
                 </div>
             </div>
+            <FAQSection />
         </Layout>
     );
 };

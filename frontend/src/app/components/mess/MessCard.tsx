@@ -67,6 +67,7 @@ export const MessCard: React.FC<MessCardProps> = ({ mess }) => {
                             target.src = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=1000&auto=format&fit=crop';
                         }}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[3s] relative z-10"
+                        loading="lazy"
                     />
                 </AnimatePresence>
 
@@ -99,27 +100,36 @@ export const MessCard: React.FC<MessCardProps> = ({ mess }) => {
 
                 {/* Like & Share */}
                 <div className="absolute top-4 sm:top-6 right-4 sm:right-6 flex flex-col gap-3 z-20">
-                    <motion.button
-                        whileHover={{ scale: 1.1, rotate: 5 }}
-                        whileTap={{ scale: 0.9 }}
-                        onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            toggleFavorite(mess.id);
-                        }}
-                        className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl backdrop-blur-xl border flex items-center justify-center transition-all shadow-2xl ${isFavorite(mess.id) ? 'bg-red-500 border-red-400 text-white' : 'bg-white/10 border-white/20 text-white hover:bg-white/30'}`}
-                    >
-                        <Heart className="w-4.5 h-4.5 sm:w-5 sm:h-5" fill={isFavorite(mess.id) ? 'currentColor' : 'none'} />
-                    </motion.button>
+                        <motion.button
+                            whileHover={{ scale: 1.1, rotate: 5 }}
+                            whileTap={{ scale: 0.9 }}
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                toggleFavorite(mess.id);
+                            }}
+                            className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl backdrop-blur-xl border flex items-center justify-center transition-all shadow-2xl ${isFavorite(mess.id) ? 'bg-red-500 border-red-400 text-white' : 'bg-white/10 border-white/20 text-white hover:bg-white/30'}`}
+                            aria-label={isFavorite(mess.id) ? "Remove from favorites" : "Add to favorites"}
+                        >
+                            <Heart className="w-4.5 h-4.5 sm:w-5 sm:h-5" fill={isFavorite(mess.id) ? 'currentColor' : 'none'} />
+                        </motion.button>
                 </div>
 
                 {/* Image Nav On Hover */}
                 {images.length > 1 && (
                     <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-4 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <button onClick={prevImage} className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white hover:bg-primary-500 transition-colors">
+                        <button 
+                            onClick={prevImage} 
+                            className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white hover:bg-primary-500 transition-colors"
+                            aria-label="Previous image"
+                        >
                             <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
                         </button>
-                        <button onClick={nextImage} className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white hover:bg-primary-500 transition-colors">
+                        <button 
+                            onClick={nextImage} 
+                            className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white hover:bg-primary-500 transition-colors"
+                            aria-label="Next image"
+                        >
                             <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
                         </button>
                     </div>

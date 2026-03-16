@@ -10,13 +10,13 @@ interface SeoProps {
 }
 
 const Seo: React.FC<SeoProps> = ({
-    title = 'MessWalha - #1 Mess Discovery Platform for Students',
-    description = 'Find the best local mess services with healthy food and simplified weekly/monthly subscriptions. MessWalha connects students with verified messes.',
-    keywords = 'mess discovery, student food, meal plans, indian mess, tiffin service, student subscription',
-    image = '/vite.svg', // Replace with a real meta image when available
+    title = 'FindMess – Find the Best Mess & Tiffin Services Near You',
+    description = 'FindMess helps students and PG residents discover affordable mess and tiffin services near them. Compare prices, reviews, and locations.',
+    keywords = 'mess near me, tiffin service, student mess, PG food service, affordable mess, find mess India',
+    image = '/og-image.png', // Optimized branding banner
     url = window.location.href,
 }) => {
-    const siteTitle = title.includes('MessWalha') ? title : `${title} | MessWalha`;
+    const siteTitle = title.includes('FindMess') ? title : `${title} | FindMess`;
 
     return (
         <Helmet>

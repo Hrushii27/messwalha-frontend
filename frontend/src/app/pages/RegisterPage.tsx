@@ -8,6 +8,7 @@ import { useAppDispatch } from '../../hooks/redux';
 import { setCredentials } from '../../store/slices/authSlice';
 import api from '../api/axiosInstance';
 import { toast } from 'react-hot-toast';
+import Seo from '../components/common/Seo';
 
 const RegisterPage: React.FC = () => {
     const [formData, setFormData] = useState({
@@ -21,11 +22,18 @@ const RegisterPage: React.FC = () => {
 
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
-
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
         setError('');
+
+        const recaptchaResponse = (document.getElementById('g-recaptcha-response') as HTMLInputElement)?.value;
+
+        if (!recaptchaResponse) {
+            toast.error('Please complete the reCAPTCHA verification');
+            setIsLoading(false);
+            return;
+        }
 
         try {
             // Call backend directly for registration
@@ -34,7 +42,8 @@ const RegisterPage: React.FC = () => {
                 email: formData.email,
                 phone: '', // Added empty phone to prevent backend SQL errors
                 password: formData.password,
-                role: formData.role
+                role: formData.role,
+                recaptchaToken: recaptchaResponse
             });
 
             dispatch(setCredentials(response.data));
@@ -49,9 +58,13 @@ const RegisterPage: React.FC = () => {
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-dark px-4 py-12">
+            <Seo 
+                title="Sign Up" 
+                description="Join FindMess today. Create an account to find affordable mess services, browse menus, and subscribe easily." 
+            />
             <Card className="w-full max-w-2xl p-8">
                 <div className="text-center space-y-2 mb-8">
-                    <Link to="/" className="inline-flex items-center justify-center p-3 bg-primary rounded-xl text-white mb-4">
+                    <Link to="/" className="inline-flex items-center justify-center p-3 bg-primary rounded-xl text-white mb-4" aria-label="FindMess Home">
                         <Utensils size={32} />
                     </Link>
                     <h1 className="text-3xl font-heading font-bold">Create an Account</h1>
@@ -74,6 +87,8 @@ const RegisterPage: React.FC = () => {
                                 ? 'border-primary bg-primary/5'
                                 : 'border-gray-200 hover:border-gray-300'
                                 }`}
+                            role="radio"
+                            aria-checked={formData.role === 'STUDENT'}
                         >
                             <div className={`p-3 rounded-lg mr-4 ${formData.role === 'STUDENT' ? 'bg-primary text-white' : 'bg-gray-100'}`}>
                                 <User size={24} />
@@ -91,6 +106,8 @@ const RegisterPage: React.FC = () => {
                                 ? 'border-primary bg-primary/5'
                                 : 'border-gray-200 hover:border-gray-300'
                                 }`}
+                            role="radio"
+                            aria-checked={formData.role === 'OWNER'}
                         >
                             <div className={`p-3 rounded-lg mr-4 ${formData.role === 'OWNER' ? 'bg-primary text-white' : 'bg-gray-100'}`}>
                                 <Building size={24} />
@@ -104,6 +121,7 @@ const RegisterPage: React.FC = () => {
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <Input
+                            id="full-name"
                             label="Full Name"
                             placeholder="John Doe"
                             value={formData.name}
@@ -111,6 +129,7 @@ const RegisterPage: React.FC = () => {
                             required
                         />
                         <Input
+                            id="email-address"
                             label="Email Address"
                             type="email"
                             placeholder="john@example.com"
@@ -119,6 +138,7 @@ const RegisterPage: React.FC = () => {
                             required
                         />
                         <Input
+                            id="password"
                             label="Password"
                             type="password"
                             placeholder="••••••••"
@@ -134,6 +154,10 @@ const RegisterPage: React.FC = () => {
                         <Link to="/terms" className="text-primary hover:underline">Terms of Service</Link> and{' '}
                         <Link to="/privacy" className="text-primary hover:underline">Privacy Policy</Link>.
                     </p>
+
+                    <div className="flex justify-center mb-6">
+                        <div className="g-recaptcha" data-sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY || "6Lf93ossAAAAAM99LFC5v3EwCAD3Cxn-FwoExzRr"}></div>
+                    </div>
 
                     <Button type="submit" className="w-full" size="lg" isLoading={isLoading}>
                         Create Account

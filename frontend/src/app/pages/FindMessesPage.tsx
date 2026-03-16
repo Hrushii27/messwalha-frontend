@@ -129,7 +129,7 @@ const FindMessesPage: React.FC = () => {
     return (
         <Layout>
             <Seo
-                title="Find Your Perfect Mess | MessWalha"
+                title="Find Your Perfect Mess | FindMess"
                 description="Browse and find the best verified messes near your university. Filter by cuisine, rating, price, and distance."
             />
 
@@ -193,6 +193,7 @@ const FindMessesPage: React.FC = () => {
                                         className="w-full bg-white/[0.03] border-none text-white pl-14 sm:pl-16 pr-6 py-5 sm:py-6 rounded-full focus:ring-2 focus:ring-primary-500/50 transition-all font-black uppercase tracking-widest text-[10px] sm:text-xs outline-none"
                                         value={locationTerm}
                                         onChange={(e) => setLocationTerm(e.target.value)}
+                                        aria-label="Search by location or name"
                                     />
                                 </div>
                                 <div className="flex-1 w-full relative group">
@@ -201,6 +202,7 @@ const FindMessesPage: React.FC = () => {
                                         className="w-full bg-white/[0.03] border-none text-white pl-14 sm:pl-16 pr-10 sm:pr-12 py-5 sm:py-6 rounded-full focus:ring-2 focus:ring-primary-500/50 transition-all font-black uppercase tracking-widest text-[10px] sm:text-xs appearance-none cursor-pointer outline-none"
                                         value={mealType}
                                         onChange={(e) => setMealType(e.target.value)}
+                                        aria-label="Filter by meal type"
                                     >
                                         <option value="" className="bg-dark-900 text-white">🍛 Veg / Non-Veg</option>
                                         <option value="veg" className="bg-dark-900 text-white">Pure Veg</option>
@@ -235,10 +237,10 @@ const FindMessesPage: React.FC = () => {
                             >
                                 <div className="p-6 sm:p-12 bg-dark-900/95 backdrop-blur-3xl rounded-[2rem] sm:rounded-[3rem] shadow-3xl border border-white/10 sticky top-32">
                                     <div className="flex items-center justify-between mb-8 sm:mb-10">
-                                        <h3 className="font-black text-[10px] uppercase tracking-[0.4em] text-primary-500 italic">Filter Registry</h3>
+                                        <h2 className="font-black text-[10px] uppercase tracking-[0.4em] text-primary-500 italic">Filter Registry</h2>
                                         <button
                                             onClick={() => setShowFilters(false)}
-                                            className="lg:hidden p-2 text-white/40 hover:text-white"
+                                            className="lg:hidden p-2 text-white/70 hover:text-white"
                                         >
                                             <X size={20} />
                                         </button>
@@ -246,7 +248,7 @@ const FindMessesPage: React.FC = () => {
 
                                     <div className="space-y-10 sm:space-y-12">
                                         <div className="space-y-4 sm:space-y-6">
-                                            <h4 className="text-[10px] font-black uppercase tracking-widest text-white/40">Cuisine Selection</h4>
+                                            <h2 className="text-[10px] font-black uppercase tracking-widest text-white/70">Cuisine Selection</h2>
                                             <div className="grid grid-cols-2 gap-3">
                                                 <button
                                                     onClick={() => setFilters({ ...filters, cuisine: '' })}
@@ -258,7 +260,7 @@ const FindMessesPage: React.FC = () => {
                                                     <button
                                                         key={c}
                                                         onClick={() => setFilters({ ...filters, cuisine: c })}
-                                                        className={`px-4 py-3 rounded-2xl text-[9px] font-black uppercase tracking-widest transition-all border ${filters.cuisine === c ? 'bg-primary-500 border-primary-500 text-white shadow-xl shadow-primary-500/20' : 'bg-white/5 border-white/5 text-white/30 hover:bg-white/10 hover:text-white'}`}
+                                                        className={`px-4 py-3 rounded-2xl text-[9px] font-black uppercase tracking-widest transition-all border ${filters.cuisine === c ? 'bg-primary-500 border-primary-500 text-white shadow-xl shadow-primary-500/20' : 'bg-white/5 border-white/5 text-white/60 hover:bg-white/10 hover:text-white'}`}
                                                     >
                                                         {c}
                                                     </button>
@@ -268,7 +270,7 @@ const FindMessesPage: React.FC = () => {
 
                                         <div className="space-y-6">
                                             <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest">
-                                                <span className="text-white/40">Price Protocol</span>
+                                                <span className="text-white/70">Price Protocol</span>
                                                 <span className="text-white italic">Up to ₹{filters.maxPrice}</span>
                                             </div>
                                             <div className="relative pt-2">
@@ -280,12 +282,13 @@ const FindMessesPage: React.FC = () => {
                                                     value={filters.maxPrice}
                                                     onChange={(e) => setFilters({ ...filters, maxPrice: parseInt(e.target.value) })}
                                                     className="w-full accent-primary-500 h-1 bg-white/10 rounded-full appearance-none cursor-pointer"
+                                                    aria-label="Maximum monthly price"
                                                 />
                                             </div>
                                         </div>
 
                                         <div className="space-y-4 sm:space-y-6">
-                                            <h4 className="text-[10px] font-black uppercase tracking-widest text-white/40">Network Trust</h4>
+                                            <h2 className="text-[10px] font-black uppercase tracking-widest text-white/70">Network Trust</h2>
                                             <button
                                                 onClick={() => setFilters({ ...filters, verified: !filters.verified })}
                                                 className={`w-full flex items-center justify-between p-5 sm:p-6 rounded-[1.5rem] border-2 transition-all duration-500 ${filters.verified ? 'border-primary-500 bg-primary-500/10 text-white' : 'border-white/5 bg-white/5 text-white/30 hover:border-white/20'}`}
@@ -301,7 +304,7 @@ const FindMessesPage: React.FC = () => {
                                         </div>
 
                                         <div className="space-y-6">
-                                            <h4 className="text-[10px] font-black uppercase tracking-widest text-white/40">Rating Intelligence</h4>
+                                            <h2 className="text-[10px] font-black uppercase tracking-widest text-white/70">Rating Intelligence</h2>
                                             <div className="flex justify-between items-center p-6 bg-white/5 rounded-[1.5rem] border border-white/5">
                                                 <div className="flex gap-2">
                                                     {[1, 2, 3, 4, 5].map(star => (
@@ -319,7 +322,7 @@ const FindMessesPage: React.FC = () => {
                                         </div>
 
                                         <button
-                                            className="w-full py-6 rounded-[1.5rem] border border-white/10 font-black uppercase tracking-widest text-[9px] text-white/30 hover:text-white hover:bg-white/10 transition-all"
+                                            className="w-full py-6 rounded-[1.5rem] border border-white/10 font-black uppercase tracking-widest text-[9px] text-white/60 hover:text-white hover:bg-white/10 transition-all"
                                             onClick={() => setFilters({ cuisine: '', verified: false, minRating: 0, maxPrice: 6000, distance: 5, sort: 'Best Rated' })}
                                         >
                                             Reset Filter Protocol
@@ -349,6 +352,7 @@ const FindMessesPage: React.FC = () => {
                                             className="bg-white/5 font-black text-[10px] uppercase tracking-[0.2em] focus:outline-none py-4 px-8 rounded-2xl cursor-pointer text-white border border-white/10 appearance-none pr-12"
                                             value={filters.sort}
                                             onChange={(e) => setFilters({ ...filters, sort: e.target.value })}
+                                            aria-label="Sort messes by"
                                         >
                                             <option className="bg-dark-900">Best Rated</option>
                                             <option className="bg-dark-900">Price: Low to High</option>
@@ -410,7 +414,7 @@ const FindMessesPage: React.FC = () => {
                                             No Mess Found <br />
                                             <span className="text-white/10 italic">In This Area Yet</span>
                                         </h3>
-                                        <p className="text-white/40 font-black uppercase tracking-[0.3em] text-[10px] md:text-xs max-w-xl mx-auto leading-loose italic">
+                                        <p className="text-white/70 font-black uppercase tracking-[0.3em] text-[10px] md:text-xs max-w-xl mx-auto leading-loose italic">
                                             We are expanding our network rapidly. You can request a mess service for your specific campus or browse nearby college hubs.
                                         </p>
                                     </div>

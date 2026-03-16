@@ -6,20 +6,29 @@ import { Card } from '../components/common/Card';
 import { Utensils, ArrowLeft, CircleCheck, AlertCircle } from 'lucide-react';
 import api from '../api/axiosInstance';
 import { toast } from 'react-hot-toast';
+import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 
 const ForgotPasswordPage: React.FC = () => {
     const [email, setEmail] = useState('');
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const { executeRecaptcha } = useGoogleReCaptcha();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
         setError(null);
 
+        if (!executeRecaptcha) {
+            toast.error('reCAPTCHA not initialized');
+            setIsLoading(false);
+            return;
+        }
+
         try {
-            await api.post('/auth/forgot-password', { email });
+            const recaptchaToken = await executeRecaptcha('forgot_password');
+            await api.post('/auth/forgot-password', { email, recaptchaToken });
             setIsSubmitted(true);
         } catch (error) {
             const err = error as { response?: { data?: { message?: string } } };

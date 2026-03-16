@@ -61,6 +61,7 @@ const NotificationCenter: React.FC = () => {
             <button
                 onClick={() => setIsOpen(!isOpen)}
                 className="relative p-2 rounded-xl bg-gray-100 hover:bg-gray-200 transition-colors"
+                aria-label={unreadCount > 0 ? `Notifications (${unreadCount} unread)` : 'Notifications'}
             >
                 <Bell size={20} className="text-gray-600" />
                 {unreadCount > 0 && (
@@ -106,11 +107,19 @@ const NotificationCenter: React.FC = () => {
                                         </div>
                                         <div className="opacity-0 group-hover:opacity-100 transition-opacity flex flex-col gap-2">
                                             {!n.read && (
-                                                <button onClick={() => markAsRead(n.id)} className="p-1 text-green-500 hover:bg-green-50 rounded-md">
+                                                <button 
+                                                    onClick={() => markAsRead(n.id)} 
+                                                    className="p-1 text-green-500 hover:bg-green-50 rounded-md"
+                                                    aria-label="Mark as read"
+                                                >
                                                     <Check size={14} />
                                                 </button>
                                             )}
-                                            <button onClick={() => deleteNotification(n.id)} className="p-1 text-red-400 hover:bg-red-50 rounded-md">
+                                            <button 
+                                                onClick={() => deleteNotification(n.id)} 
+                                                className="p-1 text-red-400 hover:bg-red-50 rounded-md"
+                                                aria-label="Delete notification"
+                                            >
                                                 <Trash2 size={14} />
                                             </button>
                                         </div>

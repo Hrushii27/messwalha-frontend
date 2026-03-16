@@ -174,7 +174,7 @@ const ProfilePage: React.FC = () => {
                             initial={{ x: -20, opacity: 0 }}
                             animate={{ x: 0, opacity: 1 }}
                             onClick={() => window.history.back()}
-                            className="flex items-center text-white/40 hover:text-primary-500 transition-all font-black uppercase tracking-[0.3em] text-[10px] group"
+                            className="flex items-center text-white/70 hover:text-primary-500 transition-all font-black uppercase tracking-[0.3em] text-[10px] group"
                         >
                             <ArrowLeft size={16} className="mr-3 group-hover:-translate-x-2 transition-transform" />
                             Discover Dashboard
@@ -244,7 +244,7 @@ const ProfilePage: React.FC = () => {
                                         </div>
 
                                         <div className="pt-8 space-y-4 border-t border-white/5">
-                                            <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-white/40">
+                                            <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-white/70">
                                                 <span>Profile Completion</span>
                                                 <span>{completionPercentage}%</span>
                                             </div>
@@ -279,7 +279,7 @@ const ProfilePage: React.FC = () => {
                                     <button
                                         key={tab.id}
                                         onClick={() => setActiveTab(tab.id as ActiveTab)}
-                                        className={`w-full flex items-center justify-between px-8 py-5 rounded-[2rem] transition-all duration-500 font-black uppercase tracking-widest text-[10px] border ${activeTab === tab.id ? 'bg-primary-500 border-primary-400 text-white shadow-3xl shadow-primary-500/30' : 'bg-white/5 border-white/5 text-white/40 hover:bg-white/10 hover:text-white'}`}
+                                        className={`w-full flex items-center justify-between px-8 py-5 rounded-[2rem] transition-all duration-500 font-black uppercase tracking-widest text-[10px] border ${activeTab === tab.id ? 'bg-primary-500 border-primary-400 text-white shadow-3xl shadow-primary-500/30' : 'bg-white/5 border-white/5 text-white/70 hover:bg-white/10 hover:text-white'}`}
                                     >
                                         <div className="flex items-center gap-4">
                                             <tab.icon size={18} />
@@ -448,7 +448,7 @@ const ProfilePage: React.FC = () => {
 
                                                         <div className="p-8 bg-white/5 rounded-[2.5rem] border border-white/5 space-y-6">
                                                             <div className="flex items-center gap-4">
-                                                                <LogOut size={24} className="text-white/40" />
+                                                                <LogOut size={24} className="text-white/70" />
                                                                 <h5 className="text-sm font-black text-white uppercase tracking-widest">Active Sessions</h5>
                                                             </div>
                                                             <div className="flex items-center justify-between">
@@ -481,7 +481,7 @@ const ProfilePage: React.FC = () => {
                                                     </div>
                                                     <button
                                                         onClick={fetchActivity}
-                                                        className="p-4 bg-white/5 rounded-2xl hover:bg-white/10 text-white/40 hover:text-white transition-all"
+                                                        className="p-4 bg-white/5 rounded-2xl hover:bg-white/10 text-white/70 hover:text-white transition-all"
                                                     >
                                                         <History size={20} className={loadingActivities ? 'animate-spin' : ''} />
                                                     </button>

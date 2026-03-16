@@ -7,6 +7,8 @@ import { Utensils } from 'lucide-react';
 import { useAppDispatch } from '../../hooks/redux';
 import { setCredentials } from '../../store/slices/authSlice';
 import api from '../api/axiosInstance';
+import Seo from '../components/common/Seo';
+import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 
 const LoginPage: React.FC = () => {
     const [email, setEmail] = useState('');
@@ -16,15 +18,24 @@ const LoginPage: React.FC = () => {
 
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
+    const { executeRecaptcha } = useGoogleReCaptcha();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
         setError('');
 
+        if (!executeRecaptcha) {
+            setError('reCAPTCHA not initialized');
+            setIsLoading(false);
+            return;
+        }
+
         try {
+            const recaptchaToken = await executeRecaptcha('login');
+
             // Call backend directly for login
-            const response = await api.post('/auth/login', { email, password });
+            const response = await api.post('/auth/login', { email, password, recaptchaToken });
 
             dispatch(setCredentials(response.data));
             navigate('/');
@@ -40,9 +51,13 @@ const LoginPage: React.FC = () => {
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-dark px-4 py-12">
+            <Seo 
+                title="Login" 
+                description="Sign in to your FindMess account to manage your subscriptions and find the best mess services." 
+            />
             <Card className="w-full max-w-md p-8">
                 <div className="text-center space-y-2 mb-8">
-                    <Link to="/" className="inline-flex items-center justify-center p-3 bg-primary rounded-xl text-white mb-4">
+                    <Link to="/" className="inline-flex items-center justify-center p-3 bg-primary rounded-xl text-white mb-4" aria-label="FindMess Home">
                         <Utensils size={32} />
                     </Link>
                     <h1 className="text-3xl font-heading font-bold">Welcome Back</h1>
@@ -58,6 +73,7 @@ const LoginPage: React.FC = () => {
 
                     <div className="space-y-4">
                         <Input
+                            id="login-email"
                             label="Email Address"
                             type="email"
                             placeholder="name@example.com"
@@ -66,6 +82,7 @@ const LoginPage: React.FC = () => {
                             required
                         />
                         <Input
+                            id="login-password"
                             label="Password"
                             type="password"
                             placeholder="••••••••"

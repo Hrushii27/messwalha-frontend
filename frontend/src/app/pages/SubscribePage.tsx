@@ -85,7 +85,7 @@ const SubscribePage: React.FC = () => {
                     >
                         UNLEASH YOUR <span className="text-primary-500">POTENTIAL</span>
                     </motion.h1>
-                    <p className="text-white/40 font-black uppercase tracking-[0.4em] text-[10px] md:text-xs">MessWalha Elite Listing Plan</p>
+                    <p className="text-white/70 font-black uppercase tracking-[0.4em] text-[10px] md:text-xs">MessWalha Elite Listing Plan</p>
                 </div>
             </div>
 
@@ -131,7 +131,7 @@ const SubscribePage: React.FC = () => {
                                     <span className="bg-primary-500/10 text-primary-500 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border border-primary-500/20">Elite Listing Plan</span>
                                     <div className="flex items-baseline gap-2">
                                         <span className="text-6xl font-black text-white italic">₹499</span>
-                                        <span className="text-white/40 font-bold uppercase tracking-widest text-sm">/ Month</span>
+                                        <span className="text-white/70 font-bold uppercase tracking-widest text-sm">/ Month</span>
                                     </div>
                                     <div className="flex items-center gap-2 text-primary-500">
                                         <Zap size={16} />

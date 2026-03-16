@@ -22,6 +22,7 @@ import type { RootState } from '../../store';
 import { useFavorites } from '../hooks/useFavorites';
 import { motion } from 'framer-motion';
 import type { Mess, Menu } from '../types/mess';
+import Seo from '../components/common/Seo';
 
 // Razorpay is now globally declared in global.d.ts
 
@@ -207,6 +208,10 @@ const MessDetailsPage: React.FC = () => {
 
     return (
         <Layout>
+            <Seo 
+                title={`${mess.name} | Best Mess Near You`} 
+                description={`Check out ${mess.name} on FindMess. Discover their weekly menu, pricing, and student reviews in ${mess.address}.`}
+            />
             <div className="container mx-auto px-4 py-8 max-w-7xl">
                 {/* Mess Owner Notices */}
                 {notifications.length > 0 && (
@@ -222,7 +227,7 @@ const MessDetailsPage: React.FC = () => {
                                     <ShieldCheck size={24} />
                                 </div>
                                 <div className="flex-1">
-                                    <h4 className="font-black text-orange-500 uppercase tracking-widest text-xs mb-1 italic">⚠ Notice from Mess Owner</h4>
+                                    <h2 className="font-black text-orange-500 uppercase tracking-widest text-xs mb-1 italic">⚠ Notice from Mess Owner</h2>
                                     <p className="text-orange-900 dark:text-orange-200 font-bold leading-relaxed">
                                         {notif.message}
                                     </p>
@@ -241,6 +246,7 @@ const MessDetailsPage: React.FC = () => {
                         src={getImageUrl(mess.messImage || mess.images?.[0]) || 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&q=80&w=1200'}
                         className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
                         alt={mess.name}
+                        fetchPriority="high"
                         onError={(e) => {
                             (e.target as HTMLImageElement).src = 'https://via.placeholder.com/1200x800.png?text=Mess+Image';
                         }}
@@ -263,6 +269,7 @@ const MessDetailsPage: React.FC = () => {
                                 }
                             }}
                             className="p-3 bg-white/10 backdrop-blur-md rounded-2xl text-white hover:bg-white/20 transition-all border border-white/20"
+                            aria-label="Share this mess"
                         >
                             <Share2 size={20} />
                         </button>
@@ -271,6 +278,7 @@ const MessDetailsPage: React.FC = () => {
                                 if (id) toggleFavorite(id);
                             }}
                             className={`p-3 backdrop-blur-md rounded-2xl transition-all border ${isFavorite(id || '') ? 'bg-red-500 border-red-500 text-white' : 'bg-white/10 border-white/20 text-white hover:bg-white/20'}`}
+                            aria-label={isFavorite(id || '') ? "Remove from favorites" : "Add to favorites"}
                         >
                             <Heart size={20} fill={isFavorite(id || '') ? 'currentColor' : 'none'} className={isFavorite(id || '') ? 'animate-pulse' : ''} />
                         </button>
@@ -425,7 +433,7 @@ const MessDetailsPage: React.FC = () => {
                                     <Card className="p-10 border-primary-500/20 bg-primary-500/5 rounded-[3rem] animate-in slide-in-from-top-4 duration-300">
                                         <form onSubmit={handleReviewSubmit} className="space-y-8">
                                             <div className="space-y-4">
-                                                <label className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 ml-2">Signal Intensity (Rating)</label>
+                                                <label className="text-[10px] font-black uppercase tracking-[0.3em] text-white/70 ml-2">Signal Intensity (Rating)</label>
                                                 <div className="flex gap-4 p-4 bg-white/5 rounded-3xl w-fit">
                                                     {[1, 2, 3, 4, 5].map((num) => (
                                                         <button
@@ -440,7 +448,7 @@ const MessDetailsPage: React.FC = () => {
                                                 </div>
                                             </div>
                                             <div className="space-y-4">
-                                                <label className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 ml-2">Logic Description (Comment)</label>
+                                                <label className="text-[10px] font-black uppercase tracking-[0.3em] text-white/70 ml-2">Logic Description (Comment)</label>
                                                 <textarea
                                                     required
                                                     value={reviewForm.comment}
@@ -607,16 +615,16 @@ const MessDetailsPage: React.FC = () => {
                                     <Clock size={24} />
                                 </div>
                                 <div className="space-y-1">
-                                    <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-text-muted dark:text-white/40 italic">Operational Status</h4>
+                                    <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-text-muted dark:text-white/70 italic">Operational Status</h4>
                                     <p className="text-2xl font-black italic tracking-tighter text-text-primary dark:text-white">SEC <span className="text-primary-500">ACTIVE</span></p>
                                 </div>
                             </div>
                             <div className="space-y-4">
                                 <div className="flex justify-between items-center bg-bg-main dark:bg-white/5 p-5 rounded-2xl border border-border-color dark:border-white/5">
-                                    <span className="text-[9px] font-black uppercase tracking-widest text-text-muted dark:text-white/40 italic">Logistics Cycle</span>
+                                    <span className="text-[9px] font-black uppercase tracking-widest text-text-muted dark:text-white/70 italic">Logistics Cycle</span>
                                     <span className="text-[10px] font-black uppercase tracking-widest">Daily 11:00 - 22:00</span>
                                 </div>
-                                <p className="text-[9px] font-black uppercase tracking-[0.2em] text-center text-text-muted dark:text-white/20 italic pt-2">Zero Latency Meal Supply Guaranteed</p>
+                                <p className="text-[9px] font-black uppercase tracking-[0.2em] text-center text-text-muted dark:text-text-secondary italic pt-2">Zero Latency Meal Supply Guaranteed</p>
                             </div>
                         </Card>
                     </div>

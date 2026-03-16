@@ -21,9 +21,11 @@ import api from '../api/axiosInstance';
 import { useNavigate, Link } from 'react-router-dom';
 import Seo from '../components/common/Seo';
 import { useEffect } from 'react';
+import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 
 const AddMessPage: React.FC = () => {
     const navigate = useNavigate();
+    const { executeRecaptcha } = useGoogleReCaptcha();
     const [loading, setLoading] = useState(false);
     const [subStatus, setSubStatus] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
@@ -117,19 +119,27 @@ const AddMessPage: React.FC = () => {
         setLoading(true);
         setError(null);
 
-        const data = new FormData();
-        Object.entries(formData).forEach(([key, value]) => {
-            data.append(key, value);
-        });
-
-        if (messImage) {
-            data.append('mess_image', messImage);
+        if (!executeRecaptcha) {
+            setError('reCAPTCHA not initialized');
+            setLoading(false);
+            return;
         }
-        menuImages.forEach(file => {
-            data.append('menu_images', file);
-        });
 
         try {
+            const recaptchaToken = await executeRecaptcha('add_mess');
+            const data = new FormData();
+            Object.entries(formData).forEach(([key, value]) => {
+                data.append(key, value);
+            });
+            data.append('recaptchaToken', recaptchaToken);
+
+            if (messImage) {
+                data.append('mess_image', messImage);
+            }
+            menuImages.forEach(file => {
+                data.append('menu_images', file);
+            });
+
             await api.post('/mess', data, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
@@ -158,7 +168,7 @@ const AddMessPage: React.FC = () => {
                         </div>
                         <div className="space-y-4">
                             <h2 className="text-4xl font-black italic tracking-tighter text-text-primary dark:text-white uppercase">Mess Registered!</h2>
-                            <p className="text-text-muted dark:text-white/40 font-bold uppercase tracking-widest text-xs">Your mess has been added to the network successfully. Redirecting to exploration page...</p>
+                            <p className="text-text-muted dark:text-white/70 font-bold uppercase tracking-widest text-xs">Your mess has been added to the network successfully. Redirecting to exploration page...</p>
                         </div>
                     </motion.div>
                 </div>
@@ -218,7 +228,7 @@ const AddMessPage: React.FC = () => {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div className="space-y-3">
-                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted dark:text-white/40 ml-2">Mess Name</label>
+                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted dark:text-white/70 ml-2">Mess Name</label>
                                 <div className="relative group">
                                     <Utensils size={16} className="absolute left-6 top-1/2 -translate-y-1/2 text-primary-500" />
                                     <input
@@ -233,7 +243,7 @@ const AddMessPage: React.FC = () => {
                                 </div>
                             </div>
                             <div className="space-y-3">
-                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted dark:text-white/40 ml-2">Owner Name</label>
+                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted dark:text-white/70 ml-2">Owner Name</label>
                                 <div className="relative group">
                                     <User size={16} className="absolute left-6 top-1/2 -translate-y-1/2 text-primary-500" />
                                     <input
@@ -248,7 +258,7 @@ const AddMessPage: React.FC = () => {
                                 </div>
                             </div>
                             <div className="space-y-3">
-                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted dark:text-white/40 ml-2">Mobile Number</label>
+                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted dark:text-white/70 ml-2">Mobile Number</label>
                                 <div className="relative group">
                                     <Phone size={16} className="absolute left-6 top-1/2 -translate-y-1/2 text-primary-500" />
                                     <input
@@ -263,7 +273,7 @@ const AddMessPage: React.FC = () => {
                                 </div>
                             </div>
                             <div className="space-y-3">
-                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted dark:text-white/40 ml-2">Mess Address</label>
+                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted dark:text-white/70 ml-2">Mess Address</label>
                                 <div className="relative group">
                                     <MapPin size={16} className="absolute left-6 top-1/2 -translate-y-1/2 text-primary-500" />
                                     <input
@@ -289,7 +299,7 @@ const AddMessPage: React.FC = () => {
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                             <div className="space-y-3">
-                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted dark:text-white/40 ml-2">Cost Per Month</label>
+                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted dark:text-white/70 ml-2">Cost Per Month</label>
                                 <div className="relative group">
                                     <IndianRupee size={16} className="absolute left-6 top-1/2 -translate-y-1/2 text-primary-500" />
                                     <input
@@ -304,7 +314,7 @@ const AddMessPage: React.FC = () => {
                                 </div>
                             </div>
                             <div className="space-y-3">
-                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted dark:text-white/40 ml-2">Cost Per Week</label>
+                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted dark:text-white/70 ml-2">Cost Per Week</label>
                                 <div className="relative group">
                                     <IndianRupee size={16} className="absolute left-6 top-1/2 -translate-y-1/2 text-primary-500" />
                                     <input
@@ -319,7 +329,7 @@ const AddMessPage: React.FC = () => {
                                 </div>
                             </div>
                             <div className="space-y-3">
-                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted dark:text-white/40 ml-2">Cost Per Day</label>
+                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted dark:text-white/70 ml-2">Cost Per Day</label>
                                 <div className="relative group">
                                     <IndianRupee size={16} className="absolute left-6 top-1/2 -translate-y-1/2 text-primary-500" />
                                     <input
@@ -347,7 +357,7 @@ const AddMessPage: React.FC = () => {
                             {/* Text Menu */}
                             <div className="space-y-4">
                                 <div className="flex items-center justify-between">
-                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted dark:text-white/40 ml-2">Menu Description (Optional)</label>
+                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted dark:text-white/70 ml-2">Menu Description (Optional)</label>
                                     <span className="text-[8px] font-black uppercase tracking-widest text-primary-500/60 bg-primary-500/5 px-3 py-1 rounded-full border border-primary-500/10">Text Option</span>
                                 </div>
                                 <textarea
@@ -362,7 +372,7 @@ const AddMessPage: React.FC = () => {
 
                             {/* Main Image */}
                             <div className="space-y-6">
-                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted dark:text-white/40 ml-2">Mess Display Photo (Plate Image)</label>
+                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted dark:text-white/70 ml-2">Mess Display Photo (Plate Image)</label>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                     <div
                                         onClick={() => document.getElementById('messImageInput')?.click()}
@@ -399,7 +409,7 @@ const AddMessPage: React.FC = () => {
                             {/* Menu Images */}
                             <div className="space-y-6">
                                 <div className="flex items-center justify-between">
-                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted dark:text-white/40 ml-2">Gallery / Menu Board Photos (Max 5)</label>
+                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted dark:text-white/70 ml-2">Gallery / Menu Board Photos (Max 5)</label>
                                     <span className="text-[8px] font-black uppercase tracking-widest text-primary-500/60 bg-primary-500/5 px-3 py-1 rounded-full border border-primary-500/10">Image Option</span>
                                 </div>
                                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-6">

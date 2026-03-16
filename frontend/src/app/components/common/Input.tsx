@@ -16,7 +16,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         return (
             <div className="w-full space-y-1.5">
                 {label && (
-                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <label htmlFor={props.id} className="text-sm font-medium text-gray-700 dark:text-gray-300">
                         {label}
                     </label>
                 )}

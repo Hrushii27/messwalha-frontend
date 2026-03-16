@@ -162,9 +162,9 @@ const ChatPage: React.FC = () => {
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <Button variant="ghost" size="sm" className="rounded-xl text-gray-400"><Phone size={20} /></Button>
-                                        <Button variant="ghost" size="sm" className="rounded-xl text-gray-400"><Video size={20} /></Button>
-                                        <Button variant="ghost" size="sm" className="rounded-xl text-gray-400"><Info size={20} /></Button>
+                                        <Button variant="ghost" size="sm" className="rounded-xl text-gray-400" aria-label="Call"><Phone size={20} /></Button>
+                                        <Button variant="ghost" size="sm" className="rounded-xl text-gray-400" aria-label="Video Call"><Video size={20} /></Button>
+                                        <Button variant="ghost" size="sm" className="rounded-xl text-gray-400" aria-label="Information"><Info size={20} /></Button>
                                     </div>
                                 </div>
 

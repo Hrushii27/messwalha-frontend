@@ -14,6 +14,7 @@ import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import Seo from '../components/common/Seo';
+import { FAQSection } from '../components/common/FAQSection';
 
 const LandingPage: React.FC = () => {
     useTranslation();
@@ -23,7 +24,7 @@ const LandingPage: React.FC = () => {
         <Layout>
             <div className="bg-bg-main">
                 <Seo
-                    title="Find Your Perfect Mess in Seconds | MessWalha"
+                    title="Find Your Perfect Mess in Seconds | FindMess"
                     description="Discover verified mess services near your college. Compare menus, prices, and subscribe easily. Affordable and healthy meal plans for students."
                 />
 
@@ -44,9 +45,9 @@ const LandingPage: React.FC = () => {
                     <div className="container mx-auto px-4 relative z-10 py-20 lg:py-32">
                         <div className="max-w-5xl mx-auto text-center space-y-12">
                             <motion.div
-                                initial={{ opacity: 0, y: 30 }}
+                                initial={{ opacity: 1, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.8 }}
+                                transition={{ duration: 0.5 }}
                                 className="space-y-6"
                             >
                                 <motion.div
@@ -60,7 +61,7 @@ const LandingPage: React.FC = () => {
                                     Find Your Perfect <br className="hidden sm:block" />
                                     <span className="text-primary-500 italic">Mess in Seconds</span>
                                 </h1>
-                                <p className="text-xs sm:text-lg md:text-xl lg:text-2xl text-white/50 font-medium max-w-3xl mx-auto leading-relaxed italic mt-6 px-4">
+                                <p className="text-xs sm:text-lg md:text-xl lg:text-2xl text-white/70 font-medium max-w-3xl mx-auto leading-relaxed italic mt-6 px-4">
                                     Discover verified mess services near your college terminal. <br className="hidden md:block" />
                                     Compare menus, prices, and subscribe with professional ease.
                                 </p>
@@ -80,11 +81,15 @@ const LandingPage: React.FC = () => {
                                             type="text"
                                             placeholder="📍 Enter College / Area..."
                                             className="w-full bg-white/[0.03] border-none text-white pl-14 pr-6 py-5 sm:py-7 rounded-full focus:ring-2 focus:ring-primary-500/50 transition-all font-black uppercase tracking-widest text-[10px] sm:text-[11px] outline-none"
+                                            aria-label="Search by Area or College"
                                         />
                                     </div>
                                     <div className="flex-1 w-full relative group/select">
                                         <Utensils className="absolute left-6 top-1/2 -translate-y-1/2 text-primary-500 z-10 group-hover/select:scale-110 transition-transform" size={16} />
-                                        <select className="w-full bg-white/[0.03] border-none text-white pl-14 pr-10 py-5 sm:py-7 rounded-full focus:ring-2 focus:ring-primary-500/50 transition-all font-black uppercase tracking-widest text-[10px] sm:text-[11px] appearance-none cursor-pointer outline-none">
+                                        <select 
+                                            className="w-full bg-white/[0.03] border-none text-white pl-14 pr-10 py-5 sm:py-7 rounded-full focus:ring-2 focus:ring-primary-500/50 transition-all font-black uppercase tracking-widest text-[10px] sm:text-[11px] appearance-none cursor-pointer outline-none"
+                                            aria-label="Filter by meal type"
+                                        >
                                             <option value="" className="bg-dark-900 text-[10px]">🍛 Veg / Non-Veg</option>
                                             <option value="veg" className="bg-dark-900 text-[10px]">Pure Veg</option>
                                             <option value="non-veg" className="bg-dark-900 text-[10px]">Veg + Non-Veg</option>
@@ -113,7 +118,7 @@ const LandingPage: React.FC = () => {
                                     { icon: CircleCheck, text: 'Affordable Monthly Plans' },
                                     { icon: CircleCheck, text: 'Healthy & Hygienic Food' }
                                 ].map((feature, i) => (
-                                    <div key={i} className="flex items-center space-x-3 text-white/40 group hover:text-white transition-colors cursor-default">
+                                    <div key={i} className="flex items-center space-x-3 text-white/80 group hover:text-white transition-colors cursor-default">
                                         <feature.icon size={18} className="text-primary-500 group-hover:scale-125 transition-transform" />
                                         <span className="text-[11px] font-black uppercase tracking-[0.2em] italic">✓ {feature.text}</span>
                                     </div>
@@ -248,6 +253,9 @@ const LandingPage: React.FC = () => {
                         </div>
                     </div>
                 </section>
+
+                {/* FAQ Section */}
+                <FAQSection />
 
                 {/* CTA Section */}
                 <section className="py-16 sm:py-24 bg-bg-main">
