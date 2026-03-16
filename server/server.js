@@ -34,8 +34,8 @@ app.use(
       directives: {
         defaultSrc: ["'self'"],
         scriptSrc: ["'self'", "'unsafe-inline'", "https://www.google.com/recaptcha/", "https://www.gstatic.com/recaptcha/", "https://checkout.razorpay.com", "https://api.razorpay.com"],
-        frameSrc: ["'self'", "https://www.google.com/", "https://recaptcha.google.com/", "https://checkout.razorpay.com/", "https://api.razorpay.com/"],
-        connectSrc: ["'self'", "https://www.google.com/recaptcha/", "https://api.findmess.me", "https://api.razorpay.com"],
+        frameSrc: ["'self'", "https://www.google.com/recaptcha/", "https://recaptcha.google.com/", "https://checkout.razorpay.com/", "https://api.razorpay.com/"],
+        connectSrc: ["'self'", "https://www.google.com/recaptcha/", "https://www.gstatic.com/recaptcha/", "https://api.findmess.me", "https://api.razorpay.com"],
         imgSrc: ["'self'", "data:", "https://www.gstatic.com/", "https://www.google.com/"],
         styleSrc: ["'self'", "'unsafe-inline'"],
       },
