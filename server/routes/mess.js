@@ -86,7 +86,8 @@ router.post('/', messValidation, validateRequest, async (req, res) => {
             cuisine || 'Indian',
             req.body.city || '',
             req.body.veg_nonveg || 'Veg',
-            req.body.college_tags || ''
+            req.body.college_tags || '',
+            req.body.upiId || null
         );
         res.status(201).json({ success: true, data: mess });
     } catch (err) {
@@ -115,6 +116,12 @@ router.put('/my', async (req, res) => {
         if (!req.user) {
             return res.status(401).json({ message: 'Unauthorized' });
         }
+
+        const sub = await Subscription.findByOwnerId(req.user.id);
+        if (!sub || (sub.status !== 'trial' && sub.status !== 'active')) {
+            return res.status(403).json({ message: 'Subscription expired or inactive. Please renew to update your mess.' });
+        }
+
         const updatedMess = await Mess.update(req.user.id, req.body);
         res.json({ success: true, data: updatedMess });
     } catch (err) {

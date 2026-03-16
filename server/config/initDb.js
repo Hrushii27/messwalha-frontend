@@ -118,6 +118,12 @@ const createTables = async () => {
         IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='mess_listings' AND column_name='city') THEN
             ALTER TABLE mess_listings ADD COLUMN city VARCHAR(100);
         END IF;
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='mess_listings' AND column_name='status') THEN
+            ALTER TABLE mess_listings ADD COLUMN status VARCHAR(20) DEFAULT 'pending';
+        END IF;
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='mess_listings' AND column_name='upi_id') THEN
+            ALTER TABLE mess_listings ADD COLUMN upi_id VARCHAR(100);
+        END IF;
     END $$;
     `;
 

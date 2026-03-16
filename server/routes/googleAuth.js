@@ -32,11 +32,19 @@ router.post('/google', async (req, res) => {
             }
         }
 
-        const jwtToken = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1d' });
+        // Generate and send OTP for 2-step verification
+        const Otp = require('../models/otp');
+        const { sendOTPEmail } = require('../utils/emailService');
+        
+        const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+        await Otp.create(email, otpCode);
+        await sendOTPEmail(email, otpCode);
 
+        // Do not issue JWT yet. Instruct frontend to ask for OTP.
         res.json({
-            token: jwtToken,
-            owner: user
+            requireOtp: true,
+            email: email,
+            message: 'Google verified. Please check your email for the OTP to complete login.'
         });
 
     } catch (err) {

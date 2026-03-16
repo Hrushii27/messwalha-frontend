@@ -11,12 +11,23 @@ const registerValidation = [
     body('phone').optional({ checkFalsy: true }).matches(/^[0-9]{10}$/).withMessage('Invalid phone number (10 digits required)')
 ];
 
+const ownerRegisterValidation = [
+    body('email').isEmail().normalizeEmail().withMessage('Invalid email address'),
+    body('password').isLength({ min: 8 }).withMessage('Password must be at least 8 characters long'),
+    body('name').trim().notEmpty().withMessage('Name is required'),
+    body('messName').trim().notEmpty().withMessage('Mess Name is required'),
+    body('location').trim().notEmpty().withMessage('Location is required'),
+    body('city').trim().notEmpty().withMessage('City is required'),
+    body('phone').matches(/^[0-9]{10}$/).withMessage('Valid phone number (10 digits) is required for owners')
+];
+
 const loginValidation = [
     body('email').isEmail().normalizeEmail().withMessage('Invalid email address'),
     body('password').notEmpty().withMessage('Password is required')
 ];
 
 router.post('/register', registerValidation, validateRequest, authController.register);
+router.post('/owner-register', ownerRegisterValidation, validateRequest, authController.ownerRegister);
 router.post('/login', loginValidation, validateRequest, authController.login);
 router.post('/forgot-password', [
     body('email').isEmail().normalizeEmail(),
