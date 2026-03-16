@@ -8,7 +8,7 @@ const registerValidation = [
     body('email').isEmail().normalizeEmail().withMessage('Invalid email address'),
     body('password').isLength({ min: 8 }).withMessage('Password must be at least 8 characters long'),
     body('name').trim().notEmpty().withMessage('Name is required'),
-    body('phone').matches(/^[0-9]{10}$/).withMessage('Invalid phone number (10 digits required)')
+    body('phone').optional({ checkFalsy: true }).matches(/^[0-9]{10}$/).withMessage('Invalid phone number (10 digits required)')
 ];
 
 const loginValidation = [
