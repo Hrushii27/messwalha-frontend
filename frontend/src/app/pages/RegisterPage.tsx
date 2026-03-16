@@ -22,26 +22,70 @@ const RegisterPage: React.FC = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
+    React.useEffect(() => {
+        const renderRecaptcha = () => {
+            if ((window as any).grecaptcha && (window as any).grecaptcha.render) {
+                const container = document.getElementById('recaptcha-container');
+                if (container && container.innerHTML === '') {
+                    (window as any).grecaptcha.render('recaptcha-container', {
+                        'sitekey': import.meta.env.VITE_RECAPTCHA_SITE_KEY || "6Ld48IssAAAAACSSpuDv2_NC8bNqQBol2lpFpsM7",
+                        'theme': document.documentElement.classList.contains('dark') ? 'dark' : 'light'
+                    });
+                }
+            } else {
+                setTimeout(renderRecaptcha, 500);
+            }
+        };
+        renderRecaptcha();
+    }, []);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
         setError('');
 
         try {
+            const recaptchaResponse = (window as any).grecaptcha?.getResponse();
+            if (!recaptchaResponse) {
+                toast.error('Please complete the reCAPTCHA verification');
+                setIsLoading(false);
+                return;
+            }
+
+            if (formData.password.length < 8) {
+                toast.error('Password must be at least 8 characters long');
+                setIsLoading(false);
+                return;
+            }
+
             // Call backend directly for registration
             const response = await api.post('/auth/register', {
                 name: formData.name,
                 email: formData.email,
                 phone: '', // Added empty phone to prevent backend SQL errors
                 password: formData.password,
-                role: formData.role
+                role: formData.role,
+                recaptchaToken: recaptchaResponse
             });
 
             dispatch(setCredentials(response.data));
             navigate('/');
         } catch (error) {
-            const err = error as { response?: { data?: { message?: string } } };
-            toast.error(err.response?.data?.message || 'Registration failed');
+            const err = error as { 
+                response?: { 
+                    data?: { 
+                        message?: string,
+                        errors?: Array<{ msg: string }>
+                    } 
+                } 
+            };
+            
+            if (err.response?.data?.errors && err.response.data.errors.length > 0) {
+                // Show the first validation error
+                toast.error(err.response.data.errors[0].msg);
+            } else {
+                toast.error(err.response?.data?.message || 'Registration failed');
+            }
         } finally {
             setIsLoading(false);
         }
@@ -134,6 +178,10 @@ const RegisterPage: React.FC = () => {
                         <Link to="/terms" className="text-primary hover:underline">Terms of Service</Link> and{' '}
                         <Link to="/privacy" className="text-primary hover:underline">Privacy Policy</Link>.
                     </p>
+
+                    <div className="flex justify-center mb-6">
+                        <div id="recaptcha-container"></div>
+                    </div>
 
                     <Button type="submit" className="w-full" size="lg" isLoading={isLoading}>
                         Create Account

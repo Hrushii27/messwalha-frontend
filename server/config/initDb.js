@@ -10,7 +10,9 @@ const createTables = async () => {
       phone VARCHAR(20),
       password_hash VARCHAR(255) NOT NULL,
       role VARCHAR(20) DEFAULT 'STUDENT',
-      created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+      google_id VARCHAR(255) UNIQUE,
+      profile_picture TEXT
     );
 
     CREATE TABLE IF NOT EXISTS subscriptions (
@@ -82,6 +84,15 @@ const createTables = async () => {
       created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
       UNIQUE(user_id, mess_id)
     );
+    
+    CREATE TABLE IF NOT EXISTS otp_verifications (
+      id SERIAL PRIMARY KEY,
+      user_email VARCHAR(255) NOT NULL,
+      otp_code VARCHAR(6) NOT NULL,
+      expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
+      attempts INTEGER DEFAULT 0,
+      created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    );
 
     -- Additional Migrations
     DO $$ 
@@ -95,6 +106,17 @@ const createTables = async () => {
         END IF;
         IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='mess_owners' AND column_name='reset_password_expires') THEN
             ALTER TABLE mess_owners ADD COLUMN reset_password_expires TIMESTAMP WITH TIME ZONE;
+        END IF;
+
+        -- Listing improvements
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='mess_listings' AND column_name='veg_nonveg') THEN
+            ALTER TABLE mess_listings ADD COLUMN veg_nonveg VARCHAR(20) DEFAULT 'Both';
+        END IF;
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='mess_listings' AND column_name='college_tags') THEN
+            ALTER TABLE mess_listings ADD COLUMN college_tags TEXT;
+        END IF;
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='mess_listings' AND column_name='city') THEN
+            ALTER TABLE mess_listings ADD COLUMN city VARCHAR(100);
         END IF;
     END $$;
     `;

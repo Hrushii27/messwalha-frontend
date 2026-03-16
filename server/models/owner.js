@@ -36,6 +36,18 @@ const Owner = {
             [passwordHash, id]
         );
         return result.rows[0];
+    },
+    findByGoogleId: async (googleId) => {
+        const result = await db.query('SELECT * FROM mess_owners WHERE google_id = $1', [googleId]);
+        return result.rows[0];
+    },
+    updateProfile: async (id, data) => {
+        const { google_id, profile_picture } = data;
+        const result = await db.query(
+            'UPDATE mess_owners SET google_id = COALESCE($1, google_id), profile_picture = COALESCE($2, profile_picture) WHERE id = $3 RETURNING *',
+            [google_id, profile_picture, id]
+        );
+        return result.rows[0];
     }
 };
 

@@ -16,6 +16,7 @@ const activityRoutes = require('./routes/activity');
 const menuRoutes = require('./routes/menu');
 const orderRoutes = require('./routes/order');
 const reviewsRoutes = require('./routes/reviews');
+const googleAuthRoutes = require('./routes/googleAuth');
 
 const helmet = require('helmet');
 const { setupSecurity } = require('./middleware/security');
@@ -113,6 +114,7 @@ try {
 
 // --- API Routes ---
 app.use('/api/auth', authRoutes);
+app.use('/api/auth', googleAuthRoutes);
 
 // Dual support for singular/plural endpoints to avoid frontend breakage
 app.use(['/api/subscription', '/api/subscriptions'], subscriptionRoutes);

@@ -77,11 +77,49 @@ router.post('/', messValidation, validateRequest, async (req, res) => {
         const monthlyPrice = pricePerMonth;
         const description = menuText || '';
 
-        const mess = await Mess.create(ownerId, name, address, monthlyPrice, description, cuisine || 'Indian');
+        const mess = await Mess.create(
+            ownerId, 
+            name, 
+            address, 
+            monthlyPrice, 
+            description, 
+            cuisine || 'Indian',
+            req.body.city || '',
+            req.body.veg_nonveg || 'Veg',
+            req.body.college_tags || ''
+        );
         res.status(201).json({ success: true, data: mess });
     } catch (err) {
         console.error('Error creating mess:', err);
         res.status(500).json({ message: 'Error creating mess listing: ' + err.message });
+    }
+});
+
+// Get logged-in owner's mess
+router.get('/my', async (req, res) => {
+    try {
+        if (!req.user) {
+            return res.status(401).json({ message: 'Unauthorized' });
+        }
+        const messes = await Mess.findByOwnerId(req.user.id);
+        res.json({ data: messes[0] || null }); // Return first mess or null
+    } catch (err) {
+        console.error('Error fetching owner mess:', err);
+        res.status(500).json({ message: 'Error fetching mess details' });
+    }
+});
+
+// Update logged-in owner's mess
+router.put('/my', async (req, res) => {
+    try {
+        if (!req.user) {
+            return res.status(401).json({ message: 'Unauthorized' });
+        }
+        const updatedMess = await Mess.update(req.user.id, req.body);
+        res.json({ success: true, data: updatedMess });
+    } catch (err) {
+        console.error('Error updating owner mess:', err);
+        res.status(500).json({ message: 'Error updating mess details: ' + err.message });
     }
 });
 

@@ -3,7 +3,8 @@ const Subscription = require('../models/subscription');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
-const { sendResetPasswordEmail } = require('../utils/emailService');
+const { sendResetPasswordEmail, sendOTPEmail } = require('../utils/emailService');
+const Otp = require('../models/otp');
 const { body, validationResult } = require('express-validator');
 const { verifyRecaptcha } = require('../utils/securityUtils');
 const { logSecurityEvent } = require('../middleware/activityLogger');
@@ -144,6 +145,42 @@ const authController = {
         } catch (err) {
             console.error('❌ Reset Password Error:', err);
             res.status(500).json({ message: 'Server error' });
+        }
+    },
+    sendOTP: async (req, res) => {
+        const { email } = req.body;
+        const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+        try {
+            await Otp.create(email, otpCode);
+            await sendOTPEmail(email, otpCode);
+            res.json({ success: true, message: 'OTP sent successfully' });
+        } catch (err) {
+            console.error('❌ Send OTP Error:', err);
+            res.status(500).json({ message: 'Failed to send OTP' });
+        }
+    },
+    verifyOTP: async (req, res) => {
+        const { email, otp } = req.body;
+
+        try {
+            const record = await Otp.verify(email, otp);
+            if (!record) {
+                await Otp.incrementAttempts(email);
+                return res.status(400).json({ message: 'Invalid or expired OTP' });
+            }
+
+            let user = await Owner.findByEmail(email);
+            if (!user) {
+                // Auto-register as Student if not exists
+                user = await Owner.create(email.split('@')[0], email, '', 'OTP_AUTH_NO_PASSWORD', 'STUDENT');
+            }
+
+            const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1d' });
+            res.json({ token, owner: user });
+        } catch (err) {
+            console.error('❌ Verify OTP Error:', err);
+            res.status(500).json({ message: 'OTP verification failed' });
         }
     }
 };

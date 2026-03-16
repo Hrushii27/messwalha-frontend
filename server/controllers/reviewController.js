@@ -1,4 +1,5 @@
 const Review = require('../models/review');
+const db = require('../config/db');
 
 const addReview = async (req, res) => {
     try {
@@ -28,7 +29,44 @@ const getReviewsByMess = async (req, res) => {
     }
 };
 
+const respondToReview = async (req, res) => {
+    try {
+        const { reviewId } = req.params;
+        const { response } = req.body;
+        const ownerId = req.user.id;
+
+        // Verify that the owner owns the mess for this review
+        const review = await db.query(
+            'SELECT r.* FROM reviews r JOIN mess_listings ml ON r.mess_id = ml.id WHERE r.id = $1 AND ml.mess_owner_id = $2',
+            [reviewId, ownerId]
+        );
+
+        if (review.rows.length === 0) {
+            return res.status(403).json({ message: 'Unauthorized to respond to this review' });
+        }
+
+        const updatedReview = await Review.respond(reviewId, response);
+        res.json({ success: true, data: updatedReview });
+    } catch (err) {
+        console.error('Error responding to review:', err);
+        res.status(500).json({ message: 'Error responding to review' });
+    }
+};
+
+const getUserReviews = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const reviews = await Review.findByUserId(userId);
+        res.json({ success: true, data: reviews });
+    } catch (err) {
+        console.error('Error fetching user reviews:', err);
+        res.status(500).json({ message: 'Error fetching reviews' });
+    }
+};
+
 module.exports = {
     addReview,
-    getReviewsByMess
+    getReviewsByMess,
+    respondToReview,
+    getUserReviews
 };

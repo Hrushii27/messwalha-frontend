@@ -28,4 +28,11 @@ router.post('/reset-password', [
     validateRequest
 ], authController.resetPassword);
 
+// OTP Routes
+router.post('/send-otp', body('email').isEmail(), validateRequest, authController.sendOTP);
+router.post('/verify-otp', [
+    body('email').isEmail(),
+    body('otp').isLength({ min: 6, max: 6 })
+], validateRequest, authController.verifyOTP);
+
 module.exports = router;
