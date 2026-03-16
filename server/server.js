@@ -33,11 +33,12 @@ app.use(
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "'unsafe-inline'", "https://www.google.com/recaptcha/", "https://www.gstatic.com/recaptcha/", "https://checkout.razorpay.com", "https://api.razorpay.com"],
-        frameSrc: ["'self'", "https://www.google.com/recaptcha/", "https://recaptcha.google.com/", "https://checkout.razorpay.com/", "https://api.razorpay.com/"],
-        connectSrc: ["'self'", "https://www.google.com/recaptcha/", "https://www.gstatic.com/recaptcha/", "https://api.findmess.me", "https://api.razorpay.com"],
-        imgSrc: ["'self'", "data:", "https://www.gstatic.com/", "https://www.google.com/"],
-        styleSrc: ["'self'", "'unsafe-inline'"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "https://*.google.com", "https://*.gstatic.com", "https://*.razorpay.com", "https://checkout.razorpay.com"],
+        frameSrc: ["'self'", "https://*.google.com", "https://recaptcha.google.com", "https://*.razorpay.com", "https://checkout.razorpay.com"],
+        connectSrc: ["'self'", "https://*.google.com", "https://*.gstatic.com", "https://api.findmess.me", "https://*.razorpay.com"],
+        imgSrc: ["'self'", "data:", "https://*.gstatic.com", "https://*.google.com"],
+        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+        fontSrc: ["'self'", "https://fonts.gstatic.com"],
       },
     },
   })
