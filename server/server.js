@@ -28,7 +28,20 @@ const PORT = process.env.PORT || 5000;
 console.log('✅ Express initialized. Port:', PORT);
 
 // --- 1. Security Headers (Helmet) ---
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "https://www.google.com/recaptcha/", "https://www.gstatic.com/recaptcha/", "https://checkout.razorpay.com"],
+        frameSrc: ["'self'", "https://www.google.com/recaptcha/", "https://recaptcha.google.com/", "https://checkout.razorpay.com"],
+        connectSrc: ["'self'", "https://www.google.com/recaptcha/", "https://api.findmess.me", "https://api.razorpay.com"],
+        imgSrc: ["'self'", "data:", "https://www.gstatic.com/", "https://www.google.com/"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+      },
+    },
+  })
+);
 
 // --- 2. CORS Configuration ---
 app.use(
