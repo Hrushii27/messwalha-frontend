@@ -10,9 +10,10 @@ import GlobalErrorBoundary from './app/components/GlobalErrorBoundary';
 const LandingPage = lazy(() => import('./app/pages/LandingPage'));
 const LoginPage = lazy(() => import('./app/pages/LoginPage'));
 const RegisterPage = lazy(() => import('./app/pages/RegisterPage'));
+const OwnerRegistrationPage = lazy(() => import('./app/pages/OwnerRegistrationPage'));
 const FindMessesPage = lazy(() => import('./app/pages/FindMessesPage'));
 const MessDetailsPage = lazy(() => import('./app/pages/MessDetailsPage'));
-const StudentDashboardPage = lazy(() => import('./app/pages/StudentDashboardPage'));
+const UserDashboard = lazy(() => import('./app/pages/UserDashboard'));
 const MySubscriptionsPage = lazy(() => import('./app/pages/MySubscriptionsPage'));
 const ChatPage = lazy(() => import('./app/pages/ChatPage'));
 const OwnerDashboardPage = lazy(() => import('./app/pages/OwnerDashboardPage'));
@@ -51,6 +52,7 @@ const App: React.FC = () => {
                 <Route path="/faq" element={<FAQPage />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
+                <Route path="/mess-owner-register" element={<OwnerRegistrationPage />} />
                 <Route path="/forgot-password" element={<ForgotPasswordPage />} />
                 <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
                 <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
@@ -58,7 +60,7 @@ const App: React.FC = () => {
                 <Route path="/find-messes" element={<Navigate to="/find-mess" replace />} />
                 <Route path="/mess/:id/:section?" element={<MessDetailsPage />} />
                 <Route path="/invoice/:id" element={<InvoicePage />} />
-                <Route path="/dashboard" element={<StudentDashboardPage />} />
+                <Route path="/dashboard" element={<UserDashboard />} />
                 <Route path="/subscriptions" element={<MySubscriptionsPage />} />
                 <Route path="/messages" element={<ChatPage />} />
                 <Route path="/profile" element={<ProfilePage />} />

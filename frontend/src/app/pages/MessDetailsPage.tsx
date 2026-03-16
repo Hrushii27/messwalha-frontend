@@ -69,6 +69,17 @@ const MessDetailsPage: React.FC = () => {
                 setMess(messRes.data.data);
                 setNotifications(notifRes.data.data || []);
                 setReviews(reviewsRes.data.data || []);
+
+                // Tracking Recently Viewed
+                if (messRes.data.data) {
+                    const m = messRes.data.data;
+                    const history = JSON.parse(localStorage.getItem('recentlyViewed') || '[]');
+                    const updated = [
+                        { id: m.id, name: m.name, image: getImageUrl(m.messImage || m.images?.[0]), rating: m.rating },
+                        ...history.filter((item: any) => item.id !== m.id)
+                    ].slice(0, 10);
+                    localStorage.setItem('recentlyViewed', JSON.stringify(updated));
+                }
             } catch (error) {
                 console.error('Error fetching details:', error);
             } finally {
@@ -211,6 +222,46 @@ const MessDetailsPage: React.FC = () => {
             <Seo 
                 title={`${mess.name} | Best Mess Near You`} 
                 description={`Check out ${mess.name} on FindMess. Discover their weekly menu, pricing, and student reviews in ${mess.address}.`}
+                schema={{
+                    "@context": "https://schema.org",
+                    "@type": "LocalBusiness",
+                    "name": mess.name,
+                    "image": getImageUrl(mess.messImage || mess.images?.[0]),
+                    "@id": window.location.href,
+                    "url": window.location.href,
+                    "telephone": mess.contact || mess.mobile,
+                    "address": {
+                      "@type": "PostalAddress",
+                      "streetAddress": mess.address,
+                      "addressLocality": mess.city || "Pune",
+                      "addressRegion": "Maharashtra",
+                      "postalCode": "411005",
+                      "addressCountry": "IN"
+                    },
+                    "geo": {
+                      "@type": "GeoCoordinates",
+                      "latitude": 18.5204,
+                      "longitude": 73.8567
+                    },
+                    "aggregateRating": {
+                      "@type": "AggregateRating",
+                      "ratingValue": mess.rating || 4.5,
+                      "reviewCount": reviews.length || 10
+                    },
+                    "review": reviews.slice(0, 5).map(r => ({
+                      "@type": "Review",
+                      "author": {
+                        "@type": "Person",
+                        "name": r.user_name
+                      },
+                      "datePublished": r.created_at,
+                      "reviewBody": r.comment,
+                      "reviewRating": {
+                        "@type": "Rating",
+                        "ratingValue": r.rating
+                      }
+                    }))
+                }}
             />
             <div className="container mx-auto px-4 py-8 max-w-7xl">
                 {/* Mess Owner Notices */}
@@ -484,6 +535,14 @@ const MessDetailsPage: React.FC = () => {
                                                     </div>
                                                 </div>
                                                 <p className="text-text-secondary dark:text-white/60 font-medium leading-relaxed italic pr-12">"{review.comment}"</p>
+                                                {review.owner_response && (
+                                                    <div className="mt-6 p-6 bg-primary-500/5 rounded-2xl border-l-4 border-primary-500 space-y-2">
+                                                        <h5 className="text-[9px] font-black uppercase tracking-widest text-primary-500">Response from Owner</h5>
+                                                        <p className="text-[11px] text-text-primary dark:text-white italic font-medium leading-relaxed">
+                                                            "{review.owner_response}"
+                                                        </p>
+                                                    </div>
+                                                )}
                                             </Card>
                                         ))
                                     ) : (

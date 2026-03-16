@@ -19,12 +19,13 @@ const SubscribePage: React.FC = () => {
     const handleSubscribe = async () => {
         setLoading(true);
         try {
-            const res = await api.post('/payments/create-order', {
+            const res = await api.post('/subscriptions/order', {
                 amount: 499,
                 planType: 'monthly'
             });
 
-            const { orderId, amount, currency } = res.data;
+            const { order } = res.data;
+            const { id: order_id, amount, currency } = order;
 
             // Razorpay Integration
             const options = {
@@ -33,10 +34,10 @@ const SubscribePage: React.FC = () => {
                 currency,
                 name: 'MessWalha',
                 description: 'Mess Listing Subscription',
-                order_id: orderId,
+                order_id: order_id,
                 handler: async (response: RazorpayResponse) => {
                     try {
-                        await api.post('/payments/verify', {
+                        await api.post('/subscriptions/verify-payment', {
                             ...response,
                             planType: 'monthly'
                         });
@@ -128,14 +129,16 @@ const SubscribePage: React.FC = () => {
                         <Card className="p-1 w-full bg-gradient-to-br from-primary-500 to-primary-700 rounded-[3rem] shadow-3xl shadow-primary-500/20">
                             <div className="bg-dark-900 rounded-[2.8rem] p-12 space-y-10">
                                 <div className="space-y-4">
-                                    <span className="bg-primary-500/10 text-primary-500 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border border-primary-500/20">Elite Listing Plan</span>
+                                    <span className="bg-primary-500/10 text-primary-500 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border border-primary-500/20">FindMess Listing Plan</span>
                                     <div className="flex items-baseline gap-2">
                                         <span className="text-6xl font-black text-white italic">₹499</span>
                                         <span className="text-white/70 font-bold uppercase tracking-widest text-sm">/ Month</span>
                                     </div>
-                                    <div className="flex items-center gap-2 text-primary-500">
-                                        <Zap size={16} />
-                                        <span className="text-[10px] font-black uppercase tracking-widest italic">First 2 Months Completely FREE</span>
+                                    <div className="flex flex-col gap-2 mt-2">
+                                        <div className="flex items-center gap-2 text-primary-500">
+                                            <Zap size={16} />
+                                            <span className="text-[10px] font-black uppercase tracking-widest italic">Includes a 60-Day Free Trial upon Registration</span>
+                                        </div>
                                     </div>
                                 </div>
 

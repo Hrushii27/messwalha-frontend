@@ -16,7 +16,9 @@ import {
     Image as ImageIcon,
     Clock,
     CreditCard,
-    Calendar
+    Calendar,
+    MessageSquare,
+    Star
 } from 'lucide-react';
 import { useAppSelector } from '../../hooks/redux';
 import type { RootState } from '../../store';
@@ -26,7 +28,7 @@ import { BillingHistoryModal } from '../components/dashboard/BillingHistoryModal
 import { useNavigate } from 'react-router-dom';
 import type { Mess, Subscription, Menu, MenuItem } from '../types/mess';
 
-type Tab = 'overview' | 'menu' | 'subscribers' | 'settings';
+type Tab = 'overview' | 'menu' | 'subscribers' | 'settings' | 'reviews';
 
 const OwnerDashboardPage: React.FC = () => {
     const navigate = useNavigate();
@@ -44,6 +46,9 @@ const OwnerDashboardPage: React.FC = () => {
     const [subscription, setSubscription] = useState<Subscription | null>(null);
     const [announcement, setAnnouncement] = useState('');
     const [sendingAnnouncement, setSendingAnnouncement] = useState(false);
+    const [ownerReviews, setOwnerReviews] = useState<any[]>([]);
+    const [respondingTo, setRespondingTo] = useState<string | null>(null);
+    const [responseText, setResponseText] = useState('');
 
 
     // Form states
@@ -53,6 +58,9 @@ const OwnerDashboardPage: React.FC = () => {
         address: '',
         cuisine: '',
         contact: '',
+        city: '',
+        veg_nonveg: 'Veg',
+        college_tags: '',
         images: [] as string[]
     });
 
@@ -71,12 +79,20 @@ const OwnerDashboardPage: React.FC = () => {
                 setSubscribers(subsRes.data.data);
                 setRevenue(subsRes.data.totalRevenue || 0);
                 setSubscription(subStatusRes.data.data);
+                
+                if (messRes.data.data?.id) {
+                    const reviewsRes = await api.get(`/reviews/${messRes.data.data.id}`);
+                    setOwnerReviews(reviewsRes.data.data || []);
+                }
                 setMessForm({
                     name: messRes.data.data?.name || '',
                     description: messRes.data.data?.description || '',
                     address: messRes.data.data?.address || '',
                     cuisine: messRes.data.data?.cuisine || '',
                     contact: messRes.data.data?.contact || '',
+                    city: messRes.data.data?.city || '',
+                    veg_nonveg: messRes.data.data?.veg_nonveg || 'Veg',
+                    college_tags: messRes.data.data?.college_tags || '',
                     images: messRes.data.data?.images || []
                 });
             } catch (error) {
@@ -204,6 +220,23 @@ const OwnerDashboardPage: React.FC = () => {
     };
 
 
+    const isSubscriptionActive = subscription?.status === 'trial' || subscription?.status === 'active';
+
+    const renderInactiveBlock = (featureName: string) => (
+        <Card className="p-12 text-center space-y-6 flex flex-col items-center justify-center border-orange-100 bg-orange-50/50">
+            <div className="p-6 bg-orange-100 text-orange-500 rounded-full mb-4">
+                <CreditCard size={48} />
+            </div>
+            <h3 className="text-2xl font-bold">Subscription Required</h3>
+            <p className="text-gray-500 max-w-md mx-auto">
+                Your subscription has expired or is inactive. You must renew your Elite Listing Plan to access {featureName} and continue finding students.
+            </p>
+            <Button onClick={() => navigate('/owner/subscribe')} className="px-8 py-4 text-base mt-4 shadow-lg shadow-primary/20">
+                Renew Subscription for ₹499/mo
+            </Button>
+        </Card>
+    );
+
     const renderOverview = () => (
         <div className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -240,7 +273,7 @@ const OwnerDashboardPage: React.FC = () => {
                             <div>
                                 <div className="flex items-center space-x-3 mb-1">
                                     <h3 className="text-lg font-black uppercase tracking-tight">
-                                        {subscription?.status === 'trial' ? '60-Day Free Trial' : 'Elite Listing Plan'}
+                                        {subscription?.status === 'trial' ? '90-Day Free Trial' : 'Elite Listing Plan'}
                                     </h3>
                                     <span className={`text-[10px] font-black px-2 py-1 rounded-lg uppercase ${subscription?.status === 'trial' ? 'bg-orange-500 text-white' :
                                         subscription?.status === 'active' ? 'bg-green-500 text-white' :
@@ -255,7 +288,7 @@ const OwnerDashboardPage: React.FC = () => {
                                             <Clock size={16} className="mr-1" />
                                             <span>
                                                 {(() => {
-                                                    if (!subscription?.trial_end) return '60 days remaining';
+                                                    if (!subscription?.trial_end) return '90 days remaining';
                                                     const end = new Date(subscription.trial_end);
                                                     const now = new Date();
                                                     const diff = Math.ceil((end.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
@@ -305,7 +338,7 @@ const OwnerDashboardPage: React.FC = () => {
                 <h2 className="text-xl font-bold">Quick Activity</h2>
                 <Card className="p-0 overflow-hidden">
                     <div className="divide-y divide-gray-100">
-                        {subscribers.slice(0, 5).map(sub => (
+                        {subscribers.length > 0 ? subscribers.slice(0, 5).map(sub => (
                             <div key={sub.id} className="p-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
                                 <div className="flex items-center space-x-3">
                                     <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
@@ -318,7 +351,9 @@ const OwnerDashboardPage: React.FC = () => {
                                 </div>
                                 <span className="text-[10px] font-black uppercase text-green-500 bg-green-50 px-2 py-1 rounded-lg">Active</span>
                             </div>
-                        ))}
+                        )) : (
+                            <div className="p-10 text-center text-gray-400 font-medium italic">No recent activity</div>
+                        )}
                     </div>
                 </Card>
             </section>
@@ -349,7 +384,9 @@ const OwnerDashboardPage: React.FC = () => {
         </div>
     );
 
-    const renderMenuManagement = () => (
+    const renderMenuManagement = () => {
+        if (!isSubscriptionActive) return renderInactiveBlock('Menu Management');
+        return (
         <div className="space-y-6">
             <div className="flex justify-between items-center mb-10">
                 <div className="space-y-1">
@@ -423,9 +460,103 @@ const OwnerDashboardPage: React.FC = () => {
                 </button>
             </div>
         </div>
-    );
+    ); };
 
-    const renderSubscribers = () => (
+    const renderReviews = () => {
+        if (!isSubscriptionActive) return renderInactiveBlock('Student Reviews');
+        return (
+        <div className="space-y-6">
+            <h2 className="text-xl font-bold">Student Reviews ({ownerReviews.length})</h2>
+            <div className="grid grid-cols-1 gap-6">
+                {ownerReviews.length > 0 ? ownerReviews.map(review => (
+                    <Card key={review.id} className="p-8 space-y-6">
+                        <div className="flex justify-between items-start">
+                            <div className="flex items-center gap-4">
+                                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-bold">
+                                    {review.user_name?.[0] || 'U'}
+                                </div>
+                                <div>
+                                    <h4 className="font-bold text-sm uppercase tracking-widest">{review.user_name}</h4>
+                                    <p className="text-[10px] text-gray-400 font-bold uppercase">{new Date(review.created_at).toLocaleDateString()}</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-1 bg-orange-50 px-3 py-1 rounded-full border border-orange-100">
+                                <Star size={12} className="text-orange-500 fill-orange-500" />
+                                <span className="text-[10px] font-black text-orange-600">{review.rating}.0</span>
+                            </div>
+                        </div>
+                        <p className="text-gray-600 italic leading-relaxed">"{review.comment}"</p>
+                        
+                        {review.owner_response ? (
+                            <div className="p-4 bg-gray-50 rounded-xl border-l-4 border-primary/40 space-y-2">
+                                <p className="text-[10px] font-black uppercase tracking-widest text-primary/60">Your Response</p>
+                                <p className="text-sm italic text-gray-700">"{review.owner_response}"</p>
+                            </div>
+                        ) : (
+                            <div className="pt-2">
+                                {respondingTo === review.id ? (
+                                    <div className="space-y-4 animate-in slide-in-from-top-2">
+                                        <textarea
+                                            value={responseText}
+                                            onChange={(e) => setResponseText(e.target.value)}
+                                            placeholder="Type your response..."
+                                            className="w-full p-4 rounded-xl border border-gray-200 outline-none focus:ring-2 focus:ring-primary text-sm min-h-[100px]"
+                                        />
+                                        <div className="flex gap-2">
+                                            <Button
+                                                size="sm"
+                                                onClick={async () => {
+                                                    try {
+                                                        await api.post(`/reviews/${review.id}/respond`, { response: responseText });
+                                                        toast.success('Response transmitted!');
+                                                        // Refresh reviews
+                                                        const res = await api.get(`/reviews/${mess?.id}`);
+                                                        setOwnerReviews(res.data.data);
+                                                        setRespondingTo(null);
+                                                        setResponseText('');
+                                                    } catch (err) {
+                                                        toast.error('Failed to transmit response');
+                                                    }
+                                                }}
+                                                className="rounded-lg px-6"
+                                            >
+                                                Transmit
+                                            </Button>
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={() => setRespondingTo(null)}
+                                                className="rounded-lg"
+                                            >
+                                                Cancel
+                                            </Button>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => setRespondingTo(review.id)}
+                                        className="rounded-lg font-black uppercase tracking-widest text-[9px] px-6"
+                                    >
+                                        Respond to Signal
+                                    </Button>
+                                )}
+                            </div>
+                        )}
+                    </Card>
+                )) : (
+                    <div className="p-20 text-center text-gray-400 font-medium italic border-2 border-dashed border-gray-100 rounded-3xl">
+                        No student signals detected yet
+                    </div>
+                )}
+            </div>
+        </div>
+    ); };
+
+    const renderSubscribers = () => {
+        if (!isSubscriptionActive) return renderInactiveBlock('Subscribers List');
+        return (
         <div className="space-y-6">
             <h2 className="text-xl font-bold">Active Subscribers ({subscribers.length})</h2>
             <Card className="p-0 overflow-hidden">
@@ -471,9 +602,11 @@ const OwnerDashboardPage: React.FC = () => {
                 </table>
             </Card>
         </div>
-    );
+    ); };
 
-    const renderSettings = () => (
+    const renderSettings = () => {
+        if (!isSubscriptionActive) return renderInactiveBlock('Profile Settings');
+        return (
         <div className="space-y-6">
             <h2 className="text-xl font-bold">Mess Profile Settings</h2>
             <Card className="p-8">
@@ -535,6 +668,40 @@ const OwnerDashboardPage: React.FC = () => {
                                 />
                             </div>
                         </div>
+
+                        <div className="space-y-2">
+                            <label className="text-sm font-bold text-gray-600">City</label>
+                            <input
+                                type="text"
+                                value={(messForm as any).city || ''}
+                                onChange={e => setMessForm({ ...messForm, city: e.target.value } as any)}
+                                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                                placeholder="e.g. Pune, Mumbai"
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="text-sm font-bold text-gray-600">Veg / Non-Veg</label>
+                            <select
+                                value={(messForm as any).veg_nonveg || 'Veg'}
+                                onChange={e => setMessForm({ ...messForm, veg_nonveg: e.target.value } as any)}
+                                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all appearance-none bg-white"
+                            >
+                                <option value="Veg">Pure Veg</option>
+                                <option value="Non-Veg">Veg + Non-Veg</option>
+                            </select>
+                        </div>
+
+                        <div className="md:col-span-2 space-y-2">
+                            <label className="text-sm font-bold text-gray-600">College Tags (Comma separated)</label>
+                            <input
+                                type="text"
+                                value={(messForm as any).college_tags || ''}
+                                onChange={e => setMessForm({ ...messForm, college_tags: e.target.value } as any)}
+                                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                                placeholder="e.g. COEP, VJTI, MIT"
+                            />
+                        </div>
                     </div>
 
                     <div className="pt-6 border-t border-gray-100 flex justify-end">
@@ -545,7 +712,7 @@ const OwnerDashboardPage: React.FC = () => {
                 </form>
             </Card>
         </div>
-    );
+    ); };
 
     return (
         <Layout>
@@ -578,6 +745,7 @@ const OwnerDashboardPage: React.FC = () => {
                                 { id: 'overview', icon: <LayoutDashboard size={20} />, label: 'Overview' },
                                 { id: 'menu', icon: <Utensils size={20} />, label: 'Menu Schedule' },
                                 { id: 'subscribers', icon: <Users size={20} />, label: 'Subscribers' },
+                                { id: 'reviews', icon: <MessageSquare size={20} />, label: 'Student Reviews' },
                                 { id: 'settings', icon: <Settings size={20} />, label: 'Profile Settings' },
                             ].map((item) => (
                                 <button
@@ -607,6 +775,7 @@ const OwnerDashboardPage: React.FC = () => {
                                 {activeTab === 'overview' && renderOverview()}
                                 {activeTab === 'menu' && renderMenuManagement()}
                                 {activeTab === 'subscribers' && renderSubscribers()}
+                                {activeTab === 'reviews' && renderReviews()}
                                 {activeTab === 'settings' && renderSettings()}
                             </>
                         )}

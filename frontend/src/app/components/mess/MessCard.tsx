@@ -137,10 +137,21 @@ export const MessCard: React.FC<MessCardProps> = ({ mess }) => {
 
                 {/* Bottom Stats Overlay */}
                 <div className="absolute bottom-4 sm:bottom-6 left-4 sm:left-6 right-4 sm:right-6 flex justify-between items-end z-20">
-                    <div className="flex gap-2">
-                        <div className="bg-white/10 backdrop-blur-xl border border-white/20 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl flex items-center shadow-2xl">
-                            <Star className="text-rating-color fill-rating-color mr-2 w-3 h-3 sm:w-3.5 sm:h-3.5" />
-                            <span className="text-[10px] sm:text-xs font-black text-white italic">{rating.toFixed(1)}</span>
+                    <div className="flex flex-col gap-2">
+                        <div className="flex gap-2">
+                            <div className="bg-white/10 backdrop-blur-xl border border-white/20 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl flex items-center shadow-2xl">
+                                <Star className="text-rating-color fill-rating-color mr-2 w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                                <span className="text-[10px] sm:text-xs font-black text-white italic">{rating.toFixed(1)}</span>
+                            </div>
+                            { (mess as any).vegNonVeg && (
+                                <div className={`backdrop-blur-xl border px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl flex items-center shadow-2xl ${
+                                    (mess as any).vegNonVeg === 'Veg' ? 'bg-green-500/20 border-green-500/40 text-green-400' : 'bg-red-500/20 border-red-500/40 text-red-400'
+                                }`}>
+                                    <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest">
+                                        {(mess as any).vegNonVeg}
+                                    </span>
+                                </div>
+                            )}
                         </div>
                     </div>
                     <div className="bg-primary-500 text-white px-4 sm:px-5 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-[9px] sm:text-[10px] font-black tracking-[0.2em] uppercase shadow-2xl border border-white/10">

@@ -45,7 +45,15 @@ const FindMessesPage: React.FC = () => {
     const [messes, setMesses] = useState<Mess[]>([]);
     const [loading, setLoading] = useState(true);
     const [locationTerm, setLocationTerm] = useState('');
+    const [debouncedLocationTerm, setDebouncedLocationTerm] = useState('');
     const [mealType, setMealType] = useState('');
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedLocationTerm(locationTerm);
+        }, 300);
+        return () => clearTimeout(timer);
+    }, [locationTerm]);
     const [showFilters, setShowFilters] = useState(window.innerWidth >= 1024);
     const [filters, setFilters] = useState({
         cuisine: '',
@@ -53,7 +61,9 @@ const FindMessesPage: React.FC = () => {
         minRating: 0,
         maxPrice: 6000,
         distance: 5,
-        sort: 'Best Rated'
+        sort: 'Best Rated',
+        college: '',
+        veg_nonveg: ''
     });
 
     const fetchMesses = useCallback(async () => {
@@ -84,20 +94,24 @@ const FindMessesPage: React.FC = () => {
 
     const filteredMesses = messes
         .filter((mess: Mess) => {
-            const locationLower = locationTerm.toLowerCase().trim();
+            const locationLower = debouncedLocationTerm.toLowerCase().trim();
 
-            const matchesLocation = !locationTerm ||
+            const matchesLocation = !debouncedLocationTerm ||
                 (mess.address && mess.address.toLowerCase().includes(locationLower)) ||
                 (mess.city && mess.city.toLowerCase().includes(locationLower)) ||
-                (mess.name && mess.name.toLowerCase().includes(locationLower));
+                (mess.name && mess.name.toLowerCase().includes(locationLower)) ||
+                (mess.collegeTags && mess.collegeTags.toLowerCase().includes(locationLower));
 
-            const matchesMealType = !mealType ||
-                (mealType === 'veg' ? (mess.cuisine && mess.cuisine.toLowerCase().includes('veg')) : true);
+            const matchesMealType = !filters.veg_nonveg || 
+                (mess.vegNonVeg === filters.veg_nonveg);
+
+            const matchesCollege = !filters.college ||
+                (mess.collegeTags && mess.collegeTags.toLowerCase().includes(filters.college.toLowerCase()));
 
             const matchesVerified = !filters.verified || mess.verified;
             const matchesRating = (mess.rating || 0) >= filters.minRating;
 
-            return matchesLocation && matchesMealType && matchesVerified && matchesRating;
+            return matchesLocation && matchesMealType && matchesCollege && matchesVerified && matchesRating;
         })
         .sort((a: Mess, b: Mess) => {
             if (filters.sort === 'Best Rated') return (b.rating || 0) - (a.rating || 0);
@@ -321,9 +335,42 @@ const FindMessesPage: React.FC = () => {
                                             </div>
                                         </div>
 
+                                        <div className="space-y-4 sm:space-y-6">
+                                            <h2 className="text-[10px] font-black uppercase tracking-widest text-white/70">Dietary Preference</h2>
+                                            <div className="grid grid-cols-2 gap-3">
+                                                <button
+                                                    onClick={() => setFilters({ ...filters, veg_nonveg: '' })}
+                                                    className={`px-4 py-3 rounded-2xl text-[9px] font-black uppercase tracking-widest transition-all border ${!filters.veg_nonveg ? 'bg-primary-500 border-primary-500 text-white shadow-xl shadow-primary-500/20' : 'bg-white/5 border-white/5 text-white/30 hover:bg-white/10 hover:text-white'}`}
+                                                >
+                                                    Both
+                                                </button>
+                                                <button
+                                                    onClick={() => setFilters({ ...filters, veg_nonveg: 'Veg' })}
+                                                    className={`px-4 py-3 rounded-2xl text-[9px] font-black uppercase tracking-widest transition-all border ${filters.veg_nonveg === 'Veg' ? 'bg-green-500 border-green-500 text-white shadow-xl shadow-green-500/20' : 'bg-white/5 border-white/5 text-white/60 hover:bg-white/10 hover:text-white'}`}
+                                                >
+                                                    Pure Veg
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-4 sm:space-y-6">
+                                            <h2 className="text-[10px] font-black uppercase tracking-widest text-white/70">Select College</h2>
+                                            <select
+                                                value={filters.college}
+                                                onChange={(e) => setFilters({ ...filters, college: e.target.value })}
+                                                className="w-full bg-white/5 border border-white/10 p-4 rounded-2xl text-white outline-none focus:ring-2 focus:ring-primary-500 text-[10px] font-black uppercase tracking-widest appearance-none bg-dark-900"
+                                            >
+                                                <option value="" className="bg-dark-900">All Colleges</option>
+                                                <option value="COEP" className="bg-dark-900">COEP</option>
+                                                <option value="VJTI" className="bg-dark-900">VJTI</option>
+                                                <option value="MIT" className="bg-dark-900">MIT</option>
+                                                <option value="WCE" className="bg-dark-900">WCE Sangli</option>
+                                            </select>
+                                        </div>
+
                                         <button
                                             className="w-full py-6 rounded-[1.5rem] border border-white/10 font-black uppercase tracking-widest text-[9px] text-white/60 hover:text-white hover:bg-white/10 transition-all"
-                                            onClick={() => setFilters({ cuisine: '', verified: false, minRating: 0, maxPrice: 6000, distance: 5, sort: 'Best Rated' })}
+                                            onClick={() => setFilters({ cuisine: '', verified: false, minRating: 0, maxPrice: 6000, distance: 5, sort: 'Best Rated', college: '', veg_nonveg: '' })}
                                         >
                                             Reset Filter Protocol
                                         </button>

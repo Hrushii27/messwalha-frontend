@@ -11,6 +11,7 @@ import {
     FileText,
     Image as ImageIcon,
     Upload,
+    Zap,
     X,
     CheckCircle2,
     ArrowRight,
@@ -67,7 +68,8 @@ const AddMessPage: React.FC = () => {
         pricePerMonth: '',
         pricePerWeek: '',
         pricePerDay: '',
-        menuText: ''
+        menuText: '',
+        upiId: ''
     });
 
     const [messImage, setMessImage] = useState<File | null>(null);
@@ -339,6 +341,21 @@ const AddMessPage: React.FC = () => {
                                         placeholder="₹ 120"
                                         className="w-full bg-bg-main dark:bg-white/[0.03] border border-border-color dark:border-white/10 text-text-primary dark:text-white pl-14 pr-6 py-5 rounded-2xl focus:ring-2 focus:ring-primary-500/50 outline-none transition-all font-bold tracking-widest text-xs"
                                         value={formData.pricePerDay}
+                                        onChange={handleInputChange}
+                                    />
+                                </div>
+                            </div>
+                            {/* UPI ID Field */}
+                            <div className="space-y-3 md:col-span-3">
+                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted dark:text-white/70 ml-2">UPI ID for Payments (For Students to pay you)</label>
+                                <div className="relative group">
+                                    <Zap size={16} className="absolute left-6 top-1/2 -translate-y-1/2 text-primary-500" />
+                                    <input
+                                        type="text"
+                                        name="upiId"
+                                        placeholder="e.g. 9876543210@paytm"
+                                        className="w-full bg-bg-main dark:bg-white/[0.03] border border-border-color dark:border-white/10 text-text-primary dark:text-white pl-14 pr-6 py-5 rounded-2xl focus:ring-2 focus:ring-primary-500/50 outline-none transition-all font-bold tracking-widest text-xs uppercase"
+                                        value={formData.upiId}
                                         onChange={handleInputChange}
                                     />
                                 </div>

@@ -26,6 +26,8 @@ export interface Mess {
         city: string;
     };
     city: string;
+    vegNonVeg: string;
+    collegeTags: string;
     rating: number;
     images: string[];
     imageUrl?: string;
@@ -39,6 +41,9 @@ export interface Mess {
     createdAt?: string;
     ownerId?: string;
     ownerName?: string;
+    ownerEmail?: string;
+    upiId?: string;
+    upi_id?: string;
     contact?: string;
     mobile?: string;
     menus?: Menu[];

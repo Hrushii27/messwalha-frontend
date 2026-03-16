@@ -44,14 +44,14 @@ const AdminDashboardPage: React.FC = () => {
     const fetchData = async () => {
         try {
             setLoading(true);
-            const [statsRes, usersRes, messesRes] = await Promise.all([
+            const [statsRes, pendingRes] = await Promise.all([
                 api.get('/admin/stats'),
-                api.get('/admin/users'),
-                api.get('/admin/messes')
+                api.get('/admin/pending-listings')
             ]);
             setStats(statsRes.data.data);
-            setUsers(usersRes.data.data);
-            setMesses(messesRes.data.data);
+            setMesses(pendingRes.data.data);
+            
+            // Optionally fetch all messes if needed, but primary focus is pending
         } catch (error) {
             console.error('Failed to load admin data:', error);
             toast.error('Failed to load admin data');
@@ -64,14 +64,27 @@ const AdminDashboardPage: React.FC = () => {
         fetchData();
     }, []);
 
-    const handleVerifyMess = async (id: string, currentStatus: boolean) => {
+    const handleApproveMess = async (id: string) => {
         try {
-            await api.put(`/admin/messes/${id}/verify`, { verified: !currentStatus });
-            setMesses(prev => prev.map(m => m.id === id ? { ...m, verified: !currentStatus } : m));
-            toast.success('Mess verification status updated');
+            await api.post(`/admin/approve-listing/${id}`);
+            setMesses(prev => prev.filter(m => m.id !== id));
+            toast.success('Mess listing approved!');
         } catch (error) {
-            console.error('Failed to update verification status:', error);
-            toast.error('Failed to update verification status');
+            console.error('Failed to approve mess:', error);
+            toast.error('Failed to approve mess');
+        }
+    };
+
+    const handleRejectMess = async (id: string) => {
+        const reason = window.prompt('Enter rejection reason:');
+        if (reason === null) return;
+        try {
+            await api.post(`/admin/reject-listing/${id}`, { reason });
+            setMesses(prev => prev.filter(m => m.id !== id));
+            toast.success('Mess listing rejected');
+        } catch (error) {
+            console.error('Failed to reject mess:', error);
+            toast.error('Failed to reject mess');
         }
     };
 
@@ -160,30 +173,38 @@ const AdminDashboardPage: React.FC = () => {
 
                 <section className="space-y-4">
                     <h3 className="text-lg font-black uppercase tracking-widest flex items-center gap-2">
-                        <Building size={18} className="text-secondary" /> Pending Verifications
+                        <Building size={18} className="text-secondary" /> Pending Marketplace Approvals
                     </h3>
                     <Card className="p-0 overflow-hidden">
                         <div className="divide-y divide-gray-100">
-                            {messes.filter(m => !m.verified).slice(0, 5).map(m => (
+                            {messes.length > 0 ? messes.slice(0, 5).map(m => (
                                 <div key={m.id} className="p-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
                                     <div>
-                                        <p className="font-bold text-sm">{m.name}</p>
-                                        <p className="text-xs text-gray-400">Owner: {m.owner?.name || 'N/A'}</p>
+                                        <p className="font-bold text-sm tracking-tight">{m.name}</p>
+                                        <p className="text-[10px] text-gray-400 font-bold uppercase">Owner: {m.ownerName || 'N/A'}</p>
                                     </div>
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        className="text-[10px] font-black uppercase py-1 h-8"
-                                        onClick={() => handleVerifyMess(m.id, false)}
-                                    >
-                                        Verify
-                                    </Button>
+                                    <div className="flex gap-2">
+                                        <Button
+                                            size="sm"
+                                            className="text-[10px] font-black uppercase py-1 h-8 px-4"
+                                            onClick={() => handleApproveMess(m.id)}
+                                        >
+                                            Approve
+                                        </Button>
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            className="text-[10px] font-black uppercase py-1 h-8 px-4 border-red-200 text-red-500 hover:bg-red-50"
+                                            onClick={() => handleRejectMess(m.id)}
+                                        >
+                                            Reject
+                                        </Button>
+                                    </div>
                                 </div>
-                            ))}
-                            {messes.filter(m => !m.verified).length === 0 && (
+                            )) : (
                                 <div className="p-12 text-center text-gray-400">
-                                    <CircleCheck size={32} className="mx-auto mb-2 opacity-20" />
-                                    <p className="text-xs font-bold uppercase tracking-widest">All Verified!</p>
+                                    <CircleCheck size={32} className="mx-auto mb-2 opacity-20 text-green-500" />
+                                    <p className="text-[10px] font-black uppercase tracking-widest">Marketplace Clean!</p>
                                 </div>
                             )}
                         </div>
@@ -248,54 +269,48 @@ const AdminDashboardPage: React.FC = () => {
 
     const renderMesses = () => (
         <div className="grid grid-cols-1 gap-4">
+            <h2 className="text-xl font-black uppercase tracking-wider mb-2">Pending Marketplace Approvals ({messes.length})</h2>
             {messes.map(m => (
-                <Card key={m.id} className="p-6 flex flex-col md:row items-center justify-between gap-6 hover:border-primary transition-colors group">
+                <Card key={m.id} className="p-6 flex flex-col md:flex-row items-center justify-between gap-6 hover:border-primary transition-colors group border-2 border-transparent">
                     <div className="flex items-center gap-6 flex-grow">
-                        <div className="w-16 h-16 rounded-2xl bg-gray-100 overflow-hidden relative">
-                            {m.images?.[0] ? (
-                                <img
-                                    src={m.images[0]}
-                                    alt={m.name}
-                                    className="w-full h-full object-cover"
-                                    onError={(e) => {
-                                        (e.target as HTMLImageElement).src = 'https://via.placeholder.com/400x300.png?text=Mess+Image';
-                                    }}
-                                />
-                            ) : (
-                                <Building className="w-full h-full p-4 text-gray-300" />
-                            )}
+                        <div className="w-16 h-16 rounded-2xl bg-gray-100 overflow-hidden relative flex items-center justify-center">
+                             <Building className="w-8 h-8 text-gray-300" />
                         </div>
                         <div>
                             <div className="flex items-center gap-2">
-                                <h4 className="font-black text-lg">{m.name}</h4>
-                                {m.verified && <CircleCheck size={14} className="text-green-500" />}
+                                <h4 className="font-black text-lg tracking-tighter">{m.name}</h4>
+                                <span className="bg-orange-100 text-orange-600 px-2 py-0.5 rounded text-[9px] font-black uppercase">Pending Approval</span>
                             </div>
-                            <p className="text-xs text-gray-400 font-bold uppercase tracking-wider">{m.cuisine} • {m.address}</p>
-                            <p className="text-[10px] text-gray-500 font-medium mt-1">Owner: {m.owner?.name || 'N/A'} ({m.owner?.email || 'N/A'})</p>
+                            <p className="text-xs text-gray-400 font-bold uppercase tracking-wider">{m.cuisine} • {m.city}</p>
+                            <p className="text-[10px] text-gray-500 font-medium mt-1">Owner: {m.ownerName || 'N/A'} • {m.ownerEmail || 'N/A'}</p>
                         </div>
                     </div>
-                    <div className="flex items-center gap-12 text-center">
-                        <div>
-                            <p className="text-[10px] font-black text-gray-400 uppercase">Subs</p>
-                            <p className="text-lg font-black">{m._count?.subscriptions || 0}</p>
-                        </div>
-                        <div>
-                            <p className="text-[10px] font-black text-gray-400 uppercase">Reviews</p>
-                            <p className="text-lg font-black">{m._count?.reviews || 0}</p>
-                        </div>
-                        <div className="flex gap-2">
-                            <Button
-                                variant={m.verified ? "outline" : "primary"}
-                                size="sm"
-                                className="rounded-xl px-6 text-[10px] font-black uppercase"
-                                onClick={() => handleVerifyMess(m.id, m.verified || false)}
-                            >
-                                {m.verified ? 'Revoke' : 'Verify'}
-                            </Button>
-                        </div>
+                    <div className="flex items-center gap-3">
+                        <Button
+                            size="sm"
+                            className="rounded-xl px-8 text-[10px] font-black uppercase h-10"
+                            onClick={() => handleApproveMess(m.id)}
+                        >
+                            Approve Listing
+                        </Button>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            className="rounded-xl px-8 text-[10px] font-black uppercase h-10 border-red-200 text-red-500 hover:bg-red-50"
+                            onClick={() => handleRejectMess(m.id)}
+                        >
+                            Reject
+                        </Button>
                     </div>
                 </Card>
             ))}
+            {messes.length === 0 && (
+                <div className="p-20 text-center bg-white rounded-[2rem] border-2 border-dashed border-gray-100">
+                    <CircleCheck size={48} className="mx-auto text-green-500 mb-4 opacity-30" />
+                    <h3 className="text-xl font-black uppercase tracking-widest">No Pending Approvals</h3>
+                    <p className="text-gray-400 text-sm mt-2">All mess listings have been processed.</p>
+                </div>
+            )}
         </div>
     );
 

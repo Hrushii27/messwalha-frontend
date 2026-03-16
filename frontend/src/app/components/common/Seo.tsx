@@ -7,6 +7,7 @@ interface SeoProps {
     keywords?: string;
     image?: string;
     url?: string;
+    schema?: object;
 }
 
 const Seo: React.FC<SeoProps> = ({
@@ -15,6 +16,7 @@ const Seo: React.FC<SeoProps> = ({
     keywords = 'mess near me, tiffin service, student mess, PG food service, affordable mess, find mess India',
     image = '/og-image.png', // Optimized branding banner
     url = window.location.href,
+    schema,
 }) => {
     const siteTitle = title.includes('FindMess') ? title : `${title} | FindMess`;
 
@@ -24,6 +26,12 @@ const Seo: React.FC<SeoProps> = ({
             <title>{siteTitle}</title>
             <meta name="description" content={description} />
             <meta name="keywords" content={keywords} />
+
+            {schema && (
+                <script type="application/ld+json">
+                    {JSON.stringify(schema)}
+                </script>
+            )}
 
             {/* Facebook Meta Tags */}
             <meta property="og:type" content="website" />
