@@ -74,3 +74,8 @@ node_modules/
 
 # dataconnect generated files
 .dataconnect
+
+# Project specific
+package-lock.json
+.DS_Store
+uploads/
