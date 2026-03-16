@@ -4,7 +4,7 @@ const Subscription = {
     createTrial: async (ownerId) => {
         const trialStart = new Date();
         const trialEnd = new Date();
-        trialEnd.setDate(trialEnd.getDate() + 60);
+        trialEnd.setDate(trialEnd.getDate() + 90);
 
         const result = await db.query(
             'INSERT INTO subscriptions (mess_owner_id, plan_type, trial_start, trial_end, status) VALUES ($1, $2, $3, $4, $5) RETURNING *',

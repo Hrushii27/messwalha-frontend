@@ -45,15 +45,15 @@ const authController = {
             const owner = await Owner.create(name, email, phone, passwordHash, userRole);
             console.log(`✅ User created with ID: ${owner.id}`);
 
-            // Automatically assign 60-day trial only for OWNERS
+            // Automatically assign 90-day trial only for OWNERS
             if (userRole === 'OWNER') {
-                console.log('🎁 Creating 60-day trial subscription...');
+                console.log('🎁 Creating 90-day trial subscription...');
                 await Subscription.createTrial(owner.id);
             }
 
             const token = jwt.sign({ id: owner.id, role: userRole }, process.env.JWT_SECRET, { expiresIn: '1d' });
             res.status(201).json({
-                message: userRole === 'OWNER' ? 'Owner registered and 60-day trial started' : 'User registered successfully',
+                message: userRole === 'OWNER' ? 'Owner registered and 90-day trial started' : 'User registered successfully',
                 token,
                 owner
             });
