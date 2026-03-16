@@ -14,11 +14,11 @@ const generalLimiter = rateLimit({
 
 // Auth Rate Limiter (Stricter for login/register)
 const authLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000, // 1 hour
-  max: 20, // Limit each IP to 20 attempts per hour
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: 5, // Limit each IP to 5 attempts per minute
   message: {
     status: 429,
-    message: 'Too many authentication attempts, please try again after an hour'
+    message: 'Too many authentication attempts, please try again after a minute'
   }
 });
 

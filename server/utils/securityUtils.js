@@ -7,8 +7,8 @@ const axios = require('axios');
  */
 const verifyRecaptcha = async (token) => {
     // Skip verification if secret key is missing (e.g. dynamic dev environments)
-    if (!process.env.RECAPTCHA_SECRET_KEY) {
-        console.warn('⚠️ RECAPTCHA_SECRET_KEY is missing. Skipping verification.');
+    if (!process.env.RECAPTCHA_SECRET) {
+        console.warn('⚠️ RECAPTCHA_SECRET is missing. Skipping verification.');
         return true; 
     }
     
@@ -16,11 +16,10 @@ const verifyRecaptcha = async (token) => {
 
     try {
         const response = await axios.post(
-            `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPTCHA_SECRET_KEY}&response=${token}`
+            `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPTCHA_SECRET}&response=${token}`
         );
         
-        // Score threshold of 0.5 is standard for v3
-        return response.data.success && response.data.score > 0.5;
+        return response.data.success;
     } catch (err) {
         console.error('reCAPTCHA Verification Error:', err.message);
         return false;
