@@ -216,7 +216,7 @@ const OwnerDashboardPage: React.FC = () => {
                             <div>
                                 <div className="flex items-center space-x-3 mb-1">
                                     <h3 className="text-lg font-black uppercase tracking-tight">
-                                        {subscription?.status === 'trial' ? '60-Day Free Trial' : 'Elite Listing Plan'}
+                                        {subscription?.status === 'trial' ? '90-Day Free Trial' : 'Elite Listing Plan'}
                                     </h3>
                                     <span className={`text-[10px] font-black px-2 py-1 rounded-lg uppercase ${subscription?.status === 'trial' ? 'bg-orange-500 text-white' :
                                         subscription?.status === 'active' ? 'bg-green-500 text-white' :
@@ -231,7 +231,7 @@ const OwnerDashboardPage: React.FC = () => {
                                             <Clock size={16} className="mr-1" />
                                             <span>
                                                 {(() => {
-                                                    if (!subscription?.trial_end) return '60 days remaining';
+                                                    if (!subscription?.trial_end) return '90 days remaining';
                                                     const end = new Date(subscription.trial_end);
                                                     const now = new Date();
                                                     const diff = Math.ceil((end.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
