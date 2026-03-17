@@ -407,11 +407,11 @@ const FindMessesPage: React.FC = () => {
                                     </div>
                                     <div className="space-y-6">
                                         <h3 className="text-5xl md:text-7xl font-black italic tracking-tighter text-white">
-                                            No Mess Found <br />
-                                            <span className="text-white/10 italic">In This Area Yet</span>
+                                            No Mess Listings <br />
+                                            <span className="text-white/10 italic">Yet</span>
                                         </h3>
                                         <p className="text-white/40 font-black uppercase tracking-[0.3em] text-[10px] md:text-xs max-w-xl mx-auto leading-loose italic">
-                                            We are expanding our network rapidly. You can request a mess service for your specific campus or browse nearby college hubs.
+                                            Be the first to list your mess and reach thousands of students. Start with a 60-day free trial.
                                         </p>
                                     </div>
                                     <div className="flex flex-col sm:flex-row gap-6 justify-center pt-8">
@@ -428,9 +428,9 @@ const FindMessesPage: React.FC = () => {
                                         </Button>
                                         <Button
                                             className="h-20 rounded-full px-16 bg-gradient-to-r from-primary-500 to-primary-600 text-white font-black uppercase tracking-[0.2em] text-xs shadow-3xl shadow-primary-500/30 hover:scale-[1.05] transition-all"
-                                            onClick={() => window.location.href = 'mailto:support@messwalha.com?subject=Mess Request'}
+                                            onClick={() => window.location.href = '/mess-owner-register'}
                                         >
-                                            Request a Mess
+                                            Add Your Mess
                                         </Button>
                                     </div>
                                 </div>

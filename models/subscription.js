@@ -59,6 +59,13 @@ const Subscription = {
             [status, id]
         );
         return result.rows[0];
+    },
+
+    findExpiredSubscriptions: async () => {
+        const result = await db.query(
+            "SELECT * FROM owner_subscriptions WHERE status = 'active' AND subscription_end < CURRENT_TIMESTAMP"
+        );
+        return result.rows;
     }
 };
 

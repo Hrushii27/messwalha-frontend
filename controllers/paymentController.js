@@ -57,6 +57,16 @@ const paymentController = {
       const currentSub = await Subscription.findByOwnerId(req.owner.id);
       if (currentSub) {
         const updatedSub = await Subscription.updateSubscription(req.owner.id, 30);
+
+        // Record payment in history
+        await db.query(
+          'INSERT INTO payment_history (owner_id, amount, razorpay_order_id, razorpay_payment_id, status) VALUES ($1, $2, $3, $4, $5)',
+          [req.owner.id, 499, razorpay_order_id, razorpay_payment_id, 'success']
+        );
+
+        // Reactivate messes
+        await db.query('UPDATE messes SET is_active = TRUE WHERE owner_id = $1', [req.owner.id]);
+
         return res.status(200).json({
           success: true,
           message: 'Platform plan activated successfully for 30 days',
@@ -74,6 +84,19 @@ const paymentController = {
 
   handleWebhook: async (req, res) => {
     res.status(200).json({ received: true });
+  },
+
+  getPaymentHistory: async (req, res) => {
+    try {
+      const result = await db.query(
+        'SELECT * FROM payment_history WHERE owner_id = $1 ORDER BY created_at DESC',
+        [req.owner.id]
+      );
+      res.status(200).json({ success: true, data: result.rows });
+    } catch (err) {
+      console.error('❌ Payment History Error:', err);
+      res.status(500).json({ success: false, message: 'Server error fetching payment history' });
+    }
   }
 };
 

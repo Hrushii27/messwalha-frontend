@@ -71,6 +71,16 @@ const createTables = async () => {
     
     ALTER TABLE messes ADD COLUMN IF NOT EXISTS city TEXT;
     ALTER TABLE messes ADD COLUMN IF NOT EXISTS cuisine TEXT;
+
+    CREATE TABLE IF NOT EXISTS payment_history (
+      id SERIAL PRIMARY KEY,
+      owner_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+      amount INTEGER NOT NULL,
+      razorpay_order_id TEXT,
+      razorpay_payment_id TEXT,
+      status TEXT DEFAULT 'success',
+      created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    );
   `;
 
   try {

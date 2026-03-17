@@ -83,6 +83,8 @@ export interface Subscription {
     user?: User;
     trial_start?: string;
     trial_end?: string;
+    trial_start_date?: string;
+    trial_end_date?: string;
     created_at?: string;
     createdAt?: string;
     next_billing_date?: string;

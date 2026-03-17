@@ -28,6 +28,7 @@ const ProfilePage = lazy(() => import('./app/pages/ProfilePage'));
 const TodayMenuPage = lazy(() => import('./app/pages/TodayMenuPage'));
 const AddMessPage = lazy(() => import('./app/pages/AddMessPage'));
 const SubscribePage = lazy(() => import('./app/pages/SubscribePage'));
+const OwnerRegistrationPage = lazy(() => import('./app/pages/OwnerRegistrationPage'));
 
 // Loading component for Suspense
 const PageLoader = () => (
@@ -52,6 +53,7 @@ const App: React.FC = () => {
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
                 <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                <Route path="/mess-owner-register" element={<OwnerRegistrationPage />} />
                 <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
                 <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
                 <Route path="/find-mess" element={<FindMessesPage />} />

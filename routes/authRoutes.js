@@ -4,6 +4,7 @@ const authController = require('../controllers/authController');
 const authMiddleware = require('../middleware/auth');
 
 router.post('/register', authController.register);
+router.post('/register-owner', authController.registerOwner);
 router.post('/login', authController.login);
 router.post('/firebase-login', authController.firebaseAuth);
 router.get('/profile', authMiddleware, authController.getProfile);

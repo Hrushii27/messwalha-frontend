@@ -8,5 +8,6 @@ router.post('/owner/create-order', authMiddleware, paymentController.createOrder
 router.post('/verify', authMiddleware, paymentController.verifyPayment);
 router.post('/owner/verify', authMiddleware, paymentController.verifyPayment); // Alias
 router.post('/webhook', paymentController.handleWebhook);
+router.get('/history', authMiddleware, paymentController.getPaymentHistory);
 
 module.exports = router;

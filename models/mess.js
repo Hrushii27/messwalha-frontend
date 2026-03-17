@@ -37,21 +37,27 @@ const Mess = {
 
     findAllActive: async (filters = {}) => {
         const { cuisine, maxPrice } = filters;
-        let query = 'SELECT * FROM messes WHERE is_active = TRUE';
+        let query = `SELECT m.* FROM messes m
+            INNER JOIN owner_subscriptions os ON m.owner_id = os.owner_id
+            WHERE m.is_active = TRUE
+            AND (
+                (os.status = 'trial' AND os.trial_end_date > CURRENT_TIMESTAMP)
+                OR (os.status = 'active' AND os.subscription_end > CURRENT_TIMESTAMP)
+            )`;
         const values = [];
         let index = 1;
 
         if (cuisine && cuisine.toLowerCase() !== 'all') {
-            query += ` AND LOWER(cuisine) = $${index++}`;
+            query += ` AND LOWER(m.cuisine) = $${index++}`;
             values.push(cuisine.toLowerCase());
         }
 
         if (maxPrice) {
-            query += ` AND price_per_month <= $${index++}`;
+            query += ` AND m.price_per_month <= $${index++}`;
             values.push(parseInt(maxPrice));
         }
 
-        query += ' ORDER BY city ASC, created_at DESC';
+        query += ' ORDER BY m.city ASC, m.created_at DESC';
 
         const result = await db.query(query, values);
         return result.rows;

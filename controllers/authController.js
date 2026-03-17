@@ -1,5 +1,6 @@
 const User = require('../models/user');
 const Subscription = require('../models/subscription');
+const Mess = require('../models/mess');
 const { hashPassword, comparePassword } = require('../utils/bcrypt');
 const { generateToken } = require('../utils/jwt');
 
@@ -43,6 +44,65 @@ const authController = {
                 message: 'Server error during registration',
                 error: err.message,
                 stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+            });
+        }
+    },
+
+    registerOwner: async (req, res) => {
+        const { ownerName, phone, email, password, messName, location } = req.body;
+        try {
+            if (!ownerName || !email || !password || !messName || !location) {
+                return res.status(400).json({ success: false, message: 'All fields are required' });
+            }
+
+            const existingUser = await User.findByEmail(email);
+            if (existingUser) {
+                return res.status(400).json({ success: false, message: 'User already exists with this email' });
+            }
+
+            const passwordHash = await hashPassword(password);
+            const user = await User.create(ownerName, email, phone || '', passwordHash, 'OWNER');
+
+            // Create 60-day trial
+            const ownerSubscription = await Subscription.createTrial(user.id);
+
+            // Create initial mess record
+            await Mess.create({
+                owner_id: user.id,
+                mess_name: messName,
+                owner_name: ownerName,
+                mobile: phone || '',
+                address: location,
+                city: location.split(',').pop()?.trim() || location,
+                cuisine: '',
+                price_per_month: 0,
+                price_per_week: 0,
+                price_per_day: 0,
+                menu_text: '',
+                mess_image: null,
+                menu_images: []
+            });
+
+            const token = generateToken(user.id, 'OWNER');
+            res.status(201).json({
+                success: true,
+                message: 'Owner registration successful! 60-day free trial activated.',
+                token,
+                user: {
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    phone: user.phone,
+                    role: 'OWNER',
+                    ownerSubscription
+                }
+            });
+        } catch (err) {
+            console.error('❌ Owner Registration Error:', err);
+            res.status(500).json({
+                success: false,
+                message: 'Server error during owner registration',
+                error: err.message
             });
         }
     },

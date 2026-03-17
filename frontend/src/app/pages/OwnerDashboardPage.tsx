@@ -16,7 +16,8 @@ import {
     Image as ImageIcon,
     Clock,
     CreditCard,
-    Calendar
+    Calendar,
+    AlertTriangle
 } from 'lucide-react';
 import { useAppSelector } from '../../hooks/redux';
 import type { RootState } from '../../store';
@@ -216,7 +217,7 @@ const OwnerDashboardPage: React.FC = () => {
                             <div>
                                 <div className="flex items-center space-x-3 mb-1">
                                     <h3 className="text-lg font-black uppercase tracking-tight">
-                                        {subscription?.status === 'trial' ? '90-Day Free Trial' : 'Elite Listing Plan'}
+                                        {subscription?.status === 'trial' ? '60-Day Free Trial' : 'Elite Listing Plan'}
                                     </h3>
                                     <span className={`text-[10px] font-black px-2 py-1 rounded-lg uppercase ${subscription?.status === 'trial' ? 'bg-orange-500 text-white' :
                                         subscription?.status === 'active' ? 'bg-green-500 text-white' :
@@ -520,6 +521,61 @@ const OwnerDashboardPage: React.FC = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Subscription Top Banner */}
+            {!loading && subscription && (() => {
+                const status = subscription.status;
+                const trialEnd = subscription.trial_end ? new Date(subscription.trial_end) : null;
+                const trialEndDate = subscription.trial_end_date ? new Date(subscription.trial_end_date) : trialEnd;
+                const now = new Date();
+                const daysLeft = trialEndDate ? Math.max(0, Math.ceil((trialEndDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))) : 0;
+
+                if (status === 'trial') {
+                    return (
+                        <div className="container mx-auto px-4 mt-4">
+                            <div className="bg-orange-500/10 border border-orange-500/30 rounded-2xl p-4 flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                    <Clock size={20} className="text-orange-500" />
+                                    <span className="text-sm font-bold text-orange-600 dark:text-orange-400">
+                                        ⏳ Free trial: <strong>{daysLeft} days remaining</strong>
+                                    </span>
+                                </div>
+                                <Button size="sm" className="rounded-xl" onClick={() => navigate('/owner/subscribe')}>
+                                    Subscribe ₹499/mo
+                                </Button>
+                            </div>
+                        </div>
+                    );
+                } else if (status === 'expired') {
+                    return (
+                        <div className="container mx-auto px-4 mt-4">
+                            <div className="bg-red-500/10 border border-red-500/30 rounded-2xl p-4 flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                    <AlertTriangle size={20} className="text-red-500" />
+                                    <span className="text-sm font-bold text-red-600 dark:text-red-400">
+                                        ⚠️ Trial ended — Subscribe to keep your mess visible
+                                    </span>
+                                </div>
+                                <Button size="sm" className="rounded-xl bg-red-500 hover:bg-red-600" onClick={() => navigate('/owner/subscribe')}>
+                                    Subscribe ₹499/mo
+                                </Button>
+                            </div>
+                        </div>
+                    );
+                } else if (status === 'active') {
+                    return (
+                        <div className="container mx-auto px-4 mt-4">
+                            <div className="bg-green-500/10 border border-green-500/30 rounded-2xl p-4 flex items-center gap-3">
+                                <CircleCheck size={20} className="text-green-500" />
+                                <span className="text-sm font-bold text-green-600 dark:text-green-400">
+                                    ✅ Subscription active
+                                </span>
+                            </div>
+                        </div>
+                    );
+                }
+                return null;
+            })()}
 
             <div className="container mx-auto px-4 -mt-10 pb-20">
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
