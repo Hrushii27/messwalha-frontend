@@ -77,7 +77,7 @@ node_modules/
 .vercel
 
 # Project specific
-package-lock.json
+# package-lock.json
 .DS_Store
 uploads/
 backend/firebase-service-account.json

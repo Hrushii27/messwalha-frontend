@@ -31,9 +31,6 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 console.log('✅ Express initialized. Port:', PORT);
 
-<<<<<<< HEAD
-// Middleware
-=======
 // --- 1. Security Headers (Helmet) ---
 app.use(
   helmet({
@@ -44,7 +41,7 @@ app.use(
         frameSrc: ["'self'", "https://*.google.com", "https://recaptcha.google.com", "https://*.razorpay.com", "https://checkout.razorpay.com"],
         connectSrc: ["'self'", "https://*.google.com", "https://*.gstatic.com", "https://api.findmess.me", "https://*.razorpay.com"],
         imgSrc: ["'self'", "data:", "https://*.gstatic.com", "https://*.google.com"],
-        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://accounts.google.com"],
         fontSrc: ["'self'", "https://fonts.gstatic.com"],
       },
     },
@@ -52,29 +49,10 @@ app.use(
 );
 
 // --- 2. CORS Configuration ---
->>>>>>> 3188c9a67539e26bc98942bbe963b9995a127f3a
 app.use(
   cors({
     origin: [
       "http://localhost:5173",
-<<<<<<< HEAD
-      "https://frontend-one-swart-57.vercel.app"
-    ],
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"]
-  })
-);
-
-app.use(express.json());
-
-// Global Request Logger
-app.use((req, res, next) => {
-  console.log(`[${new Date().toISOString()}] 📡 ${req.method} ${req.url}`);
-  next();
-});
-
-=======
       "https://frontend-one-swart-57.vercel.app",
       "https://findmess.me",
       "https://www.findmess.me"
@@ -102,8 +80,6 @@ app.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] 📡 ${req.method} ${req.url}`);
   next();
 });
-
->>>>>>> 3188c9a67539e26bc98942bbe963b9995a127f3a
 // --- Diagnostic Routes ---
 app.get('/api/ping', (req, res) => res.json({ status: 'OK', message: 'pong', time: new Date() }));
 
@@ -140,21 +116,12 @@ try {
 
 // --- API Routes ---
 app.use('/api/auth', authRoutes);
-<<<<<<< HEAD
-app.use('/api/subscription', subscriptionRoutes);
-app.use('/api/messes', messRoutes);
-=======
 app.use('/api/auth', googleAuthRoutes);
-
-// Dual support for singular/plural endpoints to avoid frontend breakage
 app.use(['/api/subscription', '/api/subscriptions'], subscriptionRoutes);
 app.use(['/api/mess', '/api/messes'], messRoutes);
 app.use(['/api/notification', '/api/notifications'], notificationsRoutes);
-
->>>>>>> 3188c9a67539e26bc98942bbe963b9995a127f3a
 app.use('/api/admin', adminRoutes);
 app.use('/api/favorites', favoritesRoutes);
-// Notifications already mounted above with dual support
 app.use('/api/users', userRoutes);
 app.use('/api/activity', activityRoutes);
 app.use('/api/menu', menuRoutes);
@@ -166,11 +133,7 @@ app.get('/', (req, res) => {
   res.json({
     status: 'OK',
     message: 'MessWalha Production API is LIVE 🚀',
-<<<<<<< HEAD
-    version: '1.2.2',
-=======
     version: '1.2.3',
->>>>>>> 3188c9a67539e26bc98942bbe963b9995a127f3a
     timestamp: new Date().toISOString()
   });
 });
