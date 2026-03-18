@@ -13,7 +13,6 @@ import {
     Heart,
     User as UserIcon,
     Phone,
-    Navigation,
     ShieldCheck,
     MapPin,
     AlertCircle
@@ -24,6 +23,7 @@ import { useAppSelector } from '../../hooks/redux';
 import type { RootState } from '../../store';
 import { useFavorites } from '../hooks/useFavorites';
 import { motion, AnimatePresence } from 'framer-motion';
+import toast from 'react-hot-toast';
 import type { Mess, Menu } from '../types/mess';
 import Seo from '../components/common/Seo';
 

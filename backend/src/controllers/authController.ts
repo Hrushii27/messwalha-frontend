@@ -7,6 +7,10 @@ import { adminAuth, db } from '../config/firebase.js';
 import { logger } from '../utils/logger.js';
 import crypto from 'crypto';
 
+// Re-using firebaseAuth logic or similar for Google login if needed
+// For real production with GSI tokens, google-auth-library is recommended.
+// Here we'll implement a robust Google Login flow.
+
 export const register = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { email, password, name, role, phone, college } = req.body;
@@ -388,6 +392,186 @@ export const resetPassword = async (req: Request, res: Response, next: NextFunct
             message: 'Password has been reset'
         });
     } catch (error) {
+        next(error);
+    }
+};
+
+export const sendOtp = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { email } = req.body;
+
+        if (!db) {
+            return next(new AppError('Database not configured', 500));
+        }
+
+        // Generate 6 digit OTP
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        const expiresAt = new Date();
+        expiresAt.setMinutes(expiresAt.getMinutes() + 10); // 10 minutes expiry
+
+        // Store OTP in Firestore
+        await db.collection('otps').doc(email).set({
+            otp,
+            expiresAt,
+            createdAt: new Date()
+        });
+
+        // Send Email
+        await emailService.sendOtpEmail(email, otp);
+
+        res.status(200).json({
+            success: true,
+            message: 'OTP sent successfully'
+        });
+    } catch (error) {
+        console.error('Send OTP Error:', error);
+        next(error);
+    }
+};
+
+export const verifyOtp = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { email, otp } = req.body;
+
+        if (!db) {
+            return next(new AppError('Database not configured', 500));
+        }
+
+        const otpDoc = await db.collection('otps').doc(email).get();
+        if (!otpDoc.exists) {
+            return next(new AppError('OTP not found or expired', 400));
+        }
+
+        const otpData = otpDoc.data();
+        if (!otpData || otpData.otp !== otp) {
+            return next(new AppError('Invalid OTP code', 400));
+        }
+
+        if (otpData.expiresAt.toDate() < new Date()) {
+            return next(new AppError('OTP has expired', 400));
+        }
+
+        // OTP is valid, delete it
+        await db.collection('otps').doc(email).delete();
+
+        // Find or create user
+        const userSnapshot = await db.collection('users').where('email', '==', email).limit(1).get();
+        let user;
+        let ownerSubscription = null;
+
+        if (userSnapshot.empty) {
+            // This case might happen if Google Login requested OTP for new user
+            return next(new AppError('User registration required', 404));
+        }
+
+        const userDoc = userSnapshot.docs[0];
+        user = userDoc.data();
+
+        if (user.role === 'OWNER') {
+            const subSnapshot = await db.collection('owner_subscriptions')
+                .where('ownerId', '==', user.id)
+                .limit(1)
+                .get();
+            if (!subSnapshot.empty) {
+                ownerSubscription = subSnapshot.docs[0].data();
+            }
+        }
+
+        const token = generateToken(user.id, user.role);
+        const refreshToken = generateRefreshToken(user.id);
+
+        res.status(200).json({
+            success: true,
+            token,
+            refreshToken,
+            user: {
+                id: user.id,
+                email: user.email,
+                name: user.name,
+                role: user.role,
+                ownerSubscription
+            }
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const googleLogin = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { token: idToken } = req.body;
+
+        if (!db || !adminAuth) {
+            return next(new AppError('Firebase not configured', 500));
+        }
+
+        // Ideally verify with google-auth-library here. 
+        // For now, since we are using Firebase, we can check if the user exists.
+        // If we want real verification without google-auth-library, we'd need to fetch from googleapis.
+        
+        // Let's use a secure approach: fetch token info from Google
+        const googleVerifyUrl = `https://oauth2.googleapis.com/tokeninfo?id_token=${idToken}`;
+        const verifyRes = await fetch(googleVerifyUrl);
+        const payload = await verifyRes.json();
+
+        if (!payload.email) {
+            return next(new AppError('Invalid Google token', 401));
+        }
+
+        const email = payload.email;
+        const name = payload.name;
+        const picture = payload.picture;
+
+        const userSnapshot = await db.collection('users').where('email', '==', email).limit(1).get();
+        let user;
+        let ownerSubscription = null;
+
+        if (userSnapshot.empty) {
+            // New user via Google - Create with temporary password
+            const userRef = db.collection('users').doc();
+            user = {
+                id: userRef.id,
+                email,
+                name: name || 'Google User',
+                role: 'STUDENT', // Default role
+                avatar: picture,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                // Password is required in schema, set a random one
+                password: await hashPassword(crypto.randomBytes(16).toString('hex'))
+            };
+            await userRef.set(user);
+        } else {
+            user = userSnapshot.docs[0].data();
+            if (user.role === 'OWNER') {
+                const subSnapshot = await db.collection('owner_subscriptions')
+                    .where('ownerId', '==', user.id)
+                    .limit(1)
+                    .get();
+                if (!subSnapshot.empty) {
+                    ownerSubscription = subSnapshot.docs[0].data();
+                }
+            }
+        }
+
+        const token = generateToken(user.id, user.role);
+        const refreshToken = generateRefreshToken(user.id);
+
+        res.status(200).json({
+            success: true,
+            token,
+            refreshToken,
+            user: {
+                id: user.id,
+                email: user.email,
+                name: user.name,
+                role: user.role,
+                avatar: user.avatar,
+                ownerSubscription
+            }
+        });
+    } catch (error) {
+        console.error('Google Login Error:', error);
         next(error);
     }
 };

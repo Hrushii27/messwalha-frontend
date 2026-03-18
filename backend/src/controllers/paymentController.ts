@@ -7,10 +7,19 @@ import { AppError } from '../middleware/errorHandler.js';
 import { emailService } from '../services/emailService.js';
 import { db } from '../config/firebase.js';
 
-const razorpay = new Razorpay({
-    key_id: config.RAZORPAY_KEY_ID!,
-    key_secret: config.RAZORPAY_KEY_SECRET!,
-});
+let razorpay: Razorpay | null = null;
+try {
+    if (config.RAZORPAY_KEY_ID && config.RAZORPAY_KEY_SECRET) {
+        razorpay = new Razorpay({
+            key_id: config.RAZORPAY_KEY_ID,
+            key_secret: config.RAZORPAY_KEY_SECRET,
+        });
+    } else {
+        console.warn('⚠️ Razorpay keys not found. Payment features will be in MOCK mode.');
+    }
+} catch (err) {
+    console.error('❌ Failed to initialize Razorpay:', err);
+}
 
 export const createOrder = async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
@@ -50,6 +59,10 @@ export const createOrder = async (req: AuthRequest, res: Response, next: NextFun
             currency: 'INR',
             receipt: `rcpt_${Date.now()}`,
         };
+
+        if (!razorpay) {
+            return next(new AppError('Razorpay not configured and mock mode disabled', 500));
+        }
 
         const order = await razorpay.orders.create(options);
 
@@ -114,6 +127,10 @@ export const createOwnerOrder = async (req: AuthRequest, res: Response, next: Ne
             currency: 'INR',
             receipt: `owner_rcpt_${Date.now()}`,
         };
+
+        if (!razorpay) {
+            return next(new AppError('Razorpay not configured and mock mode disabled', 500));
+        }
 
         const order = await razorpay.orders.create(options);
 

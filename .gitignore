@@ -80,3 +80,6 @@ node_modules/
 package-lock.json
 .DS_Store
 uploads/
+backend/firebase-service-account.json
+deploy_heroku_manual.bat
+*.bat

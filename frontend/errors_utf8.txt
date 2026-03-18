@@ -1,0 +1,7 @@
+﻿src/app/pages/FindMessesPage.tsx(7,5): error TS6133: 'Star' is declared but its value is never read.
+src/app/pages/LoginPage.tsx(5,1): error TS6133: 'Card' is declared but its value is never read.
+src/app/pages/MessDetailsPage.tsx(16,5): error TS6133: 'Navigation' is declared but its value is never read.
+src/app/pages/MessDetailsPage.tsx(270,37): error TS2304: Cannot find name 'toast'.
+src/app/pages/MessDetailsPage.tsx(575,61): error TS2304: Cannot find name 'toast'.
+src/app/pages/OwnerDashboardPage.tsx(21,5): error TS6133: 'ArrowRight' is declared but its value is never read.
+src/app/pages/OwnerDashboardPage.tsx(44,12): error TS6133: 'loading' is declared but its value is never read.

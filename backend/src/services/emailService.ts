@@ -113,6 +113,24 @@ class EmailService {
         `;
         return this.sendMail(email, subject, html);
     }
+
+    async sendOtpEmail(email: string, otp: string) {
+        const subject = `${otp} is your MessWalha OTP Verification Code`;
+        const html = `
+            <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px; text-align: center; background-color: #f8fafc;">
+                <div style="background-color: #ffffff; padding: 40px; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+                    <h1 style="color: #f97316; margin-bottom: 24px; font-size: 28px;">Verification Code</h1>
+                    <p style="color: #475569; font-size: 16px; line-height: 24px;">Please use the following single-use code to complete your login sequence. This code is valid for 10 minutes.</p>
+                    <div style="margin: 32px 0; background-color: #fff7ed; padding: 24px; border-radius: 12px; border: 2px dashed #fdba74;">
+                        <span style="font-size: 42px; font-weight: 800; letter-spacing: 8px; color: #ea580c; font-family: monospace;">${otp}</span>
+                    </div>
+                    <p style="color: #94a3b8; font-size: 14px;">If you did not request this code, please ignore this email or contact security support.</p>
+                </div>
+                <p style="margin-top: 24px; color: #94a3b8; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">MessWalha - Secure Discovery Network</p>
+            </div>
+        `;
+        return this.sendMail(email, subject, html);
+    }
 }
 
 export const emailService = new EmailService();

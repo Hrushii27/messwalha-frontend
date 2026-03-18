@@ -29,7 +29,7 @@ interface Subscription {
 type Tab = 'overview' | 'favorites' | 'reviews' | 'settings';
 
 const UserDashboard: React.FC = () => {
-    const { user } = useAppSelector((state) => state.auth);
+    const { user, isLoading: authLoading } = useAppSelector((state) => state.auth);
     const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
     const [favorites, setFavorites] = useState<any[]>([]);
     const [userReviews, setUserReviews] = useState<any[]>([]);
@@ -37,6 +37,22 @@ const UserDashboard: React.FC = () => {
     const [activeTab, setActiveTab] = useState<Tab>('overview');
     const [isLoading, setIsLoading] = useState(true);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (!authLoading && !user) {
+            navigate('/login');
+        }
+    }, [user, authLoading, navigate]);
+
+    if (authLoading || !user) {
+        return (
+            <Layout>
+                <div className="min-h-screen flex items-center justify-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+                </div>
+            </Layout>
+        );
+    }
 
     useEffect(() => {
         const fetchDashboardData = async () => {

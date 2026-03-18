@@ -15,14 +15,9 @@ import {
     Clock,
     CreditCard,
     Calendar,
-<<<<<<< HEAD
     MessageSquare,
     Star,
-    ChevronRight,
-    ArrowRight
-=======
-    AlertTriangle
->>>>>>> 3188c9a67539e26bc98942bbe963b9995a127f3a
+    ChevronRight
 } from 'lucide-react';
 import { useAppSelector } from '../../hooks/redux';
 import type { RootState } from '../../store';
@@ -185,7 +180,7 @@ const OwnerDashboardPage: React.FC = () => {
             } else {
                 newMenus.push({
                     day,
-                    items: [{ name: '', type: 'Veg', [field]: value }]
+                    items: [{ name: '', type: 'Veg', [field]: value }] as MenuItem[]
                 });
             }
             return newMenus;
@@ -294,11 +289,7 @@ const OwnerDashboardPage: React.FC = () => {
                                             <Clock size={14} className="mr-2" />
                                             <span>
                                                 {(() => {
-<<<<<<< HEAD
-=======
-                                                    if (!subscription?.trial_end) return '90 days remaining';
->>>>>>> 3188c9a67539e26bc98942bbe963b9995a127f3a
-                                                    const end = new Date(subscription.trial_end);
+                                                    const end = new Date(subscription.trial_end!);
                                                     const now = new Date();
                                                     const diff = Math.ceil((end.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
                                                     return `${Math.max(0, diff)} Cycles`;
@@ -683,6 +674,7 @@ const OwnerDashboardPage: React.FC = () => {
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMessForm({ ...messForm, name: e.target.value })}
                                 placeholder="Designation"
                                 className="h-14 md:h-16"
+                                id="mess-name-input"
                             />
                             <Input
                                 label="Cuisine Type"
@@ -690,6 +682,7 @@ const OwnerDashboardPage: React.FC = () => {
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMessForm({ ...messForm, cuisine: e.target.value })}
                                 placeholder="Signals (e.g. Maharashtrian)"
                                 className="h-14 md:h-16"
+                                id="mess-cuisine-input"
                             />
                             <div className="md:col-span-2 space-y-4">
                                 <label className="text-[10px] font-black uppercase tracking-[0.2em] text-navy-400 ml-2 italic">Broadcast Description</label>
@@ -707,6 +700,7 @@ const OwnerDashboardPage: React.FC = () => {
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMessForm({ ...messForm, address: e.target.value })}
                                 placeholder="Coordinates"
                                 className="h-14 md:h-16"
+                                id="mess-address-input"
                             />
                             <Input
                                 label="Signal Frequency (Phone)"
@@ -714,6 +708,7 @@ const OwnerDashboardPage: React.FC = () => {
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMessForm({ ...messForm, contact: e.target.value })}
                                 placeholder="+91 XXXX"
                                 className="h-14 md:h-16"
+                                id="mess-contact-input"
                             />
                             <Input
                                 label="Metropolitan Sector (City)"
@@ -721,6 +716,7 @@ const OwnerDashboardPage: React.FC = () => {
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMessForm({ ...messForm, city: e.target.value })}
                                 placeholder="E.g. Pune"
                                 className="h-14 md:h-16"
+                                id="mess-city-input"
                             />
                             <div className="space-y-4">
                                 <label className="text-[10px] font-black uppercase tracking-[0.2em] text-navy-400 ml-2 italic">Dietary Matrix</label>
@@ -745,6 +741,7 @@ const OwnerDashboardPage: React.FC = () => {
                                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMessForm({ ...messForm, college_tags: e.target.value })}
                                     placeholder="Comma separatedInstitution tags..."
                                     className="h-14 md:h-16"
+                                    id="mess-tags-input"
                                 />
                             </div>
                         </div>
@@ -763,6 +760,17 @@ const OwnerDashboardPage: React.FC = () => {
             </div>
         );
     };
+
+    if (loading) {
+        return (
+            <Layout>
+                <div className="min-h-screen bg-navy-950 flex flex-col items-center justify-center p-6 sm:p-12 lg:p-24 relative z-10 w-full">
+                    <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary-500 mb-4"></div>
+                    <p className="text-navy-300 font-black uppercase tracking-[0.2em] text-xs">Initializing Terminal...</p>
+                </div>
+            </Layout>
+        );
+    }
 
     return (
         <Layout>
@@ -795,73 +803,10 @@ const OwnerDashboardPage: React.FC = () => {
                     </div>
                 </div>
 
-<<<<<<< HEAD
                 <div className="container mx-auto px-4 md:px-6 -mt-10 pb-32 relative z-20 flex flex-col lg:flex-row gap-10">
-                    {/* Navigation Sidebar - Horizontal scroll on mobile */}
+                    {/* Navigation Sidebar */}
                     <aside className="w-full lg:w-[320px] shrink-0">
                         <div className="lg:sticky lg:top-32 flex lg:flex-col overflow-x-auto lg:overflow-x-visible pb-4 lg:pb-0 gap-3 scrollbar-hide">
-=======
-            {/* Subscription Top Banner */}
-            {!loading && subscription && (() => {
-                const status = subscription.status;
-                const trialEnd = subscription.trial_end ? new Date(subscription.trial_end) : null;
-                const trialEndDate = subscription.trial_end_date ? new Date(subscription.trial_end_date) : trialEnd;
-                const now = new Date();
-                const daysLeft = trialEndDate ? Math.max(0, Math.ceil((trialEndDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))) : 0;
-
-                if (status === 'trial') {
-                    return (
-                        <div className="container mx-auto px-4 mt-4">
-                            <div className="bg-orange-500/10 border border-orange-500/30 rounded-2xl p-4 flex items-center justify-between">
-                                <div className="flex items-center gap-3">
-                                    <Clock size={20} className="text-orange-500" />
-                                    <span className="text-sm font-bold text-orange-600 dark:text-orange-400">
-                                        ⏳ Free trial: <strong>{daysLeft} days remaining</strong>
-                                    </span>
-                                </div>
-                                <Button size="sm" className="rounded-xl" onClick={() => navigate('/owner/subscribe')}>
-                                    Subscribe ₹499/mo
-                                </Button>
-                            </div>
-                        </div>
-                    );
-                } else if (status === 'expired') {
-                    return (
-                        <div className="container mx-auto px-4 mt-4">
-                            <div className="bg-red-500/10 border border-red-500/30 rounded-2xl p-4 flex items-center justify-between">
-                                <div className="flex items-center gap-3">
-                                    <AlertTriangle size={20} className="text-red-500" />
-                                    <span className="text-sm font-bold text-red-600 dark:text-red-400">
-                                        ⚠️ Trial ended — Subscribe to keep your mess visible
-                                    </span>
-                                </div>
-                                <Button size="sm" className="rounded-xl bg-red-500 hover:bg-red-600" onClick={() => navigate('/owner/subscribe')}>
-                                    Subscribe ₹499/mo
-                                </Button>
-                            </div>
-                        </div>
-                    );
-                } else if (status === 'active') {
-                    return (
-                        <div className="container mx-auto px-4 mt-4">
-                            <div className="bg-green-500/10 border border-green-500/30 rounded-2xl p-4 flex items-center gap-3">
-                                <CircleCheck size={20} className="text-green-500" />
-                                <span className="text-sm font-bold text-green-600 dark:text-green-400">
-                                    ✅ Subscription active
-                                </span>
-                            </div>
-                        </div>
-                    );
-                }
-                return null;
-            })()}
-
-            <div className="container mx-auto px-4 -mt-10 pb-20">
-                <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-                    {/* Navigation */}
-                    <div className="lg:col-span-1">
-                        <Card className="p-2 space-y-1 sticky top-24 shadow-2xl shadow-primary/5 dark:bg-dark-card rounded-2xl">
->>>>>>> 3188c9a67539e26bc98942bbe963b9995a127f3a
                             {[
                                 { id: 'overview', icon: <LayoutDashboard size={20} />, label: 'Dashboard' },
                                 { id: 'menu', icon: <Utensils size={20} />, label: 'Menu Logic' },

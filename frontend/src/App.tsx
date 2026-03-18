@@ -31,11 +31,7 @@ const ProfilePage = lazy(() => import('./app/pages/ProfilePage'));
 const TodayMenuPage = lazy(() => import('./app/pages/TodayMenuPage'));
 const AddMessPage = lazy(() => import('./app/pages/AddMessPage'));
 const SubscribePage = lazy(() => import('./app/pages/SubscribePage'));
-<<<<<<< HEAD
 const MyReviewsPage = lazy(() => import('./app/pages/MyReviewsPage'));
-=======
-const OwnerRegistrationPage = lazy(() => import('./app/pages/OwnerRegistrationPage'));
->>>>>>> 3188c9a67539e26bc98942bbe963b9995a127f3a
 
 // Loading component for Suspense
 const PageLoader = () => (
@@ -47,9 +43,8 @@ const PageLoader = () => (
 const App: React.FC = () => {
   return (
     <Provider store={store}>
-<<<<<<< HEAD
       <GoogleReCaptchaProvider
-        reCaptchaKey={import.meta.env.VITE_RECAPTCHA_SITE_KEY || "6Ld48IssAAAAACSSpuDv2_NC8bNqQBol2lpFpsM7"}
+        reCaptchaKey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
         scriptProps={{
           async: false,
           defer: false,
@@ -97,46 +92,6 @@ const App: React.FC = () => {
           </GlobalErrorBoundary>
         </FavoritesProvider>
       </GoogleReCaptchaProvider>
-=======
-      <FavoritesProvider>
-        <GlobalErrorBoundary>
-          <Router>
-            <Suspense fallback={<PageLoader />}>
-              <Routes>
-                <Route path="/" element={<LandingPage />} />
-                <Route path="/about" element={<AboutPage />} />
-                <Route path="/terms" element={<TermsPage />} />
-                <Route path="/refund-policy" element={<RefundPolicyPage />} />
-                <Route path="/faq" element={<FAQPage />} />
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/register" element={<RegisterPage />} />
-                <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-                <Route path="/mess-owner-register" element={<OwnerRegistrationPage />} />
-                <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
-                <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
-                <Route path="/find-mess" element={<FindMessesPage />} />
-                <Route path="/find-messes" element={<Navigate to="/find-mess" replace />} />
-                <Route path="/mess/:id" element={<MessDetailsPage />} />
-                <Route path="/invoice/:id" element={<InvoicePage />} />
-                <Route path="/dashboard" element={<StudentDashboardPage />} />
-                <Route path="/subscriptions" element={<MySubscriptionsPage />} />
-                <Route path="/messages" element={<ChatPage />} />
-                <Route path="/profile" element={<ProfilePage />} />
-                <Route path="/profile/settings" element={<ProfilePage />} /> { /* Shared for now */}
-                <Route path="/security" element={<ProfilePage />} /> { /* Shared for now */}
-                <Route path="/menu/today" element={<TodayMenuPage />} />
-                <Route path="/orders" element={<MySubscriptionsPage />} /> { /* Shared for now */}
-                <Route path="/owner/dashboard" element={<OwnerDashboardPage />} />
-                <Route path="/owner/subscribe" element={<SubscribePage />} />
-                <Route path="/owner/add-mess" element={<AddMessPage />} />
-                <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
-                <Route path="*" element={<Navigate to="/" replace />} />
-              </Routes>
-            </Suspense>
-          </Router>
-        </GlobalErrorBoundary>
-      </FavoritesProvider>
->>>>>>> 3188c9a67539e26bc98942bbe963b9995a127f3a
     </Provider>
   );
 };
