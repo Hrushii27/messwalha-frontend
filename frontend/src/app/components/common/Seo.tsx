@@ -8,17 +8,20 @@ interface SeoProps {
     image?: string;
     url?: string;
     schema?: object;
+    robots?: string;
 }
 
 const Seo: React.FC<SeoProps> = ({
-    title = 'FindMess – Find the Best Mess & Tiffin Services Near You',
-    description = 'FindMess helps students and PG residents discover affordable mess and tiffin services near them. Compare prices, reviews, and locations.',
-    keywords = 'mess near me, tiffin service, student mess, PG food service, affordable mess, find mess India',
-    image = '/og-image.png', // Optimized branding banner
+    title = 'FindMess – Elite Mess & Tiffin Discovery Platform',
+    description = 'Discover premium mess and tiffin services. FindMess provides students and PG residents with an elite culinary discovery experience with verified reviews and secure subscriptions.',
+    keywords = 'premium mess, tiffin service, student dining, elite mess discovery, verified mess reviews, FindMess',
+    image = '/og-banner.png',
     url = window.location.href,
     schema,
+    robots = 'index, follow',
 }) => {
     const siteTitle = title.includes('FindMess') ? title : `${title} | FindMess`;
+    const canonical = url.split(/[?#]/)[0];
 
     return (
         <Helmet>
@@ -26,6 +29,9 @@ const Seo: React.FC<SeoProps> = ({
             <title>{siteTitle}</title>
             <meta name="description" content={description} />
             <meta name="keywords" content={keywords} />
+            <link rel="canonical" href={canonical} />
+            <meta name="robots" content={robots} />
+            <meta name="theme-color" content="#0F172A" />
 
             {schema && (
                 <script type="application/ld+json">
@@ -33,12 +39,13 @@ const Seo: React.FC<SeoProps> = ({
                 </script>
             )}
 
-            {/* Facebook Meta Tags */}
+            {/* Social Meta Tags */}
             <meta property="og:type" content="website" />
             <meta property="og:title" content={siteTitle} />
             <meta property="og:description" content={description} />
             <meta property="og:image" content={image} />
-            <meta property="og:url" content={url} />
+            <meta property="og:url" content={canonical} />
+            <meta property="og:site_name" content="FindMess" />
 
             {/* Twitter Meta Tags */}
             <meta name="twitter:card" content="summary_large_image" />

@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Layout } from '../components/layout/Layout';
 import { Button } from '../components/common/Button';
-import { Search, Send, Image as ImageIcon, Phone, Video, Info } from 'lucide-react';
+import { Search, Send, Image as ImageIcon, Phone, Video, Info, MessageSquare } from 'lucide-react';
+import { EmptyState } from '../components/common/EmptyState';
 import { useAppSelector } from '../../hooks/redux';
 import type { RootState } from '../../store';
 import api from '../api/axiosInstance';
@@ -210,16 +211,13 @@ const ChatPage: React.FC = () => {
                                 </div>
                             </>
                         ) : (
-                            <div className="flex-grow flex items-center justify-center text-center p-12">
-                                <div className="space-y-4 opacity-30 translate-y-[-20%]">
-                                    <div className="w-24 h-24 bg-gray-100 rounded-[2.5rem] mx-auto flex items-center justify-center text-primary">
-                                        <Send size={48} />
-                                    </div>
-                                    <div>
-                                        <h3 className="text-xl font-black uppercase tracking-widest">Your Inbox</h3>
-                                        <p className="text-sm font-bold mt-2">Select a conversation to start chatting</p>
-                                    </div>
-                                </div>
+                            <div className="flex-grow flex items-center justify-center p-12">
+                                <EmptyState
+                                    icon={MessageSquare}
+                                    title="Your Elite Inbox"
+                                    description="Select a conversation to start transmitting messages through our secure culinary frequency."
+                                    className="border-none shadow-none bg-transparent"
+                                />
                             </div>
                         )}
                     </div>

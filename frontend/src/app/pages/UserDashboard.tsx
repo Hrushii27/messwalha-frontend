@@ -73,16 +73,6 @@ const UserDashboard: React.FC = () => {
         }
     }, [user]);
 
-    if (!user) {
-        return (
-            <Layout>
-                <div className="flex items-center justify-center min-h-[60vh]">
-                    <Button onClick={() => navigate('/login')}>Login to View Dashboard</Button>
-                </div>
-            </Layout>
-        );
-    }
-
     const handleLogout = () => {
         localStorage.removeItem('token');
         window.location.href = '/login';

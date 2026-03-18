@@ -19,27 +19,22 @@ const SubscribePage: React.FC = () => {
     const handleSubscribe = async () => {
         setLoading(true);
         try {
-            const res = await api.post('/subscriptions/order', {
-                amount: 499,
-                planType: 'monthly'
-            });
+            const res = await api.post('/payments/owner/create-order');
 
-            const { order } = res.data;
-            const { id: order_id, amount, currency } = order;
+            const { orderId, amount, currency } = res.data;
 
             // Razorpay Integration
             const options = {
-                key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+                key: import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_dummy_id',
                 amount,
                 currency,
                 name: 'MessWalha',
-                description: 'Mess Listing Subscription',
-                order_id: order_id,
+                description: 'Elite Listing Plan Subscription',
+                order_id: orderId,
                 handler: async (response: RazorpayResponse) => {
                     try {
-                        await api.post('/subscriptions/verify-payment', {
-                            ...response,
-                            planType: 'monthly'
+                        await api.post('/payments/owner/verify', {
+                            ...response
                         });
                         window.location.href = '/owner/dashboard';
                     } catch (error) {
@@ -47,10 +42,10 @@ const SubscribePage: React.FC = () => {
                         alert('Payment verification failed');
                     }
                 },
-                theme: { color: '#F59E0B' }
+                theme: { color: '#f97316' }
             };
 
-            const Razorpay = window.Razorpay;
+            const Razorpay = (window as any).Razorpay;
             const rzp = new Razorpay(options);
             rzp.open();
         } catch (err) {

@@ -9,7 +9,7 @@ export const getAllMesses = async (req: Request, res: Response, next: NextFuncti
 
         const { cuisine, verified, minRating } = req.query;
 
-        let query: any = db.collection('messes');
+        let query: any = db.collection('messes').where('isVisible', '==', true);
 
         if (cuisine) {
             query = query.where('cuisine', '==', cuisine as string);

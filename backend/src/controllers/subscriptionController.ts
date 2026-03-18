@@ -24,7 +24,7 @@ export const createSubscription = async (req: AuthRequest, res: Response, next: 
             planType,
             startDate,
             endDate,
-            status: 'ACTIVE',
+            status: 'active',
             createdAt: new Date(),
             updatedAt: new Date(),
         };
@@ -117,6 +117,72 @@ export const getOwnerSubscribers = async (req: AuthRequest, res: Response, next:
             totalRevenue,
             data: subscribers
         });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const getSubscriptionStatus = async (req: AuthRequest, res: Response, next: NextFunction) => {
+    try {
+        if (!db) return next(new AppError('Database not configured', 500));
+
+        const subSnapshot = await db.collection('owner_subscriptions')
+            .where('ownerId', '==', req.user!.id)
+            .limit(1)
+            .get();
+
+        if (subSnapshot.empty) {
+            // First time owners get a 60-day trial automatically
+            const trialEnd = new Date();
+            trialEnd.setDate(trialEnd.getDate() + 60);
+
+            const newSubRef = db.collection('owner_subscriptions').doc();
+            const newSub = {
+                id: newSubRef.id,
+                ownerId: req.user!.id,
+                status: 'trial',
+                planName: 'FREE_TRIAL',
+                trial_end: trialEnd,
+                trial_end_date: trialEnd, // Duplicate for frontend compatibility
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            };
+
+            await newSubRef.set(newSub);
+            return res.status(200).json({ success: true, data: newSub });
+        }
+
+        const subData = subSnapshot.docs[0].data();
+        
+        // Helper to handle Firestore Timestamps
+        const toDate = (val: any) => {
+            if (!val) return null;
+            if (val.toDate && typeof val.toDate === 'function') return val.toDate();
+            return new Date(val);
+        };
+
+        const trial_end = toDate(subData.trial_end);
+        const subscription_end = toDate(subData.subscription_end);
+        const now = new Date();
+
+        let status = subData.status || 'inactive';
+        if (status === 'trial' && trial_end && trial_end < now) {
+            status = 'expired';
+        } else if (status === 'active' && subscription_end && subscription_end < now) {
+            status = 'expired';
+        }
+
+        const subscription = {
+            ...subData,
+            status,
+            trial_end,
+            trial_end_date: trial_end, // Add for compatibility
+            subscription_end,
+            nextBillingDate: toDate(subData.nextBillingDate),
+            isActive: status === 'trial' || status === 'active'
+        };
+
+        res.status(200).json({ success: true, data: subscription });
     } catch (error) {
         next(error);
     }

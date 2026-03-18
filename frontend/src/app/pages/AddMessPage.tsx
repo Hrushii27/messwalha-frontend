@@ -40,7 +40,7 @@ const AddMessPage: React.FC = () => {
                     const status = res.data.data.status;
                     // Check if trial/active date is actually valid
                     const now = new Date();
-                    const end = status === 'trial' ? new Date(res.data.data.trial_end_date) : new Date(res.data.data.subscription_end);
+                    const end = status === 'trial' ? new Date(res.data.data.trial_end) : new Date(res.data.data.subscription_end);
 
                     if (end < now) {
                         setSubStatus('expired');
@@ -142,7 +142,7 @@ const AddMessPage: React.FC = () => {
                 data.append('menu_images', file);
             });
 
-            await api.post('/mess', data, {
+            await api.post('/messes', data, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
             setSuccess(true);

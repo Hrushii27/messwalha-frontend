@@ -37,6 +37,7 @@ export interface Mess {
     weeklyPrice?: number;
     dailyPrice?: number;
     verified?: boolean;
+    isVisible?: boolean;
     cuisine?: string;
     createdAt?: string;
     ownerId?: string;

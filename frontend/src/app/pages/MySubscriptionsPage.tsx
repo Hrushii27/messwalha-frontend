@@ -5,6 +5,7 @@ import { Button } from '../components/common/Button';
 import { Search, Filter, Download, Pause, XCircle, RefreshCw } from 'lucide-react';
 import api from '../api/axiosInstance';
 import type { Subscription } from '../types/mess';
+import { EmptyState } from '../components/common/EmptyState';
 
 const MySubscriptionsPage: React.FC = () => {
     const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
@@ -128,19 +129,13 @@ const MySubscriptionsPage: React.FC = () => {
                         ))}
                     </div>
                 ) : (
-                    <div className="text-center py-20">
-                        <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-300">
-                            <RefreshCw size={40} />
-                        </div>
-                        <h2 className="text-xl font-bold">Find a Mess</h2>
-                        <p className="text-gray-500 mt-2">Browse Available Mess Services</p>
-                        <Button
-                            className="mt-6 rounded-full px-8"
-                            onClick={() => window.location.href = '/find-mess'}
-                        >
-                            Find a Mess
-                        </Button>
-                    </div>
+                    <EmptyState
+                        icon={RefreshCw}
+                        title="No Subscriptions Found"
+                        description="You haven't subscribed to any mess yet. Explore our elite network of mess services and start your trial today."
+                        actionLabel="Find a Mess"
+                        onAction={() => window.location.href = '/find-mess'}
+                    />
                 )}
             </div>
         </Layout>

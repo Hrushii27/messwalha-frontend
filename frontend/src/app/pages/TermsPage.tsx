@@ -2,10 +2,15 @@ import React from 'react';
 import { Layout } from '../components/layout/Layout';
 import { motion } from 'framer-motion';
 import { FAQSection } from '../components/common/FAQSection';
+import Seo from '../components/common/Seo';
 
 const TermsPage: React.FC = () => {
     return (
         <Layout>
+            <Seo 
+                title="Terms & Conditions | FindMess" 
+                description="Read the terms and conditions for using FindMess, the elite discovery platform for student mess and tiffin services."
+            />
             <div className="grad-dark py-32">
                 <div className="container mx-auto px-4">
                     <motion.h1

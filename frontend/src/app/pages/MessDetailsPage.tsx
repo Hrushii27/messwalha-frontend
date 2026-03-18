@@ -14,17 +14,18 @@ import {
     User as UserIcon,
     Phone,
     Navigation,
-    ShieldCheck
+    ShieldCheck,
+    MapPin,
+    AlertCircle
 } from 'lucide-react';
+import { EmptyState } from '../components/common/EmptyState';
 import api, { getImageUrl } from '../api/axiosInstance';
 import { useAppSelector } from '../../hooks/redux';
 import type { RootState } from '../../store';
 import { useFavorites } from '../hooks/useFavorites';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import type { Mess, Menu } from '../types/mess';
 import Seo from '../components/common/Seo';
-
-// Razorpay is now globally declared in global.d.ts
 
 interface Plan {
     title: string;
@@ -70,7 +71,6 @@ const MessDetailsPage: React.FC = () => {
                 setNotifications(notifRes.data.data || []);
                 setReviews(reviewsRes.data.data || []);
 
-                // Tracking Recently Viewed
                 if (messRes.data.data) {
                     const m = messRes.data.data;
                     const history = JSON.parse(localStorage.getItem('recentlyViewed') || '[]');
@@ -163,7 +163,7 @@ const MessDetailsPage: React.FC = () => {
                 theme: { color: '#F97316' }
             };
 
-            const rzp = new window.Razorpay(options);
+            const rzp = new (window as any).Razorpay(options);
             rzp.open();
         } catch (error) {
             console.error('Checkout error', error);
@@ -184,7 +184,6 @@ const MessDetailsPage: React.FC = () => {
             if (data.success) {
                 alert('Review submitted successfully!');
                 setReviewForm({ rating: 5, comment: '', show: false });
-                // Fetch fresh reviews
                 const reviewsRes = await api.get(`/reviews/${id}`);
                 setReviews(reviewsRes.data.data || []);
             }
@@ -197,22 +196,22 @@ const MessDetailsPage: React.FC = () => {
     if (loading) {
         return (
             <Layout>
-                <div className="container mx-auto px-4 py-12 space-y-8 animate-pulse text-white">
-                    <div className="h-64 bg-white/5 rounded-xl" />
+                <div className="container mx-auto px-4 py-24 space-y-8 animate-pulse text-white">
+                    <div className="h-64 md:h-96 bg-white/5 rounded-[2.5rem]" />
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         <div className="lg:col-span-2 space-y-6">
-                            <div className="h-10 w-1/2 bg-white/5 rounded-md" />
-                            <div className="h-4 w-3/4 bg-white/5 rounded-md" />
-                            <div className="h-48 bg-white/5 rounded-xl" />
+                            <div className="h-12 w-1/2 bg-white/5 rounded-2xl" />
+                            <div className="h-6 w-3/4 bg-white/5 rounded-2xl" />
+                            <div className="h-64 bg-white/5 rounded-[2.5rem]" />
                         </div>
-                        <div className="h-96 bg-white/5 rounded-xl" />
+                        <div className="h-96 bg-white/5 rounded-[2.5rem]" />
                     </div>
                 </div>
             </Layout>
         );
     }
 
-    if (!mess) return <Layout><div className="text-center py-20 text-white">Mess not found</div></Layout>;
+    if (!mess) return <Layout><div className="text-center py-20 text-white font-black uppercase text-xl italic pt-40">Mess Protocol Not Found</div></Layout>;
 
     const currentDayMenu = mess.menus?.find((m: Menu) => m.day === selectedDay);
     const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
@@ -220,70 +219,31 @@ const MessDetailsPage: React.FC = () => {
     return (
         <Layout>
             <Seo 
-                title={`${mess.name} | Best Mess Near You`} 
+                title={`${mess.name} | Premium Mess Listing`} 
                 description={`Check out ${mess.name} on FindMess. Discover their weekly menu, pricing, and student reviews in ${mess.address}.`}
-                schema={{
-                    "@context": "https://schema.org",
-                    "@type": "LocalBusiness",
-                    "name": mess.name,
-                    "image": getImageUrl(mess.messImage || mess.images?.[0]),
-                    "@id": window.location.href,
-                    "url": window.location.href,
-                    "telephone": mess.contact || mess.mobile,
-                    "address": {
-                      "@type": "PostalAddress",
-                      "streetAddress": mess.address,
-                      "addressLocality": mess.city || "Pune",
-                      "addressRegion": "Maharashtra",
-                      "postalCode": "411005",
-                      "addressCountry": "IN"
-                    },
-                    "geo": {
-                      "@type": "GeoCoordinates",
-                      "latitude": 18.5204,
-                      "longitude": 73.8567
-                    },
-                    "aggregateRating": {
-                      "@type": "AggregateRating",
-                      "ratingValue": mess.rating || 4.5,
-                      "reviewCount": reviews.length || 10
-                    },
-                    "review": reviews.slice(0, 5).map(r => ({
-                      "@type": "Review",
-                      "author": {
-                        "@type": "Person",
-                        "name": r.user_name
-                      },
-                      "datePublished": r.created_at,
-                      "reviewBody": r.comment,
-                      "reviewRating": {
-                        "@type": "Rating",
-                        "ratingValue": r.rating
-                      }
-                    }))
-                }}
             />
-            <div className="container mx-auto px-4 py-8 max-w-7xl">
-                {/* Mess Owner Notices */}
+            <div className="container mx-auto px-4 pt-24 md:pt-32 pb-20 max-w-7xl">
+                {/* Emergency Protocols (Notices) */}
                 {notifications.length > 0 && (
-                    <div className="mb-8 space-y-4">
+                    <div className="mb-10 space-y-4">
                         {notifications.map((notif) => (
                             <motion.div
-                                initial={{ opacity: 0, y: -20 }}
-                                animate={{ opacity: 1, y: 0 }}
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
                                 key={notif.id}
-                                className="bg-orange-500/10 border-2 border-orange-500/50 rounded-3xl p-6 flex items-start gap-4 shadow-xl shadow-orange-500/10"
+                                className="bg-primary-500/10 border-2 border-primary-500/40 rounded-[2rem] p-6 md:p-8 flex items-start gap-6 shadow-2xl shadow-primary-500/10 relative overflow-hidden"
                             >
-                                <div className="p-3 bg-orange-500 rounded-2xl text-white">
+                                <div className="absolute top-0 right-0 p-4 opacity-20"><AlertCircle size={40} className="text-primary-500" /></div>
+                                <div className="p-4 bg-primary-500 rounded-2xl text-white shadow-xl">
                                     <ShieldCheck size={24} />
                                 </div>
                                 <div className="flex-1">
-                                    <h2 className="font-black text-orange-500 uppercase tracking-widest text-xs mb-1 italic">⚠ Notice from Mess Owner</h2>
-                                    <p className="text-orange-900 dark:text-orange-200 font-bold leading-relaxed">
-                                        {notif.message}
+                                    <h2 className="font-black text-primary-500 uppercase tracking-[0.3em] text-[10px] mb-2 italic">Priority Transmission</h2>
+                                    <p className="text-white font-bold leading-relaxed text-sm md:text-base italic">
+                                        "{notif.message}"
                                     </p>
-                                    <p className="text-orange-500/50 text-[10px] font-black uppercase tracking-widest mt-2 italic">
-                                        Transmitted {new Date(notif.created_at).toLocaleString()}
+                                    <p className="text-navy-500 text-[9px] font-black uppercase tracking-widest mt-4">
+                                        Signal Posted: {new Date(notif.created_at).toLocaleString()}
                                     </p>
                                 </div>
                             </motion.div>
@@ -291,75 +251,63 @@ const MessDetailsPage: React.FC = () => {
                     </div>
                 )}
 
-                {/* Hero Section */}
-                <div className="relative h-[300px] md:h-[450px] rounded-[2.5rem] overflow-hidden mb-12 shadow-2xl group">
+                {/* Imagery / Hero Logic */}
+                <div className="relative h-[400px] md:h-[550px] rounded-[3rem] overflow-hidden mb-12 shadow-2xl group border border-white/5">
                     <img
-                        src={getImageUrl(mess.messImage || mess.images?.[0]) || 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&q=80&w=1200'}
-                        className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                        src={getImageUrl(mess.messImage || mess.images?.[0]) || 'https://images.unsplash.com/photo-1547523199-467464010617?auto=format&fit=crop&q=80&w=1400'}
+                        className="w-full h-full object-cover transition-transform duration-[3s] group-hover:scale-110"
                         alt={mess.name}
-                        fetchPriority="high"
-                        onError={(e) => {
-                            (e.target as HTMLImageElement).src = 'https://via.placeholder.com/1200x800.png?text=Mess+Image';
-                        }}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-navy-950 via-navy-950/40 to-transparent" />
 
                     <div className="absolute top-6 right-6 flex gap-3">
                         <button
                             onClick={() => {
-                                if (!mess) return;
                                 if (navigator.share) {
-                                    navigator.share({
-                                        title: mess.name,
-                                        text: `Check out ${mess.name} on MessWalha!`,
-                                        url: window.location.href,
-                                    }).catch(console.error);
+                                    navigator.share({ title: mess.name, url: window.location.href });
                                 } else {
                                     navigator.clipboard.writeText(window.location.href);
-                                    alert('Link copied to clipboard!');
+                                    toast.success('Signal link cloned to clipboard.');
                                 }
                             }}
-                            className="p-3 bg-white/10 backdrop-blur-md rounded-2xl text-white hover:bg-white/20 transition-all border border-white/20"
-                            aria-label="Share this mess"
+                            className="p-4 bg-white/5 backdrop-blur-3xl rounded-2xl text-white hover:bg-primary-500 transition-all border border-white/10 shadow-2xl group/btn"
                         >
-                            <Share2 size={20} />
+                            <Share2 size={20} className="group-hover/btn:scale-110 transition-transform" />
                         </button>
                         <button
-                            onClick={() => {
-                                if (id) toggleFavorite(id);
-                            }}
-                            className={`p-3 backdrop-blur-md rounded-2xl transition-all border ${isFavorite(id || '') ? 'bg-red-500 border-red-500 text-white' : 'bg-white/10 border-white/20 text-white hover:bg-white/20'}`}
-                            aria-label={isFavorite(id || '') ? "Remove from favorites" : "Add to favorites"}
+                            onClick={() => id && toggleFavorite(id)}
+                            className={`p-4 backdrop-blur-3xl rounded-2xl transition-all border shadow-2xl group/btn ${isFavorite(id || '') ? 'bg-primary-500 border-primary-500 text-white' : 'bg-white/5 border-white/10 text-white hover:bg-white/10'}`}
                         >
-                            <Heart size={20} fill={isFavorite(id || '') ? 'currentColor' : 'none'} className={isFavorite(id || '') ? 'animate-pulse' : ''} />
+                            <Heart size={20} fill={isFavorite(id || '') ? 'currentColor' : 'none'} className={`${isFavorite(id || '') ? 'animate-pulse' : 'group-hover/btn:scale-110 transition-transform'}`} />
                         </button>
                     </div>
 
-                    <div className="absolute bottom-10 left-10 right-10 flex flex-col md:flex-row justify-between items-end gap-6 text-white">
-                        <div className="space-y-3">
-                            <div className="flex items-center gap-2">
-                                <span className="bg-primary-500 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-md shadow-sm">
-                                    {mess.cuisine || 'Multi-Cuisine'}
-                                </span>
-                                <span className="bg-success-500 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-md shadow-sm flex items-center">
-                                    <CircleCheck size={12} className="mr-1" /> Shield Protocol Active
-                                </span>
+                    <div className="absolute bottom-8 left-8 right-8 md:bottom-12 md:left-12 md:right-12 space-y-6">
+                        <div className="flex flex-wrap items-center gap-3">
+                            <span className="bg-primary-500 text-white text-[9px] font-black uppercase tracking-[0.3em] px-4 py-1.5 rounded-lg shadow-xl italic">
+                                {mess.cuisine || 'Elite Kitchen'}
+                            </span>
+                            <span className="bg-navy-900/80 backdrop-blur-xl text-white text-[9px] font-black uppercase tracking-[0.3em] px-4 py-1.5 rounded-lg border border-white/10 flex items-center italic">
+                                <ShieldCheck size={14} className="mr-2 text-primary-500" /> Authorized Node
+                            </span>
+                        </div>
+                        <h1 className="text-4xl md:text-8xl font-black tracking-tighter uppercase italic leading-[0.9] text-white">
+                            {mess.name}
+                        </h1>
+                        <div className="flex flex-col md:flex-row md:items-center gap-6 pt-2">
+                            <div className="flex items-center gap-3">
+                                <div className="flex text-orange-400">
+                                    {[1, 2, 3, 4, 5].map((s) => (
+                                        <Star key={s} size={18} fill={s <= Math.round(mess.rating || 4) ? 'currentColor' : 'none'} />
+                                    ))}
+                                </div>
+                                <span className="font-black text-2xl text-white italic tracking-tighter">{(mess.rating || 4.5).toFixed(1)}</span>
+                                <span className="text-navy-400 text-[10px] font-black uppercase tracking-widest ml-1">{mess.reviews?.length || 0} Units Reported</span>
                             </div>
-                            <h1 className="text-4xl md:text-6xl font-black italic tracking-tighter uppercase">{mess.name}</h1>
-                            <div className="flex flex-wrap items-center gap-6">
-                                <div className="flex items-center gap-2">
-                                    <div className="flex text-rating-color">
-                                        {[1, 2, 3, 4, 5].map((s) => (
-                                            <Star key={s} size={16} fill={s <= Math.round(mess.rating || 4) ? 'currentColor' : 'none'} />
-                                        ))}
-                                    </div>
-                                    <span className="font-black text-white">{(mess.rating || 4.5).toFixed(1)}</span>
-                                    <span className="text-white/90 text-xs font-bold uppercase tracking-widest">({mess.reviews?.length || 0} Signal Logs)</span>
-                                </div>
-                                <div className="flex items-center gap-2 text-white font-bold uppercase tracking-widest text-xs">
-                                    <Navigation size={18} className="text-primary-500" />
-                                    <span>{mess.location?.address || mess.address}</span>
-                                </div>
+                            <div className="h-6 w-px bg-white/10 hidden md:block" />
+                            <div className="flex items-center gap-3 text-white/80 font-black uppercase tracking-widest text-[10px] italic">
+                                <MapPin size={18} className="text-primary-500" />
+                                <span>{mess.address}</span>
                             </div>
                         </div>
                     </div>
@@ -367,287 +315,316 @@ const MessDetailsPage: React.FC = () => {
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
                     <div className="lg:col-span-8 space-y-12">
-                        {/* Custom Tabs */}
-                        <div className="flex gap-8 border-b border-white/5">
+                        {/* Responsive Control Switcher (Tabs) */}
+                        <div className="flex gap-4 md:gap-10 border-b border-white/5 overflow-x-auto scrollbar-hide">
                             {[
-                                { id: 'menu', label: 'Menu Protocol', icon: Utensils },
-                                { id: 'reviews', label: 'Public Feed', icon: MessageSquare },
-                                { id: 'about', label: 'Asset Details', icon: ShieldCheck },
+                                { id: 'menu', label: 'Culinary Schedule', icon: Utensils },
+                                { id: 'reviews', label: 'Unit Feedback', icon: MessageSquare },
+                                { id: 'about', label: 'Node Intel', icon: ShieldCheck },
                             ].map((tab) => (
                                 <button
                                     key={tab.id}
                                     onClick={() => setActiveTab(tab.id as 'menu' | 'reviews' | 'about')}
-                                    className={`flex items-center gap-2 pb-6 text-[10px] font-black uppercase tracking-[0.3em] transition-all relative ${activeTab === tab.id
+                                    className={`flex items-center gap-3 pb-6 text-[10px] font-black uppercase tracking-[0.3em] transition-all relative shrink-0 italic ${activeTab === tab.id
                                         ? 'text-primary-500'
-                                        : 'text-text-muted dark:text-white/60 hover:text-text-primary dark:hover:text-white'
+                                        : 'text-white/40 hover:text-white'
                                         }`}
                                 >
                                     <tab.icon size={16} />
                                     {tab.label}
                                     {activeTab === tab.id && (
-                                        <motion.div layoutId="tab-underline" className="absolute bottom-0 left-0 right-0 h-1 bg-primary-500 rounded-full" />
+                                        <motion.div layoutId="tab-underline" className="absolute bottom-0 left-0 right-0 h-1 bg-primary-500 rounded-full shadow-[0_0_10px_rgba(249,115,22,0.5)]" />
                                     )}
                                 </button>
                             ))}
                         </div>
 
-                        {activeTab === 'menu' && (
-                            <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                                {mess.description && (
-                                    <Card className="p-10 bg-bg-section dark:bg-white/5 backdrop-blur-3xl border-border-color dark:border-white/10 rounded-[3rem] space-y-6">
-                                        <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary-500 italic">Menu Description</h3>
-                                        <p className="text-text-secondary dark:text-white/60 font-medium leading-relaxed italic border-l-4 border-primary-500/20 pl-6 py-2">
-                                            "{mess.description}"
-                                        </p>
-                                    </Card>
-                                )}
-
-                                {mess.menuImages && mess.menuImages.length > 0 && (
-                                    <div className="space-y-6">
-                                        <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary-500 italic">Menu Gallery</h3>
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                            {mess.menuImages.map((img: string, i: number) => (
-                                                <div key={i} className="rounded-[2rem] overflow-hidden border border-white/10 shadow-3xl aspect-[4/3] group">
-                                                    <img
-                                                        src={getImageUrl(img)}
-                                                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[2s]"
-                                                        alt={`Menu ${i}`}
-                                                    />
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
-
-                                <div className="space-y-8">
-                                    <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-                                        {days.map((day) => (
-                                            <button
-                                                key={day}
-                                                onClick={() => setSelectedDay(day)}
-                                                className={`px-6 py-3 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all border ${selectedDay === day
-                                                    ? 'bg-primary-500 border-primary-500 text-white shadow-xl shadow-primary-500/20'
-                                                    : 'bg-white/5 border-white/5 text-white/30 hover:bg-white/10'
-                                                    }`}
-                                            >
-                                                {day}
-                                            </button>
-                                        ))}
-                                    </div>
-
-                                    <Card className="p-10 bg-bg-section dark:bg-white/5 backdrop-blur-3xl border-border-color dark:border-white/10 rounded-[3rem]">
-                                        <div className="flex items-center justify-between mb-10">
-                                            <h3 className="text-lg font-black uppercase tracking-widest italic text-text-primary dark:text-white">{selectedDay}'s Protocol</h3>
-                                            <span className="bg-success-500/10 text-success-500 px-4 py-2 rounded-full text-[9px] font-black uppercase tracking-widest border border-success-500/20 italic">Fresh Logistics Verified</span>
-                                        </div>
-
-                                        {currentDayMenu ? (
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                                {currentDayMenu.items.map((item, idx) => (
-                                                    <div key={idx} className="bg-bg-main dark:bg-white/5 p-6 rounded-2xl flex items-center gap-6 border border-border-color dark:border-white/5 hover:border-primary-500/30 transition-all group">
-                                                        <div className="w-14 h-14 rounded-xl bg-primary-500/10 flex items-center justify-center text-primary-500 group-hover:scale-110 transition-transform">
-                                                            <Utensils size={20} />
-                                                        </div>
-                                                        <div className="flex-1">
-                                                            <h4 className="font-black text-text-primary dark:text-white text-[11px] uppercase tracking-widest mb-1">{item.name}</h4>
-                                                            <span className={`text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full border ${item.type === 'Non-Veg' ? 'border-red-500/20 bg-red-500/10 text-red-500' : 'border-success-500/20 bg-success-500/10 text-success-500'}`}>
-                                                                {item.type}
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        ) : (
-                                            <div className="text-center py-20 bg-white/5 rounded-[2.5rem] border-2 border-dashed border-white/5">
-                                                <p className="text-white/20 font-black uppercase tracking-[0.2em] text-[10px] italic">No digital menu log detected for this day</p>
-                                            </div>
+                        <AnimatePresence mode="wait">
+                            <motion.div
+                                key={activeTab}
+                                initial={{ opacity: 0, y: 15 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -15 }}
+                                transition={{ duration: 0.4 }}
+                                className="space-y-12"
+                            >
+                                {activeTab === 'menu' && (
+                                    <>
+                                        {mess.description && (
+                                            <Card className="p-10 bg-navy-900/40 backdrop-blur-3xl border-navy-800 rounded-[2.5rem] relative overflow-hidden">
+                                                <div className="absolute top-0 right-0 w-32 h-32 bg-primary-500/5 rounded-full blur-3xl -mr-16 -mt-16" />
+                                                <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary-500 italic mb-6">Mission Overview</h3>
+                                                <p className="text-navy-100 font-medium leading-relaxed italic border-l-4 border-primary-500/30 pl-8 py-2 text-lg">
+                                                    "{mess.description}"
+                                                </p>
+                                            </Card>
                                         )}
-                                    </Card>
-                                </div>
-                            </div>
-                        )}
 
-                        {activeTab === 'reviews' && (
-                            <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                                <div className="flex justify-between items-center px-4">
-                                    <h3 className="text-xl font-black uppercase tracking-widest italic text-text-primary dark:text-white">Public Feed</h3>
-                                    <Button
-                                        variant="outline"
-                                        className="rounded-full font-black uppercase tracking-widest text-[9px] py-4 px-8 bg-bg-section dark:bg-white/5 border-border-color dark:border-white/10 hover:bg-bg-main dark:hover:bg-white/10 text-text-primary dark:text-white/60 hover:text-primary-500 transition-all font-black"
-                                        onClick={() => setReviewForm(prev => ({ ...prev, show: !prev.show }))}
-                                    >
-                                        {reviewForm.show ? 'Cancel Log' : 'Post Signal Log'}
-                                    </Button>
-                                </div>
-
-                                {reviewForm.show && (
-                                    <Card className="p-10 border-primary-500/20 bg-primary-500/5 rounded-[3rem] animate-in slide-in-from-top-4 duration-300">
-                                        <form onSubmit={handleReviewSubmit} className="space-y-8">
-                                            <div className="space-y-4">
-                                                <label className="text-[10px] font-black uppercase tracking-[0.3em] text-white/70 ml-2">Signal Intensity (Rating)</label>
-                                                <div className="flex gap-4 p-4 bg-white/5 rounded-3xl w-fit">
-                                                    {[1, 2, 3, 4, 5].map((num) => (
-                                                        <button
-                                                            key={num}
-                                                            type="button"
-                                                            onClick={() => setReviewForm({ ...reviewForm, rating: num })}
-                                                            className={`p-2 transition-all hover:scale-125 ${reviewForm.rating >= num ? 'text-primary-500' : 'text-white/10'}`}
-                                                        >
-                                                            <Star size={32} fill={reviewForm.rating >= num ? 'currentColor' : 'none'} />
-                                                        </button>
+                                        {mess.images && mess.images.length > 1 && (
+                                            <div className="space-y-6">
+                                                <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary-500 italic ml-4">Visual Intel</h3>
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                    {mess.images.slice(1).map((img, i) => (
+                                                        <div key={i} className="rounded-[2rem] overflow-hidden border border-white/5 shadow-2xl aspect-[16/10] group">
+                                                            <img
+                                                                src={getImageUrl(img)}
+                                                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[2s]"
+                                                                alt={`Intel ${i}`}
+                                                            />
+                                                        </div>
                                                     ))}
                                                 </div>
                                             </div>
-                                            <div className="space-y-4">
-                                                <label className="text-[10px] font-black uppercase tracking-[0.3em] text-white/70 ml-2">Logic Description (Comment)</label>
-                                                <textarea
-                                                    required
-                                                    value={reviewForm.comment}
-                                                    onChange={(e) => setReviewForm({ ...reviewForm, comment: e.target.value })}
-                                                    placeholder="Enter your experience metrics..."
-                                                    className="w-full bg-white/[0.03] border border-white/10 text-white px-8 py-6 rounded-3xl focus:ring-2 focus:ring-primary-500/50 outline-none transition-all font-bold tracking-widest text-xs min-h-[150px]"
-                                                />
-                                            </div>
-                                            <Button type="submit" className="w-full h-20 rounded-[1.5rem] font-black uppercase tracking-[0.3em] text-xs shadow-3xl shadow-primary-500/40 bg-primary-500 text-white">Transmit Log</Button>
-                                        </form>
-                                    </Card>
-                                )}
+                                        )}
 
-                                <div className="grid grid-cols-1 gap-8">
-                                    {reviews && reviews.length > 0 ? (
-                                        reviews.map((review) => (
-                                            <Card key={review.id} className="p-8 bg-white/5 backdrop-blur-3xl border-white/10 rounded-[2.5rem] group hover:border-primary-500/30 transition-all">
-                                                <div className="flex justify-between items-start mb-6">
-                                                    <div className="flex items-center gap-4">
-                                                        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary-500 to-indigo-600 flex items-center justify-center text-white font-black text-xs shadow-2xl">
-                                                            {review.user_name?.[0] || 'U'}
-                                                        </div>
-                                                        <div>
-                                                            <h4 className="font-black text-text-primary dark:text-white text-[11px] uppercase tracking-widest">{review.user_name}</h4>
-                                                            <p className="text-[9px] text-text-muted dark:text-white/30 font-black uppercase tracking-[0.2em]">
-                                                                {new Date(review.created_at).toLocaleDateString()}
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                    <div className="flex bg-primary-500/10 px-4 py-2 rounded-full items-center gap-2 border border-primary-500/20">
-                                                        <Star size={14} className="text-primary-500 fill-primary-500" />
-                                                        <span className="text-[10px] font-black text-primary-500 uppercase tracking-widest">{review.rating}.0</span>
+                                        <div className="space-y-8">
+                                            <div className="flex gap-3 overflow-x-auto pb-6 scrollbar-hide -mx-2 px-2">
+                                                {days.map((day) => (
+                                                    <button
+                                                        key={day}
+                                                        onClick={() => setSelectedDay(day)}
+                                                        className={`px-8 py-5 rounded-2xl text-[9px] font-black uppercase tracking-widest transition-all border-2 shrink-0 ${selectedDay === day
+                                                            ? 'bg-primary-500 border-primary-500 text-white shadow-xl shadow-primary-500/20 italic'
+                                                            : 'bg-navy-900/50 border-navy-800 text-navy-400 hover:text-white'
+                                                            }`}
+                                                    >
+                                                        {day}
+                                                    </button>
+                                                ))}
+                                            </div>
+
+                                            <Card className="p-8 md:p-12 bg-navy-900/40 backdrop-blur-3xl border-navy-800 rounded-[3rem]">
+                                                <div className="flex flex-col sm:flex-row items-center justify-between gap-6 mb-12">
+                                                    <h3 className="text-2xl font-black italic tracking-tighter uppercase text-white leading-none">
+                                                        {selectedDay}'s <span className="text-primary-500">Signal</span>
+                                                    </h3>
+                                                    <div className="px-6 py-2.5 rounded-full bg-green-500/10 border border-green-500/20 text-green-400 text-[10px] font-black uppercase tracking-widest italic">
+                                                        Integrity Verified
                                                     </div>
                                                 </div>
-                                                <p className="text-text-secondary dark:text-white/60 font-medium leading-relaxed italic pr-12">"{review.comment}"</p>
-                                                {review.owner_response && (
-                                                    <div className="mt-6 p-6 bg-primary-500/5 rounded-2xl border-l-4 border-primary-500 space-y-2">
-                                                        <h5 className="text-[9px] font-black uppercase tracking-widest text-primary-500">Response from Owner</h5>
-                                                        <p className="text-[11px] text-text-primary dark:text-white italic font-medium leading-relaxed">
-                                                            "{review.owner_response}"
-                                                        </p>
+
+                                                {currentDayMenu ? (
+                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                        {currentDayMenu.items.map((item, idx) => (
+                                                            <div key={idx} className="bg-navy-800/40 p-6 rounded-[2rem] flex items-center gap-6 border border-white/5 hover:border-primary-500/30 transition-all group shadow-xl">
+                                                                <div className="w-14 h-14 rounded-2xl bg-primary-500/10 flex items-center justify-center text-primary-500 group-hover:scale-110 transition-transform duration-500 shrink-0">
+                                                                    <Utensils size={20} />
+                                                                </div>
+                                                                <div className="flex-1 min-w-0">
+                                                                    <div className="flex items-center gap-3 mb-2">
+                                                                        <div className={`w-2 h-2 rounded-full shrink-0 ${item.type === 'Non-Veg' ? 'bg-red-500 shadow-[0_0_10px_#ef4444]' : 'bg-green-500 shadow-[0_0_10px_#22c55e]'}`} />
+                                                                        <h4 className="font-black text-white text-[13px] uppercase tracking-widest italic truncate">{item.name}</h4>
+                                                                    </div>
+                                                                    <span className={`text-[9px] font-black uppercase tracking-[0.2em] px-4 py-1.5 rounded-lg border ${item.type === 'Non-Veg' ? 'border-red-500/20 bg-red-500/10 text-red-500' : 'border-green-500/20 bg-green-500/10 text-green-400'}`}>
+                                                                        {item.type}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        ))}
                                                     </div>
+                                                ) : (
+                                                    <EmptyState
+                                                        icon={Utensils}
+                                                        title="Signal Lost"
+                                                        description="No culinary transmissions detected for this cycle."
+                                                        className="py-16 bg-transparent border-none"
+                                                    />
                                                 )}
                                             </Card>
-                                        ))
-                                    ) : (
-                                        <div className="text-center py-24 text-text-muted">
-                                            <MessageSquare size={80} strokeWidth={1} className="mx-auto mb-6 opacity-20" />
-                                            <p className="font-black uppercase tracking-[0.4em] text-[10px] italic">No signal logs detected in this sector</p>
                                         </div>
-                                    )}
-                                </div>
-                            </div>
-                        )}
+                                    </>
+                                )}
 
-                        {activeTab === 'about' && (
-                            <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                    <Card className="p-10 bg-white/5 backdrop-blur-3xl border-white/10 rounded-[3rem] space-y-8">
-                                        <h4 className="font-black uppercase tracking-[0.4em] text-primary-500 italic text-[10px]">Shield Protocol</h4>
-                                        <div className="space-y-4">
-                                            {['Supply Chain Integrity', 'Hygiene Protocol', 'Unlimited Meal Access', 'Student Subsidies', 'Digital Payments'].map(f => (
-                                                <div key={f} className="flex items-center gap-4 text-text-muted dark:text-white/50 text-[10px] font-black uppercase tracking-widest italic group">
-                                                    <CircleCheck size={18} className="text-primary-500 group-hover:scale-125 transition-transform" />
-                                                    {f}
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </Card>
-                                    <Card className="p-10 bg-white/5 backdrop-blur-3xl border-white/10 rounded-[3rem] space-y-8">
-                                        <h4 className="font-black uppercase tracking-[0.4em] text-primary-500 italic text-[10px]">Asset Operator</h4>
-                                        <div className="space-y-6">
-                                            <div className="flex items-center gap-5 group">
-                                                <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center text-primary-500 border border-white/10 group-hover:scale-110 transition-transform shadow-2xl">
-                                                    <UserIcon size={20} />
-                                                </div>
-                                                <div>
-                                                    <p className="font-black text-text-muted dark:text-white/20 uppercase tracking-[0.2em] text-[8px] mb-1">Operator Name</p>
-                                                    <p className="text-xs font-black text-text-primary dark:text-white uppercase tracking-widest">{mess.ownerName || mess.owner?.name}</p>
-                                                </div>
-                                            </div>
-                                            <div className="flex items-center gap-5 group">
-                                                <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center text-primary-500 border border-white/10 group-hover:scale-110 transition-transform shadow-2xl">
-                                                    <Phone size={20} />
-                                                </div>
-                                                <div>
-                                                    <p className="font-black text-text-muted dark:text-white/20 uppercase tracking-[0.2em] text-[8px] mb-1">Contact Signal</p>
-                                                    <p className="text-xs font-black text-text-primary dark:text-white uppercase tracking-widest">{mess.contact || mess.mobile}</p>
-                                                </div>
+                                {activeTab === 'reviews' && (
+                                    <div className="space-y-10">
+                                        <div className="flex flex-col sm:flex-row justify-between items-center bg-navy-900/40 backdrop-blur-3xl p-8 rounded-[2.5rem] border border-navy-800 gap-6">
+                                            <div className="text-center sm:text-left">
+                                                <h3 className="text-xl md:text-2xl font-black uppercase tracking-tighter italic text-white leading-none">Public Feedback Node</h3>
+                                                <p className="text-[10px] text-navy-400 font-black uppercase tracking-[0.3em] mt-2 italic">Student Unit transmissions</p>
                                             </div>
                                             <Button
-                                                className="w-full h-16 rounded-2xl text-[9px] font-black uppercase tracking-[0.3em] bg-white/5 border border-white/10 hover:bg-white/10 text-white"
-                                                onClick={async () => {
-                                                    try {
-                                                        await api.post('/chats', { ownerId: mess.ownerId });
-                                                        navigate('/messages');
-                                                    } catch (err) {
-                                                        console.error('Chat error:', err);
-                                                        alert('Shield error: Failed to initialize encrypted comms');
-                                                    }
-                                                }}
+                                                variant="outline"
+                                                className="rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] py-5 px-10 border-navy-700 bg-navy-800/50 text-white hover:border-primary-500 italic transition-all w-full sm:w-auto"
+                                                onClick={() => setReviewForm(prev => ({ ...prev, show: !prev.show }))}
                                             >
-                                                Initialize Comms
+                                                {reviewForm.show ? 'Abort Entry' : 'Post Transmission'}
                                             </Button>
                                         </div>
-                                    </Card>
-                                </div>
-                            </div>
-                        )}
+
+                                        {reviewForm.show && (
+                                            <Card className="p-8 md:p-12 border-primary-500/30 bg-primary-500/5 rounded-[3rem] shadow-2xl relative overflow-hidden">
+                                                <div className="absolute top-0 right-0 w-32 h-32 bg-primary-500/5 rounded-full blur-3xl -mr-16 -mt-16" />
+                                                <form onSubmit={handleReviewSubmit} className="space-y-10 relative z-10">
+                                                    <div className="space-y-4">
+                                                        <label className="text-[10px] font-black uppercase tracking-[0.3em] text-navy-300 ml-4 italic">Sentiment Range</label>
+                                                        <div className="flex flex-wrap gap-4 p-5 bg-navy-900/50 rounded-3xl w-fit border border-white/5">
+                                                            {[1, 2, 3, 4, 5].map((num) => (
+                                                                <button
+                                                                    key={num}
+                                                                    type="button"
+                                                                    onClick={() => setReviewForm({ ...reviewForm, rating: num })}
+                                                                    className={`transition-all hover:scale-125 ${reviewForm.rating >= num ? 'text-primary-500' : 'text-navy-700'}`}
+                                                                >
+                                                                    <Star size={32} fill={reviewForm.rating >= num ? 'currentColor' : 'none'} />
+                                                                </button>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                    <div className="space-y-4">
+                                                        <label className="text-[10px] font-black uppercase tracking-[0.3em] text-navy-300 ml-4 italic">Signal Content</label>
+                                                        <textarea
+                                                            required
+                                                            value={reviewForm.comment}
+                                                            onChange={(e) => setReviewForm({ ...reviewForm, comment: e.target.value })}
+                                                            placeholder="Broadcast your experience metrics..."
+                                                            className="w-full bg-navy-950/50 border border-navy-800 text-white px-8 py-6 rounded-[2rem] focus:ring-2 focus:ring-primary-500/50 outline-none transition-all font-medium text-sm min-h-[160px] leading-relaxed"
+                                                        />
+                                                    </div>
+                                                    <Button type="submit" className="w-full h-20 rounded-3xl font-black uppercase tracking-[0.3em] text-xs shadow-2xl shadow-primary-500/30 bg-primary-500 text-white italic">Transmit Review</Button>
+                                                </form>
+                                            </Card>
+                                        )}
+
+                                        <div className="grid grid-cols-1 gap-8">
+                                            {reviews.length > 0 ? reviews.map(review => (
+                                                <Card key={review.id} className="p-8 md:p-10 bg-navy-900/40 backdrop-blur-3xl border-navy-800 rounded-[2.5rem] group hover:border-primary-500/30 transition-all relative overflow-hidden">
+                                                    <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 rounded-full blur-3xl -mr-16 -mt-16" />
+                                                    <div className="flex flex-col sm:flex-row justify-between items-start gap-6 mb-8 relative z-10">
+                                                        <div className="flex items-center gap-5">
+                                                            <div className="w-14 h-14 rounded-2xl bg-navy-800 border border-navy-700 flex items-center justify-center text-primary-500 font-black text-xl italic shadow-xl group-hover:scale-110 transition-transform duration-500">
+                                                                {review.user_name?.[0] || 'U'}
+                                                            </div>
+                                                            <div>
+                                                                <h4 className="font-black text-white text-[12px] uppercase tracking-widest italic">{review.user_name}</h4>
+                                                                <p className="text-[10px] text-navy-500 font-black uppercase tracking-[0.2em] mt-1">
+                                                                    {new Date(review.created_at).toLocaleDateString()}
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                        <div className="flex bg-orange-500/10 px-5 py-2.5 rounded-2xl items-center gap-3 border border-orange-500/20">
+                                                            <Star size={16} className="text-orange-400 fill-orange-400" />
+                                                            <span className="text-sm font-black text-white italic tracking-tighter">{review.rating}.0</span>
+                                                        </div>
+                                                    </div>
+                                                    <p className="text-navy-100 font-medium leading-relaxed italic text-lg border-l-4 border-navy-800 pl-8 relative z-10">"{review.comment}"</p>
+                                                    
+                                                    {review.owner_response && (
+                                                        <div className="mt-8 p-8 bg-navy-800/50 rounded-3xl border-l-4 border-primary-500 space-y-3 relative z-10">
+                                                            <h5 className="text-[10px] font-black uppercase tracking-[0.3em] text-primary-500 italic">Merchant Response</h5>
+                                                            <p className="text-sm text-navy-300 italic font-medium leading-relaxed">
+                                                                "{review.owner_response}"
+                                                            </p>
+                                                        </div>
+                                                    )}
+                                                </Card>
+                                            )) : (
+                                                <EmptyState
+                                                    icon={MessageSquare}
+                                                    title="Zero Transmissions"
+                                                    description="No units have reported results for this node yet."
+                                                    className="py-16 bg-navy-900/40 rounded-[3rem] border-navy-800 border"
+                                                />
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {activeTab === 'about' && (
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                        <Card className="p-10 bg-navy-900/40 backdrop-blur-3xl border-navy-800 rounded-[3rem] space-y-10 relative overflow-hidden group">
+                                            <div className="absolute top-0 right-0 w-24 h-24 bg-primary-500/5 rounded-full blur-3xl -mr-12 -mt-12 group-hover:scale-150 transition-transform duration-1000" />
+                                            <h4 className="font-black uppercase tracking-[0.4em] text-primary-500 italic text-[11px] mb-2">Node Protocols</h4>
+                                            <div className="space-y-6">
+                                                {['Quality Chain Verified', 'Hygiene Standards Alpha', 'Unlimited Buffet Protocol', 'Subsidized Pricing Units', 'Digital Payment Ready'].map(f => (
+                                                    <div key={f} className="flex items-center gap-5 text-white/70 text-[11px] font-black uppercase tracking-widest italic group/item">
+                                                        <CircleCheck size={20} className="text-primary-500 group-hover/item:scale-125 transition-transform" />
+                                                        {f}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </Card>
+                                        <Card className="p-10 bg-navy-900/40 backdrop-blur-3xl border-navy-800 rounded-[3rem] space-y-10 relative overflow-hidden group">
+                                            <div className="absolute top-0 left-0 w-2 h-full bg-primary-500/20" />
+                                            <h4 className="font-black uppercase tracking-[0.4em] text-primary-500 italic text-[11px]">Merchant Intel</h4>
+                                            <div className="space-y-8">
+                                                <div className="flex items-center gap-6 group/info">
+                                                    <div className="w-16 h-16 rounded-2xl bg-navy-800 border border-navy-700 flex items-center justify-center text-primary-500 shadow-2xl group-hover/info:scale-110 transition-transform">
+                                                        <UserIcon size={24} />
+                                                    </div>
+                                                    <div>
+                                                        <p className="font-black text-navy-500 uppercase tracking-[0.2em] text-[8px] mb-2 italic">Operator Identification</p>
+                                                        <p className="text-sm font-black text-white uppercase tracking-widest italic">{mess.ownerName || mess.owner?.name || 'Authorized Personnel'}</p>
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center gap-6 group/info">
+                                                    <div className="w-16 h-16 rounded-2xl bg-navy-800 border border-navy-700 flex items-center justify-center text-primary-500 shadow-2xl group-hover/info:scale-110 transition-transform">
+                                                        <Phone size={24} />
+                                                    </div>
+                                                    <div>
+                                                        <p className="font-black text-navy-500 uppercase tracking-[0.2em] text-[8px] mb-2 italic">Signal Frequency</p>
+                                                        <p className="text-sm font-black text-white uppercase tracking-widest italic">{mess.contact || mess.mobile}</p>
+                                                    </div>
+                                                </div>
+                                                <Button
+                                                    className="w-full h-18 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] bg-navy-800 border border-navy-700 hover:border-primary-500 text-white italic"
+                                                    onClick={async () => {
+                                                        try {
+                                                            await api.post('/chats', { ownerId: mess.ownerId });
+                                                            navigate('/messages');
+                                                        } catch (err) {
+                                                            toast.error('Initialization failed.');
+                                                        }
+                                                    }}
+                                                >
+                                                    Open Comm Channel
+                                                </Button>
+                                            </div>
+                                        </Card>
+                                    </div>
+                                )}
+                            </motion.div>
+                        </AnimatePresence>
                     </div>
 
-                    {/* Right Column: Sticky Sidebar */}
-                    <div className="lg:col-span-4 lg:sticky lg:top-32 h-fit space-y-10">
-                        <Card className="p-12 bg-white/5 backdrop-blur-3xl border-white/10 rounded-[4rem] shadow-3xl relative overflow-hidden group">
+                    {/* Right Column: Sticky Subscription Nexus */}
+                    <div className="lg:col-span-4 space-y-10">
+                        <Card className="p-8 md:p-12 bg-navy-900/40 backdrop-blur-3xl border-navy-800 rounded-[4rem] shadow-3xl lg:sticky lg:top-36 relative overflow-hidden group">
                             <div className="absolute top-0 right-0 w-32 h-32 bg-primary-500/10 rounded-full blur-3xl -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-1000" />
 
                             <div className="text-center space-y-4 mb-12">
-                                <h3 className="text-2xl font-black italic tracking-tighter uppercase text-text-primary dark:text-white">Subscription</h3>
-                                <div className="h-1 w-12 bg-primary-500 mx-auto rounded-full" />
-                                <p className="text-text-muted dark:text-white/20 text-[9px] font-black uppercase tracking-[0.3em]">Select Protocol Level</p>
+                                <h3 className="text-3xl font-black italic tracking-tighter uppercase text-white leading-none">Access <span className="text-primary-500">Plan</span></h3>
+                                <div className="h-1 w-12 bg-primary-500 mx-auto rounded-full shadow-[0_0_8px_rgba(249,115,22,0.8)]" />
+                                <p className="text-navy-400 text-[10px] font-black uppercase tracking-[0.4em] pt-2">Initialize Subscription</p>
                             </div>
 
                             <div className="space-y-4 mb-12">
                                 {[
-                                    { title: 'Elite Access', price: `₹${mess.monthlyPrice || 2500}`, priceValue: mess.monthlyPrice || 2500, type: 'MONTHLY', period: '/month', popular: true, desc: '30 Cycle Supply + Shield' },
-                                    { title: 'Sector Sprint', price: `₹${mess.weeklyPrice || (Math.round((mess.monthlyPrice || 2500) / 4))}`, priceValue: mess.weeklyPrice || (Math.round((mess.monthlyPrice || 2500) / 4)), type: 'WEEKLY', period: '/week', desc: '7 Cycle Deployment' },
-                                    { title: 'Single Pulse', price: `₹${mess.dailyPrice || 80}`, priceValue: mess.dailyPrice || 80, type: 'DAILY', period: '/day', desc: '1 Cycle Trial Logic' },
+                                    { title: 'Monthly Nexus', price: `₹${mess.monthlyPrice || 2500}`, priceValue: mess.monthlyPrice || 2500, type: 'MONTHLY', period: '/month', popular: true, desc: '30 Cycle Protocol' },
+                                    { title: 'Weekly Core', price: `₹${mess.weeklyPrice || (Math.round((mess.monthlyPrice || 2500) / 4))}`, priceValue: mess.weeklyPrice || (Math.round((mess.monthlyPrice || 2500) / 4)), type: 'WEEKLY', period: '/week', desc: '07 Cycle Access' },
+                                    { title: 'Daily Pulse', price: `₹${mess.dailyPrice || 80}`, priceValue: mess.dailyPrice || 80, type: 'DAILY', period: '/day', desc: '01 Cycle Trial' },
                                 ].map((plan) => (
                                     <button
                                         key={plan.title}
                                         onClick={() => setSelectedPlan(plan)}
-                                        className={`w-full p-6 py-8 rounded-[1.5rem] border-2 text-left transition-all relative group ${selectedPlan?.title === plan.title
-                                            ? 'border-primary-500 bg-primary-500/10 shadow-xl shadow-primary-500/20'
-                                            : 'border-border-color dark:border-white/5 bg-bg-section dark:bg-white/[0.03] hover:border-primary-500/30'
+                                        className={`w-full p-6 py-8 rounded-[2rem] border-2 text-left transition-all relative group ${selectedPlan?.title === plan.title
+                                            ? 'border-primary-500 bg-primary-500/10 shadow-2xl shadow-primary-500/10'
+                                            : 'border-navy-800 bg-navy-900/50 hover:border-primary-500/30'
                                             }`}
                                     >
                                         {plan.popular && (
-                                            <div className="absolute -top-3 right-6 bg-primary-500 text-white text-[8px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full shadow-lg italic">
-                                                Elite Choice
+                                            <div className="absolute -top-3 right-8 bg-primary-500 text-white text-[8px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full shadow-xl shadow-primary-500/20 italic">
+                                                Elite Node
                                             </div>
                                         )}
                                         <div className="flex justify-between items-center mb-1">
-                                            <span className="font-black text-text-primary dark:text-white text-[11px] uppercase tracking-widest italic">{plan.title}</span>
+                                            <span className="font-black text-white text-[12px] uppercase tracking-widest italic">{plan.title}</span>
                                             <div className="flex items-baseline">
-                                                <span className="text-lg font-black text-primary-500 italic">{plan.price}</span>
+                                                <span className="text-xl font-black text-primary-500 italic tracking-tighter">{plan.price}</span>
                                             </div>
                                         </div>
-                                        <p className="text-[8px] text-text-muted dark:text-white/30 font-black uppercase tracking-widest">{plan.desc}</p>
+                                        <p className="text-[9px] text-navy-400 font-black uppercase tracking-widest mt-1 opacity-60">
+                                            {plan.desc}
+                                        </p>
                                     </button>
                                 ))}
                             </div>
@@ -655,35 +632,35 @@ const MessDetailsPage: React.FC = () => {
                             <Button
                                 onClick={handleSubscribe}
                                 disabled={subscribing}
-                                className="w-full h-24 rounded-[2rem] text-sm font-black uppercase tracking-[0.4em] shadow-3xl shadow-primary-500/40 hover:scale-[1.05] transition-all bg-primary-500 text-white italic"
+                                className="w-full h-24 rounded-[2.5rem] text-sm font-black uppercase tracking-[0.4em] shadow-2xl shadow-primary-500/30 hover:scale-[1.03] active:scale-[0.98] transition-all bg-primary-500 text-white italic"
                                 size="lg"
                             >
-                                {subscribing ? 'Transmitting...' : 'Initiate Access'}
+                                {subscribing ? 'TRANSMITTING...' : 'INITIALIZE ACCESS'}
                             </Button>
 
                             <div className="mt-8 flex items-center justify-center gap-3 opacity-30">
                                 <CircleCheck size={14} className="text-primary-500" />
-                                <span className="text-[8px] font-black uppercase tracking-[0.2em] text-white">Razorpay Secure Protocol Active</span>
+                                <span className="text-[9px] font-black uppercase tracking-[0.4em] text-white">RAZORPAY SECURE NODE</span>
                             </div>
                         </Card>
 
-                        <Card className="p-10 bg-bg-section dark:bg-[#0f172a] border border-border-color dark:border-white/10 rounded-[3rem] shadow-3xl text-text-primary dark:text-white relative overflow-hidden">
-                            <div className="absolute top-0 left-0 w-2 h-full bg-primary-500" />
+                        <Card className="p-10 bg-navy-900/40 border border-navy-800 rounded-[3rem] shadow-2xl relative overflow-hidden group">
+                            <div className="absolute top-0 right-0 w-40 h-40 bg-primary-500/5 rounded-full blur-[80px]" />
                             <div className="flex items-center gap-6 mb-8">
-                                <div className="p-4 bg-bg-main dark:bg-white/5 rounded-2xl border border-border-color dark:border-white/10 text-primary-500 shadow-2xl">
+                                <div className="p-5 bg-navy-800 rounded-2xl border border-navy-700 text-primary-500 shadow-xl group-hover:scale-110 transition-transform">
                                     <Clock size={24} />
                                 </div>
                                 <div className="space-y-1">
-                                    <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-text-muted dark:text-white/70 italic">Operational Status</h4>
-                                    <p className="text-2xl font-black italic tracking-tighter text-text-primary dark:text-white">SEC <span className="text-primary-500">ACTIVE</span></p>
+                                    <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-navy-500 italic">Operational Status</h4>
+                                    <p className="text-3xl font-black italic tracking-tighter text-white">LIVE <span className="text-primary-500">NOW</span></p>
                                 </div>
                             </div>
                             <div className="space-y-4">
-                                <div className="flex justify-between items-center bg-bg-main dark:bg-white/5 p-5 rounded-2xl border border-border-color dark:border-white/5">
-                                    <span className="text-[9px] font-black uppercase tracking-widest text-text-muted dark:text-white/70 italic">Logistics Cycle</span>
-                                    <span className="text-[10px] font-black uppercase tracking-widest">Daily 11:00 - 22:00</span>
+                                <div className="flex justify-between items-center bg-navy-800/50 p-6 rounded-2xl border border-white/5">
+                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-navy-400 italic">Frequency</span>
+                                    <span className="text-[11px] font-black uppercase tracking-widest text-white italic">11:30 - 22:30</span>
                                 </div>
-                                <p className="text-[9px] font-black uppercase tracking-[0.2em] text-center text-text-muted dark:text-text-secondary italic pt-2">Zero Latency Meal Supply Guaranteed</p>
+                                <p className="text-[9px] font-black uppercase tracking-[0.3em] text-center text-navy-600 italic pt-4">Quality & Hygiene Integrity Verified</p>
                             </div>
                         </Card>
                     </div>

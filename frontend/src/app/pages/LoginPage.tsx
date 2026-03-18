@@ -3,12 +3,14 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '../components/common/Button';
 import { Input } from '../components/common/Input';
 import { Card } from '../components/common/Card';
-import { Utensils, Mail, ShieldCheck } from 'lucide-react';
+import { Utensils, Mail, ShieldCheck, Zap, CreditCard, BarChart3, ChevronLeft } from 'lucide-react';
 import { useAppDispatch } from '../../hooks/redux';
 import { setCredentials } from '../../store/slices/authSlice';
 import api from '../api/axiosInstance';
 import Seo from '../components/common/Seo';
 import toast from 'react-hot-toast';
+import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
+import { motion } from 'framer-motion';
 
 const LoginPage: React.FC = () => {
     const [email, setEmail] = useState('');
@@ -18,6 +20,7 @@ const LoginPage: React.FC = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [loginMode, setLoginMode] = useState<'password' | 'otp'>('password');
     const [otpStep, setOtpStep] = useState<1 | 2>(1);
+    const { executeRecaptcha } = useGoogleReCaptcha();
 
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
@@ -36,17 +39,6 @@ const LoginPage: React.FC = () => {
     // reCAPTCHA and Google Auth Initialization
     useEffect(() => {
         const initScripts = () => {
-            // reCAPTCHA
-            if ((window as any).grecaptcha && (window as any).grecaptcha.render) {
-                const container = document.getElementById('recaptcha-container');
-                if (container && container.innerHTML === '') {
-                    (window as any).grecaptcha.render('recaptcha-container', {
-                        'sitekey': import.meta.env.VITE_RECAPTCHA_SITE_KEY || "6Ld48IssAAAAACSSpuDv2_NC8bNqQBol2lpFpsM7",
-                        'theme': document.documentElement.classList.contains('dark') ? 'dark' : 'light'
-                    });
-                }
-            }
-
             // Google One Tap / Login Button
             if ((window as any).google) {
                 (window as any).google.accounts.id.initialize({
@@ -61,7 +53,7 @@ const LoginPage: React.FC = () => {
         };
 
         const timer = setInterval(() => {
-            if ((window as any).grecaptcha && (window as any).google) {
+            if ((window as any).google) {
                 initScripts();
                 clearInterval(timer);
             }
@@ -76,13 +68,11 @@ const LoginPage: React.FC = () => {
             const response = await api.post('/auth/google', { token: googleResponse.credential });
             
             if (response.data.requireOtp) {
-                // Sequential Auth: Google verified, now need OTP
                 setEmail(response.data.email);
                 setLoginMode('otp');
                 setOtpStep(2);
                 toast.success('Google verified. Please check email for OTP.', { duration: 4000 });
             } else {
-                // Fallback / legacy
                 dispatch(setCredentials(response.data));
                 toast.success('Logged in with Google!');
                 navigate('/dashboard');
@@ -130,15 +120,14 @@ const LoginPage: React.FC = () => {
         setIsLoading(true);
         setError('');
 
-        const recaptchaToken = (window as any).grecaptcha?.getResponse();
-
-        if (!recaptchaToken) {
-            setError('Please complete the reCAPTCHA verification');
+        if (!executeRecaptcha) {
+            setError('reCAPTCHA not initialized');
             setIsLoading(false);
             return;
         }
 
         try {
+            const recaptchaToken = await executeRecaptcha('login');
             const response = await api.post('/auth/login', { email, password, recaptchaToken });
             dispatch(setCredentials(response.data));
             navigate('/dashboard');
@@ -152,155 +141,244 @@ const LoginPage: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-dark px-4 py-12">
+        <div className="min-h-screen bg-navy-950 flex flex-col lg:flex-row relative overflow-hidden">
             <Seo 
-                title="Login" 
-                description="Sign in to your FindMess account to manage your subscriptions and find the best mess services." 
+                title="Login | Access Your Elite Mess Terminal | FindMess" 
+                description="Sign in to your FindMess account to manage subscriptions, track meal plans, and communicate with verified mess owners." 
             />
-            <Card className="w-full max-w-md p-8">
-                <div className="text-center space-y-2 mb-8">
-                    <Link to="/" className="inline-flex items-center justify-center p-3 bg-primary rounded-xl text-white mb-4">
-                        <Utensils size={32} />
-                    </Link>
-                    <h1 className="text-3xl font-heading font-bold">Welcome Back</h1>
-                    <p className="text-gray-500">Sign in to your MessWalha account</p>
-                </div>
 
-                <div className="space-y-4">
-                    {/* Google Login Section */}
-                    <div id="google-login-btn" className="w-full"></div>
+            {/* Background Gradients */}
+            <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary-500/10 rounded-full blur-[120px] -mr-32 -mt-32 pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-indigo-500/10 rounded-full blur-[100px] -ml-32 -mb-32 pointer-events-none" />
 
-                    <div className="relative my-6">
-                        <div className="absolute inset-0 flex items-center">
-                            <span className="w-full border-t border-gray-200"></span>
+            {/* Left Panel: Branding & Benefits - Hidden on mobile by default, shown at bottom */}
+            <div className="hidden lg:flex lg:w-1/2 flex-col justify-center px-12 xl:px-24 relative z-10 py-20 bg-navy-900/30">
+                <div className="max-w-md">
+                    <Link to="/" className="inline-flex items-center space-x-3 mb-16">
+                        <div className="w-12 h-12 bg-primary-500 rounded-xl flex items-center justify-center text-white shadow-lg shadow-primary-500/40">
+                            <Utensils size={28} />
                         </div>
-                        <div className="relative flex justify-center text-sm">
-                            <span className="px-2 bg-white dark:bg-card-dark text-gray-500 uppercase">Or continue with</span>
+                        <span className="text-3xl font-heading font-black tracking-tighter text-white">
+                            FIND<span className="text-primary-500">MESS</span>
+                        </span>
+                    </Link>
+
+                    <div className="space-y-12">
+                        <motion.div initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.1 }} className="space-y-4">
+                            <h2 className="text-4xl xl:text-5xl font-black text-white italic leading-tight tracking-tighter">
+                                Elite Mess <br />
+                                <span className="text-primary-500 italic">Discovery Terminal</span>
+                            </h2>
+                            <p className="text-navy-300 text-lg font-medium italic">
+                                Access your personalized dashboard and manage your culinary journey.
+                            </p>
+                        </motion.div>
+
+                        <div className="space-y-8">
+                            {[
+                                { icon: Zap, title: 'Instant Access', desc: 'Secure login with military-grade encryption.' },
+                                { icon: CreditCard, title: 'Smart Payments', desc: 'Track your subscriptions and digital receipts.' },
+                                { icon: BarChart3, title: 'Personalized Stats', desc: 'Monitor your nutrition and spending alerts.' }
+                            ].map((feature, i) => (
+                                <motion.div 
+                                    key={i}
+                                    initial={{ x: -20, opacity: 0 }}
+                                    animate={{ x: 0, opacity: 1 }}
+                                    transition={{ delay: 0.2 + i * 0.1 }}
+                                    className="flex items-start space-x-6 group"
+                                >
+                                    <div className="w-14 h-14 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center text-primary-500 group-hover:bg-primary-500 group-hover:text-white transition-all duration-500 shadow-xl group-hover:shadow-primary-500/20">
+                                        <feature.icon size={24} />
+                                    </div>
+                                    <div className="space-y-1">
+                                        <h3 className="text-[11px] font-black uppercase tracking-widest text-white italic">{feature.title}</h3>
+                                        <p className="text-navy-400 text-sm font-medium">{feature.desc}</p>
+                                    </div>
+                                </motion.div>
+                            ))}
                         </div>
                     </div>
+                </div>
+            </div>
 
-                    {error && (
-                        <div className="bg-red-50 text-red-500 p-3 rounded-lg text-sm border border-red-100 mb-4">
-                            {error}
+            {/* Right Panel: Form */}
+            <div className="flex-1 flex flex-col items-center justify-center p-6 sm:p-12 lg:p-24 relative z-10 w-full overflow-y-auto">
+                {/* Mobile Back Button */}
+                <Link to="/" className="absolute top-8 left-8 p-3 bg-white/5 rounded-xl text-white/40 hover:text-white transition-all lg:hidden">
+                    <ChevronLeft size={24} />
+                </Link>
+
+                {/* Mobile Logo */}
+                <Link to="/" className="flex items-center space-x-3 mb-12 lg:hidden">
+                    <div className="w-10 h-10 bg-primary-500 rounded-xl flex items-center justify-center text-white">
+                        <Utensils size={24} />
+                    </div>
+                    <span className="text-2xl font-heading font-black tracking-tighter text-white">
+                        FIND<span className="text-primary-500">MESS</span>
+                    </span>
+                </Link>
+
+                <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="w-full max-w-md">
+                    <div className="mb-10 text-center lg:text-left">
+                        <h1 className="text-3xl md:text-5xl font-black text-white italic tracking-tighter mb-3">Welcome Back</h1>
+                        <p className="text-navy-300 font-black uppercase tracking-[0.2em] text-[10px] md:text-xs">Sign in to access your elite terminal</p>
+                    </div>
+
+                    <div className="space-y-4">
+                        {/* Google Login Section */}
+                        <div id="google-login-btn" className="w-full"></div>
+
+                        <div className="relative my-8">
+                            <div className="absolute inset-0 flex items-center">
+                                <span className="w-full border-t border-navy-800"></span>
+                            </div>
+                            <div className="relative flex justify-center text-[10px] font-black uppercase tracking-[0.3em]">
+                                <span className="px-4 bg-navy-950 text-navy-400">Or continue with</span>
+                            </div>
                         </div>
-                    )}
 
-                    {loginMode === 'password' ? (
-                        <form onSubmit={handleSubmit} className="space-y-6">
-                            <div className="space-y-4">
-                                <Input
-                                    id="login-email"
-                                    label="Email Address"
-                                    type="email"
-                                    placeholder="name@example.com"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    required
-                                />
-                                <Input
-                                    id="login-password"
-                                    label="Password"
-                                    type="password"
-                                    placeholder="••••••••"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    required
-                                />
+                        {error && (
+                            <div className="bg-red-500/10 text-red-400 p-4 rounded-xl text-xs border border-red-500/20 mb-6 font-medium italic">
+                                {error}
                             </div>
+                        )}
 
-                            <div className="flex items-center justify-between">
-                                <label className="flex items-center space-x-2 text-sm">
-                                    <input type="checkbox" className="rounded border-gray-300 text-primary focus:ring-primary" />
-                                    <span>Remember me</span>
-                                </label>
-                                <Link to="/forgot-password" title="Forgot password" className="text-sm text-primary hover:underline">
-                                    Forgot password?
-                                </Link>
-                            </div>
-
-                            <div className="flex justify-center mb-6">
-                                <div id="recaptcha-container"></div>
-                            </div>
-
-                            <Button type="submit" className="w-full" size="lg" isLoading={isLoading}>
-                                Sign In
-                            </Button>
-
-                            <button
-                                type="button"
-                                onClick={() => setLoginMode('otp')}
-                                className="w-full text-sm text-gray-500 hover:text-primary transition-colors flex items-center justify-center space-x-2"
-                            >
-                                <Mail size={16} />
-                                <span>Sign in with OTP</span>
-                            </button>
-                        </form>
-                    ) : (
-                        <form onSubmit={otpStep === 1 ? handleSendOTP : handleVerifyOTP} className="space-y-6">
-                            {otpStep === 1 ? (
+                        {loginMode === 'password' ? (
+                            <form onSubmit={handleSubmit} className="space-y-6">
                                 <div className="space-y-4">
                                     <Input
-                                        id="otp-email"
-                                        label="Email for OTP"
+                                        id="login-email"
+                                        label="Email Address"
                                         type="email"
                                         placeholder="name@example.com"
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
                                         required
+                                        className="h-14 md:h-16"
                                     />
-                                    <Button type="submit" className="w-full" size="lg" isLoading={isLoading}>
-                                        Send OTP
-                                    </Button>
-                                </div>
-                            ) : (
-                                <div className="space-y-4">
-                                    <div className="text-center py-2">
-                                        <p className="text-sm text-gray-500">OTP sent to <strong>{email}</strong></p>
-                                    </div>
                                     <Input
-                                        id="otp-code"
-                                        label="Enter 6-digit OTP"
-                                        type="text"
-                                        maxLength={6}
-                                        placeholder="000000"
-                                        value={otp}
-                                        onChange={(e) => setOtp(e.target.value)}
+                                        id="login-password"
+                                        label="Password"
+                                        type="password"
+                                        placeholder="••••••••"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
                                         required
+                                        className="h-14 md:h-16"
                                     />
-                                    <Button type="submit" className="w-full" size="lg" isLoading={isLoading}>
-                                        Verify & Login
-                                    </Button>
-                                    <button 
-                                        type="button" 
-                                        onClick={() => setOtpStep(1)}
-                                        className="text-sm text-primary hover:underline block w-full text-center"
-                                    >
-                                        Resend OTP
-                                    </button>
                                 </div>
-                            )}
 
-                            <button
-                                type="button"
-                                onClick={() => setLoginMode('password')}
-                                className="w-full text-sm text-gray-500 hover:text-primary transition-colors flex items-center justify-center space-x-2"
-                            >
-                                <ShieldCheck size={16} />
-                                <span>Use Password instead</span>
-                            </button>
-                        </form>
-                    )}
-                </div>
+                                <div className="flex items-center justify-between">
+                                    <label className="flex items-center space-x-2 text-[10px] md:text-[11px] font-black uppercase tracking-widest text-navy-300 cursor-pointer">
+                                        <input type="checkbox" className="rounded border-navy-700 bg-navy-800 text-primary-500 focus:ring-primary-500/50" />
+                                        <span>Remember me</span>
+                                    </label>
+                                    <Link to="/forgot-password" text-primary-500 hover:text-primary-400 font-black uppercase tracking-widest italic text-[10px] md:text-[11px] transition-colors>
+                                        Forgot password?
+                                    </Link>
+                                </div>
 
-                <div className="mt-8 pt-6 border-t border-gray-100 dark:border-dark-lighter text-center">
-                    <p className="text-sm text-gray-500">
-                        Don't have an account?{' '}
-                        <Link to="/register" className="text-primary font-semibold hover:underline">
-                            Create an account
-                        </Link>
-                    </p>
-                </div>
-            </Card>
+                                <Button type="submit" className="w-full h-14 md:h-16" size="lg" isLoading={isLoading}>
+                                    Sign In
+                                </Button>
+
+                                <button
+                                    type="button"
+                                    onClick={() => setLoginMode('otp')}
+                                    className="w-full text-[10px] font-black uppercase tracking-[0.2em] text-navy-400 hover:text-white transition-all flex items-center justify-center space-x-3 py-4 border border-navy-800 rounded-xl hover:bg-navy-800/30"
+                                >
+                                    <Mail size={16} className="text-primary-500" />
+                                    <span>Sign in with OTP</span>
+                                </button>
+                            </form>
+                        ) : (
+                            <form onSubmit={otpStep === 1 ? handleSendOTP : handleVerifyOTP} className="space-y-6">
+                                {otpStep === 1 ? (
+                                    <div className="space-y-4">
+                                        <Input
+                                            id="otp-email"
+                                            label="Email for OTP"
+                                            type="email"
+                                            placeholder="name@example.com"
+                                            value={email}
+                                            onChange={(e) => setEmail(e.target.value)}
+                                            required
+                                            className="h-14 md:h-16"
+                                        />
+                                        <Button type="submit" className="w-full h-14 md:h-16" size="lg" isLoading={isLoading}>
+                                            Send OTP
+                                        </Button>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-4">
+                                        <div className="text-center py-2">
+                                            <p className="text-sm text-gray-500">OTP sent to <strong>{email}</strong></p>
+                                        </div>
+                                        <Input
+                                            id="otp-code"
+                                            label="Enter 6-digit OTP"
+                                            type="text"
+                                            maxLength={6}
+                                            placeholder="000000"
+                                            value={otp}
+                                            onChange={(e) => setOtp(e.target.value)}
+                                            required
+                                            className="h-14 md:h-16"
+                                        />
+                                        <Button type="submit" className="w-full h-14 md:h-16" size="lg" isLoading={isLoading}>
+                                            Verify & Login
+                                        </Button>
+                                        <button 
+                                            type="button" 
+                                            onClick={() => setOtpStep(1)}
+                                            className="text-sm text-primary hover:underline block w-full text-center"
+                                        >
+                                            Resend OTP
+                                        </button>
+                                    </div>
+                                )}
+
+                                <button
+                                    type="button"
+                                    onClick={() => setLoginMode('password')}
+                                    className="w-full text-sm text-gray-500 hover:text-primary transition-colors flex items-center justify-center space-x-2"
+                                >
+                                    <ShieldCheck size={16} />
+                                    <span>Use Password instead</span>
+                                </button>
+                            </form>
+                        )}
+                    </div>
+
+                    <div className="mt-10 pt-8 border-t border-navy-800 text-center">
+                        <p className="text-[11px] font-black uppercase tracking-[0.2em] text-navy-400">
+                            Don't have an account?{' '}
+                            <Link to="/register" className="text-primary-500 font-black hover:text-primary-400 transition-colors italic">
+                                Create account
+                            </Link>
+                        </p>
+                    </div>
+
+                    {/* Mobile Benefits - Stacked at bottom */}
+                    <div className="mt-16 sm:mt-24 space-y-12 lg:hidden">
+                        <div className="h-px bg-white/5 w-full"></div>
+                        {[
+                            { icon: Zap, title: 'Instant Access', desc: 'Secure login with military-grade encryption.' },
+                            { icon: CreditCard, title: 'Smart Payments', desc: 'Track your subscriptions and digital receipts.' }
+                        ].map((feature, i) => (
+                            <div key={i} className="flex items-start space-x-6">
+                                <div className="w-12 h-12 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center text-primary-500 shrink-0">
+                                    <feature.icon size={20} />
+                                </div>
+                                <div className="space-y-1">
+                                    <h3 className="text-[10px] font-black uppercase tracking-widest text-white italic">{feature.title}</h3>
+                                    <p className="text-navy-400 text-xs font-medium">{feature.desc}</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </motion.div>
+            </div>
         </div>
     );
 };

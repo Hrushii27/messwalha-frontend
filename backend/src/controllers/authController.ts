@@ -9,7 +9,7 @@ import crypto from 'crypto';
 
 export const register = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { email, password, name, role } = req.body;
+        const { email, password, name, role, phone, college } = req.body;
 
         if (!db) {
             return next(new AppError('Database not configured', 500));
@@ -30,6 +30,8 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
             password: hashedPassword,
             name,
             role: userRole,
+            phone: phone || '',
+            college: college || '',
             createdAt: new Date(),
             updatedAt: new Date(),
         };
@@ -48,9 +50,9 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
                 id: subRef.id,
                 ownerId: userRef.id,
                 planName: 'FREE_TRIAL',
-                trialStartDate: new Date(),
-                trialEndDate: trialEndDate,
-                status: 'TRIAL',
+                trial_start: new Date(),
+                trial_end: trialEndDate,
+                status: 'trial',
                 paymentStatus: 'PENDING',
                 createdAt: new Date(),
                 updatedAt: new Date(),
@@ -75,6 +77,103 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
                 name,
                 role: userRole,
                 ownerSubscription
+            },
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const ownerRegister = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        console.log('Owner registration request received:', req.body.email);
+        const { email, password, name, phone, messName, location } = req.body;
+
+        if (!db) {
+            return next(new AppError('Database not configured', 500));
+        }
+
+        const userSnapshot = await db.collection('users').where('email', '==', email).get();
+        if (!userSnapshot.empty) {
+            return next(new AppError('User already exists', 400));
+        }
+
+        const hashedPassword = await hashPassword(password);
+        const userRef = db.collection('users').doc();
+        
+        const userData = {
+            id: userRef.id,
+            email,
+            password: hashedPassword,
+            name,
+            phone: phone || '',
+            role: 'OWNER',
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        };
+
+        // Create subscription
+        const trialDays = 60;
+        const trialEndDate = new Date();
+        trialEndDate.setDate(trialEndDate.getDate() + trialDays);
+
+        const subRef = db.collection('owner_subscriptions').doc();
+        const ownerSubscription = {
+            id: subRef.id,
+            ownerId: userRef.id,
+            planName: 'FREE_TRIAL',
+            trial_start: new Date(),
+            trial_end: trialEndDate,
+            status: 'trial',
+            paymentStatus: 'PENDING',
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        };
+
+        // Create Mess record
+        const messRef = db.collection('messes').doc();
+        const messData = {
+            id: messRef.id,
+            ownerId: userRef.id,
+            name: messName,
+            address: location,
+            description: `Welcome to ${messName}. We provide quality meals for students.`,
+            cuisine: 'Indian',
+            contact: phone,
+            images: [],
+            rating: 0,
+            verified: false,
+            isVisible: true,
+            monthlyPrice: 0, // Placeholder
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        };
+
+        // Execution (Simplified atomicity with sequential writes for now, could be transaction)
+        const batch = db.batch();
+        batch.set(userRef, userData);
+        batch.set(subRef, ownerSubscription);
+        batch.set(messRef, messData);
+        await batch.commit();
+
+        const token = generateToken(userRef.id, 'OWNER');
+        const refreshToken = generateRefreshToken(userRef.id);
+
+        emailService.sendWelcomeEmail(email, name).catch((err: Error) => {
+            console.error('Failed to send welcome email:', err);
+        });
+
+        res.status(201).json({
+            success: true,
+            token,
+            refreshToken,
+            user: {
+                id: userRef.id,
+                email,
+                name,
+                role: 'OWNER',
+                ownerSubscription,
+                mess: messData
             },
         });
     } catch (error) {
@@ -175,9 +274,9 @@ export const firebaseAuth = async (req: Request, res: Response, next: NextFuncti
                     id: subRef.id,
                     ownerId: user.id,
                     planName: 'FREE_TRIAL',
-                    trialStartDate: new Date(),
-                    trialEndDate: trialEndDate,
-                    status: 'TRIAL',
+                    trial_start: new Date(),
+                    trial_end: trialEndDate,
+                    status: 'trial',
                     paymentStatus: 'PENDING',
                     createdAt: new Date(),
                     updatedAt: new Date(),

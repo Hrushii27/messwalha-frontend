@@ -81,7 +81,7 @@ export const MessCard: React.FC<MessCardProps> = ({ mess }) => {
                             animate={{ x: 0, opacity: 1 }}
                             className="bg-primary-500 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-full shadow-2xl flex items-center gap-2 text-[9px] sm:text-[10px] font-black uppercase tracking-widest border border-white/20"
                         >
-                            <CircleCheck className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                            <CircleCheck aria-hidden="true" className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                             Verified
                         </motion.div>
                     )}
@@ -92,7 +92,7 @@ export const MessCard: React.FC<MessCardProps> = ({ mess }) => {
                             transition={{ delay: 0.1 }}
                             className="bg-rating-color text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-full shadow-2xl flex items-center gap-2 text-[9px] sm:text-[10px] font-black uppercase tracking-widest border border-white/20"
                         >
-                            <Star className="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="currentColor" />
+                            <Star aria-hidden="true" className="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="currentColor" />
                             Top Rated
                         </motion.div>
                     )}
@@ -140,7 +140,7 @@ export const MessCard: React.FC<MessCardProps> = ({ mess }) => {
                     <div className="flex flex-col gap-2">
                         <div className="flex gap-2">
                             <div className="bg-white/10 backdrop-blur-xl border border-white/20 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl flex items-center shadow-2xl">
-                                <Star className="text-rating-color fill-rating-color mr-2 w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                                <Star aria-hidden="true" className="text-rating-color fill-rating-color mr-2 w-3 h-3 sm:w-3.5 sm:h-3.5" />
                                 <span className="text-[10px] sm:text-xs font-black text-white italic">{rating.toFixed(1)}</span>
                             </div>
                             { (mess as any).vegNonVeg && (
@@ -166,7 +166,7 @@ export const MessCard: React.FC<MessCardProps> = ({ mess }) => {
                         {mess.name}
                     </h3>
                     <div className="flex items-center gap-2 sm:gap-3 text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-text-secondary">
-                        <MapPin size={12} className="text-primary-500 sm:w-3.5 sm:h-3.5" />
+                        <MapPin aria-hidden="true" size={12} className="text-primary-500 sm:w-3.5 sm:h-3.5" />
                         <span className="line-clamp-1">{mess.address}</span>
                     </div>
                 </div>

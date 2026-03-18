@@ -80,7 +80,7 @@ export const createOwnerOrder = async (req: AuthRequest, res: Response, next: Ne
     try {
         if (!db) return next(new AppError('Database not configured', 500));
 
-        const amount = 599;
+        const amount = 499;
 
         // Development Bypass
         const isMockEnabled = config.NODE_ENV !== 'production' && (config.RAZORPAY_KEY_ID === 'rzp_test_dummy_id' || !config.RAZORPAY_KEY_ID);
@@ -181,7 +181,7 @@ export const verifyPayment = async (req: AuthRequest, res: Response, next: NextF
                 planType,
                 startDate: new Date(),
                 endDate: calculateEndDate(planType),
-                status: 'ACTIVE',
+                status: 'active',
                 paymentId: razorpay_payment_id || razorpay_order_id,
                 createdAt: new Date(),
                 updatedAt: new Date(),
@@ -255,12 +255,27 @@ export const verifyOwnerPayment = async (req: AuthRequest, res: Response, next: 
             }
 
             transaction.update(subSnapshot.docs[0].ref, {
-                status: 'ACTIVE',
-                planName: 'BASIC_599',
+                status: 'active',
+                planName: 'ELITE_LISTING_499',
                 paymentStatus: 'PAID',
+                subscription_end: nextBillingDate,
                 nextBillingDate: nextBillingDate,
                 updatedAt: new Date()
             });
+
+            // AUTO-ACTIVATE MESS VISIBILITY ON PAYMENT
+            const messSnapshot = await db!.collection('messes')
+                .where('ownerId', '==', req.user!.id)
+                .limit(1)
+                .get();
+            
+            if (!messSnapshot.empty) {
+                transaction.update(messSnapshot.docs[0].ref, {
+                    isVisible: true,
+                    subscriptionStatus: 'active',
+                    updatedAt: new Date()
+                });
+            }
 
             transaction.update(paymentSnapshot.docs[0].ref, {
                 status: 'SUCCESS',
@@ -277,14 +292,15 @@ export const verifyOwnerPayment = async (req: AuthRequest, res: Response, next: 
                 const subject = 'Your MessWalha Owner Account is now Professional! 🚀';
                 const html = `
                     <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
-                        <h2 style="color: #f97316;">Professional Upgrade Confirmed</h2>
+                        <h2 style="color: #f97316;">Elite Listing Plan Activated</h2>
                         <p>Hi <strong>${user.name}</strong>,</p>
-                        <p>Your owner account has been successfully upgraded to the <strong>Professional Plan</strong> (₹599/month).</p>
+                        <p>Your owner account has been successfully upgraded to the <strong>Elite Listing Plan</strong> (₹499/month).</p>
                         <p>You now have access to:</p>
                         <ul>
-                            <li>Advanced Analytics</li>
-                            <li>Customer Support Tools</li>
-                            <li>Platform Fee Savings</li>
+                            <li>Public Marketplace Listing</li>
+                            <li>Weekly Menu Management</li>
+                            <li>Student Reviews & Responses</li>
+                            <li>Subscription Analytics</li>
                         </ul>
                         <div style="margin: 20px 0;">
                             <a href="${config.FRONTEND_URL}/owner/dashboard" style="background: #f97316; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Go to Owner Dashboard</a>

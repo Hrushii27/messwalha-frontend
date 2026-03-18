@@ -24,8 +24,8 @@ const LandingPage: React.FC = () => {
         <Layout>
             <div className="bg-bg-main">
                 <Seo
-                    title="Find Your Perfect Mess in Seconds | FindMess"
-                    description="Discover verified mess services near your college. Compare menus, prices, and subscribe easily. Affordable and healthy meal plans for students."
+                    title="Elite Mess Discovery & Culinary Market | FindMess"
+                    description="The ultimate discovery platform for students and PG residents. Find, compare, and subscribe to premium mess services near your campus with verified integrity."
                 />
 
                 {/* Hero Section */}
@@ -53,16 +53,21 @@ const LandingPage: React.FC = () => {
                                 <motion.div
                                     initial={{ scale: 0.8, opacity: 0 }}
                                     animate={{ scale: 1, opacity: 1 }}
-                                    className="inline-block px-6 py-2 rounded-full bg-primary-500/10 border border-primary-500/20 text-primary-500 text-[10px] font-black uppercase tracking-[0.4em] mb-4"
+                                    className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-4"
                                 >
-                                    Elite Mess Discovery Engine
+                                    <div className="px-6 py-2 rounded-full bg-primary-500/10 border border-primary-500/20 text-primary-500 text-[10px] font-black uppercase tracking-[0.4em]">
+                                        Elite Mess Marketplace
+                                    </div>
+                                    <div className="px-6 py-2 rounded-full bg-orange-500 text-white text-[10px] font-black uppercase tracking-[0.2em] shadow-lg shadow-orange-500/20">
+                                        60-Day Free Trial for Owners
+                                    </div>
                                 </motion.div>
-                                <h1 className="text-3xl sm:text-6xl md:text-8xl lg:text-9xl font-black text-white leading-[0.85] tracking-tighter">
+                                <h1 className="text-4xl sm:text-6xl md:text-8xl lg:text-9xl font-black text-white leading-[0.9] tracking-tighter">
                                     Find Your Perfect <br className="hidden sm:block" />
                                     <span className="text-primary-500 italic">Mess in Seconds</span>
                                 </h1>
-                                <p className="text-xs sm:text-lg md:text-xl lg:text-2xl text-white/70 font-medium max-w-3xl mx-auto leading-relaxed italic mt-6 px-4">
-                                    Discover verified mess services near your college terminal. <br className="hidden md:block" />
+                                <p className="text-sm sm:text-lg md:text-xl lg:text-2xl text-white/70 font-medium max-w-3xl mx-auto leading-relaxed italic mt-6 px-4">
+                                    Discover verified mess services near your college campus. <br className="hidden md:block" />
                                     Compare menus, prices, and subscribe with professional ease.
                                 </p>
                             </motion.div>
@@ -74,33 +79,33 @@ const LandingPage: React.FC = () => {
                                 transition={{ duration: 0.8, delay: 0.2 }}
                                 className="bg-white/5 backdrop-blur-3xl p-4 sm:p-5 rounded-[2.5rem] sm:rounded-[3rem] md:rounded-full border border-white/10 shadow-[0_32px_100px_-20px_rgba(0,0,0,0.5)] max-w-4xl mx-auto group hover:border-primary-500/30 transition-all duration-700"
                             >
-                                <div className="flex flex-col md:flex-row items-center gap-3 sm:gap-4">
+                                <div className="flex flex-col md:flex-row items-center gap-4 sm:gap-6">
                                     <div className="flex-1 w-full relative group/input text-left">
-                                        <MapPin className="absolute left-6 top-1/2 -translate-y-1/2 text-primary-500 z-10 group-hover/input:scale-110 transition-transform" size={16} />
+                                        <MapPin aria-hidden="true" className="absolute left-6 top-1/2 -translate-y-1/2 text-primary-500 z-10 group-hover/input:scale-110 transition-transform" size={18} />
                                         <input
                                             type="text"
                                             placeholder="📍 Enter College / Area..."
-                                            className="w-full bg-white/[0.03] border-none text-white pl-14 pr-6 py-5 sm:py-7 rounded-full focus:ring-2 focus:ring-primary-500/50 transition-all font-black uppercase tracking-widest text-[10px] sm:text-[11px] outline-none"
+                                            className="w-full bg-white/[0.03] border-none text-white pl-14 pr-6 py-6 sm:py-7 rounded-[1.5rem] md:rounded-full focus:ring-2 focus:ring-primary-500/50 transition-all font-black uppercase tracking-widest text-[11px] outline-none h-16 sm:h-20"
                                             aria-label="Search by Area or College"
                                         />
                                     </div>
                                     <div className="flex-1 w-full relative group/select">
-                                        <Utensils className="absolute left-6 top-1/2 -translate-y-1/2 text-primary-500 z-10 group-hover/select:scale-110 transition-transform" size={16} />
+                                        <Utensils aria-hidden="true" className="absolute left-6 top-1/2 -translate-y-1/2 text-primary-500 z-10 group-hover/select:scale-110 transition-transform" size={18} />
                                         <select 
-                                            className="w-full bg-white/[0.03] border-none text-white pl-14 pr-10 py-5 sm:py-7 rounded-full focus:ring-2 focus:ring-primary-500/50 transition-all font-black uppercase tracking-widest text-[10px] sm:text-[11px] appearance-none cursor-pointer outline-none"
+                                            className="w-full bg-white/[0.03] border-none text-white pl-14 pr-10 py-6 sm:py-7 rounded-[1.5rem] md:rounded-full focus:ring-2 focus:ring-primary-500/50 transition-all font-black uppercase tracking-widest text-[11px] appearance-none cursor-pointer outline-none h-16 sm:h-20"
                                             aria-label="Filter by meal type"
                                         >
-                                            <option value="" className="bg-dark-900 text-[10px]">🍛 Veg / Non-Veg</option>
-                                            <option value="veg" className="bg-dark-900 text-[10px]">Pure Veg</option>
-                                            <option value="non-veg" className="bg-dark-900 text-[10px]">Veg + Non-Veg</option>
+                                            <option value="" className="bg-dark-900 text-[11px]">🍛 Veg / Non-Veg</option>
+                                            <option value="veg" className="bg-dark-900 text-[11px]">Pure Veg</option>
+                                            <option value="non-veg" className="bg-dark-900 text-[11px]">Veg + Non-Veg</option>
                                         </select>
                                     </div>
                                     <Button
                                         size="lg"
                                         onClick={() => navigate('/find-mess')}
-                                        className="w-full md:w-auto md:px-12 lg:px-16 h-16 sm:h-20 rounded-full shadow-2xl shadow-primary-500/40 font-black uppercase tracking-[0.3em] text-[10px] sm:text-[11px] hover:scale-105 transition-all duration-500 flex items-center justify-center gap-3"
+                                        className="w-full md:w-auto md:px-12 lg:px-16 h-16 sm:h-20 rounded-[1.5rem] md:rounded-full shadow-2xl shadow-primary-500/40 font-black uppercase tracking-[0.3em] text-[11px] hover:scale-105 transition-all duration-500 flex items-center justify-center gap-3 bg-primary-500"
                                     >
-                                        <SearchIcon size={18} />
+                                        <SearchIcon size={20} />
                                         Find Mess
                                     </Button>
                                 </div>
@@ -119,7 +124,7 @@ const LandingPage: React.FC = () => {
                                     { icon: CircleCheck, text: 'Healthy & Hygienic Food' }
                                 ].map((feature, i) => (
                                     <div key={i} className="flex items-center space-x-3 text-white/80 group hover:text-white transition-colors cursor-default">
-                                        <feature.icon size={18} className="text-primary-500 group-hover:scale-125 transition-transform" />
+                                        <feature.icon aria-hidden="true" size={18} className="text-primary-500 group-hover:scale-125 transition-transform" />
                                         <span className="text-[11px] font-black uppercase tracking-[0.2em] italic">✓ {feature.text}</span>
                                     </div>
                                 ))}
@@ -137,10 +142,10 @@ const LandingPage: React.FC = () => {
                     <div className="container mx-auto px-4">
                         <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-12">
                             {[
-                                { label: 'Students Connected', value: '8,000+' },
-                                { label: 'Mess Partners', value: '150+' },
-                                { label: 'Cities Covered', value: '12+' },
-                                { label: 'Satisfaction Rate', value: '98%' }
+                                { label: 'Listings', value: '150+' },
+                                { label: 'Students', value: '8,000+' },
+                                { label: 'Cities', value: '12+' },
+                                { label: 'Rating', value: '4.9/5' }
                             ].map((stat, i) => (
                                 <div key={i} className="text-center group">
                                     <div className="text-3xl sm:text-4xl md:text-5xl font-black text-text-primary mb-2 group-hover:text-primary-500 transition-colors">
@@ -273,24 +278,35 @@ const LandingPage: React.FC = () => {
                                 <div className="flex flex-col sm:flex-row justify-center gap-4 pt-4 sm:pt-6">
                                     <Button
                                         size="lg"
-                                        onClick={() => navigate('/register')}
+                                        onClick={() => navigate('/find-mess')}
                                         className="bg-white text-primary-500 hover:bg-gray-100 px-8 sm:px-12 py-4 sm:py-6 rounded-full font-black uppercase tracking-[0.2em] text-[10px] sm:text-xs h-16 sm:h-20 shadow-2xl"
                                     >
-                                        Get Started For Free
+                                        Browse Messes
                                     </Button>
                                     <Button
                                         variant="outline"
                                         size="lg"
-                                        onClick={() => navigate('/find-mess')}
+                                        onClick={() => navigate('/mess-owner-register')}
                                         className="border-white/40 text-white hover:bg-white/10 px-8 sm:px-12 py-4 sm:py-6 rounded-full font-black uppercase tracking-[0.2em] text-[10px] sm:text-xs h-16 sm:h-20"
                                     >
-                                        Browse Messes
+                                        Add Your Mess
                                     </Button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </section>
+
+                {/* Mobile Full-Width Bottom Bar */}
+                <div className="lg:hidden fixed bottom-0 left-0 right-0 p-4 bg-navy-950/80 backdrop-blur-3xl border-t border-white/10 z-[90]">
+                    <Button
+                        onClick={() => navigate('/find-mess')}
+                        className="w-full h-16 rounded-2xl bg-primary-500 text-white font-black uppercase tracking-[0.3em] text-[11px] shadow-2xl shadow-primary-500/30 flex items-center justify-center gap-3 italic"
+                    >
+                        <SearchIcon size={18} />
+                        Explore All Messes
+                    </Button>
+                </div>
             </div>
         </Layout>
     );

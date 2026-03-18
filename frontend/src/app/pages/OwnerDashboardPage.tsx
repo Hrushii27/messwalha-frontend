@@ -11,14 +11,14 @@ import {
     Save,
     Trash2,
     CircleCheck,
-    MapPin,
-    Phone,
     Image as ImageIcon,
     Clock,
     CreditCard,
     Calendar,
     MessageSquare,
-    Star
+    Star,
+    ChevronRight,
+    ArrowRight
 } from 'lucide-react';
 import { useAppSelector } from '../../hooks/redux';
 import type { RootState } from '../../store';
@@ -27,6 +27,9 @@ import { toast } from 'react-hot-toast';
 import { BillingHistoryModal } from '../components/dashboard/BillingHistoryModal';
 import { useNavigate } from 'react-router-dom';
 import type { Mess, Subscription, Menu, MenuItem } from '../types/mess';
+import { Input } from '../components/common/Input';
+import { EmptyState } from '../components/common/EmptyState';
+import { motion, AnimatePresence } from 'framer-motion';
 
 type Tab = 'overview' | 'menu' | 'subscribers' | 'settings' | 'reviews';
 
@@ -49,7 +52,6 @@ const OwnerDashboardPage: React.FC = () => {
     const [ownerReviews, setOwnerReviews] = useState<any[]>([]);
     const [respondingTo, setRespondingTo] = useState<string | null>(null);
     const [responseText, setResponseText] = useState('');
-
 
     // Form states
     const [messForm, setMessForm] = useState({
@@ -105,16 +107,17 @@ const OwnerDashboardPage: React.FC = () => {
 
         if (user && user.role === 'OWNER') fetchOwnerData();
 
-        // Load Razorpay Script
         const script = document.createElement('script');
         script.src = 'https://checkout.razorpay.com/v1/checkout.js';
         script.async = true;
         document.body.appendChild(script);
 
         return () => {
-            document.body.removeChild(script);
+            if (document.body.contains(script)) {
+                document.body.removeChild(script);
+            }
         };
-    }, [user]);
+    }, [user, navigate]);
 
     const handleUpdateMess = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -176,7 +179,6 @@ const OwnerDashboardPage: React.FC = () => {
                 newItems[itemIndex] = { ...newItems[itemIndex], [field]: value };
                 newMenus[dayMenuIndex] = { ...newMenus[dayMenuIndex], items: newItems };
             } else {
-                // If day doesn't exist, create it and add the item
                 newMenus.push({
                     day,
                     items: [{ name: '', type: 'Veg', [field]: value }]
@@ -219,574 +221,626 @@ const OwnerDashboardPage: React.FC = () => {
         });
     };
 
-
-    const isSubscriptionActive = subscription?.status === 'trial' || subscription?.status === 'active';
+    const isSubscriptionActive = (subscription as any)?.isActive || subscription?.status === 'trial' || subscription?.status === 'active';
 
     const renderInactiveBlock = (featureName: string) => (
-        <Card className="p-12 text-center space-y-6 flex flex-col items-center justify-center border-orange-100 bg-orange-50/50">
-            <div className="p-6 bg-orange-100 text-orange-500 rounded-full mb-4">
+        <Card className="p-8 md:p-16 text-center space-y-6 flex flex-col items-center justify-center border-orange-500/20 bg-orange-500/5 backdrop-blur-3xl rounded-[2.5rem] md:rounded-[3rem]">
+            <div className="p-6 bg-orange-500/20 text-orange-500 rounded-2xl mb-4 shadow-2xl shadow-orange-500/10">
                 <CreditCard size={48} />
             </div>
-            <h3 className="text-2xl font-bold">Subscription Required</h3>
-            <p className="text-gray-500 max-w-md mx-auto">
+            <h3 className="text-2xl md:text-3xl font-black text-white italic tracking-tighter uppercase">Subscription Required</h3>
+            <p className="text-navy-300 max-w-md mx-auto text-sm md:text-base font-medium">
                 Your subscription has expired or is inactive. You must renew your Elite Listing Plan to access {featureName} and continue finding students.
             </p>
-            <Button onClick={() => navigate('/owner/subscribe')} className="px-8 py-4 text-base mt-4 shadow-lg shadow-primary/20">
+            <Button onClick={() => navigate('/owner/subscribe')} size="lg" className="rounded-2xl px-12 py-6 text-xs font-black uppercase tracking-widest shadow-2xl shadow-primary-500/20">
                 Renew Subscription for ₹499/mo
             </Button>
         </Card>
     );
 
     const renderOverview = () => (
-        <div className="space-y-8">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="space-y-8 md:space-y-12">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
                 {[
-                    { label: 'Total Revenue', value: `₹${revenue.toLocaleString()}`, trend: '+12%', icon: <TrendingUp className="text-secondary" /> },
-                    { label: 'Active Subscribers', value: subscribers.length.toString(), trend: '+5', icon: <Users className="text-primary" /> },
-                    { label: 'Avg Rating', value: mess?.rating?.toFixed(1) || '0.0', trend: 'Global', icon: <Utensils className="text-accent" /> },
+                    { label: 'Total Revenue', value: `₹${revenue.toLocaleString()}`, trend: '+12%', icon: <TrendingUp className="text-primary-500" /> },
+                    { label: 'Active Students', value: subscribers.length.toString(), trend: '+5', icon: <Users className="text-indigo-400" /> },
+                    { label: 'Avg Rating', value: mess?.rating?.toFixed(1) || '0.0', trend: 'Global', icon: <Star className="text-orange-400" /> },
                 ].map((stat, i) => (
-                    <Card key={i} className="p-6">
-                        <div className="flex justify-between items-start mb-4">
-                            <div className="p-3 bg-gray-50 rounded-xl">{stat.icon}</div>
-                            <span className={`text-xs font-bold px-2 py-1 rounded-full ${stat.trend.startsWith('+') ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-500'}`}>
+                    <Card key={i} className="p-8 bg-navy-900/40 backdrop-blur-3xl border-navy-800 rounded-[2.5rem] hover:border-primary-500/30 transition-all group overflow-hidden relative">
+                        <div className="absolute top-0 right-0 w-24 h-24 bg-primary-500/5 rounded-full blur-3xl -mr-8 -mt-8" />
+                        <div className="flex justify-between items-start mb-6">
+                            <div className="p-4 bg-navy-800 rounded-2xl group-hover:scale-110 transition-transform duration-500">{stat.icon}</div>
+                            <span className={`text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full ${stat.trend.startsWith('+') ? 'bg-green-500/10 text-green-400 border border-green-500/20' : 'bg-navy-800 text-navy-400'}`}>
                                 {stat.trend}
                             </span>
                         </div>
-                        <p className="text-gray-400 text-sm font-medium">{stat.label}</p>
-                        <p className="text-3xl font-black mt-1">{stat.value}</p>
+                        <p className="text-navy-400 text-[10px] font-black uppercase tracking-[0.2em]">{stat.label}</p>
+                        <p className="text-3xl md:text-4xl font-black mt-2 text-white italic tracking-tighter">{stat.value}</p>
                     </Card>
                 ))}
             </div>
 
-            {/* Subscription Status Card */}
-            <section className="space-y-4">
-                <h2 className="text-xl font-bold">Subscription Status</h2>
-                <Card className="p-6 overflow-hidden border-2 border-primary/20 bg-primary/5">
-                    <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-                        <div className="flex items-center space-x-6">
-                            <div className={`p-4 rounded-2xl ${subscription?.status === 'trial' ? 'bg-orange-100 text-orange-600' :
-                                subscription?.status === 'active' ? 'bg-green-100 text-green-600' :
-                                    'bg-red-100 text-red-600'
+            <section className="space-y-6">
+                <h2 className="text-[10px] font-black text-navy-400 uppercase tracking-[0.4em] ml-2 italic">Operational Status</h2>
+                <Card className="p-8 md:p-10 overflow-hidden border-2 border-primary-500/10 bg-navy-900/40 backdrop-blur-3xl rounded-[2.5rem] relative">
+                    <div className="absolute bottom-0 right-0 w-64 h-64 bg-primary-500/5 rounded-full blur-[100px] -mr-32 -mb-32 pointer-events-none" />
+                    <div className="flex flex-col xl:flex-row items-center justify-between gap-10 relative z-10">
+                        <div className="flex flex-col sm:flex-row items-center space-y-6 sm:space-y-0 sm:space-x-8 text-center sm:text-left">
+                            <div className={`p-6 rounded-3xl shadow-2xl shrink-0 ${subscription?.status === 'trial' ? 'bg-orange-500/10 text-orange-500 shadow-orange-500/10' :
+                                subscription?.status === 'active' ? 'bg-primary-500/10 text-primary-500 shadow-primary-500/10' :
+                                    'bg-red-500/10 text-red-500 shadow-red-500/10'
                                 }`}>
-                                <CreditCard size={32} />
+                                <CreditCard size={40} />
                             </div>
                             <div>
-                                <div className="flex items-center space-x-3 mb-1">
-                                    <h3 className="text-lg font-black uppercase tracking-tight">
-                                        {subscription?.status === 'trial' ? '90-Day Free Trial' : 'Elite Listing Plan'}
+                                <div className="flex flex-col sm:flex-row items-center sm:space-x-4 mb-4 space-y-3 sm:space-y-0">
+                                    <h3 className="text-2xl md:text-3xl font-black text-white italic tracking-tighter uppercase leading-none">
+                                        {subscription?.status === 'trial' ? 'Free Protocol' : 'Elite Plan'}
                                     </h3>
-                                    <span className={`text-[10px] font-black px-2 py-1 rounded-lg uppercase ${subscription?.status === 'trial' ? 'bg-orange-500 text-white' :
-                                        subscription?.status === 'active' ? 'bg-green-500 text-white' :
+                                    <span className={`text-[9px] font-black px-4 py-1.5 rounded-lg uppercase tracking-widest ${subscription?.status === 'trial' ? 'bg-orange-500 text-white' :
+                                        (subscription?.status as string) === 'active' ? 'bg-primary-500 text-white' :
                                             'bg-red-500 text-white'
                                         }`}>
-                                        {subscription?.status || 'No Plan'}
+                                        {subscription?.status === 'expired' ? 'Plan Expired' : subscription?.status || 'No Active Plan'}
                                     </span>
                                 </div>
-                                <div className="flex items-center space-x-4 text-sm font-bold text-gray-500">
-                                    {subscription?.status === 'trial' && (
-                                        <div className="flex items-center text-orange-600">
-                                            <Clock size={16} className="mr-1" />
+                                <div className="flex flex-wrap items-center justify-center sm:justify-start gap-5 text-[10px] md:text-[11px] font-black uppercase tracking-widest text-navy-300">
+                                    {subscription?.status === 'trial' && subscription?.trial_end && (
+                                        <div className="flex items-center text-orange-400 bg-orange-400/10 px-4 py-2 rounded-xl">
+                                            <Clock size={14} className="mr-2" />
                                             <span>
                                                 {(() => {
-                                                    if (!subscription?.trial_end) return '90 days remaining';
                                                     const end = new Date(subscription.trial_end);
                                                     const now = new Date();
                                                     const diff = Math.ceil((end.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-                                                    return `${Math.max(0, diff)} days remaining`;
+                                                    return `${Math.max(0, diff)} Cycles`;
                                                 })()}
                                             </span>
                                         </div>
                                     )}
                                     {subscription?.subscription_end && (
-                                        <div className="flex items-center">
-                                            <Calendar size={16} className="mr-1" />
-                                            <span>Next billing: {new Date(subscription.subscription_end).toLocaleDateString()}</span>
+                                        <div className="flex items-center text-navy-400">
+                                            <Calendar size={14} className="mr-2" />
+                                            <span>Expire: {new Date(subscription.subscription_end).toLocaleDateString()}</span>
                                         </div>
                                     )}
-                                    <div className="flex items-center">
-                                        <CircleCheck size={16} className="mr-1 text-green-500" />
-                                        <span>Status: {subscription?.status?.toUpperCase() || 'INACTIVE'}</span>
+                                    <div className={`flex items-center ${isSubscriptionActive ? 'text-green-400' : 'text-red-400'}`}>
+                                        <CircleCheck size={14} className="mr-2" />
+                                        <span>{isSubscriptionActive ? 'Active' : 'Offline'}</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div className="flex space-x-3">
+                        <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 w-full xl:w-auto">
                             {subscription?.status !== 'active' && (
-                                <>
-                                    <Button
-                                        className="rounded-xl px-8 shadow-lg shadow-primary/20"
-                                        onClick={() => navigate('/owner/subscribe')}
-                                        isLoading={updating}
-                                    >
-                                        Subscribe (₹499/mo)
-                                    </Button>
-                                </>
+                                <Button
+                                    className="rounded-2xl px-12 py-6 text-xs font-black uppercase tracking-widest shadow-2xl shadow-primary-500/20 w-full"
+                                    onClick={() => navigate('/owner/subscribe')}
+                                    isLoading={updating}
+                                >
+                                    Renew (₹499)
+                                </Button>
                             )}
                             <Button
                                 variant="outline"
-                                className="rounded-xl border-gray-200"
+                                className="rounded-2xl px-12 py-6 text-xs font-black uppercase tracking-widest border-navy-700 text-white hover:bg-navy-800 transition-all w-full"
                                 onClick={() => setIsBillingModalOpen(true)}
                             >
-                                Billing History
+                                Transaction History
                             </Button>
                         </div>
                     </div>
                 </Card>
             </section>
 
-            <section className="space-y-4">
-                <h2 className="text-xl font-bold">Quick Activity</h2>
-                <Card className="p-0 overflow-hidden">
-                    <div className="divide-y divide-gray-100">
-                        {subscribers.length > 0 ? subscribers.slice(0, 5).map(sub => (
-                            <div key={sub.id} className="p-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
-                                <div className="flex items-center space-x-3">
-                                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
-                                        {sub.user?.name.charAt(0) || '?'}
-                                    </div>
-                                    <div>
-                                        <p className="font-bold text-sm">{sub.user?.name || 'Unknown Student'}</p>
-                                        <p className="text-xs text-gray-400">{sub.plan_type} Plan • {sub.created_at ? new Date(sub.created_at).toLocaleDateString() : 'N/A'}</p>
-                                    </div>
-                                </div>
-                                <span className="text-[10px] font-black uppercase text-green-500 bg-green-50 px-2 py-1 rounded-lg">Active</span>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12">
+                <section className="space-y-6">
+                    <h2 className="text-[10px] font-black text-navy-400 uppercase tracking-[0.4em] ml-2 italic">Broadcast System</h2>
+                    <Card className="p-8 border-2 border-primary-500/10 bg-navy-900/40 backdrop-blur-3xl rounded-[2.5rem] relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-primary-500/5 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
+                        <div className="space-y-6 relative z-10">
+                            <p className="text-[11px] text-navy-300 font-medium italic leading-relaxed">Broadcast a priority transmission to all student units connected to your node.</p>
+                            <textarea
+                                value={announcement}
+                                onChange={(e) => setAnnouncement(e.target.value)}
+                                className="w-full bg-navy-800/50 p-6 rounded-2xl border border-navy-700 outline-none focus:ring-2 focus:ring-primary-500/50 text-white text-sm min-h-[140px] font-medium placeholder:text-navy-500"
+                                placeholder="E.g., Closed for maintenance today..."
+                            />
+                            <div className="flex justify-end">
+                                <Button
+                                    onClick={handleSendAnnouncement}
+                                    isLoading={sendingAnnouncement}
+                                    className="rounded-xl px-10 py-5 text-[10px] font-black uppercase tracking-widest shadow-xl shadow-primary-500/10"
+                                >
+                                    Deploy Signal
+                                </Button>
                             </div>
-                        )) : (
-                            <div className="p-10 text-center text-gray-400 font-medium italic">No recent activity</div>
-                        )}
-                    </div>
-                </Card>
-            </section>
-
-            <section className="space-y-4">
-                <h2 className="text-xl font-bold">Send Announcement</h2>
-                <Card className="p-6 border-2 border-primary/10 bg-primary/5">
-                    <div className="space-y-4">
-                        <p className="text-sm text-gray-500 font-medium">Send a quick notice to all students viewing your mess page (e.g., "Closed today due to festival").</p>
-                        <textarea
-                            value={announcement}
-                            onChange={(e) => setAnnouncement(e.target.value)}
-                            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all min-h-[100px]"
-                            placeholder="Type your message here..."
-                        />
-                        <div className="flex justify-end">
-                            <Button
-                                onClick={handleSendAnnouncement}
-                                isLoading={sendingAnnouncement}
-                                className="rounded-xl px-8 shadow-lg shadow-primary/20"
-                            >
-                                Send to All Students
-                            </Button>
                         </div>
-                    </div>
-                </Card>
-            </section>
+                    </Card>
+                </section>
+
+                <section className="space-y-6">
+                    <h2 className="text-[10px] font-black text-navy-400 uppercase tracking-[0.4em] ml-2 italic">Recent Log</h2>
+                    <Card className="p-8 bg-navy-900/40 backdrop-blur-3xl border-navy-800 rounded-[2.5rem] flex flex-col items-center justify-center min-h-[300px]">
+                        <EmptyState
+                            icon={Clock}
+                            title="Log Empty"
+                            description="No incoming transmissions detected in this cycle."
+                            className="bg-transparent border-none shadow-none text-center"
+                        />
+                    </Card>
+                </section>
+            </div>
         </div>
     );
 
     const renderMenuManagement = () => {
         if (!isSubscriptionActive) return renderInactiveBlock('Menu Management');
         return (
-        <div className="space-y-6">
-            <div className="flex justify-between items-center mb-10">
-                <div className="space-y-1">
-                    <h2 className="text-3xl font-black text-dark-900">Menu Schedule</h2>
-                    <p className="text-gray-500 text-sm font-medium uppercase tracking-widest">Manage your weekly specials</p>
-                </div>
-                <Button
-                    onClick={handleMenuSave}
-                    isLoading={savingMenu}
-                    className="bg-primary hover:bg-primary/90 px-10 py-6 rounded-2xl font-black uppercase tracking-widest"
-                >
-                    Save Weekly Menu
-                </Button>
-            </div>
-
-            <div className="flex gap-3 overflow-x-auto pb-6 mb-10 scrollbar-hide">
-                {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map((day) => (
-                    <button
-                        key={day}
-                        onClick={() => setSelectedDay(day)}
-                        className={`px-8 py-4 rounded-2xl text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap border-2 ${selectedDay === day
-                            ? 'bg-primary text-white border-primary shadow-[0_0_30px_rgba(255,69,0,0.2)]'
-                            : 'bg-gray-50 text-gray-500 border-transparent hover:bg-gray-100 hover:text-gray-700'
-                            }`}
+            <div className="space-y-10">
+                <div className="flex flex-col md:flex-row justify-between items-center gap-8 bg-navy-900/40 backdrop-blur-3xl p-8 md:p-10 rounded-[2.5rem] border border-navy-800">
+                    <div className="space-y-2 text-center md:text-left">
+                        <h2 className="text-3xl md:text-4xl font-black text-white italic tracking-tighter uppercase leading-none">Menu Console</h2>
+                        <p className="text-navy-400 text-[10px] font-black uppercase tracking-[0.3em] italic">Configuring Weekly Signals</p>
+                    </div>
+                    <Button
+                        onClick={handleMenuSave}
+                        isLoading={savingMenu}
+                        className="bg-primary-500 hover:bg-primary-400 px-12 py-6 rounded-2xl font-black uppercase tracking-widest text-[11px] shadow-2xl shadow-primary-500/20 w-full md:w-auto"
                     >
-                        {day}
-                    </button>
-                ))}
-            </div>
+                        Save Configuration
+                    </Button>
+                </div>
 
-            <div className="space-y-6">
-                {menus.find(m => m.day === selectedDay)?.items.map((item: MenuItem, idx: number) => (
-                    <div key={idx} className="bg-white p-8 rounded-3xl flex flex-col md:flex-row gap-6 items-center group transition-all hover:bg-gray-50 relative border border-gray-100">
-                        <div className="flex-1 w-full space-y-3">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Item Name</label>
-                            <input
-                                type="text"
-                                value={item.name}
-                                onChange={(e) => handleItemChange(selectedDay, idx, 'name', e.target.value)}
-                                className="w-full bg-gray-50 border border-gray-100 p-6 rounded-2xl text-dark-900 outline-none focus:ring-2 focus:ring-primary transition-all"
-                                placeholder="Enter item name..."
-                            />
-                        </div>
-                        <div className="w-full md:w-64 space-y-3">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Category</label>
-                            <select
-                                value={item.type}
-                                onChange={(e) => handleItemChange(selectedDay, idx, 'type', e.target.value)}
-                                className="w-full bg-gray-50 border border-gray-100 p-6 rounded-2xl text-dark-900 outline-none focus:ring-2 focus:ring-primary transition-all appearance-none"
-                            >
-                                <option value="Veg" className="bg-white">Veg</option>
-                                <option value="Non-Veg" className="bg-white">Non-Veg</option>
-                            </select>
-                        </div>
-                        <div className="pt-6 md:pt-8 w-full md:w-auto">
-                            <button
-                                onClick={() => handleRemoveItem(selectedDay, idx)}
-                                className="w-full md:w-auto p-6 bg-red-500/10 text-red-500 rounded-2xl hover:bg-red-500 hover:text-white transition-all border border-red-500/20"
-                            >
-                                Remove
-                            </button>
-                        </div>
-                    </div>
-                ))}
+                <div className="flex gap-4 overflow-x-auto pb-6 scrollbar-hide -mx-2 px-2">
+                    {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map((day) => (
+                        <button
+                            key={day}
+                            onClick={() => setSelectedDay(day)}
+                            className={`px-8 py-4 rounded-xl text-[9px] font-black uppercase tracking-[0.2em] transition-all duration-500 whitespace-nowrap border-2 shrink-0 ${selectedDay === day
+                                ? 'bg-primary-500 text-white border-primary-500 shadow-xl shadow-primary-500/20 italic'
+                                : 'bg-navy-900/40 text-navy-400 border-navy-800 hover:border-navy-700'
+                                }`}
+                        >
+                            {day}
+                        </button>
+                    ))}
+                </div>
 
-                <button
-                    onClick={() => handleAddItem(selectedDay)}
-                    className="w-full border-2 border-dashed border-gray-200 p-10 rounded-3xl text-sm font-black uppercase tracking-widest text-gray-400 hover:border-primary hover:text-primary hover:bg-primary/5 transition-all group"
-                >
-                    <span className="group-hover:scale-110 transition-transform inline-block">+ Add Item to {selectedDay}</span>
-                </button>
-            </div>
-        </div>
-    ); };
-
-    const renderReviews = () => {
-        if (!isSubscriptionActive) return renderInactiveBlock('Student Reviews');
-        return (
-        <div className="space-y-6">
-            <h2 className="text-xl font-bold">Student Reviews ({ownerReviews.length})</h2>
-            <div className="grid grid-cols-1 gap-6">
-                {ownerReviews.length > 0 ? ownerReviews.map(review => (
-                    <Card key={review.id} className="p-8 space-y-6">
-                        <div className="flex justify-between items-start">
-                            <div className="flex items-center gap-4">
-                                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-bold">
-                                    {review.user_name?.[0] || 'U'}
-                                </div>
-                                <div>
-                                    <h4 className="font-bold text-sm uppercase tracking-widest">{review.user_name}</h4>
-                                    <p className="text-[10px] text-gray-400 font-bold uppercase">{new Date(review.created_at).toLocaleDateString()}</p>
-                                </div>
+                <div className="space-y-8">
+                    {menus.find(m => m.day === selectedDay)?.items.length ? menus.find(m => m.day === selectedDay)?.items.map((item: MenuItem, idx: number) => (
+                        <div key={idx} className="bg-navy-900/40 backdrop-blur-3xl p-8 md:p-10 rounded-[2.5rem] flex flex-col lg:flex-row gap-6 lg:gap-8 items-end group transition-all border border-navy-800 hover:border-navy-700 relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-primary-500/5 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
+                            <div className="flex-1 w-full space-y-4">
+                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-navy-400 ml-2">Slot {idx + 1}</label>
+                                <input
+                                    type="text"
+                                    value={item.name}
+                                    onChange={(e) => handleItemChange(selectedDay, idx, 'name', e.target.value)}
+                                    className="w-full h-14 md:h-16 bg-navy-800/50 border border-navy-700 p-6 rounded-2xl text-white outline-none focus:ring-2 focus:ring-primary-500/50 transition-all font-medium placeholder:text-navy-600"
+                                    placeholder="Enter dish designation..."
+                                />
                             </div>
-                            <div className="flex items-center gap-1 bg-orange-50 px-3 py-1 rounded-full border border-orange-100">
-                                <Star size={12} className="text-orange-500 fill-orange-500" />
-                                <span className="text-[10px] font-black text-orange-600">{review.rating}.0</span>
-                            </div>
-                        </div>
-                        <p className="text-gray-600 italic leading-relaxed">"{review.comment}"</p>
-                        
-                        {review.owner_response ? (
-                            <div className="p-4 bg-gray-50 rounded-xl border-l-4 border-primary/40 space-y-2">
-                                <p className="text-[10px] font-black uppercase tracking-widest text-primary/60">Your Response</p>
-                                <p className="text-sm italic text-gray-700">"{review.owner_response}"</p>
-                            </div>
-                        ) : (
-                            <div className="pt-2">
-                                {respondingTo === review.id ? (
-                                    <div className="space-y-4 animate-in slide-in-from-top-2">
-                                        <textarea
-                                            value={responseText}
-                                            onChange={(e) => setResponseText(e.target.value)}
-                                            placeholder="Type your response..."
-                                            className="w-full p-4 rounded-xl border border-gray-200 outline-none focus:ring-2 focus:ring-primary text-sm min-h-[100px]"
-                                        />
-                                        <div className="flex gap-2">
-                                            <Button
-                                                size="sm"
-                                                onClick={async () => {
-                                                    try {
-                                                        await api.post(`/reviews/${review.id}/respond`, { response: responseText });
-                                                        toast.success('Response transmitted!');
-                                                        // Refresh reviews
-                                                        const res = await api.get(`/reviews/${mess?.id}`);
-                                                        setOwnerReviews(res.data.data);
-                                                        setRespondingTo(null);
-                                                        setResponseText('');
-                                                    } catch (err) {
-                                                        toast.error('Failed to transmit response');
-                                                    }
-                                                }}
-                                                className="rounded-lg px-6"
-                                            >
-                                                Transmit
-                                            </Button>
-                                            <Button
-                                                variant="ghost"
-                                                size="sm"
-                                                onClick={() => setRespondingTo(null)}
-                                                className="rounded-lg"
-                                            >
-                                                Cancel
-                                            </Button>
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => setRespondingTo(review.id)}
-                                        className="rounded-lg font-black uppercase tracking-widest text-[9px] px-6"
+                            <div className="w-full lg:w-64 space-y-4">
+                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-navy-400 ml-2">Node Type</label>
+                                <div className="relative">
+                                    <select
+                                        value={item.type}
+                                        onChange={(e) => handleItemChange(selectedDay, idx, 'type', e.target.value)}
+                                        className="w-full h-14 md:h-16 bg-navy-800/50 border border-navy-700 pl-6 pr-12 rounded-2xl text-white outline-none focus:ring-2 focus:ring-primary-500/50 transition-all appearance-none font-black uppercase tracking-widest text-[10px]"
                                     >
-                                        Respond to Signal
-                                    </Button>
-                                )}
+                                        <option value="Veg" className="bg-navy-900">VEG PROTOCOL</option>
+                                        <option value="Non-Veg" className="bg-navy-900">NON-VEG SIGNAL</option>
+                                    </select>
+                                    <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-navy-500">
+                                        <Clock size={16} />
+                                    </div>
+                                </div>
                             </div>
-                        )}
-                    </Card>
-                )) : (
-                    <div className="p-20 text-center text-gray-400 font-medium italic border-2 border-dashed border-gray-100 rounded-3xl">
-                        No student signals detected yet
-                    </div>
-                )}
+                            <div className="w-full lg:w-auto">
+                                <button
+                                    onClick={() => handleRemoveItem(selectedDay, idx)}
+                                    className="w-full lg:w-auto p-5 bg-red-500/10 text-red-500 rounded-2xl hover:bg-red-500 hover:text-white transition-all border border-red-500/20"
+                                >
+                                    <Trash2 size={20} />
+                                </button>
+                            </div>
+                        </div>
+                    )) : (
+                        <Card className="min-h-[400px] bg-navy-900/40 backdrop-blur-3xl border-navy-800 rounded-[2.5rem] flex items-center justify-center">
+                            <EmptyState
+                                icon={Utensils}
+                                title="Console Offline"
+                                description={`Deploy signals for ${selectedDay} to update student feeds.`}
+                                actionLabel="Add Entry"
+                                onAction={() => handleAddItem(selectedDay)}
+                            />
+                        </Card>
+                    )}
+
+                    <button
+                        onClick={() => handleAddItem(selectedDay)}
+                        className="w-full border-2 border-dashed border-navy-800 py-16 rounded-[2.5rem] text-[10px] font-black uppercase tracking-[0.4em] text-navy-500 hover:border-primary-500/50 hover:text-primary-500 hover:bg-primary-500/5 transition-all group relative overflow-hidden"
+                    >
+                        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-primary-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <span className="group-hover:scale-110 transition-transform inline-block relative z-10 font-black italic">+ Initialize New Signal</span>
+                    </button>
+                </div>
             </div>
-        </div>
-    ); };
+        );
+    };
 
     const renderSubscribers = () => {
         if (!isSubscriptionActive) return renderInactiveBlock('Subscribers List');
         return (
-        <div className="space-y-6">
-            <h2 className="text-xl font-bold">Active Subscribers ({subscribers.length})</h2>
-            <Card className="p-0 overflow-hidden">
-                <table className="w-full text-left">
-                    <thead className="bg-gray-50 border-b border-gray-100">
-                        <tr>
-                            <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase">Student</th>
-                            <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase">Plan</th>
-                            <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase">Started</th>
-                            <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase">Status</th>
-                            <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-100">
-                        {subscribers.map(sub => (
-                            <tr key={sub.id} className="hover:bg-gray-50 transition-colors">
-                                <td className="px-6 py-4">
-                                    <div className="flex items-center space-x-3">
-                                        <div className="w-8 h-8 rounded-full bg-gray-200" />
-                                        <div>
-                                            <p className="font-bold text-sm">{sub.user?.name || 'Unknown'}</p>
-                                            <p className="text-xs text-gray-400">{sub.user?.email || 'N/A'}</p>
-                                        </div>
+            <div className="space-y-8">
+                <div className="flex flex-col md:flex-row justify-between items-center bg-navy-900/40 backdrop-blur-3xl p-8 md:p-10 rounded-[2.5rem] border border-navy-800 gap-8">
+                    <div className="space-y-2 text-center md:text-left">
+                        <h2 className="text-3xl md:text-4xl font-black text-white italic tracking-tighter uppercase leading-none">Student Units</h2>
+                        <p className="text-navy-400 text-[10px] font-black uppercase tracking-[0.3em] italic">Active Node Subscribers</p>
+                    </div>
+                    <div className="px-10 py-5 bg-navy-800 rounded-2xl border border-navy-700 flex items-center gap-4">
+                        <span className="text-primary-500 font-black text-3xl italic tracking-tighter">{subscribers.length}</span>
+                        <span className="text-navy-400 text-[10px] font-black uppercase tracking-widest">Units Connected</span>
+                    </div>
+                </div>
+
+                {subscribers.length > 0 ? (
+                    <Card className="bg-navy-900/40 backdrop-blur-3xl border-navy-800 rounded-[2.5rem] overflow-hidden shadow-2xl">
+                        <div className="overflow-x-auto scrollbar-hide">
+                            <table className="w-full text-left border-collapse min-w-[800px]">
+                                <thead>
+                                    <tr className="bg-navy-800/50">
+                                        <th className="px-10 py-6 text-[10px] font-black text-navy-400 uppercase tracking-[0.2em]">Identification</th>
+                                        <th className="px-10 py-6 text-[10px] font-black text-navy-400 uppercase tracking-[0.2em]">Node Protocol</th>
+                                        <th className="px-10 py-6 text-[10px] font-black text-navy-400 uppercase tracking-[0.2em]">Timestamp</th>
+                                        <th className="px-10 py-6 text-[10px] font-black text-navy-400 uppercase tracking-[0.2em]">Status</th>
+                                        <th className="px-10 py-6 text-[10px] font-black text-navy-400 uppercase tracking-[0.2em]">Command</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-navy-800/30">
+                                    {subscribers.map(sub => (
+                                        <tr key={sub.id} className="hover:bg-navy-800/30 transition-colors group">
+                                            <td className="px-10 py-8">
+                                                <div className="flex items-center space-x-5">
+                                                    <div className="w-14 h-14 rounded-2xl bg-primary-500/10 flex items-center justify-center text-primary-500 font-black italic text-xl shadow-lg group-hover:scale-110 transition-transform duration-500">
+                                                        {sub.user?.name.charAt(0) || '?'}
+                                                    </div>
+                                                    <div>
+                                                        <p className="font-black text-white uppercase tracking-widest text-[11px] mb-1">{sub.user?.name || 'Anonymous'}</p>
+                                                        <p className="text-[10px] text-navy-500 font-medium italic">{sub.user?.email || 'Encrypted'}</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td className="px-10 py-8">
+                                                <div className="px-4 py-2 bg-navy-800 rounded-xl border border-navy-700 inline-block">
+                                                    <p className="text-[10px] font-black text-navy-300 uppercase tracking-widest">{sub.plan_type}</p>
+                                                </div>
+                                            </td>
+                                            <td className="px-10 py-8 text-[11px] font-black text-navy-400 uppercase tracking-widest italic">
+                                                {sub.created_at ? new Date(sub.created_at).toLocaleDateString() : '—'}
+                                            </td>
+                                            <td className="px-10 py-8">
+                                                <span className="text-[9px] font-black px-4 py-1.5 bg-green-500/10 text-green-400 rounded-lg uppercase tracking-widest border border-green-500/20 italic">Node Active</span>
+                                            </td>
+                                            <td className="px-10 py-8">
+                                                <button className="p-4 bg-navy-800 text-navy-500 rounded-xl hover:bg-red-500/10 hover:text-red-500 transition-all border border-navy-700 hover:border-red-500/20">
+                                                    <Trash2 size={18} />
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </Card>
+                ) : (
+                    <Card className="min-h-[400px] bg-navy-900/40 backdrop-blur-3xl border-navy-800 rounded-[2.5rem] flex items-center justify-center">
+                        <EmptyState
+                            icon={Users}
+                            title="Zero Units"
+                            description="No student signals detected yet. Optimize your node to attract units."
+                        />
+                    </Card>
+                )}
+            </div>
+        );
+    };
+
+    const renderReviews = () => {
+        if (!isSubscriptionActive) return renderInactiveBlock('Student Reviews');
+        return (
+            <div className="space-y-10">
+                <div className="flex flex-col md:flex-row justify-between items-center bg-navy-900/40 backdrop-blur-3xl p-8 md:p-10 rounded-[2.5rem] border border-navy-800 gap-8">
+                    <div className="space-y-2 text-center md:text-left">
+                        <h2 className="text-3xl md:text-4xl font-black text-white italic tracking-tighter uppercase leading-none">Feedback Matrix</h2>
+                        <p className="text-navy-400 text-[10px] font-black uppercase tracking-[0.3em] italic">Analyzing Unit Transmissions</p>
+                    </div>
+                    <div className="flex items-center gap-5 px-8 py-5 bg-navy-800 rounded-2xl border border-navy-700">
+                        <Star size={24} className="text-orange-400 fill-orange-400" />
+                        <span className="text-white font-black text-2xl md:text-3xl italic tracking-tighter">{mess?.rating?.toFixed(1) || '0.0'}</span>
+                        <div className="h-8 w-px bg-navy-700 mx-2" />
+                        <span className="text-navy-400 text-[10px] font-black uppercase tracking-widest">Overall</span>
+                    </div>
+                </div>
+
+                <div className="space-y-8">
+                    {ownerReviews.length > 0 ? ownerReviews.map(review => (
+                        <Card key={review.id} className="p-8 md:p-12 bg-navy-900/40 backdrop-blur-3xl border-navy-800 rounded-[2.5rem] space-y-8 relative overflow-hidden group hover:border-navy-700 transition-all">
+                            <div className="absolute top-0 right-0 w-40 h-40 bg-indigo-500/5 rounded-full blur-[80px] -mr-20 -mt-20 pointer-events-none" />
+                            <div className="flex flex-col sm:flex-row justify-between items-start gap-6 relative z-10">
+                                <div className="flex items-center gap-6">
+                                    <div className="w-16 h-16 rounded-2xl bg-navy-800 border border-navy-700 flex items-center justify-center text-primary-500 font-black italic shadow-xl group-hover:scale-110 transition-transform duration-500 text-2xl">
+                                        {review.user_name?.[0] || 'U'}
                                     </div>
-                                </td>
-                                <td className="px-6 py-4">
-                                    <p className="text-sm font-medium">{sub.plan_type}</p>
-                                </td>
-                                <td className="px-6 py-4 text-sm text-gray-500">
-                                    {sub.created_at ? new Date(sub.created_at).toLocaleDateString() : 'N/A'}
-                                </td>
-                                <td className="px-6 py-4">
-                                    <span className="text-[10px] font-bold px-2 py-1 bg-green-100 text-green-600 rounded-lg uppercase">Active</span>
-                                </td>
-                                <td className="px-6 py-4">
-                                    <Button variant="ghost" size="sm" className="text-red-500 hover:bg-red-50">
-                                        <Trash2 size={16} />
-                                    </Button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </Card>
-        </div>
-    ); };
+                                    <div>
+                                        <h4 className="font-black text-white uppercase tracking-widest text-[11px] mb-1 italic">{review.user_name}</h4>
+                                        <p className="text-[10px] text-navy-500 font-black uppercase tracking-[0.2em]">{new Date(review.created_at).toLocaleDateString()}</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-3 bg-orange-500/10 px-6 py-3 rounded-2xl border border-orange-500/20">
+                                    <Star size={18} className="text-orange-400 fill-orange-400" />
+                                    <span className="text-lg font-black text-white italic tracking-tighter">{review.rating}.0</span>
+                                </div>
+                            </div>
+                            <p className="text-navy-100 italic leading-relaxed text-xl border-l-4 border-navy-800 pl-8 font-medium relative z-10">"{review.comment}"</p>
+                            
+                            {review.owner_response ? (
+                                <div className="p-8 bg-navy-800/50 rounded-3xl border-l-4 border-primary-500/40 space-y-4 relative z-10">
+                                    <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-[0.3em] text-primary-500 italic">
+                                        <span>Merchant Transmission</span>
+                                        <MessageSquare size={16} />
+                                    </div>
+                                    <p className="text-navy-300 italic font-medium leading-relaxed">"{review.owner_response}"</p>
+                                </div>
+                            ) : (
+                                <div className="pt-4 relative z-10">
+                                    {respondingTo === review.id ? (
+                                        <div className="space-y-6">
+                                            <textarea
+                                                value={responseText}
+                                                onChange={(e) => setResponseText(e.target.value)}
+                                                placeholder="Compose signal response..."
+                                                className="w-full h-16 lg:h-18 bg-navy-800/50 p-8 rounded-3xl border border-navy-700 outline-none focus:ring-2 focus:ring-primary-500/50 text-white text-sm min-h-[140px] font-medium leading-relaxed"
+                                            />
+                                            <div className="flex flex-wrap gap-4">
+                                                <Button
+                                                    size="lg"
+                                                    onClick={async () => {
+                                                        try {
+                                                            await api.post(`/reviews/${review.id}/respond`, { response: responseText });
+                                                            toast.success('Response Deployed');
+                                                            const res = await api.get(`/reviews/${mess?.id}`);
+                                                            setOwnerReviews(res.data.data);
+                                                            setRespondingTo(null);
+                                                            setResponseText('');
+                                                        } catch (err) {
+                                                            toast.error('Deployment Failed');
+                                                        }
+                                                    }}
+                                                    className="rounded-2xl px-12 py-5 font-black uppercase tracking-widest text-[10px] grow md:grow-0"
+                                                >
+                                                    Transmit Signal
+                                                </Button>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="lg"
+                                                    onClick={() => setRespondingTo(null)}
+                                                    className="rounded-2xl px-12 py-5 font-black uppercase tracking-widest text-[10px] text-navy-400 border border-navy-800 hover:bg-navy-800 grow md:grow-0"
+                                                >
+                                                    Cancel Transmit
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <button
+                                            onClick={() => setRespondingTo(review.id)}
+                                            className="rounded-2xl font-black uppercase tracking-widest text-[10px] px-10 py-5 bg-navy-800 text-white border border-navy-700 hover:border-primary-500 hover:text-primary-500 transition-all flex items-center gap-4 italic"
+                                        >
+                                            <MessageSquare size={18} className="text-primary-500" />
+                                            Respond to Signal
+                                        </button>
+                                    )}
+                                </div>
+                            )}
+                        </Card>
+                    )) : (
+                        <Card className="min-h-[400px] bg-navy-900/40 backdrop-blur-3xl border-navy-800 rounded-[2.5rem] flex items-center justify-center">
+                            <EmptyState
+                                icon={MessageSquare}
+                                title="No Signals"
+                                description="Inbound student feedback will appear here."
+                            />
+                        </Card>
+                    )}
+                </div>
+            </div>
+        );
+    };
 
     const renderSettings = () => {
         if (!isSubscriptionActive) return renderInactiveBlock('Profile Settings');
         return (
-        <div className="space-y-6">
-            <h2 className="text-xl font-bold">Mess Profile Settings</h2>
-            <Card className="p-8">
-                <form onSubmit={handleUpdateMess} className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                            <label className="text-sm font-bold text-gray-600">Mess Name</label>
-                            <input
-                                type="text"
+            <div className="space-y-10">
+                <Card className="bg-navy-900/40 backdrop-blur-3xl p-8 md:p-12 rounded-[2.5rem] border border-navy-800">
+                    <div className="space-y-2 mb-10 text-center md:text-left">
+                        <h2 className="text-3xl md:text-4xl font-black text-white italic tracking-tighter uppercase leading-none">Node Settings</h2>
+                        <p className="text-navy-400 text-[10px] font-black uppercase tracking-[0.3em] italic">Configuring Metadata Relays</p>
+                    </div>
+                    <form onSubmit={handleUpdateMess} className="space-y-8">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <Input
+                                label="Operational Name"
                                 value={messForm.name}
-                                onChange={e => setMessForm({ ...messForm, name: e.target.value })}
-                                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
-                                placeholder="Business Name"
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMessForm({ ...messForm, name: e.target.value })}
+                                placeholder="Designation"
+                                className="h-14 md:h-16"
                             />
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-sm font-bold text-gray-600">Cuisine Types</label>
-                            <input
-                                type="text"
+                            <Input
+                                label="Cuisine Type"
                                 value={messForm.cuisine}
-                                onChange={e => setMessForm({ ...messForm, cuisine: e.target.value })}
-                                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
-                                placeholder="e.g. Maharashtrian, North Indian"
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMessForm({ ...messForm, cuisine: e.target.value })}
+                                placeholder="Signals (e.g. Maharashtrian)"
+                                className="h-14 md:h-16"
                             />
-                        </div>
-                        <div className="md:col-span-2 space-y-2">
-                            <label className="text-sm font-bold text-gray-600">Description</label>
-                            <textarea
-                                rows={3}
-                                value={messForm.description}
-                                onChange={e => setMessForm({ ...messForm, description: e.target.value })}
-                                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
-                                placeholder="Tell students about your kitchen and services..."
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-sm font-bold text-gray-600">Address</label>
-                            <div className="relative">
-                                <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                                <input
-                                    type="text"
-                                    value={messForm.address}
-                                    onChange={e => setMessForm({ ...messForm, address: e.target.value })}
-                                    className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
-                                    placeholder="Full location"
+                            <div className="md:col-span-2 space-y-4">
+                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-navy-400 ml-2 italic">Broadcast Description</label>
+                                <textarea
+                                    rows={4}
+                                    value={messForm.description}
+                                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setMessForm({ ...messForm, description: e.target.value })}
+                                    className="w-full bg-navy-800/50 border border-navy-700 p-8 rounded-[2rem] text-white outline-none focus:ring-2 focus:ring-primary-500/50 transition-all font-medium placeholder:text-navy-600 leading-relaxed text-sm"
+                                    placeholder="Briefly describe your culinary node..."
                                 />
                             </div>
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-sm font-bold text-gray-600">Contact Number</label>
-                            <div className="relative">
-                                <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                                <input
-                                    type="text"
-                                    value={messForm.contact}
-                                    onChange={e => setMessForm({ ...messForm, contact: e.target.value })}
-                                    className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
-                                    placeholder="Business phone"
+                            <Input
+                                label="Physical Location"
+                                value={messForm.address}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMessForm({ ...messForm, address: e.target.value })}
+                                placeholder="Coordinates"
+                                className="h-14 md:h-16"
+                            />
+                            <Input
+                                label="Signal Frequency (Phone)"
+                                value={messForm.contact}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMessForm({ ...messForm, contact: e.target.value })}
+                                placeholder="+91 XXXX"
+                                className="h-14 md:h-16"
+                            />
+                            <Input
+                                label="Metropolitan Sector (City)"
+                                value={messForm.city}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMessForm({ ...messForm, city: e.target.value })}
+                                placeholder="E.g. Pune"
+                                className="h-14 md:h-16"
+                            />
+                            <div className="space-y-4">
+                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-navy-400 ml-2 italic">Dietary Matrix</label>
+                                <div className="relative">
+                                    <select
+                                        value={messForm.veg_nonveg}
+                                        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setMessForm({ ...messForm, veg_nonveg: e.target.value })}
+                                        className="w-full h-14 md:h-16 bg-navy-800/50 border border-navy-700 pl-6 pr-12 rounded-2xl text-white outline-none focus:ring-2 focus:ring-primary-500/50 transition-all appearance-none font-black uppercase tracking-widest text-[10px]"
+                                    >
+                                        <option value="Veg" className="bg-navy-900 uppercase">Pure Veg</option>
+                                        <option value="Non-Veg" className="bg-navy-900 uppercase">Hybrid (Veg + Non-Veg)</option>
+                                    </select>
+                                    <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-navy-500">
+                                        <ChevronRight size={18} className="rotate-90" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="md:col-span-2">
+                                <Input
+                                    label="Target College Nodes"
+                                    value={messForm.college_tags}
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMessForm({ ...messForm, college_tags: e.target.value })}
+                                    placeholder="Comma separatedInstitution tags..."
+                                    className="h-14 md:h-16"
                                 />
                             </div>
                         </div>
 
-                        <div className="space-y-2">
-                            <label className="text-sm font-bold text-gray-600">City</label>
-                            <input
-                                type="text"
-                                value={(messForm as any).city || ''}
-                                onChange={e => setMessForm({ ...messForm, city: e.target.value } as any)}
-                                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
-                                placeholder="e.g. Pune, Mumbai"
-                            />
-                        </div>
-
-                        <div className="space-y-2">
-                            <label className="text-sm font-bold text-gray-600">Veg / Non-Veg</label>
-                            <select
-                                value={(messForm as any).veg_nonveg || 'Veg'}
-                                onChange={e => setMessForm({ ...messForm, veg_nonveg: e.target.value } as any)}
-                                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all appearance-none bg-white"
+                        <div className="pt-12 border-t border-navy-800 flex justify-end">
+                            <Button 
+                                type="submit" 
+                                isLoading={updating} 
+                                className="w-full md:w-auto rounded-2xl px-16 py-6 font-black uppercase tracking-[0.2em] italic text-xs shadow-2xl shadow-primary-500/20"
                             >
-                                <option value="Veg">Pure Veg</option>
-                                <option value="Non-Veg">Veg + Non-Veg</option>
-                            </select>
+                                <Save size={18} className="mr-3" /> Transmit Signal
+                            </Button>
                         </div>
-
-                        <div className="md:col-span-2 space-y-2">
-                            <label className="text-sm font-bold text-gray-600">College Tags (Comma separated)</label>
-                            <input
-                                type="text"
-                                value={(messForm as any).college_tags || ''}
-                                onChange={e => setMessForm({ ...messForm, college_tags: e.target.value } as any)}
-                                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
-                                placeholder="e.g. COEP, VJTI, MIT"
-                            />
-                        </div>
-                    </div>
-
-                    <div className="pt-6 border-t border-gray-100 flex justify-end">
-                        <Button type="submit" isLoading={updating} className="rounded-xl px-12">
-                            <Save size={18} className="mr-2" /> Save Changes
-                        </Button>
-                    </div>
-                </form>
-            </Card>
-        </div>
-    ); };
+                    </form>
+                </Card>
+            </div>
+        );
+    };
 
     return (
         <Layout>
-            <div className="bg-dark text-white py-12 relative overflow-hidden">
-                <div className="absolute inset-0 bg-primary opacity-5 animate-pulse" />
-                <div className="container mx-auto px-4 relative">
-                    <div className="flex flex-col md:row items-center justify-between gap-6">
-                        <div className="space-y-2">
-                            <h1 className="text-4xl font-heading font-black tracking-tighter">OWNER DASHBOARD</h1>
-                            <div className="flex items-center space-x-2 text-primary">
-                                <CircleCheck size={16} />
-                                <p className="text-sm font-bold uppercase tracking-widest">{mess?.name || 'Loading...'}</p>
+            <div className="min-h-screen bg-navy-950 flex flex-col">
+                <div className="bg-navy-950 text-white pt-24 md:pt-36 pb-20 relative overflow-hidden shrink-0">
+                    <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary-500/10 rounded-full blur-[150px] -mr-32 -mt-32 pointer-events-none" />
+                    <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-indigo-500/10 rounded-full blur-[120px] -ml-32 -mb-32 pointer-events-none" />
+                    
+                    <div className="container mx-auto px-6 relative z-10">
+                        <div className="flex flex-col md:flex-row items-center justify-between gap-10">
+                            <div className="space-y-4 text-center md:text-left">
+                                <div className="flex items-center justify-center md:justify-start space-x-3 text-primary-500 mb-2">
+                                    <div className="h-[2px] w-8 bg-primary-500 rounded-full" />
+                                    <span className="text-[10px] font-black uppercase tracking-[0.4em] italic">{mess?.name || 'Inbound'}</span>
+                                </div>
+                                <h1 className="text-5xl md:text-8xl font-black italic tracking-tighter leading-none">
+                                    CONTROL <br /> <span className="text-primary-500">CENTER</span>
+                                </h1>
                             </div>
-                        </div>
-                        <div className="flex space-x-3">
-                            <Button variant="outline" size="sm" className="rounded-xl border-white/20 text-white hover:bg-white/10 backdrop-blur-sm">
-                                <ImageIcon size={18} className="mr-2" /> Manage Gallery
-                            </Button>
+                            <div className="flex flex-wrap justify-center gap-4">
+                                <Button 
+                                    variant="outline" 
+                                    size="lg" 
+                                    className="rounded-2xl border-navy-800 bg-navy-900/50 backdrop-blur-xl text-white hover:bg-navy-800 px-10 py-6 font-black uppercase tracking-widest text-[10px] shadow-2xl shadow-black/20"
+                                >
+                                    <ImageIcon size={18} className="mr-3 text-primary-500" /> Manage Hub Photos
+                                </Button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div className="container mx-auto px-4 -mt-10 pb-20">
-                <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-                    {/* Navigation */}
-                    <div className="lg:col-span-1">
-                        <Card className="p-2 space-y-1 sticky top-24 shadow-2xl shadow-primary/5 dark:bg-dark-card rounded-2xl">
+                <div className="container mx-auto px-4 md:px-6 -mt-10 pb-32 relative z-20 flex flex-col lg:flex-row gap-10">
+                    {/* Navigation Sidebar - Horizontal scroll on mobile */}
+                    <aside className="w-full lg:w-[320px] shrink-0">
+                        <div className="lg:sticky lg:top-32 flex lg:flex-col overflow-x-auto lg:overflow-x-visible pb-4 lg:pb-0 gap-3 scrollbar-hide">
                             {[
-                                { id: 'overview', icon: <LayoutDashboard size={20} />, label: 'Overview' },
-                                { id: 'menu', icon: <Utensils size={20} />, label: 'Menu Schedule' },
-                                { id: 'subscribers', icon: <Users size={20} />, label: 'Subscribers' },
-                                { id: 'reviews', icon: <MessageSquare size={20} />, label: 'Student Reviews' },
-                                { id: 'settings', icon: <Settings size={20} />, label: 'Profile Settings' },
+                                { id: 'overview', icon: <LayoutDashboard size={20} />, label: 'Dashboard' },
+                                { id: 'menu', icon: <Utensils size={20} />, label: 'Menu Logic' },
+                                { id: 'subscribers', icon: <Users size={20} />, label: 'Connected Units' },
+                                { id: 'reviews', icon: <MessageSquare size={20} />, label: 'Signal Feedback' },
+                                { id: 'settings', icon: <Settings size={20} />, label: 'Settings' },
                             ].map((item) => (
                                 <button
                                     key={item.id}
                                     onClick={() => setActiveTab(item.id as Tab)}
-                                    className={`w-full flex items-center space-x-3 px-5 py-4 rounded-xl transition-all font-bold text-sm ${activeTab === item.id
-                                        ? 'bg-primary text-white shadow-xl shadow-primary/30'
-                                        : 'text-gray-500 hover:bg-gray-50'
+                                    className={`flex items-center space-x-5 px-8 py-5 rounded-2xl transition-all duration-500 font-black uppercase tracking-widest text-[10px] relative group shrink-0 lg:w-full border-2 ${activeTab === item.id
+                                        ? 'bg-primary-500 text-white border-primary-500 shadow-xl shadow-primary-500/10 italic'
+                                        : 'bg-navy-900/50 text-navy-400 border-navy-800/50 hover:border-primary-500/30 hover:text-white backdrop-blur-3xl'
                                         }`}
                                 >
-                                    {item.icon}
-                                    <span>{item.label}</span>
+                                    <div className="shrink-0">{item.icon}</div>
+                                    <span className="whitespace-nowrap">{item.label}</span>
+                                    {activeTab === item.id && (
+                                        <div className="hidden lg:block absolute right-4 w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_8px_white]" />
+                                    )}
                                 </button>
                             ))}
-                        </Card>
-                    </div>
+                        </div>
+                    </aside>
 
-                    {/* Content Area */}
-                    <div className="lg:col-span-3">
-                        {loading ? (
-                            <div className="space-y-6">
-                                <div className="h-40 bg-gray-50 rounded-2xl animate-pulse" />
-                                <div className="h-80 bg-gray-50 rounded-2xl animate-pulse" />
-                            </div>
-                        ) : (
-                            <>
+                    {/* Main Content Area */}
+                    <main className="flex-1 min-w-0">
+                        <AnimatePresence mode="wait">
+                            <motion.div
+                                key={activeTab}
+                                initial={{ opacity: 0, y: 15 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -15 }}
+                                transition={{ duration: 0.4 }}
+                            >
                                 {activeTab === 'overview' && renderOverview()}
                                 {activeTab === 'menu' && renderMenuManagement()}
                                 {activeTab === 'subscribers' && renderSubscribers()}
                                 {activeTab === 'reviews' && renderReviews()}
                                 {activeTab === 'settings' && renderSettings()}
-                            </>
-                        )}
-                    </div>
+                            </motion.div>
+                        </AnimatePresence>
+                    </main>
                 </div>
-            </div>
 
-            <BillingHistoryModal
-                isOpen={isBillingModalOpen}
-                onClose={() => setIsBillingModalOpen(false)}
-            />
+                <BillingHistoryModal
+                    isOpen={isBillingModalOpen}
+                    onClose={() => setIsBillingModalOpen(false)}
+                />
+            </div>
         </Layout>
     );
 };

@@ -2,10 +2,15 @@ import React from 'react';
 import { Layout } from '../components/layout/Layout';
 import { motion } from 'framer-motion';
 import { FAQSection } from '../components/common/FAQSection';
+import Seo from '../components/common/Seo';
 
 const RefundPolicyPage: React.FC = () => {
     return (
         <Layout>
+            <Seo 
+                title="Refund Policy | FindMess Transparency" 
+                description="Understand our commitment to fairness and the terms for subscription refunds on FindMess."
+            />
             <div className="grad-dark py-32">
                 <div className="container mx-auto px-4">
                     <motion.h1

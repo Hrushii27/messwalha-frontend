@@ -177,7 +177,7 @@ const ProfilePage: React.FC = () => {
                             className="flex items-center text-white/70 hover:text-primary-500 transition-all font-black uppercase tracking-[0.3em] text-[10px] group"
                         >
                             <ArrowLeft size={16} className="mr-3 group-hover:-translate-x-2 transition-transform" />
-                            Discover Dashboard
+                            Dashboard
                         </motion.button>
 
                         <AnimatePresence>
@@ -228,7 +228,7 @@ const ProfilePage: React.FC = () => {
                                         <div className="space-y-1">
                                             <h2 className="text-3xl font-black tracking-tighter text-white italic truncate">{user?.name}</h2>
                                             <p className="text-[10px] font-black uppercase tracking-[0.4em] text-primary-500">
-                                                {user?.role === 'OWNER' ? 'Mess Partner' : 'User Account'}
+                                                {user?.role === 'OWNER' ? 'Mess Partner' : 'Student Member'}
                                             </p>
                                         </div>
 
@@ -272,7 +272,7 @@ const ProfilePage: React.FC = () => {
                                 className="space-y-2"
                             >
                                 {[
-                                    { id: 'personal', icon: User, label: 'Profile Information' },
+                                    { id: 'personal', icon: User, label: 'Profile' },
                                     { id: 'security', icon: ShieldCheck, label: 'Security' },
                                     { id: 'activity', icon: History, label: 'Activity' }
                                 ].map(tab => (
@@ -394,8 +394,8 @@ const ProfilePage: React.FC = () => {
                                                 className="space-y-12"
                                             >
                                                 <div className="space-y-2">
-                                                    <h3 className="text-4xl font-black text-white italic tracking-tighter">Security <span className="text-primary-500">Fortress</span></h3>
-                                                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30">Protocol management and access control</p>
+                                                    <h3 className="text-4xl font-black text-white italic tracking-tighter">Security <span className="text-primary-500">Settings</span></h3>
+                                                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30">Manage your password and access</p>
                                                 </div>
 
                                                 <div className="grid grid-cols-1 gap-10">
@@ -404,7 +404,7 @@ const ProfilePage: React.FC = () => {
                                                             <div className="w-12 h-12 rounded-2xl bg-primary-500/20 flex items-center justify-center text-primary-500">
                                                                 <Key size={24} />
                                                             </div>
-                                                            <h4 className="text-xl font-black text-white italic tracking-tight">Credential Rotation</h4>
+                                                                <h4 className="text-xl font-black text-white italic tracking-tight">Change Password</h4>
                                                         </div>
                                                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                                             {[
@@ -428,7 +428,7 @@ const ProfilePage: React.FC = () => {
                                                             onClick={handlePasswordChange}
                                                             className="w-full h-16 rounded-[1.5rem] bg-gradient-to-r from-primary-500 to-indigo-600 font-black uppercase tracking-widest text-[10px]"
                                                         >
-                                                            Update Credential Protocol
+                                                            Update Password
                                                         </Button>
                                                     </div>
 
@@ -443,7 +443,7 @@ const ProfilePage: React.FC = () => {
                                                                     <div className="absolute left-1 top-1 w-4 h-4 bg-white/30 rounded-full" />
                                                                 </div>
                                                             </div>
-                                                            <p className="text-[10px] text-white/30 font-medium italic">Add an extra layer of defense to your account using biometric or SMS codes.</p>
+                                                            <p className="text-[10px] text-white/30 font-medium italic">Add an extra layer of security to your account.</p>
                                                         </div>
 
                                                         <div className="p-8 bg-white/5 rounded-[2.5rem] border border-white/5 space-y-6">
@@ -452,7 +452,7 @@ const ProfilePage: React.FC = () => {
                                                                 <h5 className="text-sm font-black text-white uppercase tracking-widest">Active Sessions</h5>
                                                             </div>
                                                             <div className="flex items-center justify-between">
-                                                                <span className="text-[10px] font-black text-white/30 italic">currently 1 active terminal</span>
+                                                                <span className="text-[10px] font-black text-white/30 italic">currently 1 active session</span>
                                                                 <button className="text-[9px] font-black text-primary-500 uppercase tracking-widest">Wipe All</button>
                                                             </div>
                                                         </div>
@@ -460,7 +460,7 @@ const ProfilePage: React.FC = () => {
 
                                                     <button className="flex items-center justify-center gap-3 p-8 border border-red-500/20 rounded-[2.5rem] hover:bg-red-500/5 transition-all text-red-500 group">
                                                         <Trash2 size={20} className="group-hover:rotate-12 transition-transform" />
-                                                        <span className="text-[10px] font-black uppercase tracking-[0.3em]">Decommission Account Registry</span>
+                                                        <span className="text-[10px] font-black uppercase tracking-[0.3em]">Delete Account</span>
                                                     </button>
                                                 </div>
                                             </motion.div>
@@ -476,8 +476,8 @@ const ProfilePage: React.FC = () => {
                                             >
                                                 <div className="flex justify-between items-center">
                                                     <div className="space-y-2">
-                                                        <h3 className="text-4xl font-black text-white italic tracking-tighter">Activity <span className="text-primary-500">Chronicle</span></h3>
-                                                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30">Historical registry of your interactions</p>
+                                                        <h3 className="text-4xl font-black text-white italic tracking-tighter">Activity <span className="text-primary-500">History</span></h3>
+                                                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30">A record of your recent interactions</p>
                                                     </div>
                                                     <button
                                                         onClick={fetchActivity}
@@ -503,7 +503,7 @@ const ProfilePage: React.FC = () => {
                                                                 </div>
                                                                 <p className="text-xl font-black text-white tracking-tight italic">"{act.desc}"</p>
                                                                 <div className="flex items-center gap-3 pt-2 text-white/30">
-                                                                    <span className="text-[9px] font-black uppercase tracking-widest">Protocol Version: 1.0.4</span>
+                                                                    <span className="text-[9px] font-black uppercase tracking-widest">Verified Interaction</span>
                                                                     <ExternalLink size={12} className="opacity-40" />
                                                                 </div>
                                                             </div>

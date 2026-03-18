@@ -2,20 +2,23 @@
 
 @theme {
   /* ========================= */
-  /* 🎨 BRAND COLORS */
+  /* 🎨 BRAND COLORS (Freemium Marketplace) */
   /* ========================= */
   --color-primary-50: #FFF7ED;
   --color-primary-500: #F97316;
   --color-primary-600: #EA580C;
   --color-primary-700: #C2410C;
 
-  /* Standard Tailwind mapping for convenience */
+  /* Standard Tailwind mapping */
   --color-primary: var(--color-primary-500);
-
-  --color-dark-900: #0F172A;
-  --color-dark-800: #1E293B;
-  --color-dark-700: #334155;
-  --color-dark-600: #475569;
+  
+  /* Global Brand Colors */
+  --color-navy-900: #020617;
+  --color-navy-800: #0F172A;
+  --color-navy-700: #1E293B;
+  
+  --color-orange-500: #F97316;
+  --color-orange-600: #EA580C;
 
   --color-bg-main: #F8FAFC;
   --color-bg-section: #F1F5F9;
@@ -34,11 +37,10 @@
   --color-rating-color: #FACC15;
 
   /* ========================= */
-  /* 🔠 TYPOGRAPHY */
+  /* 🔠 TYPOGRAPHY (Sora) */
   /* ========================= */
-  --font-sans: 'Inter', sans-serif;
-  --font-heading: 'Outfit', sans-serif;
-  /* Keeping Outfit for headings as it looks premium */
+  --font-sans: 'Sora', sans-serif;
+  --font-heading: 'Sora', sans-serif;
 
   --text-xs: 12px;
   --text-sm: 14px;
@@ -80,7 +82,7 @@
   --shadow-md: 0 8px 20px rgba(0, 0, 0, 0.08);
   --shadow-lg: 0 15px 35px rgba(0, 0, 0, 0.12);
 
-  /* Legacy/Background Mesh Variables */
+  /* Background Mesh Variables */
   --bg-mesh-light:
     radial-gradient(at 0% 0%, hsla(20, 100%, 98%, 1) 0, transparent 50%),
     radial-gradient(at 50% 0%, hsla(210, 40%, 96%, 1) 0, transparent 50%),
@@ -93,7 +95,6 @@
 }
 
 @layer base {
-
   html,
   body {
     @apply overflow-x-hidden;
@@ -101,12 +102,13 @@
 
   body {
     @apply font-sans antialiased transition-colors duration-300;
+    font-family: 'Sora', sans-serif;
     background: var(--color-bg-main);
     color: var(--color-text-primary);
   }
 
   .dark body {
-    background: var(--color-dark-900);
+    background: var(--color-navy-900);
     color: var(--color-text-inverse);
   }
 
@@ -117,14 +119,44 @@
   h5,
   h6 {
     @apply font-heading font-bold;
+    font-family: 'Sora', sans-serif;
   }
 
-  /* Section spacing rule */
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--color-bg-main);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-navy-700);
+    border-radius: 5px;
+    border: 2px solid var(--color-bg-main);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-primary-500);
+  }
+
+  /* Dark mode scrollbar */
+  .dark ::-webkit-scrollbar-track {
+    background: var(--color-navy-900);
+  }
+
+  .dark ::-webkit-scrollbar-thumb {
+    background: var(--color-navy-700);
+    border: 2px solid var(--color-navy-900);
+  }
+
+  /* Section spacing */
   .section {
     padding: var(--spacing-16) var(--spacing-8);
   }
 
-  /* Container rule */
+  /* Container */
   .container {
     max-width: 1200px;
     margin: auto;
@@ -233,32 +265,42 @@
 
   /* Animations */
   @keyframes float {
-    0% {
-      transform: translateY(0px);
-    }
-
-    50% {
-      transform: translateY(-10px);
-    }
-
-    100% {
-      transform: translateY(0px);
-    }
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
   }
 
   .animate-float {
     animation: float 3s ease-in-out infinite;
   }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .animate-fadeIn {
+    animation: fadeIn 0.5s ease-out forwards;
+  }
+
+  @keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  .animate-slideUp {
+    animation: slideUp 0.5s ease-out forwards;
+  }
 }
 
 /* Dark Mode Overrides */
 .dark {
-  --color-bg-main: #0F172A;
-  --color-bg-section: #1E293B;
+  --color-bg-main: #020617;
+  --color-bg-section: #0F172A;
   --color-text-primary: #FFFFFF;
   --color-text-secondary: #CBD5E1;
   --color-text-muted: #94A3B8;
-  --color-border-color: #334155;
+  --color-border-color: #1E293B;
 
   /* Update background for dynamic switching */
   --bg-mesh-light: var(--bg-mesh-dark);

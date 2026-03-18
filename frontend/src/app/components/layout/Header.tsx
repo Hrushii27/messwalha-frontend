@@ -43,8 +43,8 @@ export const Header: React.FC = () => {
     ];
 
     return (
-        <header className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 ${isScrolled ? 'py-4 translate-y-0' : 'py-6'}`}>
-            <div className={`container mx-auto px-4 h-20 flex items-center justify-between transition-all duration-500 ${isScrolled ? 'bg-dark-900/90 backdrop-blur-3xl rounded-[2rem] border border-white/10 shadow-3xl' : 'bg-dark-900/40 backdrop-blur-md rounded-[2rem] border border-white/5'}`}>
+        <header className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 ${isScrolled ? 'py-4' : 'py-6'}`}>
+            <div className={`container mx-auto px-4 h-20 flex items-center justify-between transition-all duration-500 ${isScrolled ? 'bg-navy-900/90 backdrop-blur-3xl rounded-[2rem] border border-white/10 shadow-3xl' : 'bg-navy-900/40 backdrop-blur-md rounded-[2rem] border border-white/5'}`}>
                 <div className="flex items-center space-x-2 sm:space-x-4">
                     <button
                         onClick={() => setIsMenuOpen(true)}
@@ -58,15 +58,18 @@ export const Header: React.FC = () => {
                             <Utensils size={18} className="sm:w-7 sm:h-7" strokeWidth={2.5} />
                         </div>
                         <span className="text-base sm:text-2xl font-heading font-black tracking-tighter text-white whitespace-nowrap">
-                            MESS<span className="text-primary-500">WALHA</span>
+                            FIND<span className="text-primary-500">MESS</span>
                         </span>
                     </Link>
                 </div>
 
                 <nav className="hidden lg:flex items-center space-x-12 px-4">
                     {navLinks.map(link => (
-                        <Link key={link.path} to={link.path} className="text-[10px] font-black uppercase tracking-[0.3em] text-white/70 hover:text-primary-500 transition-all">{link.label}</Link>
+                        <Link key={link.path} to={link.path} className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/70 hover:text-primary-500 transition-all">{link.label}</Link>
                     ))}
+                    {user?.role === 'OWNER' && (
+                        <Link to="/owner-dashboard" className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/70 hover:text-primary-500 transition-all">Dashboard</Link>
+                    )}
                 </nav>
 
                 <div className="flex items-center space-x-2 sm:space-x-8">
@@ -94,10 +97,12 @@ export const Header: React.FC = () => {
                             <div className="relative group/profile">
                                 <button
                                     onClick={() => setIsProfileOpen(!isProfileOpen)}
+                                    aria-expanded={isProfileOpen}
+                                    aria-haspopup="true"
                                     className="flex items-center space-x-2 sm:space-x-4 p-1.5 sm:p-2 sm:pl-5 rounded-xl sm:rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all group shadow-2xl"
                                 >
                                     <span className="text-[10px] font-black text-white/70 hidden lg:block uppercase tracking-[0.2em]">{user?.name}</span>
-                                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-gradient-to-br from-primary-500 to-indigo-600 text-white flex items-center justify-center shadow-2xl transition-transform group-hover:scale-105 shrink-0">
+                                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-gradient-to-br from-primary-500 to-orange-600 text-white flex items-center justify-center shadow-2xl transition-transform group-hover:scale-105 shrink-0">
                                         <UserIcon size={16} strokeWidth={2.5} className="sm:w-[18px] sm:h-[18px]" />
                                     </div>
                                 </button>
@@ -108,21 +113,21 @@ export const Header: React.FC = () => {
                                             initial={{ opacity: 0, y: 10, scale: 0.95 }}
                                             animate={{ opacity: 1, y: 0, scale: 1 }}
                                             exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                            className="absolute right-0 mt-6 w-72 bg-[#0f172a]/95 backdrop-blur-3xl rounded-[2.5rem] shadow-3xl border border-white/10 py-8 z-50 origin-top-right overflow-hidden"
+                                            className="absolute right-0 mt-6 w-72 bg-navy-900/95 backdrop-blur-3xl rounded-[2.5rem] shadow-3xl border border-white/10 py-8 z-50 origin-top-right overflow-hidden"
                                         >
-                                            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary-500 to-indigo-600" />
+                                            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary-500 to-orange-600" />
 
                                             <div className="px-10 pb-6 border-b border-white/5 mb-4 relative overflow-hidden">
                                                 <div className="absolute top-0 right-0 w-24 h-24 bg-primary-500/10 rounded-full blur-2xl -mr-12 -mt-12" />
-                                                <p className="text-[9px] font-black text-primary-500 uppercase tracking-[0.4em] mb-2 relative z-10">Active Protocol</p>
+                                                <p className="text-[9px] font-black text-primary-500 uppercase tracking-[0.4em] mb-2 relative z-10">{user?.role === 'OWNER' ? 'Owner Account' : 'Student Account'}</p>
                                                 <p className="text-xs font-black text-white truncate italic relative z-10">{user?.email}</p>
                                             </div>
 
                                             <div className="px-4 space-y-1">
                                                 {[
                                                     { label: 'Profile', path: '/profile', icon: UserIcon },
+                                                    ...(user?.role === 'OWNER' ? [{ label: 'Dashboard', path: '/owner-dashboard', icon: Utensils }] : []),
                                                     { label: 'Subscriptions', path: '/subscriptions', icon: Utensils },
-                                                    { label: 'Messages', path: '/messages', icon: Search },
                                                     { label: 'Settings', path: '/profile', icon: Languages },
                                                 ].map((item) => (
                                                     <Link
@@ -155,12 +160,12 @@ export const Header: React.FC = () => {
                             </div>
                         </div>
                     ) : (
-                        <div className="flex items-center space-x-2 sm:space-x-4">
+                        <div className="hidden lg:flex items-center space-x-2 sm:space-x-4">
                             <Link to="/login">
-                                <Button variant="ghost" size="sm" className="text-white/60 hover:text-primary-500 font-black uppercase tracking-[0.2em] text-[10px] px-2 sm:px-4">Login</Button>
+                                <Button variant="ghost" size="sm" className="text-white/60 hover:text-primary-500 font-bold uppercase tracking-[0.1em] text-[11px] px-2 sm:px-4">Login</Button>
                             </Link>
                             <Link to="/register">
-                                <Button size="lg" className="rounded-xl sm:rounded-2xl px-4 sm:px-8 shadow-2xl shadow-primary-500/30 font-black uppercase tracking-[0.2em] text-[10px] h-10 sm:h-12">Join</Button>
+                                <Button size="lg" className="rounded-xl sm:rounded-2xl px-4 sm:px-8 shadow-2xl shadow-primary-500/20 font-bold uppercase tracking-[0.1em] text-[11px] h-10 sm:h-12 bg-primary-500 hover:bg-primary-600 border-none">Join Free</Button>
                             </Link>
                         </div>
                     )}
@@ -176,14 +181,14 @@ export const Header: React.FC = () => {
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             onClick={() => setIsMenuOpen(false)}
-                            className="fixed inset-0 bg-dark-900/60 backdrop-blur-sm z-[110]"
+                            className="fixed inset-0 bg-navy-950/80 backdrop-blur-sm z-[110]"
                         />
                         <motion.div
-                            initial={{ x: '-100%' }}
+                            initial={{ x: '100%' }}
                             animate={{ x: 0 }}
-                            exit={{ x: '-100%' }}
+                            exit={{ x: '100%' }}
                             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                            className="fixed top-0 left-0 bottom-0 w-[300px] bg-dark-900 border-r border-white/10 z-[120] p-8 flex flex-col overflow-y-auto overflow-x-hidden"
+                            className="fixed top-0 right-0 bottom-0 w-[85%] max-w-[400px] bg-navy-900 border-l border-white/10 z-[120] p-8 flex flex-col overflow-y-auto"
                         >
                             <div className="flex items-center justify-between mb-12">
                                 <Link to="/" onClick={() => setIsMenuOpen(false)} className="flex items-center space-x-3">
@@ -191,12 +196,12 @@ export const Header: React.FC = () => {
                                         <Utensils size={24} />
                                     </div>
                                     <span className="text-xl font-heading font-black tracking-tighter text-white">
-                                        MESS<span className="text-primary-500">WALHA</span>
+                                        FIND<span className="text-primary-500">MESS</span>
                                     </span>
                                 </Link>
                                 <button 
                                     onClick={() => setIsMenuOpen(false)} 
-                                    className="p-2 text-white/40 hover:text-white"
+                                    className="p-3 bg-white/5 rounded-xl text-white/40 hover:text-white transition-all"
                                     aria-label="Close menu"
                                 >
                                     <X size={24} />
@@ -204,38 +209,69 @@ export const Header: React.FC = () => {
                             </div>
 
                             <nav className="flex flex-col space-y-2 mb-auto">
+                                <Link
+                                    to="/"
+                                    onClick={() => setIsMenuOpen(false)}
+                                    className="py-5 px-6 text-[12px] font-black uppercase tracking-[0.2em] text-white/70 hover:text-primary-500 hover:bg-white/5 rounded-2xl transition-all flex items-center justify-between group"
+                                >
+                                    <span>Home</span>
+                                    <div className="w-1.5 h-1.5 rounded-full bg-primary-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                </Link>
                                 {navLinks.map(link => (
                                     <Link
                                         key={link.path}
                                         to={link.path}
                                         onClick={() => setIsMenuOpen(false)}
-                                        className="py-4 px-6 text-[11px] font-black uppercase tracking-[0.3em] text-white/70 hover:text-primary-500 hover:bg-white/5 rounded-2xl transition-all"
+                                        className="py-5 px-6 text-[12px] font-black uppercase tracking-[0.2em] text-white/70 hover:text-primary-500 hover:bg-white/5 rounded-2xl transition-all flex items-center justify-between group"
                                     >
-                                        {link.label}
+                                        <span>{link.label}</span>
+                                        <div className="w-1.5 h-1.5 rounded-full bg-primary-500 opacity-0 group-hover:opacity-100 transition-opacity" />
                                     </Link>
                                 ))}
+                                {user?.role === 'OWNER' && (
+                                    <Link
+                                        to="/owner/dashboard"
+                                        onClick={() => setIsMenuOpen(false)}
+                                        className="py-5 px-6 text-[12px] font-black uppercase tracking-[0.2em] text-white/70 hover:text-primary-500 hover:bg-white/5 rounded-2xl transition-all flex items-center justify-between group"
+                                    >
+                                        <span>Dashboard</span>
+                                        <div className="w-1.5 h-1.5 rounded-full bg-primary-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                    </Link>
+                                )}
                             </nav>
 
-                            <div className="pt-8 border-t border-white/10 space-y-4">
+                            <div className="pt-8 border-t border-white/10 space-y-6">
                                 <button
                                     onClick={toggleLanguage}
-                                    className="w-full flex items-center justify-between p-6 rounded-2xl bg-white/5 text-white/70 hover:text-white transition-all"
+                                    className="w-full flex items-center justify-between p-6 rounded-2xl bg-white/5 text-white/70 hover:text-white transition-all border border-white/10"
                                 >
-                                    <span className="text-[10px] font-black uppercase tracking-widest italic">Signal Protocol</span>
-                                    <div className="flex items-center gap-3">
-                                        <Languages size={18} />
-                                        <span className="text-[10px] font-black uppercase">{i18n.language}</span>
+                                    <div className="flex items-center gap-4">
+                                        <Languages size={20} className="text-primary-500" />
+                                        <span className="text-[11px] font-black uppercase tracking-widest italic">Language</span>
                                     </div>
+                                    <span className="text-[11px] font-black uppercase bg-primary-500 text-white px-3 py-1 rounded-lg">{i18n.language}</span>
                                 </button>
-                                {!isAuthenticated && (
-                                    <div className="grid grid-cols-2 gap-4">
+                                
+                                {!isAuthenticated ? (
+                                    <div className="grid grid-cols-1 gap-4">
                                         <Link to="/login" onClick={() => setIsMenuOpen(false)}>
-                                            <Button variant="ghost" className="w-full font-black uppercase tracking-widest text-[10px]">Login</Button>
+                                            <Button variant="outline" className="w-full h-14 font-black uppercase tracking-widest text-[11px] border-white/10 text-white">Login</Button>
                                         </Link>
                                         <Link to="/register" onClick={() => setIsMenuOpen(false)}>
-                                            <Button className="w-full font-black uppercase tracking-widest text-[10px]">Join</Button>
+                                            <Button className="w-full h-14 font-black uppercase tracking-widest text-[11px] bg-primary-500 shadow-xl shadow-primary-500/20">Join Free</Button>
                                         </Link>
                                     </div>
+                                ) : (
+                                    <button
+                                        onClick={() => {
+                                            handleLogout();
+                                            setIsMenuOpen(false);
+                                        }}
+                                        className="w-full flex items-center justify-center gap-3 p-6 rounded-2xl bg-red-500/10 text-red-500 font-black uppercase tracking-[0.3em] text-[11px] border border-red-500/20"
+                                    >
+                                        <LogOut size={18} />
+                                        Logout
+                                    </button>
                                 )}
                             </div>
                         </motion.div>
