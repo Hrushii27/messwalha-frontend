@@ -16,15 +16,12 @@ const activityRoutes = require('./routes/activity');
 const menuRoutes = require('./routes/menu');
 const orderRoutes = require('./routes/order');
 const reviewsRoutes = require('./routes/reviews');
-<<<<<<< HEAD
-=======
 const googleAuthRoutes = require('./routes/googleAuth');
 
 const helmet = require('helmet');
 const { setupSecurity } = require('./middleware/security');
 const authenticateToken = require('./middleware/auth');
 const { activityLogger } = require('./middleware/activityLogger');
->>>>>>> 3188c9a67539e26bc98942bbe963b9995a127f3a
 
 console.log('🚀 Server starting process...');
 const app = express();
