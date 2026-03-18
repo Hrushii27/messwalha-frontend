@@ -3,11 +3,29 @@ const Subscription = require('../models/subscription');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
-const { sendResetPasswordEmail } = require('../utils/emailService');
+const { sendResetPasswordEmail, sendOTPEmail } = require('../utils/emailService');
+const Otp = require('../models/otp');
+const { body, validationResult } = require('express-validator');
+const { verifyRecaptcha } = require('../utils/securityUtils');
+const { logSecurityEvent } = require('../middleware/activityLogger');
+
 
 const authController = {
     register: async (req, res) => {
-        const { name, email, phone, password, role } = req.body;
+        const { name, email, phone, password, role, recaptchaToken } = req.body;
+        
+        // 1. Check for Validation Errors
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ status: 'ERROR', errors: errors.array() });
+        }
+
+        // 2. Verify reCAPTCHA
+        const isHuman = await verifyRecaptcha(recaptchaToken);
+        if (!isHuman && process.env.NODE_ENV === 'production') {
+            return res.status(403).json({ status: 'ERROR', message: 'reCAPTCHA verification failed' });
+        }
+
         console.log(`📝 Attempting registration for: ${email}, role: ${role || 'STUDENT'}`);
         try {
             // Check if user exists
@@ -28,15 +46,15 @@ const authController = {
             const owner = await Owner.create(name, email, phone, passwordHash, userRole);
             console.log(`✅ User created with ID: ${owner.id}`);
 
-            // Automatically assign 60-day trial only for OWNERS
+            // Automatically assign 90-day trial only for OWNERS
             if (userRole === 'OWNER') {
-                console.log('🎁 Creating 60-day trial subscription...');
+                console.log('🎁 Creating 90-day trial subscription...');
                 await Subscription.createTrial(owner.id);
             }
 
             const token = jwt.sign({ id: owner.id, role: userRole }, process.env.JWT_SECRET, { expiresIn: '1d' });
             res.status(201).json({
-                message: userRole === 'OWNER' ? 'Owner registered and 60-day trial started' : 'User registered successfully',
+                message: userRole === 'OWNER' ? 'Owner registered and 90-day trial started' : 'User registered successfully',
                 token,
                 owner
             });
@@ -45,8 +63,83 @@ const authController = {
             res.status(500).json({ message: `Server error during registration: ${err.message}` });
         }
     },
+    ownerRegister: async (req, res) => {
+        const { 
+            name, email, phone, password, 
+            messName, location, city, monthlyPrice,
+            recaptchaToken 
+        } = req.body;
+        
+        // 1. Verify reCAPTCHA (Basic check, extend validation as needed)
+        const isHuman = await verifyRecaptcha(recaptchaToken);
+        if (!isHuman && process.env.NODE_ENV === 'production') {
+            return res.status(403).json({ status: 'ERROR', message: 'reCAPTCHA verification failed' });
+        }
+
+        console.log(`📝 Attempting OWNER registration for: ${email}`);
+        try {
+            // Check if user exists
+            const existingOwner = await Owner.findByEmail(email);
+            if (existingOwner) {
+                console.warn(`⚠️ Registration failed: User ${email} already exists`);
+                return res.status(400).json({ message: 'User already exists' });
+            }
+
+            // Hash the password
+            const saltRounds = 10;
+            const passwordHash = await bcrypt.hash(password, saltRounds);
+
+            // Create Owner user
+            console.log('🔨 Creating owner entry...');
+            const owner = await Owner.create(name, email, phone, passwordHash, 'OWNER');
+            
+            // Start 60-day Trial
+            console.log('🎁 Creating 60-day trial subscription...');
+            await Subscription.createTrial(owner.id);
+
+            // Create Initial Mess Listing (Pending Status)
+            const Mess = require('../models/mess'); // Lazy load to avoid circular deps if any
+            console.log('🏠 Creating initial pending mess listing...');
+            
+            // Defaulting some fields until the owner fully fills them out in the dashboard
+            await Mess.create(
+                owner.id, 
+                messName, 
+                location, // using location as address
+                monthlyPrice || 0, 
+                'Newly registered mess. Details pending.', // description
+                'Indian', // default cuisine
+                city || 'Pune', 
+                'Both', // veg_nonveg
+                '' // college_tags
+            );
+
+            const token = jwt.sign({ id: owner.id, role: 'OWNER' }, process.env.JWT_SECRET, { expiresIn: '1d' });
+            res.status(201).json({
+                message: 'Owner registered, trial started, and mess listing created (pending approval).',
+                token,
+                owner
+            });
+        } catch (err) {
+            console.error('❌ Owner Registration Error:', err);
+            res.status(500).json({ message: `Server error during owner registration: ${err.message}` });
+        }
+    },
     login: async (req, res) => {
-        const { email, password } = req.body;
+        const { email, password, recaptchaToken } = req.body;
+
+        // 1. Check for Validation Errors
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ status: 'ERROR', errors: errors.array() });
+        }
+
+        // 2. Verify reCAPTCHA
+        const isHuman = await verifyRecaptcha(recaptchaToken);
+        if (!isHuman && process.env.NODE_ENV === 'production') {
+            return res.status(403).json({ status: 'ERROR', message: 'reCAPTCHA verification failed' });
+        }
+
         console.log(`🔑 Login attempt for: ${email}`);
         try {
             const owner = await Owner.findByEmail(email);
@@ -59,6 +152,7 @@ const authController = {
             const isPasswordValid = await bcrypt.compare(password, owner.password_hash);
             if (!isPasswordValid) {
                 console.warn('❌ Login failed: Incorrect password');
+                logSecurityEvent('AUTH_FAILURE', { email, reason: 'WRONG_PASSWORD', ip: req.ip });
                 return res.status(400).json({ message: 'Invalid credentials - password' });
             }
 
@@ -113,6 +207,42 @@ const authController = {
         } catch (err) {
             console.error('❌ Reset Password Error:', err);
             res.status(500).json({ message: 'Server error' });
+        }
+    },
+    sendOTP: async (req, res) => {
+        const { email } = req.body;
+        const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+        try {
+            await Otp.create(email, otpCode);
+            await sendOTPEmail(email, otpCode);
+            res.json({ success: true, message: 'OTP sent successfully' });
+        } catch (err) {
+            console.error('❌ Send OTP Error:', err);
+            res.status(500).json({ message: 'Failed to send OTP' });
+        }
+    },
+    verifyOTP: async (req, res) => {
+        const { email, otp } = req.body;
+
+        try {
+            const record = await Otp.verify(email, otp);
+            if (!record) {
+                await Otp.incrementAttempts(email);
+                return res.status(400).json({ message: 'Invalid or expired OTP' });
+            }
+
+            let user = await Owner.findByEmail(email);
+            if (!user) {
+                // Auto-register as Student if not exists
+                user = await Owner.create(email.split('@')[0], email, '', 'OTP_AUTH_NO_PASSWORD', 'STUDENT');
+            }
+
+            const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1d' });
+            res.json({ token, owner: user });
+        } catch (err) {
+            console.error('❌ Verify OTP Error:', err);
+            res.status(500).json({ message: 'OTP verification failed' });
         }
     }
 };

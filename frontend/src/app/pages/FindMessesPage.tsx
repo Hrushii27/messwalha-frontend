@@ -395,6 +395,7 @@ const FindMessesPage: React.FC = () => {
                                 ))}
                             </div>
                         ) : (
+<<<<<<< HEAD
                             <EmptyState
                                 icon={SearchIcon}
                                 title="No mess signals detected"
@@ -406,6 +407,49 @@ const FindMessesPage: React.FC = () => {
                                     setFilters({ cuisine: '', verified: false, minRating: 0, maxPrice: 6000, distance: 5, sort: 'Best Rated', college: '', veg_nonveg: '' });
                                 }}
                             />
+=======
+                            <motion.div
+                                initial={{ opacity: 0, y: 40 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="text-center py-40 px-12 space-y-16 bg-white/5 backdrop-blur-3xl rounded-[4rem] border border-white/10 shadow-3xl relative overflow-hidden"
+                            >
+                                <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary-500/5 rounded-full blur-[150px] -mr-64 -mt-64" />
+                                <div className="relative z-10 space-y-16">
+                                    <div className="w-48 h-48 bg-white/5 rounded-[3rem] shadow-3xl flex items-center justify-center mx-auto text-primary-500 animate-float border border-white/10 relative">
+                                        <SearchIcon size={80} strokeWidth={1} className="opacity-30" />
+                                        <div className="absolute inset-0 bg-primary-500/10 rounded-[3rem] blur-2xl animate-pulse" />
+                                    </div>
+                                    <div className="space-y-6">
+                                        <h3 className="text-5xl md:text-7xl font-black italic tracking-tighter text-white">
+                                            No Mess Listings <br />
+                                            <span className="text-white/10 italic">Yet</span>
+                                        </h3>
+                                        <p className="text-white/40 font-black uppercase tracking-[0.3em] text-[10px] md:text-xs max-w-xl mx-auto leading-loose italic">
+                                            Be the first to list your mess and reach thousands of students. Start with a 60-day free trial.
+                                        </p>
+                                    </div>
+                                    <div className="flex flex-col sm:flex-row gap-6 justify-center pt-8">
+                                        <Button
+                                            variant="outline"
+                                            className="h-20 rounded-full px-16 bg-white/5 border-2 border-white/10 font-black uppercase tracking-[0.2em] text-xs shadow-3xl hover:bg-white/10 transition-all text-white/60 hover:text-white"
+                                            onClick={() => {
+                                                setLocationTerm('');
+                                                setMealType('');
+                                                setFilters({ ...filters, cuisine: '', maxPrice: 6000 });
+                                            }}
+                                        >
+                                            Browse Nearby Areas
+                                        </Button>
+                                        <Button
+                                            className="h-20 rounded-full px-16 bg-gradient-to-r from-primary-500 to-primary-600 text-white font-black uppercase tracking-[0.2em] text-xs shadow-3xl shadow-primary-500/30 hover:scale-[1.05] transition-all"
+                                            onClick={() => window.location.href = '/mess-owner-register'}
+                                        >
+                                            Add Your Mess
+                                        </Button>
+                                    </div>
+                                </div>
+                            </motion.div>
+>>>>>>> 3188c9a67539e26bc98942bbe963b9995a127f3a
                         )}
                     </main>
                 </div>

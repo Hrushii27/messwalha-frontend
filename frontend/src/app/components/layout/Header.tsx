@@ -1,13 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '../common/Button';
-import { Utensils, Search, User as UserIcon, Languages, LogOut, Menu, X } from 'lucide-react';
+import { Utensils, Search, User as UserIcon, Languages, LogOut, Menu, X, Clock } from 'lucide-react';
 import { useAppSelector, useAppDispatch } from '../../../hooks/redux';
 import type { RootState } from '../../../store';
 import { logout } from '../../../store/slices/authSlice';
 import NotificationCenter from '../NotificationCenter';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
+import api from '../../api/axiosInstance';
 
 export const Header: React.FC = () => {
     const { isAuthenticated, user } = useAppSelector((state: RootState) => state.auth);
@@ -16,12 +17,33 @@ export const Header: React.FC = () => {
     const [isProfileOpen, setIsProfileOpen] = React.useState(false);
     const [isScrolled, setIsScrolled] = React.useState(false);
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+    const [trialDaysLeft, setTrialDaysLeft] = React.useState<number | null>(null);
+    const [subStatus, setSubStatus] = React.useState<string | null>(null);
 
     React.useEffect(() => {
         const handleScroll = () => setIsScrolled(window.scrollY > 20);
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
+
+    // Fetch subscription status for owners
+    React.useEffect(() => {
+        if (isAuthenticated && user?.role === 'OWNER') {
+            api.get('/subscriptions/status').then(res => {
+                const sub = res.data?.data;
+                if (sub) {
+                    setSubStatus(sub.status);
+                    if (sub.status === 'trial') {
+                        const endDate = sub.trial_end_date || sub.trial_end;
+                        if (endDate) {
+                            const days = Math.max(0, Math.ceil((new Date(endDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24)));
+                            setTrialDaysLeft(days);
+                        }
+                    }
+                }
+            }).catch(() => {});
+        }
+    }, [isAuthenticated, user?.role]);
 
     const handleLogout = () => {
         dispatch(logout());
@@ -122,6 +144,28 @@ export const Header: React.FC = () => {
                                                 <p className="text-[9px] font-black text-primary-500 uppercase tracking-[0.4em] mb-2 relative z-10">{user?.role === 'OWNER' ? 'Owner Account' : 'Student Account'}</p>
                                                 <p className="text-xs font-black text-white truncate italic relative z-10">{user?.email}</p>
                                             </div>
+
+                                            {/* Trial Indicator for Owners */}
+                                            {user?.role === 'OWNER' && subStatus === 'trial' && trialDaysLeft !== null && (
+                                                <div className="px-10 pb-4 mb-2">
+                                                    <div className="flex items-center gap-2 px-4 py-2.5 bg-orange-500/10 border border-orange-500/20 rounded-xl">
+                                                        <Clock size={14} className="text-orange-500" />
+                                                        <span className="text-[10px] font-black text-orange-400 uppercase tracking-widest">
+                                                            Trial: {trialDaysLeft} days left
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            )}
+                                            {user?.role === 'OWNER' && subStatus === 'expired' && (
+                                                <div className="px-10 pb-4 mb-2">
+                                                    <div className="flex items-center gap-2 px-4 py-2.5 bg-red-500/10 border border-red-500/20 rounded-xl">
+                                                        <Clock size={14} className="text-red-500" />
+                                                        <span className="text-[10px] font-black text-red-400 uppercase tracking-widest">
+                                                            Trial ended
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            )}
 
                                             <div className="px-4 space-y-1">
                                                 {[

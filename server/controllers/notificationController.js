@@ -37,7 +37,25 @@ const getNotificationsByMess = async (req, res) => {
     }
 };
 
+<<<<<<< HEAD
 module.exports = {
     sendNotification,
     getNotificationsByMess
+=======
+const getAllNotifications = async (req, res) => {
+    try {
+        const notifications = await Notification.findAll();
+        // Frontend NotificationCenter expects { data: [...] }
+        res.json({ success: true, data: notifications });
+    } catch (err) {
+        console.error('Error fetching all notifications:', err);
+        res.status(500).json({ message: 'Error fetching notifications' });
+    }
+};
+
+module.exports = {
+    sendNotification,
+    getNotificationsByMess,
+    getAllNotifications
+>>>>>>> 3188c9a67539e26bc98942bbe963b9995a127f3a
 };

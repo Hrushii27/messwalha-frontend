@@ -75,3 +75,8 @@ node_modules/
 # dataconnect generated files
 .dataconnect
 .vercel
+
+# Project specific
+package-lock.json
+.DS_Store
+uploads/
