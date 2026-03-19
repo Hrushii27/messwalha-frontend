@@ -285,7 +285,10 @@ const LoginPage: React.FC = () => {
 
                                 <button
                                     type="button"
-                                    onClick={() => setLoginMode('otp')}
+                                    onClick={() => {
+                                        setLoginMode('otp');
+                                        setError(''); // Clear error when switching to OTP
+                                    }}
                                     className="w-full text-[10px] font-black uppercase tracking-[0.2em] text-navy-400 hover:text-white transition-all flex items-center justify-center space-x-3 py-4 border border-navy-800 rounded-xl hover:bg-navy-800/30"
                                 >
                                     <Mail size={16} className="text-primary-500" />
@@ -341,7 +344,10 @@ const LoginPage: React.FC = () => {
 
                                 <button
                                     type="button"
-                                    onClick={() => setLoginMode('password')}
+                                    onClick={() => {
+                                        setLoginMode('password');
+                                        setError(''); // Clear error when switching back
+                                    }}
                                     className="w-full text-sm text-gray-500 hover:text-primary transition-colors flex items-center justify-center space-x-2"
                                 >
                                     <ShieldCheck size={16} />

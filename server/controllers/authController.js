@@ -246,7 +246,16 @@ const authController = {
             }
 
             const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1d' });
-            res.json({ token, owner: user });
+            res.json({ 
+                token, 
+                user: {
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    role: user.role,
+                    phone: user.phone
+                }
+            });
         } catch (err) {
             console.error('❌ Verify OTP Error:', err);
             res.status(500).json({ message: 'OTP verification failed' });
@@ -286,7 +295,16 @@ const authController = {
             }
 
             const jwtToken = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1d' });
-            res.json({ token: jwtToken, owner: user });
+            res.json({ 
+                token: jwtToken, 
+                user: {
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    role: user.role,
+                    phone: user.phone
+                }
+            });
         } catch (err) {
             console.error('❌ Google Login Error:', err);
             res.status(401).json({ message: 'Google authentication failed' });
