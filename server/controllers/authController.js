@@ -58,7 +58,7 @@ const authController = {
             res.status(201).json({
                 message: userRole === 'OWNER' ? 'Owner registered and 90-day trial started' : 'User registered successfully',
                 token,
-                owner
+                user: owner
             });
         } catch (err) {
             console.error('❌ Registration Error:', err);
@@ -120,7 +120,7 @@ const authController = {
             res.status(201).json({
                 message: 'Owner registered, trial started, and mess listing created (pending approval).',
                 token,
-                owner
+                user: owner
             });
         } catch (err) {
             console.error('❌ Owner Registration Error:', err);
@@ -160,7 +160,7 @@ const authController = {
 
             console.log('✅ Password verified, generating token...');
             const token = jwt.sign({ id: owner.id, role: owner.role }, process.env.JWT_SECRET, { expiresIn: '1d' });
-            res.json({ token, owner });
+            res.json({ token, user: owner });
         } catch (err) {
             console.error('❌ Login Error:', err);
             res.status(500).json({ message: `Server error during login: ${err.message}` });

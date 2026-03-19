@@ -46,10 +46,7 @@ const OwnerRegistrationPage: React.FC = () => {
                 recaptchaToken: 'bypassed'
             });
 
-            dispatch(setCredentials({
-                user: response.data.owner,
-                token: response.data.token
-            }));
+            dispatch(setCredentials(response.data));
             
             toast.success('Successfully registered! Your 60-day trial has started.', { duration: 5000 });
             navigate('/owner/dashboard');
