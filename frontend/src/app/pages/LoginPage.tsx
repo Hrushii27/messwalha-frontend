@@ -147,8 +147,20 @@ const LoginPage: React.FC = () => {
             <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-indigo-500/10 rounded-full blur-[100px] -ml-32 -mb-32 pointer-events-none" />
 
             {/* Left Panel: Branding & Benefits */}
-            <div className="hidden lg:flex lg:w-1/2 flex-col justify-center px-12 xl:px-24 relative z-10 py-20 bg-navy-900/30">
-                <div className="max-w-md">
+            <div 
+                className="hidden lg:flex lg:w-1/2 flex-col justify-center px-12 xl:px-24 relative z-10 py-20"
+                style={{ 
+                    background: 'linear-gradient(135deg, #0D1220 0%, #111826 50%, #18213A 100%)' 
+                }}
+            >
+                {/* Subtle Readability Overlay */}
+                <div 
+                    className="absolute inset-0 z-0 pointer-events-none"
+                    style={{ 
+                        background: 'linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.6))' 
+                    }}
+                />
+                <div className="max-w-md relative z-10">
                     <Link to="/" className="inline-flex items-center space-x-3 mb-16">
                         <div className="w-12 h-12 bg-primary-500 rounded-xl flex items-center justify-center text-white shadow-lg shadow-primary-500/40">
                             <Utensils size={28} />
@@ -160,11 +172,17 @@ const LoginPage: React.FC = () => {
 
                     <div className="space-y-12">
                         <motion.div initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.1 }} className="space-y-4">
-                            <h2 className="text-4xl xl:text-5xl font-black text-white italic leading-tight tracking-tighter">
+                            <h2 
+                                className="text-4xl xl:text-5xl font-black text-white italic leading-tight tracking-tighter"
+                                style={{ textShadow: '0 0 20px rgba(232,98,42,0.25)' }}
+                            >
                                 Elite Mess <br />
                                 <span className="text-primary-500 italic">Discovery Terminal</span>
                             </h2>
-                            <p className="text-navy-300 text-lg font-medium italic">
+                            <p 
+                                className="text-lg font-medium italic"
+                                style={{ color: 'rgba(232,238,255,0.8)' }}
+                            >
                                 Access your personalized dashboard and manage your culinary journey.
                             </p>
                         </motion.div>
@@ -182,12 +200,23 @@ const LoginPage: React.FC = () => {
                                     transition={{ delay: 0.2 + i * 0.1 }}
                                     className="flex items-start space-x-6 group"
                                 >
-                                    <div className="w-14 h-14 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center text-primary-500 group-hover:bg-primary-500 group-hover:text-white transition-all duration-500 shadow-xl group-hover:shadow-primary-500/20">
+                                    <div 
+                                        className="w-14 h-14 rounded-2xl flex items-center justify-center text-primary-500 group-hover:bg-primary-500 group-hover:text-white transition-all duration-500 shadow-xl group-hover:shadow-primary-500/20"
+                                        style={{ 
+                                            background: 'rgba(232,98,42,0.15)',
+                                            border: '1px solid rgba(232,98,42,0.3)'
+                                        }}
+                                    >
                                         <feature.icon size={24} />
                                     </div>
                                     <div className="space-y-1">
                                         <h3 className="text-[11px] font-black uppercase tracking-widest text-white italic">{feature.title}</h3>
-                                        <p className="text-navy-400 text-sm font-medium">{feature.desc}</p>
+                                        <p 
+                                            className="text-sm font-medium"
+                                            style={{ color: 'rgba(232,238,255,0.6)' }}
+                                        >
+                                            {feature.desc}
+                                        </p>
                                     </div>
                                 </motion.div>
                             ))}
