@@ -41,34 +41,6 @@ const createTables = async () => {
       created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
     );
 
-<<<<<<< HEAD
-      CREATE TABLE IF NOT EXISTS reviews (
-        id SERIAL PRIMARY KEY,
-        mess_id INTEGER REFERENCES mess_listings(id) ON DELETE CASCADE,
-        user_id INTEGER REFERENCES mess_owners(id) ON DELETE CASCADE,
-        rating INTEGER CHECK (rating >= 1 AND rating <= 5),
-        comment TEXT,
-        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-      );
-
-      CREATE TABLE IF NOT EXISTS notifications (
-        id SERIAL PRIMARY KEY,
-        mess_id INTEGER REFERENCES mess_listings(id) ON DELETE CASCADE,
-        message TEXT NOT NULL,
-        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-      );
-=======
-    -- Special handling for reviews (recreate if broken)
-    DO $$ 
-    BEGIN 
-        IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'reviews') THEN
-            IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'reviews' AND column_name = 'student_id') THEN
-                DROP TABLE reviews;
-            END IF;
-        END IF;
-    END $$;
->>>>>>> 3188c9a67539e26bc98942bbe963b9995a127f3a
-
     CREATE TABLE IF NOT EXISTS reviews (
       id SERIAL PRIMARY KEY,
       mess_id INTEGER REFERENCES mess_listings(id) ON DELETE CASCADE,
@@ -77,79 +49,6 @@ const createTables = async () => {
       comment TEXT,
       created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
     );
-
-<<<<<<< HEAD
-      -- Migration: Add role and profile_image columns if they don't exist
-      DO $$ 
-      BEGIN 
-          IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='mess_owners' AND column_name='role') THEN
-              ALTER TABLE mess_owners ADD COLUMN role VARCHAR(20) DEFAULT 'STUDENT';
-          END IF;
-          IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='mess_owners' AND column_name='profile_image') THEN
-              ALTER TABLE mess_owners ADD COLUMN profile_image TEXT;
-          END IF;
-          IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='mess_owners' AND column_name='reset_password_token') THEN
-              ALTER TABLE mess_owners ADD COLUMN reset_password_token VARCHAR(255);
-          END IF;
-          IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='mess_owners' AND column_name='reset_password_expires') THEN
-              ALTER TABLE mess_owners ADD COLUMN reset_password_expires TIMESTAMP WITH TIME ZONE;
-          END IF;
-
-          -- mess_listings Migrations
-          -- Handle legacy columns that might block inserts using exception handling for robustness
-          BEGIN
-              EXECUTE 'ALTER TABLE mess_listings ALTER COLUMN location DROP NOT NULL';
-          EXCEPTION WHEN undefined_column THEN
-              NULL; -- Column doesn't exist, ignore
-          END;
-
-          BEGIN
-              EXECUTE 'ALTER TABLE mess_listings ALTER COLUMN city DROP NOT NULL';
-          EXCEPTION WHEN undefined_column THEN
-              NULL; -- Column doesn't exist, ignore
-          END;
-
-          BEGIN
-              EXECUTE 'ALTER TABLE mess_listings ALTER COLUMN price DROP NOT NULL';
-          EXCEPTION WHEN undefined_column THEN
-              NULL; -- Column doesn't exist, ignore
-          END;
-
-          IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='mess_listings' AND column_name='address') THEN
-              ALTER TABLE mess_listings ADD COLUMN address TEXT NOT NULL DEFAULT '';
-          END IF;
-          IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='mess_listings' AND column_name='cuisine') THEN
-              ALTER TABLE mess_listings ADD COLUMN cuisine VARCHAR(100);
-          END IF;
-          IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='mess_listings' AND column_name='monthly_price') THEN
-              ALTER TABLE mess_listings ADD COLUMN monthly_price DECIMAL(10, 2) NOT NULL DEFAULT 0.00;
-          END IF;
-          IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='mess_listings' AND column_name='description') THEN
-              ALTER TABLE mess_listings ADD COLUMN description TEXT;
-          END IF;
-          IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='mess_listings' AND column_name='rating') THEN
-              ALTER TABLE mess_listings ADD COLUMN rating DECIMAL(3, 2) DEFAULT 0.0;
-          END IF;
-          IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='mess_listings' AND column_name='verified') THEN
-              ALTER TABLE mess_listings ADD COLUMN verified BOOLEAN DEFAULT FALSE;
-          END IF;
-          IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='mess_listings' AND column_name='image_url') THEN
-              ALTER TABLE mess_listings ADD COLUMN image_url TEXT;
-          END IF;
-          IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='mess_listings' AND column_name='is_active') THEN
-              ALTER TABLE mess_listings ADD COLUMN is_active BOOLEAN DEFAULT TRUE;
-          END IF;
-      END $$;
-=======
-    -- Special handling for notifications (recreate if broken/legacy)
-    DO $$ 
-    BEGIN 
-        IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'notifications') THEN
-            IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'notifications' AND column_name = 'title') THEN
-                DROP TABLE notifications;
-            END IF;
-        END IF;
-    END $$;
 
     CREATE TABLE IF NOT EXISTS notifications (
       id SERIAL PRIMARY KEY,
@@ -175,10 +74,13 @@ const createTables = async () => {
       created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
     );
 
-    -- Additional Migrations
+    -- Migrations and Column Checks
     DO $$ 
     BEGIN 
-        -- owners metadata
+        -- mess_owners migrations
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='mess_owners' AND column_name='role') THEN
+            ALTER TABLE mess_owners ADD COLUMN role VARCHAR(20) DEFAULT 'STUDENT';
+        END IF;
         IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='mess_owners' AND column_name='profile_image') THEN
             ALTER TABLE mess_owners ADD COLUMN profile_image TEXT;
         END IF;
@@ -189,7 +91,24 @@ const createTables = async () => {
             ALTER TABLE mess_owners ADD COLUMN reset_password_expires TIMESTAMP WITH TIME ZONE;
         END IF;
 
-        -- Listing improvements
+        -- mess_listings migrations
+        BEGIN
+            EXECUTE 'ALTER TABLE mess_listings ALTER COLUMN location DROP NOT NULL';
+        EXCEPTION WHEN undefined_column THEN NULL; END;
+        
+        BEGIN
+            EXECUTE 'ALTER TABLE mess_listings ALTER COLUMN city DROP NOT NULL';
+        EXCEPTION WHEN undefined_column THEN NULL; END;
+
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='mess_listings' AND column_name='address') THEN
+            ALTER TABLE mess_listings ADD COLUMN address TEXT NOT NULL DEFAULT '';
+        END IF;
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='mess_listings' AND column_name='cuisine') THEN
+            ALTER TABLE mess_listings ADD COLUMN cuisine VARCHAR(100);
+        END IF;
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='mess_listings' AND column_name='monthly_price') THEN
+            ALTER TABLE mess_listings ADD COLUMN monthly_price DECIMAL(10, 2) NOT NULL DEFAULT 0.00;
+        END IF;
         IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='mess_listings' AND column_name='veg_nonveg') THEN
             ALTER TABLE mess_listings ADD COLUMN veg_nonveg VARCHAR(20) DEFAULT 'Both';
         END IF;
@@ -206,7 +125,6 @@ const createTables = async () => {
             ALTER TABLE mess_listings ADD COLUMN upi_id VARCHAR(100);
         END IF;
     END $$;
->>>>>>> 3188c9a67539e26bc98942bbe963b9995a127f3a
     `;
 
     try {

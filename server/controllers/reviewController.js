@@ -1,8 +1,5 @@
 const Review = require('../models/review');
-<<<<<<< HEAD
-=======
 const db = require('../config/db');
->>>>>>> 3188c9a67539e26bc98942bbe963b9995a127f3a
 
 const addReview = async (req, res) => {
     try {
@@ -32,11 +29,6 @@ const getReviewsByMess = async (req, res) => {
     }
 };
 
-<<<<<<< HEAD
-module.exports = {
-    addReview,
-    getReviewsByMess
-=======
 const respondToReview = async (req, res) => {
     try {
         const { reviewId } = req.params;
@@ -77,5 +69,4 @@ module.exports = {
     getReviewsByMess,
     respondToReview,
     getUserReviews
->>>>>>> 3188c9a67539e26bc98942bbe963b9995a127f3a
 };
