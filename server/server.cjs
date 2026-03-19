@@ -117,11 +117,13 @@ app.get('/api/health', async (req, res) => {
   }
 });
 
-// Initialize Database
+// Initialize Database (DISABLED FOR DEBUGGING 503)
+/*
 console.log('🗄️ Initializing database...');
 createTables()
   .then(() => console.log('✅ Database initialization attempted'))
   .catch(err => console.error('❌ Database initialization error:', err));
+*/
 
 // Start Scheduler
 console.log('⏰ Starting scheduler...');
