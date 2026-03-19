@@ -33,7 +33,7 @@ const RegisterPage: React.FC = () => {
         const initScripts = () => {
             if ((window as any).google) {
                 (window as any).google.accounts.id.initialize({
-                    client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID || "853966580327-r2l2clrt5j1pnu47n6e8bt96l3sq6t6r.apps.googleusercontent.com",
+                    client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
                     callback: handleGoogleLogin
                 });
                 (window as any).google.accounts.id.renderButton(

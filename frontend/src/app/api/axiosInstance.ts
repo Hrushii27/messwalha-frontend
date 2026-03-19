@@ -37,7 +37,10 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (!error.response) {
-      console.error("Backend not reachable or network error");
+      console.error("📡 Backend not reachable or network error. Please check your CORS settings or if the server is running.");
+      console.dir(error);
+    } else {
+      console.warn(`📡 API Error [${error.response.status}]:`, error.response.data?.message || error.message);
     }
 
     if (error.response?.status === 401) {

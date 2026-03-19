@@ -12,6 +12,11 @@ const sendResetPasswordEmail = async (email, token) => {
     const frontendUrl = process.env.FRONTEND_URL || 'https://messwalha-frontend.vercel.app';
     const resetUrl = `${frontendUrl}/reset-password/${token}`;
 
+    if (!process.env.SMTP_EMAIL || !process.env.SMTP_PASSWORD) {
+        console.warn(`ΓÜá∩╕Å SMTP credentials missing. Mock Reset Link for ${email}: ${resetUrl}`);
+        return true; 
+    }
+
     const mailOptions = {
         from: `"MessWalha" <${process.env.SMTP_EMAIL}>`,
         to: email,
@@ -35,14 +40,19 @@ const sendResetPasswordEmail = async (email, token) => {
 
     try {
         await transporter.sendMail(mailOptions);
-        console.log(`✅ Password reset email sent to: ${email}`);
+        console.log(`Γ£à Password reset email sent to: ${email}`);
     } catch (error) {
-        console.error('❌ Email Send Error:', error);
+        console.error('Γ¥î Email Send Error:', error);
         throw error;
     }
 };
 
 const sendOTPEmail = async (email, otp) => {
+    if (!process.env.SMTP_EMAIL || !process.env.SMTP_PASSWORD) {
+        console.warn(`ΓÜá∩╕Å SMTP credentials missing. Mock OTP for ${email}: ${otp}`);
+        return true;
+    }
+
     const mailOptions = {
         from: `"MessWalha" <${process.env.SMTP_EMAIL}>`,
         to: email,
@@ -64,9 +74,9 @@ const sendOTPEmail = async (email, otp) => {
 
     try {
         await transporter.sendMail(mailOptions);
-        console.log(`✅ OTP email sent to: ${email}`);
+        console.log(`Γ£à OTP email sent to: ${email}`);
     } catch (error) {
-        console.error('❌ OTP Email Send Error:', error);
+        console.error('Γ¥î OTP Email Send Error:', error);
         throw error;
     }
 };
