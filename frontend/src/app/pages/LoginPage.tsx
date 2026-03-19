@@ -278,7 +278,20 @@ const LoginPage: React.FC = () => {
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
                                         required
-                                        className="h-14 md:h-16"
+                                        className="h-14 md:h-16 transition-all"
+                                        style={{ 
+                                            background: '#111826',
+                                            color: '#E8EEFF',
+                                            border: '1px solid rgba(255,255,255,0.10)'
+                                        }}
+                                        onFocus={(e) => {
+                                            e.currentTarget.style.border = '1px solid rgba(232,98,42,0.5)';
+                                            e.currentTarget.style.boxShadow = '0 0 0 3px rgba(232,98,42,0.15)';
+                                        }}
+                                        onBlur={(e) => {
+                                            e.currentTarget.style.border = '1px solid rgba(255,255,255,0.10)';
+                                            e.currentTarget.style.boxShadow = 'none';
+                                        }}
                                     />
                                     <Input
                                         id="login-password"
@@ -288,18 +301,35 @@ const LoginPage: React.FC = () => {
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
                                         required
-                                        className="h-14 md:h-16"
+                                        className="h-14 md:h-16 transition-all"
+                                        style={{ 
+                                            background: '#111826',
+                                            color: '#E8EEFF',
+                                            border: '1px solid rgba(255,255,255,0.10)'
+                                        }}
+                                        onFocus={(e) => {
+                                            e.currentTarget.style.border = '1px solid rgba(232,98,42,0.5)';
+                                            e.currentTarget.style.boxShadow = '0 0 0 3px rgba(232,98,42,0.15)';
+                                        }}
+                                        onBlur={(e) => {
+                                            e.currentTarget.style.border = '1px solid rgba(255,255,255,0.10)';
+                                            e.currentTarget.style.boxShadow = 'none';
+                                        }}
                                     />
                                 </div>
 
                                 <div className="flex items-center justify-between">
-                                    <label className="flex items-center space-x-2 text-[10px] md:text-[11px] font-black uppercase tracking-widest text-navy-300 cursor-pointer">
+                                    <label 
+                                        className="flex items-center space-x-2 text-[10px] md:text-[11px] font-black uppercase tracking-widest cursor-pointer"
+                                        style={{ color: 'rgba(232,238,255,0.7)' }}
+                                    >
                                         <input type="checkbox" className="rounded border-navy-700 bg-navy-800 text-primary-500 focus:ring-primary-500/50" />
                                         <span>Remember me</span>
                                     </label>
                                     <Link 
                                         to="/forgot-password" 
-                                        className="text-primary-500 hover:text-primary-400 font-black uppercase tracking-widest italic text-[10px] md:text-[11px] transition-colors"
+                                        className="uppercase tracking-widest italic text-[10px] md:text-[11px] transition-colors"
+                                        style={{ color: '#E8622A', fontWeight: 600 }}
                                     >
                                         Forgot password?
                                     </Link>
@@ -320,7 +350,14 @@ const LoginPage: React.FC = () => {
                                         setLoginMode('otp');
                                         setError(''); // Clear error when switching to OTP
                                     }}
-                                    className="w-full text-[10px] font-black uppercase tracking-[0.2em] text-navy-400 hover:text-white transition-all flex items-center justify-center space-x-3 py-4 border border-navy-800 rounded-xl hover:bg-navy-800/30"
+                                    className="w-full text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center space-x-3 py-4 rounded-xl"
+                                    style={{ 
+                                        background: 'transparent',
+                                        border: '1px solid rgba(255,255,255,0.12)',
+                                        color: '#E8EEFF'
+                                    }}
+                                    onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
+                                    onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
                                 >
                                     <Mail size={16} className="text-primary-500" />
                                     <span>Sign in with OTP</span>
@@ -338,7 +375,20 @@ const LoginPage: React.FC = () => {
                                             value={email}
                                             onChange={(e) => setEmail(e.target.value)}
                                             required
-                                            className="h-14 md:h-16"
+                                            className="h-14 md:h-16 transition-all"
+                                            style={{ 
+                                                background: '#111826',
+                                                color: '#E8EEFF',
+                                                border: '1px solid rgba(255,255,255,0.10)'
+                                            }}
+                                            onFocus={(e) => {
+                                                e.currentTarget.style.border = '1px solid rgba(232,98,42,0.5)';
+                                                e.currentTarget.style.boxShadow = '0 0 0 3px rgba(232,98,42,0.15)';
+                                            }}
+                                            onBlur={(e) => {
+                                                e.currentTarget.style.border = '1px solid rgba(255,255,255,0.10)';
+                                                e.currentTarget.style.boxShadow = 'none';
+                                            }}
                                         />
                                         <Button type="submit" className="w-full h-14 md:h-16" size="lg" isLoading={isLoading}>
                                             Send OTP
@@ -358,7 +408,20 @@ const LoginPage: React.FC = () => {
                                             value={otp}
                                             onChange={(e) => setOtp(e.target.value)}
                                             required
-                                            className="h-14 md:h-16"
+                                            className="h-14 md:h-16 transition-all"
+                                            style={{ 
+                                                background: '#111826',
+                                                color: '#E8EEFF',
+                                                border: '1px solid rgba(255,255,255,0.10)'
+                                            }}
+                                            onFocus={(e) => {
+                                                e.currentTarget.style.border = '1px solid rgba(232,98,42,0.5)';
+                                                e.currentTarget.style.boxShadow = '0 0 0 3px rgba(232,98,42,0.15)';
+                                            }}
+                                            onBlur={(e) => {
+                                                e.currentTarget.style.border = '1px solid rgba(255,255,255,0.10)';
+                                                e.currentTarget.style.boxShadow = 'none';
+                                            }}
                                         />
                                         <Button type="submit" className="w-full h-14 md:h-16" size="lg" isLoading={isLoading}>
                                             Verify & Login
@@ -366,7 +429,8 @@ const LoginPage: React.FC = () => {
                                         <button 
                                             type="button" 
                                             onClick={() => setOtpStep(1)}
-                                            className="text-sm text-primary hover:underline block w-full text-center"
+                                            className="text-sm hover:underline block w-full text-center"
+                                            style={{ color: '#E8622A', fontWeight: 600 }}
                                         >
                                             Resend OTP
                                         </button>
@@ -379,7 +443,10 @@ const LoginPage: React.FC = () => {
                                         setLoginMode('password');
                                         setError(''); // Clear error when switching back
                                     }}
-                                    className="w-full text-sm text-gray-500 hover:text-primary transition-colors flex items-center justify-center space-x-2"
+                                    className="w-full text-sm transition-colors flex items-center justify-center space-x-2"
+                                    style={{ color: 'rgba(232,238,255,0.6)' }}
+                                    onMouseEnter={(e) => e.currentTarget.style.color = '#E8622A'}
+                                    onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(232,238,255,0.6)'}
                                 >
                                     <ShieldCheck size={16} />
                                     <span>Use Password instead</span>
@@ -389,9 +456,16 @@ const LoginPage: React.FC = () => {
                     </div>
 
                     <div className="mt-10 pt-8 border-t border-navy-800 text-center">
-                        <p className="text-[11px] font-black uppercase tracking-[0.2em] text-navy-400">
+                        <p 
+                            className="text-[11px] font-black uppercase tracking-[0.2em]"
+                            style={{ color: 'rgba(232,238,255,0.4)' }}
+                        >
                             Don't have an account?{' '}
-                            <Link to="/register" className="text-primary-500 font-black hover:text-primary-400 transition-colors italic">
+                            <Link 
+                                to="/register" 
+                                className="font-black transition-colors italic"
+                                style={{ color: '#E8622A' }}
+                            >
                                 Create account
                             </Link>
                         </p>

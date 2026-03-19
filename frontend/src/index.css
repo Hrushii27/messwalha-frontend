@@ -319,3 +319,9 @@
   /* Update background for dynamic switching */
   --bg-mesh-light: var(--bg-mesh-dark);
 }
+
+/* Global Input Placeholder Color */
+::placeholder {
+  color: rgba(232,238,255,0.5) !important;
+  opacity: 1; /* Firefox */
+}
