@@ -9,6 +9,8 @@ const { body, validationResult } = require('express-validator');
 const { verifyRecaptcha } = require('../utils/securityUtils');
 const { logSecurityEvent } = require('../middleware/activityLogger');
 
+const { OAuth2Client } = require('google-auth-library');
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 const authController = {
     register: async (req, res) => {
@@ -224,16 +226,21 @@ const authController = {
     },
     verifyOTP: async (req, res) => {
         const { email, otp } = req.body;
+        console.log(`[DEBUG] Verifying OTP for ${email}. Entered code: ${otp}`);
 
         try {
             const record = await Otp.verify(email, otp);
             if (!record) {
+                console.warn(`[DEBUG] OTP verification failed for ${email}. Record not found or expired.`);
                 await Otp.incrementAttempts(email);
                 return res.status(400).json({ message: 'Invalid or expired OTP' });
             }
 
+            console.log(`[DEBUG] OTP verified for ${email}. Stored record:`, record);
+
             let user = await Owner.findByEmail(email);
             if (!user) {
+                console.log(`[DEBUG] Auto-registering new user via OTP: ${email}`);
                 // Auto-register as Student if not exists
                 user = await Owner.create(email.split('@')[0], email, '', 'OTP_AUTH_NO_PASSWORD', 'STUDENT');
             }
@@ -243,6 +250,46 @@ const authController = {
         } catch (err) {
             console.error('❌ Verify OTP Error:', err);
             res.status(500).json({ message: 'OTP verification failed' });
+        }
+    },
+    googleLogin: async (req, res) => {
+        const { token } = req.body;
+        console.log('🌐 Google login attempt...');
+
+        try {
+            const ticket = await client.verifyIdToken({
+                idToken: token,
+                audience: process.env.GOOGLE_CLIENT_ID
+            });
+            const payload = ticket.getPayload();
+            const { sub: googleId, email, name, picture } = payload;
+
+            console.log(`✅ Google token verified for: ${email}`);
+
+            let user = await Owner.findByGoogleId(googleId);
+            
+            if (!user) {
+                console.log(`🔍 User with Google ID ${googleId} not found. Checking by email...`);
+                user = await Owner.findByEmail(email);
+                
+                if (user) {
+                    console.log(`🔗 Linking existing user ${email} with Google ID`);
+                    await Owner.updateProfile(user.id, { google_id: googleId, profile_picture: picture });
+                } else {
+                    console.log(`🆕 Creating new user via Google: ${email}`);
+                    // Use a random placeholder for password since it's NOT NULL in DB
+                    const randomPassword = crypto.randomBytes(16).toString('hex');
+                    const passwordHash = await bcrypt.hash(randomPassword, 10);
+                    user = await Owner.create(name, email, '', passwordHash, 'STUDENT');
+                    await Owner.updateProfile(user.id, { google_id: googleId, profile_picture: picture });
+                }
+            }
+
+            const jwtToken = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1d' });
+            res.json({ token: jwtToken, owner: user });
+        } catch (err) {
+            console.error('❌ Google Login Error:', err);
+            res.status(401).json({ message: 'Google authentication failed' });
         }
     }
 };

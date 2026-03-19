@@ -46,4 +46,7 @@ router.post('/verify-otp', [
     body('otp').isLength({ min: 6, max: 6 })
 ], validateRequest, authController.verifyOTP);
 
+// Google Auth Route
+router.post('/google', authController.googleLogin);
+
 module.exports = router;
