@@ -37,11 +37,6 @@ const getNotificationsByMess = async (req, res) => {
     }
 };
 
-<<<<<<< HEAD
-module.exports = {
-    sendNotification,
-    getNotificationsByMess
-=======
 const getAllNotifications = async (req, res) => {
     try {
         const notifications = await Notification.findAll();
@@ -57,5 +52,4 @@ module.exports = {
     sendNotification,
     getNotificationsByMess,
     getAllNotifications
->>>>>>> 3188c9a67539e26bc98942bbe963b9995a127f3a
 };
