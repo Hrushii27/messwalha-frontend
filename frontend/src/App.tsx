@@ -52,10 +52,15 @@ const App: React.FC = () => {
       <GoogleReCaptchaProvider
         reCaptchaKey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
         scriptProps={{
-          async: false,
-          defer: false,
+          async: true, // Use async for faster main thread execution
+          defer: true,
           appendTo: 'head',
-          nonce: undefined,
+        }}
+        container={{
+          parameters: {
+            badge: 'bottomright',
+            theme: 'dark',
+          }
         }}
       >
         <FavoritesProvider>

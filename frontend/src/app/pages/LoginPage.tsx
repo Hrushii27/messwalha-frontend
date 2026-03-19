@@ -124,8 +124,13 @@ const LoginPage: React.FC = () => {
         setError('');
 
         if (!executeRecaptcha) {
-            setError('reCAPTCHA not initialized');
+            setError('Security system still initialising. Please wait a moment...');
             setIsLoading(false);
+            
+            // Proactive retry: wait 2 seconds and try again if the user clicks again
+            setTimeout(() => {
+                if (executeRecaptcha) setError('');
+            }, 2000);
             return;
         }
 
@@ -284,8 +289,14 @@ const LoginPage: React.FC = () => {
                                     </Link>
                                 </div>
 
-                                <Button type="submit" className="w-full h-14 md:h-16" size="lg" isLoading={isLoading}>
-                                    Sign In
+                                <Button 
+                                    type="submit" 
+                                    className="w-full h-14 md:h-16" 
+                                    size="lg" 
+                                    isLoading={isLoading}
+                                    disabled={!executeRecaptcha && !isLoading}
+                                >
+                                    {!executeRecaptcha && !isLoading ? 'Initialising Security...' : 'Sign In'}
                                 </Button>
 
                                 <button
