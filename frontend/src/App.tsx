@@ -41,6 +41,12 @@ const PageLoader = () => (
 );
 
 const App: React.FC = () => {
+  React.useEffect(() => {
+    const key = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
+    console.log(`🔒 reCAPTCHA Site Key: ${key ? '✅ Loaded' : '⚠️ MISSING'}`);
+    if (!key) console.warn('reCAPTCHA key is missing from environment variables. Registration/Login may fail.');
+  }, []);
+
   return (
     <Provider store={store}>
       <GoogleReCaptchaProvider

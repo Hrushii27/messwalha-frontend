@@ -25,6 +25,11 @@ const LoginPage: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
+    // Clear error on mount to resolve "stuck" errors
+    useEffect(() => {
+        setError('');
+    }, []);
+
     // Check if navigated from Registration Google Auth requiring OTP
     useEffect(() => {
         const state = location.state as { email?: string; startWithOtp?: boolean } | null;
