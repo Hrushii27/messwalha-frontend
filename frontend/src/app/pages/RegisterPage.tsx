@@ -7,7 +7,6 @@ import { useAppDispatch } from '../../hooks/redux';
 import { setCredentials } from '../../store/slices/authSlice';
 import api from '../api/axiosInstance';
 import { toast } from 'react-hot-toast';
-import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 import Seo from '../components/common/Seo';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Input } from '../components/common/Input';
@@ -24,7 +23,6 @@ const RegisterPage: React.FC = () => {
         location: '',
     });
     const [isLoading, setIsLoading] = useState(false);
-    const { executeRecaptcha } = useGoogleReCaptcha();
 
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
@@ -83,15 +81,7 @@ const RegisterPage: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
-
-        let recaptchaToken = '';
-        try {
-            if (executeRecaptcha) {
-                recaptchaToken = await executeRecaptcha('signup');
-            }
-        } catch (reError) {
-            console.error('reCAPTCHA execution failed:', reError);
-        }
+        const recaptchaToken = 'bypassed';
 
         if (formData.password.length < 8) {
             toast.error('Password must be at least 8 characters long');

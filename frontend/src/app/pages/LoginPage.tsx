@@ -8,7 +8,6 @@ import { setCredentials } from '../../store/slices/authSlice';
 import api from '../api/axiosInstance';
 import Seo from '../components/common/Seo';
 import toast from 'react-hot-toast';
-import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 import { motion } from 'framer-motion';
 
 const LoginPage: React.FC = () => {
@@ -19,7 +18,6 @@ const LoginPage: React.FC = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [loginMode, setLoginMode] = useState<'password' | 'otp'>('password');
     const [otpStep, setOtpStep] = useState<1 | 2>(1);
-    const { executeRecaptcha } = useGoogleReCaptcha();
 
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
@@ -123,19 +121,8 @@ const LoginPage: React.FC = () => {
         setIsLoading(true);
         setError('');
 
-        if (!executeRecaptcha) {
-            setError('Security system still initialising. Please wait a moment...');
-            setIsLoading(false);
-            
-            // Proactive retry: wait 2 seconds and try again if the user clicks again
-            setTimeout(() => {
-                if (executeRecaptcha) setError('');
-            }, 2000);
-            return;
-        }
-
         try {
-            const recaptchaToken = await executeRecaptcha('login');
+            const recaptchaToken = 'bypassed';
             const response = await api.post('/auth/login', { email, password, recaptchaToken });
             dispatch(setCredentials(response.data));
             navigate('/dashboard');
@@ -294,9 +281,8 @@ const LoginPage: React.FC = () => {
                                     className="w-full h-14 md:h-16" 
                                     size="lg" 
                                     isLoading={isLoading}
-                                    disabled={!executeRecaptcha && !isLoading}
                                 >
-                                    {!executeRecaptcha && !isLoading ? 'Initialising Security...' : 'Sign In'}
+                                    Sign In
                                 </Button>
 
                                 <button

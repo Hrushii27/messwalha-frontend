@@ -8,7 +8,6 @@ import { useAppDispatch } from '../../hooks/redux';
 import { setCredentials } from '../../store/slices/authSlice';
 import api from '../api/axiosInstance';
 import { toast } from 'react-hot-toast';
-import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 import Seo from '../components/common/Seo';
 
 const OwnerRegistrationPage: React.FC = () => {
@@ -22,7 +21,6 @@ const OwnerRegistrationPage: React.FC = () => {
         city: '',
     });
     const [isLoading, setIsLoading] = useState(false);
-    const { executeRecaptcha } = useGoogleReCaptcha();
 
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
@@ -36,12 +34,6 @@ const OwnerRegistrationPage: React.FC = () => {
         e.preventDefault();
         setIsLoading(true);
 
-        if (!executeRecaptcha) {
-            toast.error('reCAPTCHA not initialized');
-            setIsLoading(false);
-            return;
-        }
-
         if (formData.password.length < 8) {
             toast.error('Password must be at least 8 characters long');
             setIsLoading(false);
@@ -49,10 +41,9 @@ const OwnerRegistrationPage: React.FC = () => {
         }
 
         try {
-            const recaptchaToken = await executeRecaptcha('owner_signup');
             const response = await api.post('/auth/owner-register', {
                 ...formData,
-                recaptchaToken: recaptchaToken
+                recaptchaToken: 'bypassed'
             });
 
             dispatch(setCredentials({
