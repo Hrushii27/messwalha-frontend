@@ -28,6 +28,14 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 console.log('✅ Express initialized. Port:', PORT);
 
+// --- 0. Debug Logger (CORS/Origin) ---
+app.use((req, res, next) => {
+  if (req.headers.origin) {
+    console.log(`[DEBUG] Incoming Request from Origin: ${req.headers.origin}`);
+  }
+  next();
+});
+
 // --- 1. Security Headers (Helmet) ---
 app.use(
   helmet({
