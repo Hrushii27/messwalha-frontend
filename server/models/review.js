@@ -8,11 +8,6 @@ const Review = {
         );
         return result.rows[0];
     },
-<<<<<<< HEAD
-    findByMessId: async (messId) => {
-        const result = await db.query(
-            `SELECT r.*, u.name as user_name 
-=======
     respond: async (reviewId, response) => {
         const result = await db.query(
             'UPDATE reviews SET owner_response = $1 WHERE id = $2 RETURNING *',
@@ -23,7 +18,6 @@ const Review = {
     findByMessId: async (messId) => {
         const result = await db.query(
             `SELECT r.*, u.name as user_name, u.profile_picture as user_profile_picture
->>>>>>> 3188c9a67539e26bc98942bbe963b9995a127f3a
              FROM reviews r 
              JOIN mess_owners u ON r.user_id = u.id 
              WHERE r.mess_id = $1 
@@ -31,8 +25,6 @@ const Review = {
             [messId]
         );
         return result.rows;
-<<<<<<< HEAD
-=======
     },
     findByUserId: async (userId) => {
         const result = await db.query(
@@ -44,7 +36,6 @@ const Review = {
             [userId]
         );
         return result.rows;
->>>>>>> 3188c9a67539e26bc98942bbe963b9995a127f3a
     }
 };
 
