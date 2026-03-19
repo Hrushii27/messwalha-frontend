@@ -1,8 +1,18 @@
 const express = require('express');
 const cors = require('cors');
+const helmet = require('helmet');
+const cookieParser = require('cookie-parser');
 require('dotenv').config();
+
+// Configuration & Utils
+const db = require('./config/db');
 const { createTables } = require('./config/initDb');
 const startScheduler = require('./utils/scheduler');
+
+// Middleware
+const { setupSecurity } = require('./middleware/security');
+const authenticateToken = require('./middleware/auth');
+const { activityLogger } = require('./middleware/activityLogger');
 
 // Routes
 const authRoutes = require('./routes/auth');
@@ -18,23 +28,10 @@ const orderRoutes = require('./routes/order');
 const reviewsRoutes = require('./routes/reviews');
 const googleAuthRoutes = require('./routes/googleAuth');
 
-const helmet = require('helmet');
-const { setupSecurity } = require('./middleware/security');
-const authenticateToken = require('./middleware/auth');
-const { activityLogger } = require('./middleware/activityLogger');
-
 console.log('🚀 Server starting process...');
 const app = express();
 const PORT = process.env.PORT || 5000;
 console.log('✅ Express initialized. Port:', PORT);
-
-// --- 0. Debug Logger (CORS/Origin) ---
-app.use((req, res, next) => {
-  if (req.headers.origin) {
-    console.log(`[DEBUG] Incoming Request from Origin: ${req.headers.origin}`);
-  }
-  next();
-});
 
 // --- 1. Security Headers (Helmet) ---
 app.use(
@@ -83,27 +80,28 @@ app.use(
   })
 );
 
-// --- 3. Custom Security Layer (Rate Limiting, XSS, HPP) ---
+// --- 3. Body & Cookie Parsers ---
+app.use(express.json({ limit: '10kb' })); 
+app.use(cookieParser());
+
+// --- 4. Custom Security Layer (Rate Limiting, XSS, HPP) ---
 setupSecurity(app);
 
-// --- 4. Activity Logger (Monitor failed/suspicious requests) ---
+// --- 5. Activity Logger (Monitor failed/suspicious requests) ---
 app.use(activityLogger);
 
-// --- 5. Authentication (Soft Auth) ---
+// --- 6. Authentication (Soft Auth) ---
 app.use(authenticateToken);
-
-// --- 6. Body Parser ---
-app.use(express.json({ limit: '10kb' })); 
 
 // Global Request Logger
 app.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] 📡 ${req.method} ${req.url}`);
   next();
 });
+
 // --- Diagnostic Routes ---
 app.get('/api/ping', (req, res) => res.json({ status: 'OK', message: 'pong', time: new Date() }));
 
-const db = require('./config/db');
 app.get('/api/health', async (req, res) => {
   console.log('🔍 Health check requested');
   try {
