@@ -5,7 +5,6 @@ import { store } from './store';
 import { Navigate } from 'react-router-dom';
 import { FavoritesProvider } from './app/context/FavoritesContext';
 import GlobalErrorBoundary from './app/components/GlobalErrorBoundary';
-import { GoogleReCaptchaProvider } from 'react-google-recaptcha-v3';
 import ProtectedRoute from './app/components/auth/ProtectedRoute';
 
 // Lazy load pages for better performance
