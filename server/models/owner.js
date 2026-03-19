@@ -1,10 +1,10 @@
 const db = require('../config/db');
 
 const Owner = {
-    create: async (name, email, phone, passwordHash, role = 'STUDENT') => {
+    create: async (name, email, phone, passwordHash, role = 'STUDENT', googleId = null) => {
         const result = await db.query(
-            'INSERT INTO mess_owners (name, email, phone, password_hash, role) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-            [name, email, phone, passwordHash, role]
+            'INSERT INTO mess_owners (name, email, phone, password_hash, role, google_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+            [name, email, phone, passwordHash, role, googleId]
         );
         return result.rows[0];
     },

@@ -280,8 +280,8 @@ const authController = {
                     // Use a random placeholder for password since it's NOT NULL in DB
                     const randomPassword = crypto.randomBytes(16).toString('hex');
                     const passwordHash = await bcrypt.hash(randomPassword, 10);
-                    user = await Owner.create(name, email, '', passwordHash, 'STUDENT');
-                    await Owner.updateProfile(user.id, { google_id: googleId, profile_picture: picture });
+                    user = await Owner.create(name, email, '', passwordHash, 'STUDENT', googleId);
+                    await Owner.updateProfile(user.id, { profile_picture: picture });
                 }
             }
 
