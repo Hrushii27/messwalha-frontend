@@ -10,6 +10,12 @@ import api from '../api/axiosInstance';
 import { toast } from 'react-hot-toast';
 import Seo from '../components/common/Seo';
 
+const weakPasswords = [
+    "123456", "password", "qwerty", "111111",
+    "abc123", "123123", "000000", "password1",
+    "iloveyou", "admin", "letmein", "welcome"
+];
+
 const OwnerRegistrationPage: React.FC = () => {
     const [formData, setFormData] = useState({
         name: '',
@@ -20,6 +26,7 @@ const OwnerRegistrationPage: React.FC = () => {
         location: '',
         city: '',
     });
+    const [passwordError, setPasswordError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
 
     const dispatch = useAppDispatch();
@@ -28,14 +35,33 @@ const OwnerRegistrationPage: React.FC = () => {
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
+
+        if (name === 'password' && passwordError) {
+            const error = validatePassword(value);
+            if (!error) setPasswordError(null);
+        }
+    };
+
+    const validatePassword = (pass: string) => {
+        if (!pass) return null;
+        if (weakPasswords.includes(pass.toLowerCase())) {
+            return 'This password is too common. Please choose a stronger password.';
+        }
+        if (pass.length < 6) return 'Password must be at least 6 characters long';
+        if (!/[a-z]/.test(pass)) return 'Password must contain at least one lowercase letter';
+        if (!/[A-Z]/.test(pass)) return 'Password must contain at least one uppercase letter';
+        if (!/[0-9]/.test(pass)) return 'Password must contain at least one number';
+        return null;
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
 
-        if (formData.password.length < 8) {
-            toast.error('Password must be at least 8 characters long');
+        const passError = validatePassword(formData.password);
+        if (passError) {
+            setPasswordError(passError);
+            toast.error(passError);
             setIsLoading(false);
             return;
         }
@@ -100,7 +126,9 @@ const OwnerRegistrationPage: React.FC = () => {
                             <Input
                                 id="owner-password" name="password" label="Password" type="password"
                                 placeholder="••••••••" value={formData.password} onChange={handleInputChange} 
-                                minLength={8} required
+                                onBlur={() => setPasswordError(validatePassword(formData.password))}
+                                error={passwordError || undefined}
+                                required
                             />
                         </div>
 

@@ -7,6 +7,12 @@ import { Utensils, ArrowLeft, Eye, EyeOff, AlertCircle } from 'lucide-react';
 import api from '../api/axiosInstance';
 import { toast } from 'react-hot-toast';
 
+const weakPasswords = [
+    "123456", "password", "qwerty", "111111",
+    "abc123", "123123", "000000", "password1",
+    "iloveyou", "admin", "letmein", "welcome"
+];
+
 const ResetPasswordPage: React.FC = () => {
     const { token } = useParams<{ token: string }>();
     const navigate = useNavigate();
@@ -16,6 +22,7 @@ const ResetPasswordPage: React.FC = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [passwordError, setPasswordError] = useState<string | null>(null);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -25,8 +32,10 @@ const ResetPasswordPage: React.FC = () => {
             return;
         }
 
-        if (password.length < 6) {
-            setError('Password must be at least 6 characters long');
+        const passError = validatePassword(password);
+        if (passError) {
+            setPasswordError(passError);
+            setError(passError);
             return;
         }
 
@@ -45,6 +54,18 @@ const ResetPasswordPage: React.FC = () => {
         } finally {
             setIsLoading(false);
         }
+    };
+
+    const validatePassword = (pass: string) => {
+        if (!pass) return null;
+        if (weakPasswords.includes(pass.toLowerCase())) {
+            return 'This password is too common. Please choose a stronger password.';
+        }
+        if (pass.length < 6) return 'Password must be at least 6 characters long';
+        if (!/[a-z]/.test(pass)) return 'Password must contain at least one lowercase letter';
+        if (!/[A-Z]/.test(pass)) return 'Password must contain at least one uppercase letter';
+        if (!/[0-9]/.test(pass)) return 'Password must contain at least one number';
+        return null;
     };
 
     return (
@@ -72,7 +93,15 @@ const ResetPasswordPage: React.FC = () => {
                             type={showPassword ? "text" : "password"}
                             placeholder="••••••••"
                             value={password}
-                            onChange={(e) => setPassword(e.target.value)}
+                            onChange={(e) => {
+                                setPassword(e.target.value);
+                                if (passwordError) {
+                                    const err = validatePassword(e.target.value);
+                                    if (!err) setPasswordError(null);
+                                }
+                            }}
+                            onBlur={() => setPasswordError(validatePassword(password))}
+                            error={passwordError || undefined}
                             required
                         />
                         <button

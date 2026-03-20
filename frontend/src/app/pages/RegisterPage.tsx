@@ -12,6 +12,12 @@ import Seo from '../components/common/Seo';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // CACHE_BUST_v3_premium
+const weakPasswords = [
+    "123456", "password", "qwerty", "111111",
+    "abc123", "123123", "000000", "password1",
+    "iloveyou", "admin", "letmein", "welcome"
+];
+
 const RegisterPage: React.FC = () => {
     const [role, setRole] = useState<'STUDENT' | 'OWNER'>('STUDENT');
     const [formData, setFormData] = useState({
@@ -24,6 +30,7 @@ const RegisterPage: React.FC = () => {
         location: '',
         city: '',
     });
+    const [passwordError, setPasswordError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const { executeRecaptcha } = useGoogleReCaptcha();
 
@@ -76,9 +83,27 @@ const RegisterPage: React.FC = () => {
         }
     };
 
+    const validatePassword = (pass: string) => {
+        if (!pass) return null;
+        if (weakPasswords.includes(pass.toLowerCase())) {
+            return 'This password is too common. Please choose a stronger password.';
+        }
+        if (pass.length < 6) return 'Password must be at least 6 characters long';
+        if (!/[a-z]/.test(pass)) return 'Password must contain at least one lowercase letter';
+        if (!/[A-Z]/.test(pass)) return 'Password must contain at least one uppercase letter';
+        if (!/[0-9]/.test(pass)) return 'Password must contain at least one number';
+        return null;
+    };
+
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
+        
+        // Clear error when user stays in valid state or re-types
+        if (name === 'password' && passwordError) {
+            const error = validatePassword(value);
+            if (!error) setPasswordError(null);
+        }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -94,8 +119,10 @@ const RegisterPage: React.FC = () => {
             console.error('reCAPTCHA execution failed:', reError);
         }
 
-        if (formData.password.length < 8) {
-            toast.error('Password must be at least 8 characters long');
+        const passError = validatePassword(formData.password);
+        if (passError) {
+            setPasswordError(passError);
+            toast.error(passError);
             setIsLoading(false);
             return;
         }
@@ -148,7 +175,7 @@ const RegisterPage: React.FC = () => {
         </div>
     );
 
-    const Input = ({ label, id, ...props }: any) => (
+    const Input = ({ label, id, error, ...props }: any) => (
         <div className="space-y-2">
             <label htmlFor={id} className="text-[10px] font-black uppercase tracking-[0.2em] text-navy-400 italic px-1 block">
                 {label}
@@ -156,8 +183,13 @@ const RegisterPage: React.FC = () => {
             <input
                 id={id}
                 {...props}
-                className={`w-full bg-navy-800/50 border border-white/5 rounded-2xl px-6 outline-none focus:border-primary-500/50 focus:bg-navy-800 transition-all text-white font-medium placeholder:text-navy-600 ${props.className || ''}`}
+                className={`w-full bg-navy-800/50 border border-white/5 rounded-2xl px-6 outline-none focus:border-primary-500/50 focus:bg-navy-800 transition-all text-white font-medium placeholder:text-navy-600 ${props.className || ''} ${error ? 'border-red-500/50' : ''}`}
             />
+            {error && (
+                <p className="font-black italic px-1" style={{ color: '#E84B4B', fontSize: '10px', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+                    {error}
+                </p>
+            )}
         </div>
     );
 
@@ -405,6 +437,8 @@ const RegisterPage: React.FC = () => {
                                         placeholder="••••••••"
                                         value={formData.password}
                                         onChange={handleInputChange}
+                                        onBlur={() => setPasswordError(validatePassword(formData.password))}
+                                        error={passwordError}
                                         required
                                         className="h-14 lg:h-16 sm:col-span-2"
                                     />
