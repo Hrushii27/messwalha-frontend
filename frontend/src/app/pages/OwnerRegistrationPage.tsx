@@ -40,7 +40,7 @@ const OwnerRegistrationPage: React.FC = () => {
     };
 
     const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
+        const { name, value } = (e.target as HTMLInputElement);
         setTouched(prev => ({ ...prev, [name]: true }));
         const error = validateField(name, value);
         setErrors(prev => ({ ...prev, [name]: error }));
@@ -89,13 +89,7 @@ const OwnerRegistrationPage: React.FC = () => {
         return error;
     };
 
-    const isFormValid = () => {
-        const requiredFields = ['name', 'email', 'phone', 'password', 'confirmPassword', 'messName', 'location', 'city'];
-        return requiredFields.every(field => {
-            const val = formData[field as keyof typeof formData];
-            return val && !validateField(field, val);
-        });
-    };
+    // Replaced by inline validation in handleSubmit for performance
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -289,12 +283,11 @@ const OwnerRegistrationPage: React.FC = () => {
 
                      <Button 
                         type="submit" 
-                        className={`w-full transition-all ${isFormValid() ? 'opacity-100' : 'opacity-50 cursor-not-allowed'}`} 
-                        size="lg" 
+                        className="w-full h-16 py-4 bg-primary-500 shadow-2xl shadow-primary-500/20 rounded-2xl font-black uppercase tracking-[0.2em] italic text-[11px]"
                         isLoading={isLoading}
-                        disabled={!isFormValid() || isLoading}
+                        disabled={isLoading}
                     >
-                        {isLoading ? 'Processing Registration...' : 'Complete Registration & Start Trial'}
+                        <span>{isLoading ? 'Processing Registration...' : 'Start My 60-Day Free Trial'}</span>
                     </Button>
                 </form>
 

@@ -54,32 +54,30 @@ const ResetPasswordPage: React.FC = () => {
     };
 
     const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
+        const { name, value } = (e.target as HTMLInputElement);
         setTouched(prev => ({ ...prev, [name]: true }));
         const error = validateField(name, value);
         setErrors(prev => ({ ...prev, [name]: error }));
     };
 
-    const isFormValid = () => {
-        return !validatePassword(formData.password) && formData.confirmPassword === formData.password && formData.password !== '';
-    };
-
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         
-        // Final validation check - mark all as touched
         const newErrors: Record<string, string> = {};
-        const newTouched: Record<string, boolean> = {};
-        Object.keys(formData).forEach(key => {
-            newTouched[key] = true;
-            const error = validateField(key, formData[key as keyof typeof formData]);
-            if (error) newErrors[key] = error;
-        });
+        const passwordError = validatePassword(formData.password);
+        if (passwordError) {
+            newErrors.password = passwordError;
+        }
+        if (formData.password !== formData.confirmPassword) {
+            newErrors.confirmPassword = "Passwords do not match";
+        }
+        if (!formData.confirmPassword) {
+            newErrors.confirmPassword = "Confirm password is required";
+        }
 
-        setTouched(newTouched);
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
-            toast.error("Please fix errors before reset");
+            toast.error("Please fix errors before resetting your password.");
             return;
         }
 
@@ -145,11 +143,11 @@ const ResetPasswordPage: React.FC = () => {
                     />
                     <Button 
                         type="submit" 
-                        className={`w-full ${isFormValid() ? 'opacity-100' : 'opacity-50 cursor-not-allowed'}`} 
+                        className="w-full h-16 py-4 bg-primary-500 shadow-2xl shadow-primary-500/20 rounded-2xl font-black uppercase tracking-[0.2em] italic text-[11px]"
                         isLoading={isLoading}
-                        disabled={!isFormValid() || isLoading}
+                        disabled={isLoading}
                     >
-                        {isLoading ? 'Resetting...' : 'Reset Password'}
+                        {isLoading ? 'Resetting Password...' : 'Reset Password'}
                     </Button>
 
                     <Link to="/login" className="flex items-center justify-center text-sm text-gray-400 hover:text-primary transition-colors gap-2">

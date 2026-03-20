@@ -137,22 +137,13 @@ const RegisterPage: React.FC = () => {
     };
 
     const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
+        const { name, value } = (e.target as HTMLInputElement);
         setTouched(prev => ({ ...prev, [name]: true }));
         const error = validateField(name, value);
         setErrors(prev => ({ ...prev, [name]: error }));
     };
 
-    const isFormValid = () => {
-        const requiredFields = role === 'STUDENT' 
-            ? ['name', 'email', 'password', 'confirmPassword', 'college']
-            : ['name', 'email', 'password', 'confirmPassword', 'phone', 'messName', 'location', 'city'];
-        
-        return requiredFields.every(field => {
-            const val = formData[field as keyof typeof formData];
-            return val && !validateField(field, val);
-        });
-    };
+    // Replaced by inline validation in handleSubmit for performance
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -546,10 +537,10 @@ const RegisterPage: React.FC = () => {
 
                                 <Button 
                                     type="submit" 
-                                    className={`w-full h-14 md:h-18 py-6 shadow-2xl font-black uppercase tracking-[0.2em] italic text-[11px] transition-all ${isFormValid() ? 'bg-primary-500 shadow-primary-500/20 opacity-100' : 'bg-navy-800 opacity-50 cursor-not-allowed'}`}
+                                    className={`w-full h-14 md:h-18 py-6 shadow-2xl font-black uppercase tracking-[0.2em] italic text-[11px] transition-all bg-primary-500 shadow-primary-500/20 opacity-100`}
                                     size="lg" 
                                     isLoading={isLoading}
-                                    disabled={!isFormValid() || isLoading}
+                                    disabled={isLoading}
                                 >
                                     <span className="flex items-center space-x-2">
                                         <span>{isLoading ? 'Creating Account...' : 'Create Account'}</span>
