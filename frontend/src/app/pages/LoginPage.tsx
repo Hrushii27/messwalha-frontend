@@ -157,7 +157,7 @@ const LoginPage: React.FC = () => {
                 <div 
                     className="absolute inset-0 z-0 pointer-events-none"
                     style={{ 
-                        background: 'linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.6))' 
+                        background: 'linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8))' 
                     }}
                 />
                 <div className="max-w-md relative z-10">
@@ -204,7 +204,7 @@ const LoginPage: React.FC = () => {
                                         className="w-14 h-14 rounded-2xl flex items-center justify-center text-primary-500 group-hover:bg-primary-500 group-hover:text-white transition-all duration-500 shadow-xl group-hover:shadow-primary-500/20"
                                         style={{ 
                                             background: 'rgba(232,98,42,0.15)',
-                                            border: '1px solid rgba(232,98,42,0.3)'
+                                            border: '1px solid rgba(232,98,42,0.7)'
                                         }}
                                     >
                                         <feature.icon size={24} />
@@ -228,7 +228,7 @@ const LoginPage: React.FC = () => {
             {/* Right Panel: Form */}
             <div className="flex-1 flex flex-col items-center justify-center p-6 sm:p-12 lg:p-24 relative z-10 w-full overflow-y-auto">
                 {/* Mobile Back Button */}
-                <Link to="/" className="absolute top-8 left-8 p-3 bg-white/5 rounded-xl text-white/40 hover:text-white transition-all lg:hidden">
+                <Link to="/" className="absolute top-8 left-8 p-3 bg-white/5 rounded-xl text-white/80 hover:text-white transition-all lg:hidden">
                     <ChevronLeft size={24} />
                 </Link>
 
@@ -245,7 +245,12 @@ const LoginPage: React.FC = () => {
                 <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="w-full max-w-md">
                     <div className="mb-10 text-center lg:text-left">
                         <h1 className="text-3xl md:text-5xl font-black text-white italic tracking-tighter mb-3">Welcome Back</h1>
-                        <p className="text-navy-300 font-black uppercase tracking-[0.2em] text-[10px] md:text-xs">Sign in to access your elite terminal</p>
+                        <p 
+                            className="font-black uppercase tracking-[0.2em] text-[10px] md:text-xs"
+                            style={{ color: 'rgba(232,238,255,0.85)' }}
+                        >
+                            Sign in to access your elite terminal
+                        </p>
                     </div>
 
                     <div className="space-y-4">
@@ -254,10 +259,10 @@ const LoginPage: React.FC = () => {
 
                         <div className="relative my-8">
                             <div className="absolute inset-0 flex items-center">
-                                <span className="w-full border-t border-navy-800"></span>
+                                <span className="w-full border-t" style={{ borderColor: 'rgba(255,255,255,0.18)' }}></span>
                             </div>
                             <div className="relative flex justify-center text-[10px] font-black uppercase tracking-[0.3em]">
-                                <span className="px-4 bg-navy-950 text-navy-400">Or continue with</span>
+                                <span className="px-4 bg-bg" style={{ color: 'rgba(232,238,255,0.7)' }}>Or continue with</span>
                             </div>
                         </div>
 
@@ -273,63 +278,35 @@ const LoginPage: React.FC = () => {
                                     <Input
                                         id="login-email"
                                         label="Email Address"
+                                        labelStyle={{ color: 'rgba(232,238,255,0.9)' }}
                                         type="email"
                                         placeholder="name@example.com"
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
                                         required
                                         className="h-14 md:h-16 transition-all"
-                                        style={{ 
-                                            background: '#111826',
-                                            color: '#E8EEFF',
-                                            border: '1px solid rgba(255,255,255,0.10)'
-                                        }}
-                                        onFocus={(e) => {
-                                            e.currentTarget.style.border = '1px solid rgba(232,98,42,0.5)';
-                                            e.currentTarget.style.boxShadow = '0 0 0 3px rgba(232,98,42,0.15)';
-                                        }}
-                                        onBlur={(e) => {
-                                            e.currentTarget.style.border = '1px solid rgba(255,255,255,0.10)';
-                                            e.currentTarget.style.boxShadow = 'none';
-                                        }}
                                     />
                                     <Input
                                         id="login-password"
                                         label="Password"
+                                        labelStyle={{ color: 'rgba(232,238,255,0.9)' }}
                                         type="password"
                                         placeholder="••••••••"
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
                                         required
                                         className="h-14 md:h-16 transition-all"
-                                        style={{ 
-                                            background: '#111826',
-                                            color: '#E8EEFF',
-                                            border: '1px solid rgba(255,255,255,0.10)'
-                                        }}
-                                        onFocus={(e) => {
-                                            e.currentTarget.style.border = '1px solid rgba(232,98,42,0.5)';
-                                            e.currentTarget.style.boxShadow = '0 0 0 3px rgba(232,98,42,0.15)';
-                                        }}
-                                        onBlur={(e) => {
-                                            e.currentTarget.style.border = '1px solid rgba(255,255,255,0.10)';
-                                            e.currentTarget.style.boxShadow = 'none';
-                                        }}
                                     />
                                 </div>
 
                                 <div className="flex items-center justify-between">
-                                    <label 
-                                        className="flex items-center space-x-2 text-[10px] md:text-[11px] font-black uppercase tracking-widest cursor-pointer"
-                                        style={{ color: 'rgba(232,238,255,0.7)' }}
-                                    >
-                                        <input type="checkbox" className="rounded border-navy-700 bg-navy-800 text-primary-500 focus:ring-primary-500/50" />
+                                    <label className="flex items-center space-x-2 text-[10px] md:text-[11px] font-black uppercase tracking-widest text-text-secondary cursor-pointer">
+                                        <input type="checkbox" className="rounded border-white/10 bg-bg3 text-primary-500 focus:ring-primary-500/50" />
                                         <span>Remember me</span>
                                     </label>
                                     <Link 
                                         to="/forgot-password" 
-                                        className="uppercase tracking-widest italic text-[10px] md:text-[11px] transition-colors"
-                                        style={{ color: '#E8622A', fontWeight: 600 }}
+                                        className="text-primary-500 hover:text-primary-400 font-black uppercase tracking-widest italic text-[10px] md:text-[11px] transition-colors"
                                     >
                                         Forgot password?
                                     </Link>
@@ -350,14 +327,7 @@ const LoginPage: React.FC = () => {
                                         setLoginMode('otp');
                                         setError(''); // Clear error when switching to OTP
                                     }}
-                                    className="w-full text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center space-x-3 py-4 rounded-xl"
-                                    style={{ 
-                                        background: 'transparent',
-                                        border: '1px solid rgba(255,255,255,0.12)',
-                                        color: '#E8EEFF'
-                                    }}
-                                    onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
-                                    onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                                    className="w-full text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center space-x-3 py-4 rounded-xl border border-white/10 hover:bg-white/5 text-text-primary"
                                 >
                                     <Mail size={16} className="text-primary-500" />
                                     <span>Sign in with OTP</span>
@@ -370,25 +340,13 @@ const LoginPage: React.FC = () => {
                                         <Input
                                             id="otp-email"
                                             label="Email for OTP"
+                                            labelStyle={{ color: 'rgba(232,238,255,0.9)' }}
                                             type="email"
                                             placeholder="name@example.com"
                                             value={email}
                                             onChange={(e) => setEmail(e.target.value)}
                                             required
                                             className="h-14 md:h-16 transition-all"
-                                            style={{ 
-                                                background: '#111826',
-                                                color: '#E8EEFF',
-                                                border: '1px solid rgba(255,255,255,0.10)'
-                                            }}
-                                            onFocus={(e) => {
-                                                e.currentTarget.style.border = '1px solid rgba(232,98,42,0.5)';
-                                                e.currentTarget.style.boxShadow = '0 0 0 3px rgba(232,98,42,0.15)';
-                                            }}
-                                            onBlur={(e) => {
-                                                e.currentTarget.style.border = '1px solid rgba(255,255,255,0.10)';
-                                                e.currentTarget.style.boxShadow = 'none';
-                                            }}
                                         />
                                         <Button type="submit" className="w-full h-14 md:h-16" size="lg" isLoading={isLoading}>
                                             Send OTP
@@ -402,6 +360,7 @@ const LoginPage: React.FC = () => {
                                         <Input
                                             id="otp-code"
                                             label="Enter 6-digit OTP"
+                                            labelStyle={{ color: 'rgba(232,238,255,0.9)' }}
                                             type="text"
                                             maxLength={6}
                                             placeholder="000000"
@@ -409,19 +368,6 @@ const LoginPage: React.FC = () => {
                                             onChange={(e) => setOtp(e.target.value)}
                                             required
                                             className="h-14 md:h-16 transition-all"
-                                            style={{ 
-                                                background: '#111826',
-                                                color: '#E8EEFF',
-                                                border: '1px solid rgba(255,255,255,0.10)'
-                                            }}
-                                            onFocus={(e) => {
-                                                e.currentTarget.style.border = '1px solid rgba(232,98,42,0.5)';
-                                                e.currentTarget.style.boxShadow = '0 0 0 3px rgba(232,98,42,0.15)';
-                                            }}
-                                            onBlur={(e) => {
-                                                e.currentTarget.style.border = '1px solid rgba(255,255,255,0.10)';
-                                                e.currentTarget.style.boxShadow = 'none';
-                                            }}
                                         />
                                         <Button type="submit" className="w-full h-14 md:h-16" size="lg" isLoading={isLoading}>
                                             Verify & Login
@@ -429,8 +375,7 @@ const LoginPage: React.FC = () => {
                                         <button 
                                             type="button" 
                                             onClick={() => setOtpStep(1)}
-                                            className="text-sm hover:underline block w-full text-center"
-                                            style={{ color: '#E8622A', fontWeight: 600 }}
+                                            className="text-sm text-primary-500 hover:text-primary-400 hover:underline block w-full text-center font-bold"
                                         >
                                             Resend OTP
                                         </button>
@@ -443,10 +388,7 @@ const LoginPage: React.FC = () => {
                                         setLoginMode('password');
                                         setError(''); // Clear error when switching back
                                     }}
-                                    className="w-full text-sm transition-colors flex items-center justify-center space-x-2"
-                                    style={{ color: 'rgba(232,238,255,0.6)' }}
-                                    onMouseEnter={(e) => e.currentTarget.style.color = '#E8622A'}
-                                    onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(232,238,255,0.6)'}
+                                    className="w-full text-sm text-text-muted hover:text-primary-500 transition-colors flex items-center justify-center space-x-2"
                                 >
                                     <ShieldCheck size={16} />
                                     <span>Use Password instead</span>
@@ -456,15 +398,11 @@ const LoginPage: React.FC = () => {
                     </div>
 
                     <div className="mt-10 pt-8 border-t border-navy-800 text-center">
-                        <p 
-                            className="text-[11px] font-black uppercase tracking-[0.2em]"
-                            style={{ color: 'rgba(232,238,255,0.4)' }}
-                        >
+                        <p className="text-[11px] font-black uppercase tracking-[0.2em] text-text-muted">
                             Don't have an account?{' '}
                             <Link 
                                 to="/register" 
-                                className="font-black transition-colors italic"
-                                style={{ color: '#E8622A' }}
+                                className="text-primary-500 font-black hover:text-primary-400 transition-colors italic"
                             >
                                 Create account
                             </Link>
@@ -484,7 +422,12 @@ const LoginPage: React.FC = () => {
                                 </div>
                                 <div className="space-y-1">
                                     <h3 className="text-[10px] font-black uppercase tracking-widest text-white italic">{feature.title}</h3>
-                                    <p className="text-navy-400 text-xs font-medium">{feature.desc}</p>
+                                    <p 
+                                        className="text-xs font-medium"
+                                        style={{ color: 'rgba(232,238,255,0.7)' }}
+                                    >
+                                        {feature.desc}
+                                    </p>
                                 </div>
                             </div>
                         ))}

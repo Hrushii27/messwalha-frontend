@@ -8,22 +8,28 @@ function cn(...inputs: ClassValue[]) {
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
     label?: string;
+    labelClassName?: string;
+    labelStyle?: React.CSSProperties;
     error?: string;
 }
 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
-    ({ className, label, error, ...props }, ref) => {
+    ({ className, label, labelClassName, labelStyle, error, ...props }, ref) => {
         return (
             <div className="w-full space-y-1.5">
                 {label && (
-                    <label htmlFor={props.id} className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <label 
+                        htmlFor={props.id} 
+                        className={cn("text-sm font-medium transition-colors", labelClassName)}
+                        style={{ color: 'var(--color-text-secondary)', ...labelStyle }}
+                    >
                         {label}
                     </label>
                 )}
                 <input
                     ref={ref}
                     className={cn(
-                        'flex h-12 w-full rounded-xl border border-navy-700 bg-navy-800/50 px-4 py-2 text-sm text-white ring-offset-navy-950 file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-navy-400 focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all',
+                        'flex h-12 w-full rounded-xl bg-bg3 border border-white/10 px-4 py-2 text-sm text-text-primary ring-offset-bg file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-text-muted transition-all',
                         error && 'border-red-500 focus:ring-red-500',
                         className
                     )}

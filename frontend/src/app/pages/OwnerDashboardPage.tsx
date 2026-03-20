@@ -228,7 +228,7 @@ const OwnerDashboardPage: React.FC = () => {
                 <CreditCard size={48} />
             </div>
             <h3 className="text-2xl md:text-3xl font-black text-white italic tracking-tighter uppercase">Subscription Required</h3>
-            <p className="text-navy-300 max-w-md mx-auto text-sm md:text-base font-medium">
+            <p className="text-text-muted max-w-md mx-auto text-sm md:text-base font-medium italic">
                 Your subscription has expired or is inactive. You must renew your Elite Listing Plan to access {featureName} and continue finding students.
             </p>
             <Button onClick={() => navigate('/owner/subscribe')} size="lg" className="rounded-2xl px-12 py-6 text-xs font-black uppercase tracking-widest shadow-2xl shadow-primary-500/20">
@@ -245,23 +245,23 @@ const OwnerDashboardPage: React.FC = () => {
                     { label: 'Active Students', value: subscribers.length.toString(), trend: '+5', icon: <Users className="text-indigo-400" /> },
                     { label: 'Avg Rating', value: mess?.rating?.toFixed(1) || '0.0', trend: 'Global', icon: <Star className="text-orange-400" /> },
                 ].map((stat, i) => (
-                    <Card key={i} className="p-8 bg-navy-900/40 backdrop-blur-3xl border-navy-800 rounded-[2.5rem] hover:border-primary-500/30 transition-all group overflow-hidden relative">
+                    <Card key={i} className="p-8 bg-bg2/40 backdrop-blur-3xl border-white/10 rounded-[2.5rem] hover:border-primary-500/30 transition-all group overflow-hidden relative">
                         <div className="absolute top-0 right-0 w-24 h-24 bg-primary-500/5 rounded-full blur-3xl -mr-8 -mt-8" />
                         <div className="flex justify-between items-start mb-6">
-                            <div className="p-4 bg-navy-800 rounded-2xl group-hover:scale-110 transition-transform duration-500">{stat.icon}</div>
-                            <span className={`text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full ${stat.trend.startsWith('+') ? 'bg-green-500/10 text-green-400 border border-green-500/20' : 'bg-navy-800 text-navy-400'}`}>
+                            <div className="p-4 bg-bg3/50 rounded-2xl group-hover:scale-110 transition-transform duration-500">{stat.icon}</div>
+                            <span className={`text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full ${stat.trend.startsWith('+') ? 'bg-green-500/10 text-green-400 border border-green-500/20' : 'bg-bg3 text-text-muted'}`}>
                                 {stat.trend}
                             </span>
                         </div>
-                        <p className="text-navy-400 text-[10px] font-black uppercase tracking-[0.2em]">{stat.label}</p>
+                        <p className="text-text-muted text-[10px] font-black uppercase tracking-[0.2em] italic">{stat.label}</p>
                         <p className="text-3xl md:text-4xl font-black mt-2 text-white italic tracking-tighter">{stat.value}</p>
                     </Card>
                 ))}
             </div>
 
             <section className="space-y-6">
-                <h2 className="text-[10px] font-black text-navy-400 uppercase tracking-[0.4em] ml-2 italic">Operational Status</h2>
-                <Card className="p-8 md:p-10 overflow-hidden border-2 border-primary-500/10 bg-navy-900/40 backdrop-blur-3xl rounded-[2.5rem] relative">
+                <h2 className="text-[10px] font-black text-text-muted uppercase tracking-[0.4em] ml-2 italic">Operational Status</h2>
+                <Card className="p-8 md:p-10 overflow-hidden border-2 border-primary-500/10 bg-bg2/40 backdrop-blur-3xl rounded-[2.5rem] relative">
                     <div className="absolute bottom-0 right-0 w-64 h-64 bg-primary-500/5 rounded-full blur-[100px] -mr-32 -mb-32 pointer-events-none" />
                     <div className="flex flex-col xl:flex-row items-center justify-between gap-10 relative z-10">
                         <div className="flex flex-col sm:flex-row items-center space-y-6 sm:space-y-0 sm:space-x-8 text-center sm:text-left">
@@ -283,7 +283,7 @@ const OwnerDashboardPage: React.FC = () => {
                                         {subscription?.status === 'expired' ? 'Plan Expired' : subscription?.status || 'No Active Plan'}
                                     </span>
                                 </div>
-                                <div className="flex flex-wrap items-center justify-center sm:justify-start gap-5 text-[10px] md:text-[11px] font-black uppercase tracking-widest text-navy-300">
+                                <div className="flex flex-wrap items-center justify-center sm:justify-start gap-5 text-[10px] md:text-[11px] font-black uppercase tracking-widest text-text-secondary">
                                     {subscription?.status === 'trial' && subscription?.trial_end && (
                                         <div className="flex items-center text-orange-400 bg-orange-400/10 px-4 py-2 rounded-xl">
                                             <Clock size={14} className="mr-2" />
@@ -298,7 +298,7 @@ const OwnerDashboardPage: React.FC = () => {
                                         </div>
                                     )}
                                     {subscription?.subscription_end && (
-                                        <div className="flex items-center text-navy-400">
+                                        <div className="flex items-center text-text-muted">
                                             <Calendar size={14} className="mr-2" />
                                             <span>Expire: {new Date(subscription.subscription_end).toLocaleDateString()}</span>
                                         </div>
@@ -322,7 +322,7 @@ const OwnerDashboardPage: React.FC = () => {
                             )}
                             <Button
                                 variant="outline"
-                                className="rounded-2xl px-12 py-6 text-xs font-black uppercase tracking-widest border-navy-700 text-white hover:bg-navy-800 transition-all w-full"
+                                className="rounded-2xl px-12 py-6 text-xs font-black uppercase tracking-widest border-white/10 text-white hover:bg-bg3 transition-all w-full italic"
                                 onClick={() => setIsBillingModalOpen(true)}
                             >
                                 Transaction History
@@ -334,15 +334,15 @@ const OwnerDashboardPage: React.FC = () => {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12">
                 <section className="space-y-6">
-                    <h2 className="text-[10px] font-black text-navy-400 uppercase tracking-[0.4em] ml-2 italic">Broadcast System</h2>
-                    <Card className="p-8 border-2 border-primary-500/10 bg-navy-900/40 backdrop-blur-3xl rounded-[2.5rem] relative overflow-hidden">
+                    <h2 className="text-[10px] font-black text-text-muted uppercase tracking-[0.4em] ml-2 italic">Broadcast System</h2>
+                    <Card className="p-8 border-2 border-primary-500/10 bg-bg2/40 backdrop-blur-3xl rounded-[2.5rem] relative overflow-hidden">
                         <div className="absolute top-0 right-0 w-32 h-32 bg-primary-500/5 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
                         <div className="space-y-6 relative z-10">
-                            <p className="text-[11px] text-navy-300 font-medium italic leading-relaxed">Broadcast a priority transmission to all student units connected to your node.</p>
+                            <p className="text-[11px] text-text-muted font-medium italic leading-relaxed">Broadcast a priority transmission to all student units connected to your node.</p>
                             <textarea
                                 value={announcement}
                                 onChange={(e) => setAnnouncement(e.target.value)}
-                                className="w-full bg-navy-800/50 p-6 rounded-2xl border border-navy-700 outline-none focus:ring-2 focus:ring-primary-500/50 text-white text-sm min-h-[140px] font-medium placeholder:text-navy-500"
+                                className="w-full bg-bg3/30 p-6 rounded-2xl border border-white/10 outline-none focus:ring-2 focus:ring-primary-500/50 text-white text-sm min-h-[140px] font-black uppercase tracking-widest italic placeholder:text-text-muted/50"
                                 placeholder="E.g., Closed for maintenance today..."
                             />
                             <div className="flex justify-end">
@@ -359,8 +359,8 @@ const OwnerDashboardPage: React.FC = () => {
                 </section>
 
                 <section className="space-y-6">
-                    <h2 className="text-[10px] font-black text-navy-400 uppercase tracking-[0.4em] ml-2 italic">Recent Log</h2>
-                    <Card className="p-8 bg-navy-900/40 backdrop-blur-3xl border-navy-800 rounded-[2.5rem] flex flex-col items-center justify-center min-h-[300px]">
+                    <h2 className="text-[10px] font-black text-text-muted uppercase tracking-[0.4em] ml-2 italic">Recent Log</h2>
+                    <Card className="p-8 bg-bg2/40 backdrop-blur-3xl border-white/10 rounded-[2.5rem] flex flex-col items-center justify-center min-h-[300px]">
                         <EmptyState
                             icon={Clock}
                             title="Log Empty"
@@ -377,10 +377,10 @@ const OwnerDashboardPage: React.FC = () => {
         if (!isSubscriptionActive) return renderInactiveBlock('Menu Management');
         return (
             <div className="space-y-10">
-                <div className="flex flex-col md:flex-row justify-between items-center gap-8 bg-navy-900/40 backdrop-blur-3xl p-8 md:p-10 rounded-[2.5rem] border border-navy-800">
+                <div className="flex flex-col md:flex-row justify-between items-center gap-8 bg-bg2/40 backdrop-blur-3xl p-8 md:p-10 rounded-[2.5rem] border border-white/10">
                     <div className="space-y-2 text-center md:text-left">
                         <h2 className="text-3xl md:text-4xl font-black text-white italic tracking-tighter uppercase leading-none">Menu Console</h2>
-                        <p className="text-navy-400 text-[10px] font-black uppercase tracking-[0.3em] italic">Configuring Weekly Signals</p>
+                        <p className="text-text-muted text-[10px] font-black uppercase tracking-[0.3em] italic">Configuring Weekly Signals</p>
                     </div>
                     <Button
                         onClick={handleMenuSave}
@@ -398,7 +398,7 @@ const OwnerDashboardPage: React.FC = () => {
                             onClick={() => setSelectedDay(day)}
                             className={`px-8 py-4 rounded-xl text-[9px] font-black uppercase tracking-[0.2em] transition-all duration-500 whitespace-nowrap border-2 shrink-0 ${selectedDay === day
                                 ? 'bg-primary-500 text-white border-primary-500 shadow-xl shadow-primary-500/20 italic'
-                                : 'bg-navy-900/40 text-navy-400 border-navy-800 hover:border-navy-700'
+                                : 'bg-bg2/40 text-text-muted border-white/10 hover:border-white/20'
                                 }`}
                         >
                             {day}
@@ -408,28 +408,28 @@ const OwnerDashboardPage: React.FC = () => {
 
                 <div className="space-y-8">
                     {menus.find(m => m.day === selectedDay)?.items.length ? menus.find(m => m.day === selectedDay)?.items.map((item: MenuItem, idx: number) => (
-                        <div key={idx} className="bg-navy-900/40 backdrop-blur-3xl p-8 md:p-10 rounded-[2.5rem] flex flex-col lg:flex-row gap-6 lg:gap-8 items-end group transition-all border border-navy-800 hover:border-navy-700 relative overflow-hidden">
+                        <div key={idx} className="bg-bg2/40 backdrop-blur-3xl p-8 md:p-10 rounded-[2.5rem] flex flex-col lg:flex-row gap-6 lg:gap-8 items-end group transition-all border border-white/10 hover:border-white/20 relative overflow-hidden">
                             <div className="absolute top-0 right-0 w-32 h-32 bg-primary-500/5 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
                             <div className="flex-1 w-full space-y-4">
-                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-navy-400 ml-2">Slot {idx + 1}</label>
+                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted ml-2">Slot {idx + 1}</label>
                                 <input
                                     type="text"
                                     value={item.name}
                                     onChange={(e) => handleItemChange(selectedDay, idx, 'name', e.target.value)}
-                                    className="w-full h-14 md:h-16 bg-navy-800/50 border border-navy-700 p-6 rounded-2xl text-white outline-none focus:ring-2 focus:ring-primary-500/50 transition-all font-medium placeholder:text-navy-600"
+                                    className="w-full h-14 md:h-16 bg-bg3/30 border border-white/10 p-6 rounded-2xl text-white outline-none focus:ring-2 focus:ring-primary-500/50 transition-all font-black uppercase tracking-widest text-[10px] italic placeholder:text-text-muted/50"
                                     placeholder="Enter dish designation..."
                                 />
                             </div>
                             <div className="w-full lg:w-64 space-y-4">
-                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-navy-400 ml-2">Node Type</label>
+                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted ml-2">Node Type</label>
                                 <div className="relative">
                                     <select
                                         value={item.type}
                                         onChange={(e) => handleItemChange(selectedDay, idx, 'type', e.target.value)}
-                                        className="w-full h-14 md:h-16 bg-navy-800/50 border border-navy-700 pl-6 pr-12 rounded-2xl text-white outline-none focus:ring-2 focus:ring-primary-500/50 transition-all appearance-none font-black uppercase tracking-widest text-[10px]"
+                                        className="w-full h-14 md:h-16 bg-bg3/30 border border-white/10 pl-6 pr-12 rounded-2xl text-white outline-none focus:ring-2 focus:ring-primary-500/50 transition-all appearance-none font-black uppercase tracking-widest text-[10px] italic"
                                     >
-                                        <option value="Veg" className="bg-navy-900">VEG PROTOCOL</option>
-                                        <option value="Non-Veg" className="bg-navy-900">NON-VEG SIGNAL</option>
+                                        <option value="Veg" className="bg-bg2">VEG PROTOCOL</option>
+                                        <option value="Non-Veg" className="bg-bg2">NON-VEG SIGNAL</option>
                                     </select>
                                     <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-navy-500">
                                         <Clock size={16} />
@@ -459,7 +459,7 @@ const OwnerDashboardPage: React.FC = () => {
 
                     <button
                         onClick={() => handleAddItem(selectedDay)}
-                        className="w-full border-2 border-dashed border-navy-800 py-16 rounded-[2.5rem] text-[10px] font-black uppercase tracking-[0.4em] text-navy-500 hover:border-primary-500/50 hover:text-primary-500 hover:bg-primary-500/5 transition-all group relative overflow-hidden"
+                        className="w-full border-2 border-dashed border-white/10 py-16 rounded-[2.5rem] text-[10px] font-black uppercase tracking-[0.4em] text-text-muted hover:border-primary-500/50 hover:text-primary-500 hover:bg-primary-500/5 transition-all group relative overflow-hidden"
                     >
                         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-primary-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                         <span className="group-hover:scale-110 transition-transform inline-block relative z-10 font-black italic">+ Initialize New Signal</span>
@@ -473,33 +473,33 @@ const OwnerDashboardPage: React.FC = () => {
         if (!isSubscriptionActive) return renderInactiveBlock('Subscribers List');
         return (
             <div className="space-y-8">
-                <div className="flex flex-col md:flex-row justify-between items-center bg-navy-900/40 backdrop-blur-3xl p-8 md:p-10 rounded-[2.5rem] border border-navy-800 gap-8">
+                <div className="flex flex-col md:flex-row justify-between items-center bg-bg2/40 backdrop-blur-3xl p-8 md:p-10 rounded-[2.5rem] border border-white/10 gap-8">
                     <div className="space-y-2 text-center md:text-left">
                         <h2 className="text-3xl md:text-4xl font-black text-white italic tracking-tighter uppercase leading-none">Student Units</h2>
-                        <p className="text-navy-400 text-[10px] font-black uppercase tracking-[0.3em] italic">Active Node Subscribers</p>
+                        <p className="text-text-muted text-[10px] font-black uppercase tracking-[0.3em] italic">Active Node Subscribers</p>
                     </div>
-                    <div className="px-10 py-5 bg-navy-800 rounded-2xl border border-navy-700 flex items-center gap-4">
+                    <div className="px-10 py-5 bg-bg3/50 rounded-2xl border border-white/10 flex items-center gap-4">
                         <span className="text-primary-500 font-black text-3xl italic tracking-tighter">{subscribers.length}</span>
-                        <span className="text-navy-400 text-[10px] font-black uppercase tracking-widest">Units Connected</span>
+                        <span className="text-text-muted text-[10px] font-black uppercase tracking-widest">Units Connected</span>
                     </div>
                 </div>
 
                 {subscribers.length > 0 ? (
-                    <Card className="bg-navy-900/40 backdrop-blur-3xl border-navy-800 rounded-[2.5rem] overflow-hidden shadow-2xl">
+                    <Card className="bg-bg2/40 backdrop-blur-3xl border-white/10 rounded-[2.5rem] overflow-hidden shadow-3xl">
                         <div className="overflow-x-auto scrollbar-hide">
                             <table className="w-full text-left border-collapse min-w-[800px]">
                                 <thead>
-                                    <tr className="bg-navy-800/50">
-                                        <th className="px-10 py-6 text-[10px] font-black text-navy-400 uppercase tracking-[0.2em]">Identification</th>
-                                        <th className="px-10 py-6 text-[10px] font-black text-navy-400 uppercase tracking-[0.2em]">Node Protocol</th>
-                                        <th className="px-10 py-6 text-[10px] font-black text-navy-400 uppercase tracking-[0.2em]">Timestamp</th>
-                                        <th className="px-10 py-6 text-[10px] font-black text-navy-400 uppercase tracking-[0.2em]">Status</th>
-                                        <th className="px-10 py-6 text-[10px] font-black text-navy-400 uppercase tracking-[0.2em]">Command</th>
+                                    <tr className="bg-bg3/50">
+                                        <th className="px-10 py-6 text-[10px] font-black text-text-muted uppercase tracking-[0.2em]">Identification</th>
+                                        <th className="px-10 py-6 text-[10px] font-black text-text-muted uppercase tracking-[0.2em]">Node Protocol</th>
+                                        <th className="px-10 py-6 text-[10px] font-black text-text-muted uppercase tracking-[0.2em]">Timestamp</th>
+                                        <th className="px-10 py-6 text-[10px] font-black text-text-muted uppercase tracking-[0.2em]">Status</th>
+                                        <th className="px-10 py-6 text-[10px] font-black text-text-muted uppercase tracking-[0.2em]">Command</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-navy-800/30">
+                                <tbody className="divide-y divide-white/5">
                                     {subscribers.map(sub => (
-                                        <tr key={sub.id} className="hover:bg-navy-800/30 transition-colors group">
+                                        <tr key={sub.id} className="hover:bg-bg3/30 transition-colors group">
                                             <td className="px-10 py-8">
                                                 <div className="flex items-center space-x-5">
                                                     <div className="w-14 h-14 rounded-2xl bg-primary-500/10 flex items-center justify-center text-primary-500 font-black italic text-xl shadow-lg group-hover:scale-110 transition-transform duration-500">
@@ -507,23 +507,23 @@ const OwnerDashboardPage: React.FC = () => {
                                                     </div>
                                                     <div>
                                                         <p className="font-black text-white uppercase tracking-widest text-[11px] mb-1">{sub.user?.name || 'Anonymous'}</p>
-                                                        <p className="text-[10px] text-navy-500 font-medium italic">{sub.user?.email || 'Encrypted'}</p>
+                                                        <p className="text-[10px] text-text-muted font-medium italic">{sub.user?.email || 'Encrypted'}</p>
                                                     </div>
                                                 </div>
                                             </td>
                                             <td className="px-10 py-8">
-                                                <div className="px-4 py-2 bg-navy-800 rounded-xl border border-navy-700 inline-block">
-                                                    <p className="text-[10px] font-black text-navy-300 uppercase tracking-widest">{sub.plan_type}</p>
+                                                <div className="px-4 py-2 bg-bg3/50 rounded-xl border border-white/10 inline-block">
+                                                    <p className="text-[10px] font-black text-text-secondary uppercase tracking-widest italic">{sub.plan_type}</p>
                                                 </div>
                                             </td>
-                                            <td className="px-10 py-8 text-[11px] font-black text-navy-400 uppercase tracking-widest italic">
+                                            <td className="px-10 py-8 text-[11px] font-black text-text-muted uppercase tracking-widest italic">
                                                 {sub.created_at ? new Date(sub.created_at).toLocaleDateString() : '—'}
                                             </td>
                                             <td className="px-10 py-8">
                                                 <span className="text-[9px] font-black px-4 py-1.5 bg-green-500/10 text-green-400 rounded-lg uppercase tracking-widest border border-green-500/20 italic">Node Active</span>
                                             </td>
                                             <td className="px-10 py-8">
-                                                <button className="p-4 bg-navy-800 text-navy-500 rounded-xl hover:bg-red-500/10 hover:text-red-500 transition-all border border-navy-700 hover:border-red-500/20">
+                                                <button className="p-4 bg-bg3/50 text-text-muted rounded-xl hover:bg-red-500/10 hover:text-red-500 transition-all border border-white/10 hover:border-red-500/20">
                                                     <Trash2 size={18} />
                                                 </button>
                                             </td>
@@ -534,7 +534,7 @@ const OwnerDashboardPage: React.FC = () => {
                         </div>
                     </Card>
                 ) : (
-                    <Card className="min-h-[400px] bg-navy-900/40 backdrop-blur-3xl border-navy-800 rounded-[2.5rem] flex items-center justify-center">
+                    <Card className="min-h-[400px] bg-bg2/40 backdrop-blur-3xl border-white/10 rounded-[2.5rem] flex items-center justify-center">
                         <EmptyState
                             icon={Users}
                             title="Zero Units"
@@ -550,31 +550,31 @@ const OwnerDashboardPage: React.FC = () => {
         if (!isSubscriptionActive) return renderInactiveBlock('Student Reviews');
         return (
             <div className="space-y-10">
-                <div className="flex flex-col md:flex-row justify-between items-center bg-navy-900/40 backdrop-blur-3xl p-8 md:p-10 rounded-[2.5rem] border border-navy-800 gap-8">
+                <div className="flex flex-col md:flex-row justify-between items-center bg-bg2/40 backdrop-blur-3xl p-8 md:p-10 rounded-[2.5rem] border border-white/10 gap-8">
                     <div className="space-y-2 text-center md:text-left">
                         <h2 className="text-3xl md:text-4xl font-black text-white italic tracking-tighter uppercase leading-none">Feedback Matrix</h2>
-                        <p className="text-navy-400 text-[10px] font-black uppercase tracking-[0.3em] italic">Analyzing Unit Transmissions</p>
+                        <p className="text-text-muted text-[10px] font-black uppercase tracking-[0.3em] italic">Analyzing Unit Transmissions</p>
                     </div>
-                    <div className="flex items-center gap-5 px-8 py-5 bg-navy-800 rounded-2xl border border-navy-700">
+                    <div className="flex items-center gap-5 px-8 py-5 bg-bg3/50 rounded-2xl border border-white/10">
                         <Star size={24} className="text-orange-400 fill-orange-400" />
                         <span className="text-white font-black text-2xl md:text-3xl italic tracking-tighter">{mess?.rating?.toFixed(1) || '0.0'}</span>
-                        <div className="h-8 w-px bg-navy-700 mx-2" />
-                        <span className="text-navy-400 text-[10px] font-black uppercase tracking-widest">Overall</span>
+                        <div className="h-8 w-px bg-white/10 mx-2" />
+                        <span className="text-text-muted text-[10px] font-black uppercase tracking-widest">Overall</span>
                     </div>
                 </div>
 
                 <div className="space-y-8">
                     {ownerReviews.length > 0 ? ownerReviews.map(review => (
-                        <Card key={review.id} className="p-8 md:p-12 bg-navy-900/40 backdrop-blur-3xl border-navy-800 rounded-[2.5rem] space-y-8 relative overflow-hidden group hover:border-navy-700 transition-all">
+                        <Card key={review.id} className="p-8 md:p-12 bg-bg2/40 backdrop-blur-3xl border-white/10 rounded-[2.5rem] space-y-8 relative overflow-hidden group hover:border-white/20 transition-all">
                             <div className="absolute top-0 right-0 w-40 h-40 bg-indigo-500/5 rounded-full blur-[80px] -mr-20 -mt-20 pointer-events-none" />
                             <div className="flex flex-col sm:flex-row justify-between items-start gap-6 relative z-10">
                                 <div className="flex items-center gap-6">
-                                    <div className="w-16 h-16 rounded-2xl bg-navy-800 border border-navy-700 flex items-center justify-center text-primary-500 font-black italic shadow-xl group-hover:scale-110 transition-transform duration-500 text-2xl">
+                                    <div className="w-16 h-16 rounded-2xl bg-bg3/50 border border-white/10 flex items-center justify-center text-primary-500 font-black italic shadow-xl group-hover:scale-110 transition-transform duration-500 text-2xl">
                                         {review.user_name?.[0] || 'U'}
                                     </div>
                                     <div>
                                         <h4 className="font-black text-white uppercase tracking-widest text-[11px] mb-1 italic">{review.user_name}</h4>
-                                        <p className="text-[10px] text-navy-500 font-black uppercase tracking-[0.2em]">{new Date(review.created_at).toLocaleDateString()}</p>
+                                        <p className="text-[10px] text-text-muted font-black uppercase tracking-[0.2em] italic">{new Date(review.created_at).toLocaleDateString()}</p>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-3 bg-orange-500/10 px-6 py-3 rounded-2xl border border-orange-500/20">
@@ -582,15 +582,15 @@ const OwnerDashboardPage: React.FC = () => {
                                     <span className="text-lg font-black text-white italic tracking-tighter">{review.rating}.0</span>
                                 </div>
                             </div>
-                            <p className="text-navy-100 italic leading-relaxed text-xl border-l-4 border-navy-800 pl-8 font-medium relative z-10">"{review.comment}"</p>
+                            <p className="text-text-primary italic leading-relaxed text-xl border-l-4 border-white/10 pl-8 font-black uppercase tracking-wider relative z-10">"{review.comment}"</p>
                             
                             {review.owner_response ? (
-                                <div className="p-8 bg-navy-800/50 rounded-3xl border-l-4 border-primary-500/40 space-y-4 relative z-10">
+                                <div className="p-8 bg-bg3/30 rounded-3xl border-l-4 border-primary-500/40 space-y-4 relative z-10">
                                     <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-[0.3em] text-primary-500 italic">
                                         <span>Merchant Transmission</span>
                                         <MessageSquare size={16} />
                                     </div>
-                                    <p className="text-navy-300 italic font-medium leading-relaxed">"{review.owner_response}"</p>
+                                    <p className="text-text-muted italic font-black uppercase tracking-widest leading-relaxed">"{review.owner_response}"</p>
                                 </div>
                             ) : (
                                 <div className="pt-4 relative z-10">
@@ -600,7 +600,7 @@ const OwnerDashboardPage: React.FC = () => {
                                                 value={responseText}
                                                 onChange={(e) => setResponseText(e.target.value)}
                                                 placeholder="Compose signal response..."
-                                                className="w-full h-16 lg:h-18 bg-navy-800/50 p-8 rounded-3xl border border-navy-700 outline-none focus:ring-2 focus:ring-primary-500/50 text-white text-sm min-h-[140px] font-medium leading-relaxed"
+                                                className="w-full h-16 lg:h-18 bg-bg3/30 p-8 rounded-3xl border border-white/10 outline-none focus:ring-2 focus:ring-primary-500/50 text-white text-sm min-h-[140px] font-black uppercase tracking-widest italic leading-relaxed placeholder:text-text-muted/50"
                                             />
                                             <div className="flex flex-wrap gap-4">
                                                 <Button
@@ -625,7 +625,7 @@ const OwnerDashboardPage: React.FC = () => {
                                                     variant="ghost"
                                                     size="lg"
                                                     onClick={() => setRespondingTo(null)}
-                                                    className="rounded-2xl px-12 py-5 font-black uppercase tracking-widest text-[10px] text-navy-400 border border-navy-800 hover:bg-navy-800 grow md:grow-0"
+                                                    className="rounded-2xl px-12 py-5 font-black uppercase tracking-widest text-[10px] text-text-muted border border-white/10 hover:bg-bg3 grow md:grow-0 italic"
                                                 >
                                                     Cancel Transmit
                                                 </Button>
@@ -634,7 +634,7 @@ const OwnerDashboardPage: React.FC = () => {
                                     ) : (
                                         <button
                                             onClick={() => setRespondingTo(review.id)}
-                                            className="rounded-2xl font-black uppercase tracking-widest text-[10px] px-10 py-5 bg-navy-800 text-white border border-navy-700 hover:border-primary-500 hover:text-primary-500 transition-all flex items-center gap-4 italic"
+                                            className="rounded-2xl font-black uppercase tracking-widest text-[10px] px-10 py-5 bg-bg3 text-white border border-white/10 hover:border-primary-500 hover:text-primary-500 transition-all flex items-center gap-4 italic"
                                         >
                                             <MessageSquare size={18} className="text-primary-500" />
                                             Respond to Signal
@@ -644,7 +644,7 @@ const OwnerDashboardPage: React.FC = () => {
                             )}
                         </Card>
                     )) : (
-                        <Card className="min-h-[400px] bg-navy-900/40 backdrop-blur-3xl border-navy-800 rounded-[2.5rem] flex items-center justify-center">
+                        <Card className="min-h-[400px] bg-bg2/40 backdrop-blur-3xl border-white/10 rounded-[2.5rem] flex items-center justify-center">
                             <EmptyState
                                 icon={MessageSquare}
                                 title="No Signals"
@@ -661,10 +661,10 @@ const OwnerDashboardPage: React.FC = () => {
         if (!isSubscriptionActive) return renderInactiveBlock('Profile Settings');
         return (
             <div className="space-y-10">
-                <Card className="bg-navy-900/40 backdrop-blur-3xl p-8 md:p-12 rounded-[2.5rem] border border-navy-800">
+                <Card className="bg-bg2/40 backdrop-blur-3xl p-8 md:p-12 rounded-[2.5rem] border border-white/10">
                     <div className="space-y-2 mb-10 text-center md:text-left">
                         <h2 className="text-3xl md:text-4xl font-black text-white italic tracking-tighter uppercase leading-none">Node Settings</h2>
-                        <p className="text-navy-400 text-[10px] font-black uppercase tracking-[0.3em] italic">Configuring Metadata Relays</p>
+                        <p className="text-text-muted text-[10px] font-black uppercase tracking-[0.3em] italic">Configuring Metadata Relays</p>
                     </div>
                     <form onSubmit={handleUpdateMess} className="space-y-8">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -685,12 +685,12 @@ const OwnerDashboardPage: React.FC = () => {
                                 id="mess-cuisine-input"
                             />
                             <div className="md:col-span-2 space-y-4">
-                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-navy-400 ml-2 italic">Broadcast Description</label>
+                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted ml-2 italic">Broadcast Description</label>
                                 <textarea
                                     rows={4}
                                     value={messForm.description}
                                     onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setMessForm({ ...messForm, description: e.target.value })}
-                                    className="w-full bg-navy-800/50 border border-navy-700 p-8 rounded-[2rem] text-white outline-none focus:ring-2 focus:ring-primary-500/50 transition-all font-medium placeholder:text-navy-600 leading-relaxed text-sm"
+                                    className="w-full bg-bg3/30 border border-white/10 p-8 rounded-[2rem] text-white outline-none focus:ring-2 focus:ring-primary-500/50 transition-all font-black uppercase tracking-widest leading-relaxed text-sm italic placeholder:text-text-muted/50"
                                     placeholder="Briefly describe your culinary node..."
                                 />
                             </div>
@@ -719,17 +719,17 @@ const OwnerDashboardPage: React.FC = () => {
                                 id="mess-city-input"
                             />
                             <div className="space-y-4">
-                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-navy-400 ml-2 italic">Dietary Matrix</label>
+                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted ml-2 italic">Dietary Matrix</label>
                                 <div className="relative">
                                     <select
                                         value={messForm.veg_nonveg}
                                         onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setMessForm({ ...messForm, veg_nonveg: e.target.value })}
-                                        className="w-full h-14 md:h-16 bg-navy-800/50 border border-navy-700 pl-6 pr-12 rounded-2xl text-white outline-none focus:ring-2 focus:ring-primary-500/50 transition-all appearance-none font-black uppercase tracking-widest text-[10px]"
+                                        className="w-full h-14 md:h-16 bg-bg3/30 border border-white/10 pl-6 pr-12 rounded-2xl text-white outline-none focus:ring-2 focus:ring-primary-500/50 transition-all appearance-none font-black uppercase tracking-widest text-[10px] italic"
                                     >
-                                        <option value="Veg" className="bg-navy-900 uppercase">Pure Veg</option>
-                                        <option value="Non-Veg" className="bg-navy-900 uppercase">Hybrid (Veg + Non-Veg)</option>
+                                        <option value="Veg" className="bg-bg2 uppercase">Pure Veg</option>
+                                        <option value="Non-Veg" className="bg-bg2 uppercase">Hybrid (Veg + Non-Veg)</option>
                                     </select>
-                                    <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-navy-500">
+                                    <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-text-muted">
                                         <ChevronRight size={18} className="rotate-90" />
                                     </div>
                                 </div>
@@ -746,7 +746,7 @@ const OwnerDashboardPage: React.FC = () => {
                             </div>
                         </div>
 
-                        <div className="pt-12 border-t border-navy-800 flex justify-end">
+                        <div className="pt-12 border-t border-white/10 flex justify-end">
                             <Button 
                                 type="submit" 
                                 isLoading={updating} 
@@ -764,9 +764,9 @@ const OwnerDashboardPage: React.FC = () => {
     if (loading) {
         return (
             <Layout>
-                <div className="min-h-screen bg-navy-950 flex flex-col items-center justify-center p-6 sm:p-12 lg:p-24 relative z-10 w-full">
+                <div className="min-h-screen bg-bg flex flex-col items-center justify-center p-6 sm:p-12 lg:p-24 relative z-10 w-full">
                     <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary-500 mb-4"></div>
-                    <p className="text-navy-300 font-black uppercase tracking-[0.2em] text-xs">Initializing Terminal...</p>
+                    <p className="text-text-muted font-black uppercase tracking-[0.2em] text-xs">Initializing Terminal...</p>
                 </div>
             </Layout>
         );
@@ -774,8 +774,8 @@ const OwnerDashboardPage: React.FC = () => {
 
     return (
         <Layout>
-            <div className="min-h-screen bg-navy-950 flex flex-col">
-                <div className="bg-navy-950 text-white pt-24 md:pt-36 pb-20 relative overflow-hidden shrink-0">
+            <div className="min-h-screen bg-bg flex flex-col">
+                <div className="bg-bg text-white pt-24 md:pt-36 pb-20 relative overflow-hidden shrink-0">
                     <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary-500/10 rounded-full blur-[150px] -mr-32 -mt-32 pointer-events-none" />
                     <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-indigo-500/10 rounded-full blur-[120px] -ml-32 -mb-32 pointer-events-none" />
                     
@@ -794,7 +794,7 @@ const OwnerDashboardPage: React.FC = () => {
                                 <Button 
                                     variant="outline" 
                                     size="lg" 
-                                    className="rounded-2xl border-navy-800 bg-navy-900/50 backdrop-blur-xl text-white hover:bg-navy-800 px-10 py-6 font-black uppercase tracking-widest text-[10px] shadow-2xl shadow-black/20"
+                                    className="rounded-2xl border-white/10 bg-bg3/30 backdrop-blur-xl text-white hover:bg-bg3 px-10 py-6 font-black uppercase tracking-widest text-[10px] shadow-3xl"
                                 >
                                     <ImageIcon size={18} className="mr-3 text-primary-500" /> Manage Hub Photos
                                 </Button>

@@ -2,8 +2,12 @@
 
 @theme {
   /* ========================= */
-  /* 🎨 BRAND COLORS (Freemium Marketplace) */
+  /* 🎨 BRAND COLORS (Elite Dark Theme) */
   /* ========================= */
+  --bg: #080C18;
+  --bg2: #0D1220;
+  --bg3: #111826;
+
   --color-primary-50: #FFF7ED;
   --color-primary-500: #F97316;
   --color-primary-600: #EA580C;
@@ -12,35 +16,28 @@
   /* Standard Tailwind mapping */
   --color-primary: var(--color-primary-500);
   
-  /* Missing Dark Colors */
-  --color-dark-900: #0D1220;
-  --color-dark-800: #151B2E;
+  /* Unified Dark Palette */
+  --color-dark-950: var(--bg);
+  --color-dark-900: var(--bg2);
+  --color-dark-800: var(--bg3);
   --color-dark-700: #1E253A;
-  --bg2: #0D1220;
   
-  /* Custom Dark Palette (Navy) */
-  --color-navy-950: #020617;
-  --color-navy-900: #0F172A;
-  --color-navy-800: #1E293B;
+  --color-navy-950: var(--bg);
+  --color-navy-900: var(--bg2);
+  --color-navy-800: var(--bg3);
   --color-navy-700: #334155;
-  
-  /* Missing Dark Colors (Aliased) */
-  --color-dark-950: #020617;
-  --color-dark-900: #0D1220;
-  --color-dark-800: #151B2E;
-  --color-dark-700: #1E253A;
-  --bg2: #0D1220;
   
   --color-orange-500: #F97316;
   --color-orange-600: #EA580C;
 
-  --color-bg-main: #F8FAFC;
-  --color-bg-section: #F1F5F9;
-  --color-border-color: #E2E8F0;
+  --color-bg-main: var(--bg);
+  --color-bg-section: var(--bg2);
+  --color-border-color: rgba(255, 255, 255, 0.12);
 
-  --color-text-primary: #0F172A;
-  --color-text-secondary: #334155;
-  --color-text-muted: #475569;
+  /* Typography Contrast Colors */
+  --color-text-primary: #E8EEFF;
+  --color-text-secondary: rgba(232, 238, 255, 0.75);
+  --color-text-muted: rgba(232, 238, 255, 0.6);
   --color-text-inverse: #FFFFFF;
 
   --color-success-500: #22C55E;
@@ -117,13 +114,18 @@
   body {
     @apply font-sans antialiased transition-colors duration-300;
     font-family: 'Sora', sans-serif;
-    background: var(--color-bg-main);
+    background: var(--bg);
     color: var(--color-text-primary);
   }
 
+  /* Global Section Background Protection */
+  section, footer {
+    background: var(--bg2) !important;
+  }
+
   .dark body {
-    background: var(--color-navy-900);
-    color: var(--color-text-inverse);
+    background: var(--bg);
+    color: var(--color-text-primary);
   }
 
   h1,
@@ -134,6 +136,22 @@
   h6 {
     @apply font-heading font-bold;
     font-family: 'Sora', sans-serif;
+    color: var(--color-text-primary);
+  }
+  
+  /* Global Input and Form Styling */
+  input, textarea, select {
+    background: var(--bg3) !important;
+    color: var(--color-text-primary) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: var(--radius-md);
+    transition: all 0.2s ease;
+  }
+
+  input:focus, textarea:focus, select:focus {
+    border-color: rgba(249, 115, 22, 0.5) !important;
+    box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.15) !important;
+    outline: none !important;
   }
 
   /* Custom Scrollbar */
@@ -209,18 +227,19 @@
 
   /* Card System */
   .card {
-    background: white;
+    background: var(--bg2);
     border-radius: var(--radius-lg);
     padding: var(--spacing-6);
     box-shadow: var(--shadow-sm);
     border: 1px solid var(--color-border-color);
+    color: var(--color-text-primary);
     @apply transition-all duration-300;
   }
 
   .dark .card {
-    background: var(--color-dark-800);
-    border-color: var(--color-dark-700);
-    color: var(--color-text-inverse);
+    background: var(--bg2);
+    border-color: var(--color-border-color);
+    color: var(--color-text-primary);
   }
 
   .card-dark {
@@ -309,12 +328,12 @@
 
 /* Dark Mode Overrides */
 .dark {
-  --color-bg-main: #020617;
-  --color-bg-section: #0F172A;
-  --color-text-primary: #FFFFFF;
-  --color-text-secondary: #CBD5E1;
-  --color-text-muted: #94A3B8;
-  --color-border-color: #1E293B;
+  --color-bg-main: var(--bg);
+  --color-bg-section: var(--bg2);
+  --color-text-primary: #E8EEFF;
+  --color-text-secondary: rgba(232, 238, 255, 0.75);
+  --color-text-muted: rgba(232, 238, 255, 0.6);
+  --color-border-color: rgba(255, 255, 255, 0.12);
 
   /* Update background for dynamic switching */
   --bg-mesh-light: var(--bg-mesh-dark);

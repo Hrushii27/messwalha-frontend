@@ -66,11 +66,11 @@ export const Header: React.FC = () => {
 
     return (
         <header className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 ${isScrolled ? 'py-4' : 'py-6'}`}>
-            <div className={`container mx-auto px-4 h-20 flex items-center justify-between transition-all duration-500 ${isScrolled ? 'bg-navy-900/90 backdrop-blur-3xl rounded-[2rem] border border-white/10 shadow-3xl' : 'bg-navy-900/40 backdrop-blur-md rounded-[2rem] border border-white/5'}`}>
+            <div className={`container mx-auto px-4 h-20 flex items-center justify-between transition-all duration-500 ${isScrolled ? 'bg-bg/90 backdrop-blur-3xl rounded-[2rem] border border-white/10 shadow-3xl' : 'bg-bg/40 backdrop-blur-md rounded-[2rem] border border-white/5'}`}>
                 <div className="flex items-center space-x-2 sm:space-x-4">
                     <button
                         onClick={() => setIsMenuOpen(true)}
-                        className="lg:hidden p-2 text-white/70 hover:text-primary-500 transition-colors"
+                        className="lg:hidden p-2 text-text-secondary hover:text-primary-500 transition-colors"
                         aria-label="Open menu"
                     >
                         <Menu size={24} />
@@ -87,10 +87,10 @@ export const Header: React.FC = () => {
 
                 <nav className="hidden lg:flex items-center space-x-12 px-4">
                     {navLinks.map(link => (
-                        <Link key={link.path} to={link.path} className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/70 hover:text-primary-500 transition-all">{link.label}</Link>
+                        <Link key={link.path} to={link.path} className="text-[10px] font-bold uppercase tracking-[0.2em] text-text-secondary hover:text-primary-500 transition-all">{link.label}</Link>
                     ))}
                     {user?.role === 'OWNER' && (
-                        <Link to="/owner-dashboard" className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/70 hover:text-primary-500 transition-all">Dashboard</Link>
+                        <Link to="/owner-dashboard" className="text-[10px] font-bold uppercase tracking-[0.2em] text-text-secondary hover:text-primary-500 transition-all">Dashboard</Link>
                     )}
                 </nav>
 
@@ -101,15 +101,15 @@ export const Header: React.FC = () => {
                             className="p-3 hover:bg-white/5 rounded-2xl transition-all flex items-center gap-3 group border border-transparent hover:border-white/10"
                             aria-label={`Change language, current: ${i18n.language}`}
                         >
-                            <Languages size={18} className="group-hover:text-primary-500 text-white/40 transition-colors" />
-                            <span className="text-[10px] font-black uppercase text-white/40 tracking-widest">{i18n.language}</span>
+                            <Languages size={18} className="group-hover:text-primary-500 text-text-muted transition-colors" />
+                            <span className="text-[10px] font-black uppercase text-text-muted tracking-widest">{i18n.language}</span>
                         </button>
 
                         <button 
                             className="p-3 hover:bg-white/5 rounded-2xl transition-all group border border-transparent hover:border-white/10"
                             aria-label="Search"
                         >
-                            <Search size={18} className="text-white/40 group-hover:text-white transition-colors" />
+                            <Search size={18} className="text-text-muted group-hover:text-white transition-colors" />
                         </button>
                     </div>
 
@@ -123,7 +123,7 @@ export const Header: React.FC = () => {
                                     aria-haspopup="true"
                                     className="flex items-center space-x-2 sm:space-x-4 p-1.5 sm:p-2 sm:pl-5 rounded-xl sm:rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all group shadow-2xl"
                                 >
-                                    <span className="text-[10px] font-black text-white/70 hidden lg:block uppercase tracking-[0.2em]">{user?.name}</span>
+                                    <span className="text-[10px] font-black text-text-secondary hidden lg:block uppercase tracking-[0.2em]">{user?.name}</span>
                                     <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-gradient-to-br from-primary-500 to-orange-600 text-white flex items-center justify-center shadow-2xl transition-transform group-hover:scale-105 shrink-0">
                                         <UserIcon size={16} strokeWidth={2.5} className="sm:w-[18px] sm:h-[18px]" />
                                     </div>
@@ -135,7 +135,7 @@ export const Header: React.FC = () => {
                                             initial={{ opacity: 0, y: 10, scale: 0.95 }}
                                             animate={{ opacity: 1, y: 0, scale: 1 }}
                                             exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                            className="absolute right-0 mt-6 w-72 bg-navy-900/95 backdrop-blur-3xl rounded-[2.5rem] shadow-3xl border border-white/10 py-8 z-50 origin-top-right overflow-hidden"
+                                            className="absolute right-0 mt-6 w-72 bg-bg2/95 backdrop-blur-3xl rounded-[2.5rem] shadow-3xl border border-white/10 py-8 z-50 origin-top-right overflow-hidden"
                                         >
                                             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary-500 to-orange-600" />
 
@@ -177,7 +177,7 @@ export const Header: React.FC = () => {
                                                     <Link
                                                         key={item.label}
                                                         to={item.path}
-                                                        className="flex items-center gap-4 px-6 py-4 text-[10px] font-black text-white/70 hover:text-white hover:bg-white/5 rounded-2xl transition-all uppercase tracking-[0.2em] group"
+                                                        className="flex items-center gap-4 px-6 py-4 text-[10px] font-black text-text-secondary hover:text-white hover:bg-white/5 rounded-2xl transition-all uppercase tracking-[0.2em] group"
                                                         onClick={() => setIsProfileOpen(false)}
                                                     >
                                                         <item.icon size={16} className="group-hover:text-primary-500 transition-colors" />
@@ -225,14 +225,14 @@ export const Header: React.FC = () => {
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             onClick={() => setIsMenuOpen(false)}
-                            className="fixed inset-0 bg-navy-950/80 backdrop-blur-sm z-[110]"
+                            className="fixed inset-0 bg-bg/80 backdrop-blur-sm z-[110]"
                         />
                         <motion.div
                             initial={{ x: '100%' }}
                             animate={{ x: 0 }}
                             exit={{ x: '100%' }}
                             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                            className="fixed top-0 right-0 bottom-0 w-[85%] max-w-[400px] bg-navy-900 border-l border-white/10 z-[120] p-8 flex flex-col overflow-y-auto"
+                            className="fixed top-0 right-0 bottom-0 w-[85%] max-w-[400px] bg-bg border-l border-white/10 z-[120] p-8 flex flex-col overflow-y-auto"
                         >
                             <div className="flex items-center justify-between mb-12">
                                 <Link to="/" onClick={() => setIsMenuOpen(false)} className="flex items-center space-x-3">
@@ -245,7 +245,7 @@ export const Header: React.FC = () => {
                                 </Link>
                                 <button 
                                     onClick={() => setIsMenuOpen(false)} 
-                                    className="p-3 bg-white/5 rounded-xl text-white/40 hover:text-white transition-all"
+                                    className="p-3 bg-white/5 rounded-xl text-text-muted hover:text-white transition-all"
                                     aria-label="Close menu"
                                 >
                                     <X size={24} />
@@ -256,7 +256,7 @@ export const Header: React.FC = () => {
                                 <Link
                                     to="/"
                                     onClick={() => setIsMenuOpen(false)}
-                                    className="py-5 px-6 text-[12px] font-black uppercase tracking-[0.2em] text-white/70 hover:text-primary-500 hover:bg-white/5 rounded-2xl transition-all flex items-center justify-between group"
+                                    className="py-5 px-6 text-[12px] font-black uppercase tracking-[0.2em] text-text-secondary hover:text-primary-500 hover:bg-white/5 rounded-2xl transition-all flex items-center justify-between group"
                                 >
                                     <span>Home</span>
                                     <div className="w-1.5 h-1.5 rounded-full bg-primary-500 opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -266,7 +266,7 @@ export const Header: React.FC = () => {
                                         key={link.path}
                                         to={link.path}
                                         onClick={() => setIsMenuOpen(false)}
-                                        className="py-5 px-6 text-[12px] font-black uppercase tracking-[0.2em] text-white/70 hover:text-primary-500 hover:bg-white/5 rounded-2xl transition-all flex items-center justify-between group"
+                                        className="py-5 px-6 text-[12px] font-black uppercase tracking-[0.2em] text-text-secondary hover:text-primary-500 hover:bg-white/5 rounded-2xl transition-all flex items-center justify-between group"
                                     >
                                         <span>{link.label}</span>
                                         <div className="w-1.5 h-1.5 rounded-full bg-primary-500 opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -276,7 +276,7 @@ export const Header: React.FC = () => {
                                     <Link
                                         to="/owner/dashboard"
                                         onClick={() => setIsMenuOpen(false)}
-                                        className="py-5 px-6 text-[12px] font-black uppercase tracking-[0.2em] text-white/70 hover:text-primary-500 hover:bg-white/5 rounded-2xl transition-all flex items-center justify-between group"
+                                        className="py-5 px-6 text-[12px] font-black uppercase tracking-[0.2em] text-text-secondary hover:text-primary-500 hover:bg-white/5 rounded-2xl transition-all flex items-center justify-between group"
                                     >
                                         <span>Dashboard</span>
                                         <div className="w-1.5 h-1.5 rounded-full bg-primary-500 opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -287,7 +287,7 @@ export const Header: React.FC = () => {
                             <div className="pt-8 border-t border-white/10 space-y-6">
                                 <button
                                     onClick={toggleLanguage}
-                                    className="w-full flex items-center justify-between p-6 rounded-2xl bg-white/5 text-white/70 hover:text-white transition-all border border-white/10"
+                                    className="w-full flex items-center justify-between p-6 rounded-2xl bg-white/5 text-text-secondary hover:text-white transition-all border border-white/10"
                                 >
                                     <div className="flex items-center gap-4">
                                         <Languages size={20} className="text-primary-500" />

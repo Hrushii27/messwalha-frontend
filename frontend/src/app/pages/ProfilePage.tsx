@@ -161,7 +161,7 @@ const ProfilePage: React.FC = () => {
                 description="Manage your professional mess subscription profile"
             />
 
-            <div className="min-h-screen bg-[#0f172a] relative overflow-hidden pt-32 pb-24">
+            <div className="min-h-screen bg-bg relative overflow-hidden pt-32 pb-24">
                 {/* Futuristic Background Elements */}
                 <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-primary-500/10 rounded-full blur-[150px] -mr-64 -mt-64 pointer-events-none" />
                 <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-indigo-500/10 rounded-full blur-[120px] -ml-64 -mb-64 pointer-events-none" />
@@ -174,7 +174,7 @@ const ProfilePage: React.FC = () => {
                             initial={{ x: -20, opacity: 0 }}
                             animate={{ x: 0, opacity: 1 }}
                             onClick={() => window.history.back()}
-                            className="flex items-center text-white/70 hover:text-primary-500 transition-all font-black uppercase tracking-[0.3em] text-[10px] group"
+                            className="flex items-center text-text-secondary hover:text-primary-500 transition-all font-black uppercase tracking-[0.3em] text-[10px] group"
                         >
                             <ArrowLeft size={16} className="mr-3 group-hover:-translate-x-2 transition-transform" />
                             Dashboard
@@ -201,12 +201,12 @@ const ProfilePage: React.FC = () => {
                                 initial={{ y: 30, opacity: 0 }}
                                 animate={{ y: 0, opacity: 1 }}
                             >
-                                <Card className="bg-white/5 backdrop-blur-3xl border-white/10 p-10 rounded-[3rem] shadow-3xl relative overflow-hidden text-center group">
+                                <Card className="bg-bg2/80 backdrop-blur-3xl border-white/10 p-10 rounded-[3rem] shadow-3xl relative overflow-hidden text-center group">
                                     <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-primary-500 to-indigo-600" />
 
                                     <div className="relative inline-block mb-10">
                                         <div className="w-40 h-40 rounded-[2.5rem] bg-gradient-to-br from-primary-500 to-indigo-600 p-1 shadow-2xl shadow-primary-500/20">
-                                            <div className="w-full h-full rounded-[2.3rem] overflow-hidden bg-dark-900 flex items-center justify-center">
+                                            <div className="w-full h-full rounded-[2.3rem] overflow-hidden bg-bg3 flex items-center justify-center">
                                                 {user?.profile_image ? (
                                                     <img src={getImageUrl(user.profile_image)} alt={user.name} className="w-full h-full object-cover" />
                                                 ) : (
@@ -218,7 +218,7 @@ const ProfilePage: React.FC = () => {
                                             whileHover={{ scale: 1.1 }}
                                             whileTap={{ scale: 0.9 }}
                                             onClick={triggerAvatarUpload}
-                                            className="absolute bottom-0 right-0 p-4 bg-white dark:bg-dark-900 rounded-[1.5rem] shadow-2xl text-primary-500 hover:text-white hover:bg-primary-500 transition-all border border-white/10"
+                                            className="absolute bottom-0 right-0 p-4 bg-bg3 rounded-[1.5rem] shadow-2xl text-primary-500 hover:text-white hover:bg-primary-500 transition-all border border-white/10"
                                         >
                                             <Camera size={20} />
                                         </motion.button>
@@ -244,11 +244,11 @@ const ProfilePage: React.FC = () => {
                                         </div>
 
                                         <div className="pt-8 space-y-4 border-t border-white/5">
-                                            <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-white/70">
+                                            <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-text-secondary">
                                                 <span>Profile Completion</span>
                                                 <span>{completionPercentage}%</span>
                                             </div>
-                                            <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden p-[2px]">
+                                            <div className="h-2 w-full bg-bg3/50 rounded-full overflow-hidden p-[2px]">
                                                 <motion.div
                                                     initial={{ width: 0 }}
                                                     animate={{ width: `${completionPercentage}%` }}
@@ -257,9 +257,9 @@ const ProfilePage: React.FC = () => {
                                             </div>
                                         </div>
 
-                                        <div className="flex items-center justify-between pt-6 text-[10px] font-black uppercase tracking-widest text-white/30">
+                                        <div className="flex items-center justify-between pt-6 text-[10px] font-black uppercase tracking-widest text-text-muted">
                                             <span className="flex items-center gap-2"><Calendar size={12} /> Joined: {joinDate}</span>
-                                            <span className="flex items-center gap-2"><Clock size={12} /> 12:45 PM</span>
+                                            <span className="flex items-center gap-2"><Clock size={12} /> {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                                         </div>
                                     </div>
                                 </Card>
@@ -279,7 +279,7 @@ const ProfilePage: React.FC = () => {
                                     <button
                                         key={tab.id}
                                         onClick={() => setActiveTab(tab.id as ActiveTab)}
-                                        className={`w-full flex items-center justify-between px-8 py-5 rounded-[2rem] transition-all duration-500 font-black uppercase tracking-widest text-[10px] border ${activeTab === tab.id ? 'bg-primary-500 border-primary-400 text-white shadow-3xl shadow-primary-500/30' : 'bg-white/5 border-white/5 text-white/70 hover:bg-white/10 hover:text-white'}`}
+                                        className={`w-full flex items-center justify-between px-8 py-5 rounded-[2rem] transition-all duration-500 font-black uppercase tracking-widest text-[10px] border ${activeTab === tab.id ? 'bg-primary-500 border-primary-400 text-white shadow-3xl shadow-primary-500/30' : 'bg-bg2/40 border-white/5 text-text-secondary hover:bg-bg3/50 hover:text-white'}`}
                                     >
                                         <div className="flex items-center gap-4">
                                             <tab.icon size={18} />
@@ -299,7 +299,7 @@ const ProfilePage: React.FC = () => {
                                 animate={{ x: 0, opacity: 1 }}
                                 transition={{ duration: 0.4 }}
                             >
-                                <Card className="bg-white/5 backdrop-blur-3xl border-white/10 p-10 md:p-16 rounded-[3rem] shadow-3xl">
+                                <Card className="bg-bg2/80 backdrop-blur-3xl border-white/10 p-10 md:p-16 rounded-[3rem] shadow-3xl">
                                     <AnimatePresence mode="wait">
                                         {activeTab === 'personal' && (
                                             <motion.div
@@ -312,13 +312,13 @@ const ProfilePage: React.FC = () => {
                                                 <div className="flex justify-between items-center">
                                                     <div>
                                                         <h3 className="text-4xl font-black text-white italic tracking-tighter">Profile <span className="text-primary-500">Information</span></h3>
-                                                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30 mt-2">View and update your profile details</p>
+                                                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-text-muted mt-2">View and update your profile details</p>
                                                     </div>
                                                     {!isEditing && (
                                                         <Button
                                                             variant="outline"
                                                             onClick={() => setIsEditing(true)}
-                                                            className="rounded-full px-10 h-16 border-white/10 hover:bg-white/5 font-black uppercase tracking-widest text-[10px]"
+                                                            className="rounded-full px-10 h-16 border-white/10 hover:bg-bg3/50 font-black uppercase tracking-widest text-[10px]"
                                                         >
                                                             <Edit3 size={18} className="mr-3" /> Edit Profile
                                                         </Button>
@@ -333,7 +333,7 @@ const ProfilePage: React.FC = () => {
                                                         { label: 'Join Date', key: 'joined', icon: Calendar, disabled: true, value: joinDate }
                                                     ].map((field) => (
                                                         <div key={field.key} className="space-y-4">
-                                                            <label className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30 ml-2">{field.label}</label>
+                                                            <label className="text-[10px] font-black uppercase tracking-[0.3em] text-text-muted ml-2">{field.label}</label>
                                                             <div className="relative group">
                                                                 <div className="absolute left-6 top-1/2 -translate-y-1/2 text-primary-500 z-10">
                                                                     <field.icon size={18} />
@@ -344,7 +344,7 @@ const ProfilePage: React.FC = () => {
                                                                     value={field.value || (field.key === 'email' ? user?.email : (formData as Record<string, string>)[field.key])}
                                                                     onChange={e => setFormData({ ...formData, [field.key]: e.target.value })}
                                                                     placeholder={field.placeholder}
-                                                                    className="w-full bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-[2rem] pl-16 pr-8 py-5 text-white font-black uppercase tracking-widest text-[10px] focus:ring-2 focus:ring-primary-500/40 focus:bg-white/[0.07] outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed group-hover:border-white/20"
+                                                                    className="w-full bg-bg3/30 backdrop-blur-xl border border-white/10 rounded-[2rem] pl-16 pr-8 py-5 text-white font-black uppercase tracking-widest text-[10px] focus:ring-2 focus:ring-primary-500/40 focus:bg-bg3/50 outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed group-hover:border-white/20"
                                                                 />
                                                             </div>
                                                         </div>
@@ -366,7 +366,7 @@ const ProfilePage: React.FC = () => {
                                                         </button>
                                                         <button
                                                             onClick={() => setIsEditing(false)}
-                                                            className="flex-1 h-20 bg-white/5 border border-white/10 rounded-[2rem] text-white/50 font-black uppercase tracking-[0.2em] text-xs hover:text-white hover:bg-white/10 transition-all flex items-center justify-center gap-3"
+                                                            className="flex-1 h-20 bg-bg3/50 border border-white/10 rounded-[2rem] text-text-secondary font-black uppercase tracking-[0.2em] text-xs hover:text-white hover:bg-bg3 transition-all flex items-center justify-center gap-3"
                                                         >
                                                             Cancel
                                                         </button>
@@ -378,7 +378,7 @@ const ProfilePage: React.FC = () => {
                                                         <CircleCheck size={20} />
                                                         <span className="text-xs font-black uppercase tracking-widest italic">Compliance Status: Fully Aligned</span>
                                                     </div>
-                                                    <p className="text-[10px] text-white/30 font-medium leading-relaxed italic">
+                                                    <p className="text-[10px] text-text-muted font-medium leading-relaxed italic">
                                                         Your data is encrypted using 256-bit AES protocols and stored across decentralized nodes for maximum privacy and resilience.
                                                     </p>
                                                 </div>
@@ -395,11 +395,11 @@ const ProfilePage: React.FC = () => {
                                             >
                                                 <div className="space-y-2">
                                                     <h3 className="text-4xl font-black text-white italic tracking-tighter">Security <span className="text-primary-500">Settings</span></h3>
-                                                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30">Manage your password and access</p>
+                                                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-text-muted">Manage your password and access</p>
                                                 </div>
 
                                                 <div className="grid grid-cols-1 gap-10">
-                                                    <div className="space-y-8 p-10 bg-white/5 rounded-[2.5rem] border border-white/5">
+                                                    <div className="space-y-8 p-10 bg-bg3/30 rounded-[2.5rem] border border-white/5">
                                                         <div className="flex items-center gap-4">
                                                             <div className="w-12 h-12 rounded-2xl bg-primary-500/20 flex items-center justify-center text-primary-500">
                                                                 <Key size={24} />
@@ -413,12 +413,12 @@ const ProfilePage: React.FC = () => {
                                                                 { label: 'Confirm Key', key: 'confirmPassword', type: 'password' }
                                                             ].map(p => (
                                                                 <div key={p.key} className="space-y-3">
-                                                                    <label className="text-[9px] font-black uppercase text-white/30 ml-2 tracking-widest">{p.label}</label>
+                                                                    <label className="text-[9px] font-black uppercase text-text-muted ml-2 tracking-widest">{p.label}</label>
                                                                     <input
                                                                         type={p.type}
                                                                         value={(passwordData as Record<string, string>)[p.key]}
                                                                         onChange={e => setPasswordData({ ...passwordData, [p.key]: e.target.value })}
-                                                                        className="w-full bg-dark-900 border border-white/10 rounded-2xl px-6 py-4 text-white text-xs font-black focus:ring-1 focus:ring-primary-500 outline-none transition-all"
+                                                                        className="w-full bg-bg3 border border-white/10 rounded-2xl px-6 py-4 text-white text-xs font-black focus:ring-1 focus:ring-primary-500 outline-none transition-all"
                                                                         placeholder="••••••••"
                                                                     />
                                                                 </div>
@@ -433,7 +433,7 @@ const ProfilePage: React.FC = () => {
                                                     </div>
 
                                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                                        <div className="p-8 bg-white/5 rounded-[2.5rem] border border-white/5 space-y-6">
+                                                        <div className="p-8 bg-bg3/30 rounded-[2.5rem] border border-white/5 space-y-6">
                                                             <div className="flex items-center justify-between">
                                                                 <div className="flex items-center gap-4">
                                                                     <Smartphone size={24} className="text-indigo-400" />
@@ -443,16 +443,16 @@ const ProfilePage: React.FC = () => {
                                                                     <div className="absolute left-1 top-1 w-4 h-4 bg-white/30 rounded-full" />
                                                                 </div>
                                                             </div>
-                                                            <p className="text-[10px] text-white/30 font-medium italic">Add an extra layer of security to your account.</p>
+                                                            <p className="text-[10px] text-text-muted font-medium italic">Add an extra layer of security to your account.</p>
                                                         </div>
 
-                                                        <div className="p-8 bg-white/5 rounded-[2.5rem] border border-white/5 space-y-6">
+                                                        <div className="p-8 bg-bg3/30 rounded-[2.5rem] border border-white/5 space-y-6">
                                                             <div className="flex items-center gap-4">
-                                                                <LogOut size={24} className="text-white/70" />
+                                                                <LogOut size={24} className="text-text-secondary" />
                                                                 <h5 className="text-sm font-black text-white uppercase tracking-widest">Active Sessions</h5>
                                                             </div>
                                                             <div className="flex items-center justify-between">
-                                                                <span className="text-[10px] font-black text-white/30 italic">currently 1 active session</span>
+                                                                <span className="text-[10px] font-black text-text-muted italic">currently 1 active session</span>
                                                                 <button className="text-[9px] font-black text-primary-500 uppercase tracking-widest">Wipe All</button>
                                                             </div>
                                                         </div>
@@ -477,11 +477,11 @@ const ProfilePage: React.FC = () => {
                                                 <div className="flex justify-between items-center">
                                                     <div className="space-y-2">
                                                         <h3 className="text-4xl font-black text-white italic tracking-tighter">Activity <span className="text-primary-500">History</span></h3>
-                                                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30">A record of your recent interactions</p>
+                                                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-text-muted">A record of your recent interactions</p>
                                                     </div>
                                                     <button
                                                         onClick={fetchActivity}
-                                                        className="p-4 bg-white/5 rounded-2xl hover:bg-white/10 text-white/70 hover:text-white transition-all"
+                                                        className="p-4 bg-bg3/30 rounded-2xl hover:bg-bg3/50 text-text-secondary hover:text-white transition-all"
                                                     >
                                                         <History size={20} className={loadingActivities ? 'animate-spin' : ''} />
                                                     </button>
@@ -491,15 +491,15 @@ const ProfilePage: React.FC = () => {
                                                     {activities.map((act, i) => (
                                                         <div key={act.id} className="relative pl-12 group">
                                                             {i !== activities.length - 1 && (
-                                                                <div className="absolute left-6 top-10 w-[2px] h-20 bg-white/5 group-hover:bg-primary-500/20 transition-colors" />
+                                                                <div className="absolute left-6 top-10 w-[2px] h-20 bg-bg3/20 group-hover:bg-primary-500/20 transition-colors" />
                                                             )}
-                                                            <div className="absolute left-0 top-0 w-12 h-12 bg-dark-900 border-2 border-white/5 rounded-2xl flex items-center justify-center text-primary-500 z-10 group-hover:border-primary-500/30 transition-all group-hover:scale-110">
+                                                            <div className="absolute left-0 top-0 w-12 h-12 bg-bg3 border-2 border-white/5 rounded-2xl flex items-center justify-center text-primary-500 z-10 group-hover:border-primary-500/30 transition-all group-hover:scale-110">
                                                                 {act.title.includes('LOGIN') ? <Zap size={20} /> : <User size={20} />}
                                                             </div>
-                                                            <div className="p-8 bg-white/[0.02] border border-white/5 rounded-[2.5rem] space-y-3 group-hover:bg-white/[0.04] group-hover:border-white/10 transition-all">
+                                                            <div className="p-8 bg-bg3/20 border border-white/5 rounded-[2.5rem] space-y-3 group-hover:bg-bg3/30 group-hover:border-white/10 transition-all">
                                                                 <div className="flex justify-between items-center">
                                                                     <p className="text-[10px] font-black uppercase tracking-widest text-primary-500">{act.title}</p>
-                                                                    <p className="text-[10px] text-white/20 font-medium italic">{act.created_at ? new Date(act.created_at).toLocaleString() : act.time}</p>
+                                                                    <p className="text-[10px] text-text-muted font-medium italic">{act.created_at ? new Date(act.created_at).toLocaleString() : act.time}</p>
                                                                 </div>
                                                                 <p className="text-xl font-black text-white tracking-tight italic">"{act.desc}"</p>
                                                                 <div className="flex items-center gap-3 pt-2 text-white/30">

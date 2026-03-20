@@ -90,6 +90,12 @@ const createTables = async () => {
         IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='mess_owners' AND column_name='reset_password_expires') THEN
             ALTER TABLE mess_owners ADD COLUMN reset_password_expires TIMESTAMP WITH TIME ZONE;
         END IF;
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='mess_owners' AND column_name='google_id') THEN
+            ALTER TABLE mess_owners ADD COLUMN google_id VARCHAR(255) UNIQUE;
+        END IF;
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='mess_owners' AND column_name='profile_picture') THEN
+            ALTER TABLE mess_owners ADD COLUMN profile_picture TEXT;
+        END IF;
 
         -- mess_listings migrations
         BEGIN

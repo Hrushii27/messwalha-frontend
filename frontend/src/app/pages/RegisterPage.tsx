@@ -21,6 +21,7 @@ const RegisterPage: React.FC = () => {
         phone: '',
         messName: '',
         location: '',
+        city: '',
     });
     const [isLoading, setIsLoading] = useState(false);
 
@@ -108,6 +109,7 @@ const RegisterPage: React.FC = () => {
                     phone: formData.phone,
                     messName: formData.messName,
                     location: formData.location,
+                    city: formData.city,
                     recaptchaToken
                 });
             }
@@ -130,14 +132,14 @@ const RegisterPage: React.FC = () => {
                 <Icon size={24} />
             </div>
             <div className="relative z-10">
-                <h3 className="font-black text-white uppercase tracking-widest text-[11px] mb-1 italic">{title}</h3>
-                <p className="text-navy-300 text-[10px] leading-relaxed uppercase tracking-widest">{desc}</p>
+                <h3 className="font-black text-text-primary uppercase tracking-widest text-[11px] mb-1 italic">{title}</h3>
+                <p className="text-text-muted text-[10px] leading-relaxed uppercase tracking-widest">{desc}</p>
             </div>
         </div>
     );
 
     return (
-        <div className="min-h-screen bg-navy-950 flex flex-col lg:flex-row relative overflow-hidden">
+        <div className="min-h-screen bg-bg flex flex-col lg:flex-row relative overflow-hidden">
             <Seo 
                 title="Join FindMess | Create Your Elite Account" 
                 description="Join the elite discovery platform for mess & tiffin services. Create your account to start discovering or listing verified services." 
@@ -148,7 +150,7 @@ const RegisterPage: React.FC = () => {
             <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-indigo-500/10 rounded-full blur-[100px] -ml-32 -mb-32 pointer-events-none" />
 
             {/* LEFT PANEL: Branding + Benefits */}
-            <div className="hidden lg:flex lg:w-1/2 flex-col justify-center px-12 xl:px-24 relative z-10 py-20 bg-navy-900/30">
+            <div className="hidden lg:flex lg:w-1/2 flex-col justify-center px-12 xl:px-24 relative z-10 py-20 bg-bg2/30">
                 <div className="max-w-md">
                     <Link to="/" className="inline-flex items-center space-x-3 mb-16">
                         <div className="w-12 h-12 bg-primary-500 rounded-xl flex items-center justify-center text-white shadow-lg shadow-primary-500/40">
@@ -165,7 +167,7 @@ const RegisterPage: React.FC = () => {
                                 Start Your Culinary <br />
                                 <span className="text-primary-500 italic">Journey Today</span>
                             </h2>
-                            <p className="text-navy-300 text-lg font-medium italic">
+                            <p className="text-text-secondary text-lg font-medium italic">
                                 Join the network of premium mess services and hungry students.
                             </p>
                         </motion.div>
@@ -209,10 +211,10 @@ const RegisterPage: React.FC = () => {
                 </div>
 
                 <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="w-full max-w-2xl">
-                    <Card className="w-full p-8 md:p-12 bg-navy-900/50 backdrop-blur-3xl border-navy-800 rounded-[2.5rem] md:rounded-[3rem] shadow-2xl relative">
+                    <Card className="w-full p-8 md:p-12 bg-bg2/50 backdrop-blur-3xl border border-white/10 rounded-[2.5rem] md:rounded-[3rem] shadow-2xl relative">
                         <div className="text-center space-y-3 mb-10">
                             <h1 className="text-3xl md:text-5xl font-black text-white italic tracking-tighter">Create Account</h1>
-                            <p className="text-navy-300 font-black uppercase tracking-[0.2em] text-[10px] md:text-xs italic">Join FindMess and start your journey</p>
+                            <p className="text-text-secondary font-black uppercase tracking-[0.2em] text-[10px] md:text-xs italic">Join FindMess and start your journey</p>
                         </div>
 
                         <div className="space-y-8">
@@ -221,10 +223,10 @@ const RegisterPage: React.FC = () => {
 
                             <div className="relative">
                                 <div className="absolute inset-0 flex items-center">
-                                    <span className="w-full border-t border-navy-800"></span>
+                                    <span className="w-full border-t border-white/10"></span>
                                 </div>
                                 <div className="relative flex justify-center text-[10px] font-black uppercase tracking-[0.3em]">
-                                    <span className="px-4 bg-navy-950 lg:bg-navy-900/50 text-navy-400">Or continue with</span>
+                                    <span className="px-4 bg-bg lg:bg-bg2/50 text-text-muted">Or continue with</span>
                                 </div>
                             </div>
 
@@ -238,11 +240,11 @@ const RegisterPage: React.FC = () => {
                                         : 'border-navy-800 bg-navy-800/20 hover:border-navy-700'
                                     }`}
                                 >
-                                    <div className={`p-4 rounded-2xl mb-4 transition-all duration-500 ${role === 'STUDENT' ? 'bg-primary-500 text-white scale-110' : 'bg-navy-800 text-navy-400'}`}>
+                                    <div className={`p-4 rounded-2xl mb-4 transition-all duration-500 ${role === 'STUDENT' ? 'bg-primary-500 text-white scale-110' : 'bg-bg3 text-text-muted'}`}>
                                         <User size={24} />
                                     </div>
                                     <span className="font-black uppercase tracking-widest text-[11px] text-white italic">I'm a Student</span>
-                                    <span className="text-[9px] text-navy-400 mt-1 uppercase tracking-tighter font-medium italic">Find a mess near me</span>
+                                    <span className="text-[9px] text-text-muted mt-1 uppercase tracking-tighter font-medium italic">Find a mess near me</span>
                                     {role === 'STUDENT' && (
                                         <div className="absolute top-4 right-4 text-primary-500">
                                             <CheckCircle2 size={16} />
@@ -255,14 +257,14 @@ const RegisterPage: React.FC = () => {
                                     onClick={() => setRole('OWNER')}
                                     className={`flex flex-col items-center p-6 rounded-[2rem] border-2 transition-all duration-500 relative group overflow-hidden ${role === 'OWNER'
                                         ? 'border-primary-500 bg-primary-500/10 shadow-[0_0_30px_rgba(249,115,22,0.15)]'
-                                        : 'border-navy-800 bg-navy-800/20 hover:border-navy-700'
+                                        : 'border-white/10 bg-bg3/20 hover:border-white/20'
                                     }`}
                                 >
-                                    <div className={`p-4 rounded-2xl mb-4 transition-all duration-500 ${role === 'OWNER' ? 'bg-primary-500 text-white scale-110' : 'bg-navy-800 text-navy-400'}`}>
+                                    <div className={`p-4 rounded-2xl mb-4 transition-all duration-500 ${role === 'OWNER' ? 'bg-primary-500 text-white scale-110' : 'bg-bg3 text-text-muted'}`}>
                                         <Building size={24} />
                                     </div>
                                     <span className="font-black uppercase tracking-widest text-[11px] text-white italic">I'm an Owner</span>
-                                    <span className="text-[9px] text-navy-400 mt-1 uppercase tracking-tighter font-medium italic">List my mess free</span>
+                                    <span className="text-[9px] text-text-muted mt-1 uppercase tracking-tighter font-medium italic">List my mess free</span>
                                     {role === 'OWNER' && (
                                         <div className="absolute top-4 right-4 text-primary-500">
                                             <CheckCircle2 size={16} />
@@ -348,6 +350,16 @@ const RegisterPage: React.FC = () => {
                                                 required
                                                 className="h-14 lg:h-16"
                                             />
+                                            <Input
+                                                id="reg-city"
+                                                label="City"
+                                                name="city"
+                                                placeholder="e.g. Pune"
+                                                value={formData.city}
+                                                onChange={handleInputChange}
+                                                required
+                                                className="h-14 lg:h-16"
+                                            />
                                         </>
                                     )}
 
@@ -389,8 +401,8 @@ const RegisterPage: React.FC = () => {
                             </form>
                         </div>
 
-                        <div className="mt-10 pt-8 border-t border-navy-800 text-center">
-                            <p className="text-[11px] font-black uppercase tracking-[0.2em] text-navy-400 italic">
+                        <div className="mt-10 pt-8 border-t border-white/10 text-center">
+                            <p className="text-[11px] font-black uppercase tracking-[0.2em] text-text-muted italic">
                                 Already have an account?{' '}
                                 <Link to="/login" className="text-primary-500 font-black hover:text-primary-400 transition-colors italic">
                                     Sign In

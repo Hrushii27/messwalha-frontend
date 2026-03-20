@@ -101,44 +101,45 @@ const AdminDashboardPage: React.FC = () => {
 
     const renderOverview = () => (
         <div className="space-y-12">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
                 {[
-                    { label: 'Total Users', value: stats?.users || 0, icon: <Users />, color: 'bg-indigo-500' },
-                    { label: 'Total Messes', value: stats?.messes || 0, icon: <Building />, color: 'bg-primary' },
-                    { label: 'Active Subs', value: stats?.activeSubscriptions || 0, icon: <Activity />, color: 'bg-emerald-500' },
-                    { label: 'Revenue', value: `₹${(stats?.totalRevenue || 0).toLocaleString()}`, icon: <Shield />, color: 'bg-amber-500' },
-                    { label: 'Total Visits', value: (stats?.totalVisits || 0).toLocaleString(), icon: <Eye />, color: 'bg-rose-500' },
+                    { label: 'Total Users', value: stats?.users || 0, icon: <Users />, color: 'text-indigo-500' },
+                    { label: 'Total Messes', value: stats?.messes || 0, icon: <Building />, color: 'text-primary-500' },
+                    { label: 'Active Subs', value: stats?.activeSubscriptions || 0, icon: <Activity />, color: 'text-emerald-500' },
+                    { label: 'Revenue', value: `₹${(stats?.totalRevenue || 0).toLocaleString()}`, icon: <Shield />, color: 'text-amber-500' },
+                    { label: 'Total Visits', value: (stats?.totalVisits || 0).toLocaleString(), icon: <Eye />, color: 'text-rose-500' },
                 ].map((item, i) => (
-                    <Card key={i} className="p-6 border-none shadow-xl hover:scale-[1.02] transition-transform">
-                        <div className="flex items-center space-x-4">
-                            <div className={`p-4 rounded-2xl text-white shadow-lg shadow-black/10 ${item.color}`}>
+                    <Card key={i} className="p-6 border-white/5 bg-bg2/40 backdrop-blur-3xl shadow-3xl hover:border-primary-500/30 transition-all rounded-[1.5rem] relative overflow-hidden group">
+                        <div className="absolute top-0 right-0 w-24 h-24 bg-white/5 rounded-full blur-2xl -mr-8 -mt-8" />
+                        <div className="flex flex-col items-start relative z-10">
+                            <div className={`p-4 rounded-xl bg-bg3/50 mb-4 border border-white/5 group-hover:scale-110 transition-transform duration-500 ${item.color}`}>
                                 {item.icon}
                             </div>
                             <div>
-                                <p className="text-xs text-gray-400 font-black uppercase tracking-widest">{item.label}</p>
-                                <p className="text-2xl font-black mt-1">{item.value}</p>
+                                <p className="text-[9px] text-text-muted font-black uppercase tracking-[0.2em] italic mb-1">{item.label}</p>
+                                <p className="text-2xl font-black text-white italic tracking-tighter">{item.value}</p>
                             </div>
                         </div>
                     </Card>
                 ))}
             </div>
 
-            <section className="space-y-4">
-                <h3 className="text-lg font-black uppercase tracking-widest flex items-center gap-2">
-                    <Activity size={18} className="text-primary" /> Owner Subscriptions
+            <section className="space-y-6">
+                <h3 className="text-lg font-black uppercase tracking-[0.3em] flex items-center gap-3 text-text-primary px-2 italic">
+                    <Activity size={20} className="text-primary-500" /> Infrastructure <span className="text-primary-500">Allocation</span>
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     {[
-                        { label: 'Free Trials', value: stats?.ownerStats?.trial || 0, color: 'text-orange-500', bg: 'bg-orange-50' },
-                        { label: 'Active (Paid)', value: stats?.ownerStats?.active || 0, color: 'text-green-500', bg: 'bg-green-50' },
-                        { label: 'Expired', value: stats?.ownerStats?.expired || 0, color: 'text-red-500', bg: 'bg-red-50' },
+                        { label: 'Free Trials', value: stats?.ownerStats?.trial || 0, color: 'text-orange-500', bg: 'bg-orange-500/10' },
+                        { label: 'Active (Paid)', value: stats?.ownerStats?.active || 0, color: 'text-green-500', bg: 'bg-green-500/10' },
+                        { label: 'Expired', value: stats?.ownerStats?.expired || 0, color: 'text-red-500', bg: 'bg-red-500/10' },
                     ].map((item, i) => (
-                        <Card key={i} className="p-6 border-none shadow-lg">
-                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">{item.label}</p>
+                        <Card key={i} className="p-8 border-white/5 bg-bg2/40 backdrop-blur-3xl shadow-3xl rounded-[2rem] group hover:border-white/20 transition-all">
+                            <p className="text-[10px] font-black text-text-muted uppercase tracking-[0.2em] mb-4 italic">{item.label}</p>
                             <div className="flex items-end justify-between">
-                                <p className={`text-4xl font-black ${item.color}`}>{item.value}</p>
-                                <div className={`px-3 py-1 rounded-full text-[10px] font-black uppercase ${item.bg} ${item.color}`}>
-                                    Status
+                                <p className={`text-5xl font-black tracking-tighter italic ${item.color}`}>{item.value}</p>
+                                <div className={`px-4 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest border border-white/5 italic ${item.bg} ${item.color}`}>
+                                    LNK-ACT
                                 </div>
                             </div>
                         </Card>
@@ -147,64 +148,64 @@ const AdminDashboardPage: React.FC = () => {
             </section>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <section className="space-y-4">
-                    <h3 className="text-lg font-black uppercase tracking-widest flex items-center gap-2">
-                        <UserPlus size={18} className="text-primary" /> Recent Users
+                <section className="space-y-6">
+                    <h3 className="text-lg font-black uppercase tracking-[0.3em] flex items-center gap-3 text-text-primary px-2 italic">
+                        <UserPlus size={20} className="text-indigo-500" /> Neural <span className="text-indigo-500">Ingress</span>
                     </h3>
-                    <Card className="p-0 overflow-hidden">
-                        <div className="divide-y divide-gray-100">
+                    <Card className="p-0 overflow-hidden border-white/5 bg-bg2/40 backdrop-blur-3xl shadow-3xl rounded-[2rem]">
+                        <div className="divide-y divide-white/5">
                             {users.slice(0, 5).map(u => (
-                                <div key={u.id} className="p-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-full bg-indigo-50 text-indigo-500 flex items-center justify-center font-bold">
+                                <div key={u.id} className="p-6 flex items-center justify-between hover:bg-white/5 transition-all group">
+                                    <div className="flex items-center gap-5">
+                                        <div className="w-12 h-12 rounded-xl bg-bg3/50 text-indigo-400 flex items-center justify-center font-black border border-white/5 shadow-2xl">
                                             {u.name.charAt(0)}
                                         </div>
                                         <div>
-                                            <p className="font-bold text-sm">{u.name}</p>
-                                            <p className="text-xs text-gray-400">{u.role}</p>
+                                            <p className="font-black text-white italic uppercase tracking-tight">{u.name}</p>
+                                            <p className="text-[10px] text-text-muted font-black uppercase tracking-widest">{u.role}</p>
                                         </div>
                                     </div>
-                                    <span className="text-[10px] text-gray-400">{u.createdAt ? new Date(u.createdAt).toLocaleDateString() : 'N/A'}</span>
+                                    <span className="text-[9px] text-text-muted font-black uppercase tracking-widest italic">{u.createdAt ? new Date(u.createdAt).toLocaleDateString() : 'N/A'}</span>
                                 </div>
                             ))}
                         </div>
                     </Card>
                 </section>
 
-                <section className="space-y-4">
-                    <h3 className="text-lg font-black uppercase tracking-widest flex items-center gap-2">
-                        <Building size={18} className="text-secondary" /> Pending Marketplace Approvals
+                <section className="space-y-6">
+                    <h3 className="text-lg font-black uppercase tracking-[0.3em] flex items-center gap-3 text-text-primary px-2 italic">
+                        <Building size={20} className="text-secondary" /> Pending <span className="text-primary-500">Transmissions</span>
                     </h3>
-                    <Card className="p-0 overflow-hidden">
-                        <div className="divide-y divide-gray-100">
+                    <Card className="p-0 overflow-hidden border-white/5 bg-bg2/40 backdrop-blur-3xl shadow-3xl rounded-[2rem]">
+                        <div className="divide-y divide-white/5">
                             {messes.length > 0 ? messes.slice(0, 5).map(m => (
-                                <div key={m.id} className="p-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
-                                    <div>
-                                        <p className="font-bold text-sm tracking-tight">{m.name}</p>
-                                        <p className="text-[10px] text-gray-400 font-bold uppercase">Owner: {m.ownerName || 'N/A'}</p>
+                                <div key={m.id} className="p-6 flex flex-col sm:flex-row items-center justify-between gap-6 hover:bg-white/5 transition-all group">
+                                    <div className="text-center sm:text-left">
+                                        <p className="font-black text-white italic uppercase tracking-tight text-lg">{m.name}</p>
+                                        <p className="text-[10px] text-text-muted font-black uppercase tracking-[0.2em] mt-1">Owner: {m.ownerName || 'N/A'}</p>
                                     </div>
-                                    <div className="flex gap-2">
+                                    <div className="flex gap-4 w-full sm:w-auto">
                                         <Button
                                             size="sm"
-                                            className="text-[10px] font-black uppercase py-1 h-8 px-4"
+                                            className="flex-1 sm:flex-none text-[9px] font-black uppercase tracking-[0.2em] py-3 h-10 px-8 rounded-xl italic shadow-2xl shadow-primary-500/20"
                                             onClick={() => handleApproveMess(m.id)}
                                         >
-                                            Approve
+                                            Authorize
                                         </Button>
                                         <Button
                                             variant="outline"
                                             size="sm"
-                                            className="text-[10px] font-black uppercase py-1 h-8 px-4 border-red-200 text-red-500 hover:bg-red-50"
+                                            className="flex-1 sm:flex-none text-[9px] font-black uppercase tracking-[0.2em] py-3 h-10 px-8 rounded-xl italic border-white/10 text-red-500 hover:bg-red-500/5 hover:border-red-500/30"
                                             onClick={() => handleRejectMess(m.id)}
                                         >
-                                            Reject
+                                            Decline
                                         </Button>
                                     </div>
                                 </div>
                             )) : (
-                                <div className="p-12 text-center text-gray-400">
-                                    <CircleCheck size={32} className="mx-auto mb-2 opacity-20 text-green-500" />
-                                    <p className="text-[10px] font-black uppercase tracking-widest">Marketplace Clean!</p>
+                                <div className="p-20 text-center">
+                                    <CircleCheck size={48} className="mx-auto mb-4 opacity-20 text-green-500 animate-pulse" />
+                                    <p className="text-[11px] font-black text-text-muted uppercase tracking-[0.3em] italic leading-relaxed">System Sync 100%. No pending transmissions in the grid.</p>
                                 </div>
                             )}
                         </div>
@@ -215,47 +216,50 @@ const AdminDashboardPage: React.FC = () => {
     );
 
     const renderUsers = () => (
-        <div className="space-y-4">
-            <div className="flex justify-between items-center bg-white p-4 rounded-2xl shadow-sm">
-                <div className="relative flex-grow max-w-md">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                    <input type="text" placeholder="Search users by name or email..." className="w-full pl-12 pr-4 py-3 rounded-xl bg-gray-50 border-none text-sm font-medium" />
+        <div className="p-0 overflow-hidden border-white/5 bg-bg2/40 backdrop-blur-3xl shadow-3xl rounded-[2rem]">
+            <div className="p-8 border-b border-white/5 flex flex-col sm:flex-row justify-between items-center gap-6">
+                <div className="relative w-full sm:max-w-md">
+                    <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-text-muted" size={18} />
+                    <input type="text" placeholder="Scan neural signatures (name/email)..." className="w-full pl-14 pr-6 h-14 rounded-2xl bg-bg3/50 border-white/10 text-sm font-black text-white italic placeholder:text-text-muted/50 focus:border-primary-500/50 transition-all outline-none" />
+                </div>
+                <div className="flex gap-4 w-full sm:w-auto">
+                    <Button variant="outline" className="flex-1 sm:flex-none h-14 px-8 rounded-2xl border-white/10 text-[10px] font-black uppercase tracking-widest italic hover:bg-white/5">Export Registry</Button>
                 </div>
             </div>
-            <Card className="p-0 overflow-hidden">
+            <div className="overflow-x-auto">
                 <table className="w-full text-left">
-                    <thead className="bg-gray-50 border-b border-gray-100">
-                        <tr>
-                            <th className="px-6 py-4 text-xs font-black uppercase tracking-widest text-gray-400">User</th>
-                            <th className="px-6 py-4 text-xs font-black uppercase tracking-widest text-gray-400">Role</th>
-                            <th className="px-6 py-4 text-xs font-black uppercase tracking-widest text-gray-400">Joined</th>
-                            <th className="px-6 py-4 text-xs font-black uppercase tracking-widest text-gray-400 text-right">Actions</th>
+                    <thead>
+                        <tr className="border-b border-white/5 bg-bg3/30">
+                            <th className="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-text-muted italic">Entity</th>
+                            <th className="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-text-muted italic">Protocol</th>
+                            <th className="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-text-muted italic">Timestamp</th>
+                            <th className="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-text-muted italic text-right">Ops</th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-100">
+                    <tbody className="divide-y divide-white/5">
                         {users.map(u => (
-                            <tr key={u.id} className="hover:bg-gray-50/50 transition-colors">
-                                <td className="px-6 py-4">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center font-bold text-xs">
+                            <tr key={u.id} className="hover:bg-white/5 transition-all group">
+                                <td className="px-8 py-6">
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-10 h-10 rounded-xl bg-bg3/50 flex items-center justify-center font-black text-xs text-indigo-400 border border-white/5 shadow-xl">
                                             {u.name[0]}
                                         </div>
                                         <div>
-                                            <p className="font-bold text-sm">{u.name}</p>
-                                            <p className="text-xs text-gray-400">{u.email}</p>
+                                            <p className="font-black text-white text-sm italic uppercase tracking-tight">{u.name}</p>
+                                            <p className="text-[10px] text-text-muted font-black uppercase tracking-widest mt-0.5">{u.email}</p>
                                         </div>
                                     </div>
                                 </td>
-                                <td className="px-6 py-4">
-                                    <span className={`px-2 py-1 rounded-md text-[9px] font-black uppercase ${u.role === 'ADMIN' ? 'bg-indigo-100 text-indigo-600' : u.role === 'OWNER' ? 'bg-amber-100 text-amber-600' : 'bg-emerald-100 text-emerald-600'}`}>
+                                <td className="px-8 py-6">
+                                    <span className={`px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest italic border ${u.role === 'ADMIN' ? 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20' : u.role === 'OWNER' ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'}`}>
                                         {u.role}
                                     </span>
                                 </td>
-                                <td className="px-6 py-4 text-xs font-medium text-gray-500">
+                                <td className="px-8 py-6 text-[10px] font-black text-text-muted uppercase italic tracking-widest">
                                     {u.createdAt ? new Date(u.createdAt).toLocaleDateString() : 'N/A'}
                                 </td>
-                                <td className="px-6 py-4 text-right">
-                                    <Button variant="ghost" size="sm" className="text-red-500 hover:bg-red-50" onClick={() => handleDeleteUser(u.id)}>
+                                <td className="px-8 py-6 text-right">
+                                    <Button variant="ghost" size="sm" className="text-red-500 hover:bg-red-500/5 rounded-xl h-10 w-10 flex items-center justify-center" onClick={() => handleDeleteUser(u.id)}>
                                         <Trash2 size={16} />
                                     </Button>
                                 </td>
@@ -263,104 +267,108 @@ const AdminDashboardPage: React.FC = () => {
                         ))}
                     </tbody>
                 </table>
-            </Card>
+            </div>
         </div>
     );
 
     const renderMesses = () => (
-        <div className="grid grid-cols-1 gap-4">
-            <h2 className="text-xl font-black uppercase tracking-wider mb-2">Pending Marketplace Approvals ({messes.length})</h2>
+        <div className="space-y-8">
+            <h2 className="text-3xl font-black uppercase tracking-tighter italic text-text-primary px-2">Verification <span className="text-primary-500">Queue ({messes.length})</span></h2>
             {messes.map(m => (
-                <Card key={m.id} className="p-6 flex flex-col md:flex-row items-center justify-between gap-6 hover:border-primary transition-colors group border-2 border-transparent">
-                    <div className="flex items-center gap-6 flex-grow">
-                        <div className="w-16 h-16 rounded-2xl bg-gray-100 overflow-hidden relative flex items-center justify-center">
-                             <Building className="w-8 h-8 text-gray-300" />
+                <Card key={m.id} className="p-8 flex flex-col md:flex-row items-center justify-between gap-8 hover:border-primary-500/30 transition-all group border-white/5 bg-bg2/40 backdrop-blur-3xl rounded-[2.5rem] shadow-3xl relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-primary-500/5 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
+                    <div className="flex items-center gap-8 flex-grow relative z-10">
+                        <div className="w-20 h-20 rounded-[1.5rem] bg-bg3/50 overflow-hidden relative flex items-center justify-center border border-white/5 shadow-2xl group-hover:scale-110 transition-transform duration-500">
+                             <Building className="w-10 h-10 text-primary-500 opacity-50" />
                         </div>
                         <div>
-                            <div className="flex items-center gap-2">
-                                <h4 className="font-black text-lg tracking-tighter">{m.name}</h4>
-                                <span className="bg-orange-100 text-orange-600 px-2 py-0.5 rounded text-[9px] font-black uppercase">Pending Approval</span>
+                            <div className="flex items-center gap-4 mb-2">
+                                <h4 className="font-black text-2xl tracking-tighter italic text-white uppercase">{m.name}</h4>
+                                <span className="bg-orange-500/10 text-orange-400 px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border border-orange-500/20 italic">Verification Pending</span>
                             </div>
-                            <p className="text-xs text-gray-400 font-bold uppercase tracking-wider">{m.cuisine} • {m.city}</p>
-                            <p className="text-[10px] text-gray-500 font-medium mt-1">Owner: {m.ownerName || 'N/A'} • {m.ownerEmail || 'N/A'}</p>
+                            <p className="text-[10px] text-text-muted font-black uppercase tracking-[0.2em] italic mb-2">{m.cuisine} • {m.city}</p>
+                            <p className="text-[11px] text-text-muted font-black uppercase tracking-widest opacity-60 italic">Central ID: {m.id.substring(0,12)} • Owner: {m.ownerName || 'N/A'}</p>
                         </div>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-4 relative z-10 w-full md:w-auto">
                         <Button
                             size="sm"
-                            className="rounded-xl px-8 text-[10px] font-black uppercase h-10"
+                            className="flex-1 md:flex-none rounded-2xl px-10 text-[10px] font-black uppercase tracking-widest h-14 italic shadow-2xl shadow-primary-500/20"
                             onClick={() => handleApproveMess(m.id)}
                         >
-                            Approve Listing
+                            Authorize Listing
                         </Button>
                         <Button
                             variant="outline"
                             size="sm"
-                            className="rounded-xl px-8 text-[10px] font-black uppercase h-10 border-red-200 text-red-500 hover:bg-red-50"
+                            className="flex-1 md:flex-none rounded-2xl px-10 text-[10px] font-black uppercase tracking-widest h-14 italic border-white/10 text-red-500 hover:bg-red-500/5 hover:border-red-500/30"
                             onClick={() => handleRejectMess(m.id)}
                         >
-                            Reject
+                            Decline
                         </Button>
                     </div>
                 </Card>
             ))}
             {messes.length === 0 && (
-                <div className="p-20 text-center bg-white rounded-[2rem] border-2 border-dashed border-gray-100">
-                    <CircleCheck size={48} className="mx-auto text-green-500 mb-4 opacity-30" />
-                    <h3 className="text-xl font-black uppercase tracking-widest">No Pending Approvals</h3>
-                    <p className="text-gray-400 text-sm mt-2">All mess listings have been processed.</p>
-                </div>
+                <Card className="p-24 text-center bg-bg2/40 backdrop-blur-3xl rounded-[3rem] border border-white/5 shadow-3xl">
+                    <CircleCheck size={64} className="mx-auto text-green-500 mb-8 opacity-20 animate-pulse" />
+                    <h3 className="text-2xl font-black uppercase tracking-[0.3em] text-white italic">Registry Synchronized</h3>
+                    <p className="text-text-muted text-[11px] font-black uppercase tracking-widest mt-4 italic opacity-60">All mess transmissions have been authorized or declined.</p>
+                </Card>
             )}
         </div>
     );
 
     return (
         <Layout>
-            <div className="bg-dark text-white py-12 relative overflow-hidden">
-                <div className="absolute inset-0 bg-primary opacity-5 animate-pulse" />
-                <div className="container mx-auto px-4 relative">
-                    <div className="flex flex-col md:row items-center justify-between gap-6">
-                        <div className="space-y-2">
-                            <h1 className="text-4xl font-heading font-black tracking-tighter">ADMIN PANEL</h1>
-                            <div className="flex items-center space-x-2 text-primary">
-                                <Shield size={16} />
-                                <p className="text-sm font-bold uppercase tracking-widest">Platform Infrastructure</p>
+            <div className="bg-bg text-white py-20 relative overflow-hidden border-b border-white/5">
+                <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary-500/50 to-transparent opacity-30" />
+                <div className="absolute inset-0 bg-primary-500/10 mix-blend-overlay" />
+                <div className="container mx-auto px-6 relative z-10">
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-10">
+                        <div className="space-y-4 text-center md:text-left">
+                            <h1 className="text-6xl font-heading font-black tracking-tighter italic uppercase text-white leading-none">COMMAND <span className="text-primary-500">OPS</span></h1>
+                            <div className="flex items-center justify-center md:justify-start space-x-3 text-primary-500">
+                                <Shield size={20} className="animate-pulse" />
+                                <p className="text-[11px] font-black uppercase tracking-[0.4em] italic leading-none">Security Clearance: LEVEL-87</p>
                             </div>
                         </div>
                         <Button
                             variant="outline"
-                            size="sm"
-                            className="rounded-xl border-white/20 text-white hover:bg-white/10"
+                            size="lg"
+                            className="rounded-2xl border-white/10 text-white hover:bg-white/5 h-16 px-10 font-black uppercase tracking-widest text-[10px] italic shadow-2xl"
                             onClick={() => {
                                 setRefreshing(true);
                                 fetchData().then(() => setRefreshing(false));
                             }}
                         >
-                            <RefreshCw size={18} className={`mr-2 ${refreshing ? 'animate-spin' : ''}`} /> Refresh Data
+                            <RefreshCw size={20} className={`mr-3 ${refreshing ? 'animate-spin' : ''}`} /> Snyc Grid
                         </Button>
                     </div>
                 </div>
             </div>
 
-            <div className="container mx-auto px-4 -mt-10 pb-20">
-                <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <div className="container mx-auto px-6 -mt-12 pb-24 relative z-20">
+                <div className="grid grid-cols-1 lg:grid-cols-4 gap-10">
                     <div className="lg:col-span-1">
-                        <Card className="p-2 space-y-1 sticky top-24 shadow-2xl rounded-2xl dark:bg-dark-card border-none">
+                        <Card className="p-3 space-y-2 sticky top-28 shadow-3xl rounded-[2rem] bg-bg2/80 backdrop-blur-3xl border border-white/10">
                             {[
-                                { id: 'overview', icon: <LayoutDashboard size={20} />, label: 'Overview' },
-                                { id: 'users', icon: <Users size={20} />, label: 'User Management' },
-                                { id: 'messes', icon: <Building size={20} />, label: 'Mess Verification' },
-                                { id: 'settings', icon: <SettingsIcon size={20} />, label: 'Platform Stats' },
+                                { id: 'overview', icon: <LayoutDashboard size={22} />, label: 'GRID OVERVIEW' },
+                                { id: 'users', icon: <Users size={22} />, label: 'ENTITY REGISTRY' },
+                                { id: 'messes', icon: <Building size={22} />, label: 'NODE VERIFICATION' },
+                                { id: 'settings', icon: <SettingsIcon size={22} />, label: 'SYSTEM CORES' },
                             ].map((item) => (
                                 <button
                                     key={item.id}
                                     onClick={() => setActiveTab(item.id as AdminTab)}
-                                    className={`w-full flex items-center space-x-3 px-5 py-4 rounded-xl transition-all font-bold text-sm ${activeTab === item.id
-                                        ? 'bg-primary text-white shadow-xl shadow-primary/30'
-                                        : 'text-gray-500 hover:bg-gray-50'
+                                    className={`w-full flex items-center space-x-4 px-6 py-5 rounded-2xl transition-all font-black text-[10px] uppercase tracking-[0.2em] italic ${activeTab === item.id
+                                        ? 'bg-primary-500 text-white shadow-2xl shadow-primary-500/40 -translate-y-1'
+                                        : 'text-text-muted hover:bg-white/5 border border-transparent'
                                         }`}
                                 >
-                                    {item.icon}
+                                    <div className={`${activeTab === item.id ? 'text-white' : 'text-primary-500'}`}>
+                                        {item.icon}
+                                    </div>
                                     <span>{item.label}</span>
                                 </button>
                             ))}
@@ -369,11 +377,11 @@ const AdminDashboardPage: React.FC = () => {
 
                     <div className="lg:col-span-3">
                         {loading && !refreshing ? (
-                            <div className="space-y-6">
-                                <div className="grid grid-cols-4 gap-6">
-                                    {[1, 2, 3, 4].map(i => <div key={i} className="h-24 bg-gray-100 rounded-2xl animate-pulse" />)}
+                            <div className="space-y-8">
+                                <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+                                    {[1, 2, 3, 4].map(i => <div key={i} className="h-32 bg-bg2/40 backdrop-blur-3xl rounded-[2rem] border border-white/5 animate-pulse shadow-3xl" />)}
                                 </div>
-                                <div className="h-96 bg-gray-100 rounded-2xl animate-pulse" />
+                                <div className="h-[600px] bg-bg2/40 backdrop-blur-3xl rounded-[3rem] border border-white/5 animate-pulse shadow-3xl" />
                             </div>
                         ) : (
                             <>
@@ -381,40 +389,41 @@ const AdminDashboardPage: React.FC = () => {
                                 {activeTab === 'users' && renderUsers()}
                                 {activeTab === 'messes' && renderMesses()}
                                 {activeTab === 'settings' && (
-                                    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                                        <Card className="p-8 border-none shadow-2xl bg-gradient-to-br from-white to-gray-50 dark:from-dark-card dark:to-dark">
-                                            <div className="flex flex-col md:row items-center justify-between gap-8">
-                                                <div className="space-y-4 text-center md:text-left">
-                                                    <h3 className="text-2xl font-black tracking-tight flex items-center gap-3">
-                                                        <Activity className="text-primary" /> Platform Performance
+                                    <div className="space-y-10 animate-in fade-in slide-in-from-bottom-6 duration-700">
+                                        <Card className="p-12 border-white/5 shadow-3xl bg-bg2/40 backdrop-blur-3xl rounded-[3rem] relative overflow-hidden group">
+                                            <div className="absolute top-0 right-0 w-64 h-64 bg-primary-500/5 rounded-full blur-3xl -mr-32 -mt-32 pointer-events-none" />
+                                            <div className="flex flex-col lg:flex-row items-center justify-between gap-12 relative z-10">
+                                                <div className="space-y-4 text-center lg:text-left">
+                                                    <h3 className="text-3xl font-black tracking-tighter flex items-center justify-center lg:justify-start gap-4 italic uppercase text-white">
+                                                        <Activity className="text-primary-500 animate-pulse" size={32} /> Platform <span className="text-primary-500">Cores</span>
                                                     </h3>
-                                                    <p className="text-gray-500 font-medium max-w-md">
-                                                        Real-time tracking of platform activity and visitor engagement.
+                                                    <p className="text-text-muted font-black uppercase tracking-widest text-[11px] max-w-md italic leading-relaxed">
+                                                        Real-time surveillance of platform-wide activity, visitor engagement metrics, and neural link health.
                                                     </p>
                                                 </div>
-                                                <div className="flex gap-4">
-                                                    <div className="p-6 rounded-3xl bg-primary/5 border border-primary/10 text-center min-w-[160px]">
-                                                        <p className="text-[10px] font-black text-primary uppercase tracking-widest mb-1">Total Visits</p>
-                                                        <p className="text-3xl font-black text-primary">{(stats?.totalVisits || 0).toLocaleString()}</p>
+                                                <div className="flex gap-6">
+                                                    <div className="p-10 rounded-[2.5rem] bg-bg3/50 border border-white/10 text-center min-w-[220px] shadow-2xl group-hover:border-primary-500/30 transition-all duration-500">
+                                                        <p className="text-[10px] font-black text-text-muted uppercase tracking-[0.3em] mb-3 italic">Total Visitors</p>
+                                                        <p className="text-5xl font-black text-primary-500 italic tracking-tighter">{(stats?.totalVisits || 0).toLocaleString()}</p>
                                                     </div>
                                                 </div>
                                             </div>
                                         </Card>
 
-                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                                             {[
-                                                { label: 'New Users Today', value: '0', icon: <Users />, color: 'text-indigo-500' },
-                                                { label: 'Server Status', value: 'Online', icon: <Activity />, color: 'text-emerald-500' },
-                                                { label: 'Database Status', value: 'Connected', icon: <Shield />, color: 'text-amber-500' },
+                                                { label: 'Neural Ingress (Daily)', value: '18', icon: <Users />, color: 'text-indigo-500' },
+                                                { label: 'Cloud Status', value: 'SYNCED', icon: <Activity />, color: 'text-emerald-500' },
+                                                { label: 'Matrix Encryption', value: 'ACTIVE', icon: <Shield />, color: 'text-amber-500' },
                                             ].map((item, i) => (
-                                                <Card key={i} className="p-6 border-none shadow-xl hover:shadow-2xl transition-all">
-                                                    <div className="flex items-center gap-4">
-                                                        <div className={`p-3 rounded-xl bg-gray-50 ${item.color}`}>
+                                                <Card key={i} className="p-8 border-white/5 bg-bg2/40 backdrop-blur-3xl shadow-3xl hover:border-white/20 transition-all rounded-[2rem] group h-full">
+                                                    <div className="flex flex-col items-center text-center gap-6">
+                                                        <div className={`p-5 rounded-2xl bg-bg3/50 border border-white/5 group-hover:scale-110 transition-transform duration-500 ${item.color} shadow-2xl`}>
                                                             {item.icon}
                                                         </div>
                                                         <div>
-                                                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{item.label}</p>
-                                                            <p className="text-lg font-black">{item.value}</p>
+                                                            <p className="text-[10px] font-black text-text-muted uppercase tracking-[0.3em] italic mb-2">{item.label}</p>
+                                                            <p className="text-xl font-black text-white italic tracking-[0.1em]">{item.value}</p>
                                                         </div>
                                                     </div>
                                                 </Card>

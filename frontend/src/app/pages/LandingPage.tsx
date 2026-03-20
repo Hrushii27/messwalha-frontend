@@ -66,38 +66,38 @@ const LandingPage: React.FC = () => {
                                     Find Your Perfect <br className="hidden sm:block" />
                                     <span className="text-primary-500 italic">Mess in Seconds</span>
                                 </h1>
-                                <p className="text-sm sm:text-lg md:text-xl lg:text-2xl text-white/70 font-medium max-w-3xl mx-auto leading-relaxed italic mt-6 px-4">
+                                <p className="text-sm sm:text-lg md:text-xl lg:text-2xl text-text-secondary font-medium max-w-3xl mx-auto leading-relaxed italic mt-6 px-4">
                                     Discover verified mess services near your college campus. <br className="hidden md:block" />
                                     Compare menus, prices, and subscribe with professional ease.
                                 </p>
                             </motion.div>
 
                             {/* Modern Search UI - Improved */}
-                            <motion.div
-                                initial={{ opacity: 0, scale: 0.9 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                transition={{ duration: 0.8, delay: 0.2 }}
-                                className="bg-white/5 backdrop-blur-3xl p-4 sm:p-5 rounded-[2.5rem] sm:rounded-[3rem] md:rounded-full border border-white/10 shadow-[0_32px_100px_-20px_rgba(0,0,0,0.5)] max-w-4xl mx-auto group hover:border-primary-500/30 transition-all duration-700"
-                            >
+                                <motion.div
+                                    initial={{ opacity: 0, scale: 0.9 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    transition={{ duration: 0.8, delay: 0.2 }}
+                                    className="bg-bg3/40 backdrop-blur-3xl p-4 sm:p-5 rounded-[2.5rem] sm:rounded-[3rem] md:rounded-full border border-white/10 shadow-[0_32px_100px_-20px_rgba(0,0,0,0.5)] max-w-4xl mx-auto group hover:border-primary-500/30 transition-all duration-700"
+                                >
                                 <div className="flex flex-col md:flex-row items-center gap-4 sm:gap-6">
                                     <div className="flex-1 w-full relative group/input text-left">
                                         <MapPin aria-hidden="true" className="absolute left-6 top-1/2 -translate-y-1/2 text-primary-500 z-10 group-hover/input:scale-110 transition-transform" size={18} />
                                         <input
                                             type="text"
                                             placeholder="📍 Enter College / Area..."
-                                            className="w-full bg-white/[0.03] border-none text-white pl-14 pr-6 py-6 sm:py-7 rounded-[1.5rem] md:rounded-full focus:ring-2 focus:ring-primary-500/50 transition-all font-black uppercase tracking-widest text-[11px] outline-none h-16 sm:h-20"
+                                            className="w-full bg-bg3/50 border-none text-text-primary pl-14 pr-6 py-6 sm:py-7 rounded-[1.5rem] md:rounded-full focus:ring-2 focus:ring-primary-500/50 transition-all font-black uppercase tracking-widest text-[11px] outline-none h-16 sm:h-20"
                                             aria-label="Search by Area or College"
                                         />
                                     </div>
                                     <div className="flex-1 w-full relative group/select">
                                         <Utensils aria-hidden="true" className="absolute left-6 top-1/2 -translate-y-1/2 text-primary-500 z-10 group-hover/select:scale-110 transition-transform" size={18} />
                                         <select 
-                                            className="w-full bg-white/[0.03] border-none text-white pl-14 pr-10 py-6 sm:py-7 rounded-[1.5rem] md:rounded-full focus:ring-2 focus:ring-primary-500/50 transition-all font-black uppercase tracking-widest text-[11px] appearance-none cursor-pointer outline-none h-16 sm:h-20"
+                                            className="w-full bg-bg3/50 border-none text-text-primary pl-14 pr-10 py-6 sm:py-7 rounded-[1.5rem] md:rounded-full focus:ring-2 focus:ring-primary-500/50 transition-all font-black uppercase tracking-widest text-[11px] appearance-none cursor-pointer outline-none h-16 sm:h-20"
                                             aria-label="Filter by meal type"
                                         >
-                                            <option value="" className="bg-dark-900 text-[11px]">🍛 Veg / Non-Veg</option>
-                                            <option value="veg" className="bg-dark-900 text-[11px]">Pure Veg</option>
-                                            <option value="non-veg" className="bg-dark-900 text-[11px]">Veg + Non-Veg</option>
+                                            <option value="" className="bg-bg2 text-[11px]">🍛 Veg / Non-Veg</option>
+                                            <option value="veg" className="bg-bg2 text-[11px]">Pure Veg</option>
+                                            <option value="non-veg" className="bg-bg2 text-[11px]">Veg + Non-Veg</option>
                                         </select>
                                     </div>
                                     <Button
@@ -123,7 +123,7 @@ const LandingPage: React.FC = () => {
                                     { icon: CircleCheck, text: 'Affordable Monthly Plans' },
                                     { icon: CircleCheck, text: 'Healthy & Hygienic Food' }
                                 ].map((feature, i) => (
-                                    <div key={i} className="flex items-center space-x-3 text-white/80 group hover:text-white transition-colors cursor-default">
+                                    <div key={i} className="flex items-center space-x-3 text-text-secondary group hover:text-white transition-colors cursor-default">
                                         <feature.icon aria-hidden="true" size={18} className="text-primary-500 group-hover:scale-125 transition-transform" />
                                         <span className="text-[11px] font-black uppercase tracking-[0.2em] italic">✓ {feature.text}</span>
                                     </div>
@@ -161,7 +161,7 @@ const LandingPage: React.FC = () => {
                 </section>
 
                 {/* How It Works Section */}
-                <section className="py-20 sm:py-32 bg-white dark:bg-dark-900 overflow-hidden">
+                <section className="py-20 sm:py-32 bg-bg2 overflow-hidden">
                     <div className="container mx-auto px-4">
                         <div className="text-center mb-16 sm:mb-24 max-w-3xl mx-auto space-y-4">
                             <span className="text-primary-500 text-[10px] font-black uppercase tracking-[0.3em]">Easy 3 Step Process</span>
@@ -202,7 +202,7 @@ const LandingPage: React.FC = () => {
                                     <div className="absolute -top-6 left-1/2 -translate-x-1/2 w-14 h-14 sm:w-16 sm:h-16 bg-primary-500 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-primary-500/40 rotate-12 group-hover:rotate-0 transition-transform">
                                         <item.icon size={24} className="sm:w-8 sm:h-8" />
                                     </div>
-                                    <div className="text-[40px] sm:text-[60px] font-black text-border-color/20 absolute -top-4 right-6 sm:right-10 leading-none">
+                                    <div className="text-[40px] sm:text-[60px] font-black text-text-muted/40 absolute -top-4 right-6 sm:right-10 leading-none">
                                         {item.step}
                                     </div>
                                     <h3 className="text-xl sm:text-2xl font-black text-text-primary mb-4 mt-6 sm:mt-8 uppercase tracking-tighter italic">{item.title}</h3>
@@ -245,12 +245,12 @@ const LandingPage: React.FC = () => {
                                     <div className="flex text-primary-500 gap-1">
                                         {[1, 2, 3, 4, 5].map(star => <Star key={star} size={14} fill="currentColor" />)}
                                     </div>
-                                    <p className="text-lg sm:text-xl italic font-medium leading-relaxed opacity-80">"{testi.text}"</p>
+                                    <p className="text-lg sm:text-xl italic font-medium leading-relaxed text-text-secondary">"{testi.text}"</p>
                                     <div className="pt-6 border-t border-white/5 flex items-center gap-4">
                                         <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-primary-500/30"></div>
                                         <div>
                                             <p className="font-black uppercase tracking-widest text-[10px] sm:text-xs">{testi.name}</p>
-                                            <p className="text-[9px] sm:text-[10px] uppercase tracking-widest opacity-40">{testi.role}</p>
+                                            <p className="text-[9px] sm:text-[10px] uppercase tracking-widest text-text-muted">{testi.role}</p>
                                         </div>
                                     </div>
                                 </motion.div>
@@ -298,7 +298,7 @@ const LandingPage: React.FC = () => {
                 </section>
 
                 {/* Mobile Full-Width Bottom Bar */}
-                <div className="lg:hidden fixed bottom-0 left-0 right-0 p-4 bg-navy-950/80 backdrop-blur-3xl border-t border-white/10 z-[90]">
+                <div className="lg:hidden fixed bottom-0 left-0 right-0 p-4 bg-bg/80 backdrop-blur-3xl border-t border-white/10 z-[90]">
                     <Button
                         onClick={() => navigate('/find-mess')}
                         className="w-full h-16 rounded-2xl bg-primary-500 text-white font-black uppercase tracking-[0.3em] text-[11px] shadow-2xl shadow-primary-500/30 flex items-center justify-center gap-3 italic"

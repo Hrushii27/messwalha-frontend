@@ -99,17 +99,17 @@ const ChatPage: React.FC = () => {
     return (
         <Layout>
             <div className="container mx-auto px-4 py-8 h-[calc(100vh-120px)]">
-                <div className="grid grid-cols-1 md:grid-cols-12 gap-0 h-full rounded-[2.5rem] overflow-hidden shadow-2xl border border-gray-100 bg-white">
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-0 h-full rounded-[2.5rem] overflow-hidden shadow-2xl border border-white/10 bg-bg2">
                     {/* Sidebar: Chat List */}
-                    <div className="md:col-span-4 border-r border-gray-100 flex flex-col h-full bg-gray-50/30">
-                        <div className="p-6 border-b border-gray-100 bg-white">
-                            <h2 className="text-2xl font-black mb-4 tracking-tighter">Messages</h2>
+                    <div className="md:col-span-4 border-r border-white/10 flex flex-col h-full bg-bg3/30">
+                        <div className="p-6 border-b border-white/10 bg-bg2">
+                            <h2 className="text-2xl font-black mb-4 tracking-tighter text-text-primary uppercase italic">Messages</h2>
                             <div className="relative">
-                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" size={18} />
                                 <input
                                     type="text"
                                     placeholder="Search conversations..."
-                                    className="w-full pl-12 pr-4 py-3 rounded-2xl bg-gray-50 border-none outline-none focus:ring-2 focus:ring-primary/20 text-sm font-medium"
+                                    className="w-full pl-12 pr-4 py-3 rounded-2xl bg-bg3/50 border border-white/10 outline-none focus:ring-2 focus:ring-primary-500/20 text-sm font-black uppercase tracking-widest italic text-text-primary"
                                 />
                             </div>
                         </div>
@@ -123,21 +123,21 @@ const ChatPage: React.FC = () => {
                                         key={chat.id}
                                         onClick={() => setActiveChat(chat)}
                                         className={`w-full p-4 rounded-2xl flex items-center gap-4 transition-all group ${activeChat?.id === chat.id
-                                            ? 'bg-white shadow-xl shadow-primary/5 border-primary/10 border'
-                                            : 'hover:bg-white/50'}`}
+                                            ? 'bg-bg2 shadow-xl shadow-primary-500/10 border-primary-500/20 border'
+                                            : 'hover:bg-bg3/40'}`}
                                     >
                                         <div className="relative">
-                                            <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary font-black">
+                                            <div className="w-12 h-12 rounded-2xl bg-primary-500/10 flex items-center justify-center text-primary-500 font-black">
                                                 {partner?.name?.charAt(0)}
                                             </div>
-                                            <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-green-500 border-2 border-white" />
+                                            <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-green-500 border-2 border-bg2" />
                                         </div>
                                         <div className="flex-1 text-left">
                                             <div className="flex justify-between items-start">
-                                                <h4 className="font-bold text-sm text-gray-900">{partner?.name}</h4>
-                                                <span className="text-[10px] text-gray-400 font-bold">{new Date(chat.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                                <h4 className="font-black text-sm text-text-primary uppercase italic tracking-widest">{partner?.name}</h4>
+                                                <span className="text-[10px] text-text-muted font-black italic">{new Date(chat.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                                             </div>
-                                            <p className="text-xs text-gray-500 line-clamp-1 font-medium italic mt-0.5">
+                                            <p className="text-xs text-text-secondary line-clamp-1 font-medium italic mt-0.5">
                                                 {lastMsg?.text || 'No messages yet'}
                                             </p>
                                         </div>
@@ -148,24 +148,24 @@ const ChatPage: React.FC = () => {
                     </div>
 
                     {/* Main Content: Active Chat */}
-                    <div className="md:col-span-8 flex flex-col h-full bg-white relative">
+                    <div className="md:col-span-8 flex flex-col h-full bg-bg2 relative">
                         {activeChat ? (
                             <>
                                 {/* Chat Header */}
-                                <div className="p-6 border-b border-gray-100 flex items-center justify-between">
+                                <div className="p-6 border-b border-white/10 flex items-center justify-between">
                                     <div className="flex items-center gap-4">
-                                        <div className="w-10 h-10 rounded-xl bg-primary text-white flex items-center justify-center font-black">
+                                        <div className="w-10 h-10 rounded-xl bg-primary-500 text-white flex items-center justify-center font-black">
                                             {getChatPartner(activeChat)?.name?.charAt(0)}
                                         </div>
                                         <div>
-                                            <h3 className="font-black text-gray-900">{getChatPartner(activeChat)?.name}</h3>
+                                            <h3 className="font-black text-text-primary uppercase italic">{getChatPartner(activeChat)?.name}</h3>
                                             <p className="text-[10px] text-green-500 font-black uppercase tracking-widest">Online Now</p>
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <Button variant="ghost" size="sm" className="rounded-xl text-gray-400" aria-label="Call"><Phone size={20} /></Button>
-                                        <Button variant="ghost" size="sm" className="rounded-xl text-gray-400" aria-label="Video Call"><Video size={20} /></Button>
-                                        <Button variant="ghost" size="sm" className="rounded-xl text-gray-400" aria-label="Information"><Info size={20} /></Button>
+                                        <Button variant="ghost" size="sm" className="rounded-xl text-text-muted hover:text-primary-500" aria-label="Call"><Phone size={20} /></Button>
+                                        <Button variant="ghost" size="sm" className="rounded-xl text-text-muted hover:text-primary-500" aria-label="Video Call"><Video size={20} /></Button>
+                                        <Button variant="ghost" size="sm" className="rounded-xl text-text-muted hover:text-primary-500" aria-label="Information"><Info size={20} /></Button>
                                     </div>
                                 </div>
 
@@ -177,11 +177,11 @@ const ChatPage: React.FC = () => {
                                             <div key={msg.id} className={`flex ${isOwn ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-2 duration-300`}>
                                                 <div className={`max-w-[70%] group ${isOwn ? 'items-end' : 'items-start'} flex flex-col gap-1`}>
                                                     <div className={`p-4 rounded-3xl text-sm font-medium shadow-sm transition-all ${isOwn
-                                                        ? 'bg-primary text-white rounded-br-none'
-                                                        : 'bg-gray-100 text-gray-800 rounded-bl-none'}`}>
+                                                        ? 'bg-primary-500 text-white rounded-br-none'
+                                                        : 'bg-bg3/50 text-text-primary rounded-bl-none border border-white/5'}`}>
                                                         {msg.text}
                                                     </div>
-                                                    <span className="text-[9px] text-gray-400 font-black uppercase tracking-tighter opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    <span className="text-[9px] text-text-muted font-black uppercase tracking-tighter opacity-0 group-hover:opacity-100 transition-opacity">
                                                         {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                                     </span>
                                                 </div>
@@ -192,9 +192,9 @@ const ChatPage: React.FC = () => {
                                 </div>
 
                                 {/* Input Area */}
-                                <div className="p-6 border-t border-gray-100 bg-white">
-                                    <form onSubmit={handleSendMessage} className="flex items-center gap-4 bg-gray-50 p-2 rounded-3xl border border-gray-100">
-                                        <Button type="button" variant="ghost" size="sm" className="rounded-2xl text-gray-400 px-3">
+                                <div className="p-6 border-t border-white/10 bg-bg2">
+                                    <form onSubmit={handleSendMessage} className="flex items-center gap-4 bg-bg3/50 p-2 rounded-3xl border border-white/10">
+                                        <Button type="button" variant="ghost" size="sm" className="rounded-2xl text-text-muted px-3">
                                             <ImageIcon size={20} />
                                         </Button>
                                         <input
@@ -202,9 +202,9 @@ const ChatPage: React.FC = () => {
                                             value={newMessage}
                                             onChange={(e) => setNewMessage(e.target.value)}
                                             placeholder="Type your message here..."
-                                            className="flex-grow bg-transparent border-none outline-none px-2 text-sm font-medium"
+                                            className="flex-grow bg-transparent border-none outline-none px-2 text-sm font-black uppercase italic tracking-widest text-text-primary"
                                         />
-                                        <Button type="submit" size="sm" className="rounded-2xl w-12 h-12 p-0 flex items-center justify-center">
+                                        <Button type="submit" size="sm" className="rounded-2xl w-12 h-12 p-0 flex items-center justify-center bg-primary-500 text-white hover:scale-105 active:scale-95 transition-all">
                                             <Send size={20} />
                                         </Button>
                                     </form>

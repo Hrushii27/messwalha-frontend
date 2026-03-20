@@ -13,14 +13,14 @@ import Seo from '../components/common/Seo';
 const DashboardSkeleton = () => (
     <div className="space-y-8 animate-pulse">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[1, 2, 3].map(i => <div key={i} className="h-32 bg-gray-100 dark:bg-dark-card rounded-2xl" />)}
+            {[1, 2, 3].map(i => <div key={i} className="h-32 bg-bg3/50 rounded-2xl" />)}
         </div>
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
             <div className="xl:col-span-2 space-y-8">
-                <div className="h-64 bg-gray-100 dark:bg-dark-card rounded-2xl" />
-                <div className="h-64 bg-gray-100 dark:bg-dark-card rounded-2xl" />
+                <div className="h-64 bg-bg3/50 rounded-2xl" />
+                <div className="h-64 bg-bg3/50 rounded-2xl" />
             </div>
-            <div className="h-96 bg-gray-100 dark:bg-dark-card rounded-2xl" />
+            <div className="h-96 bg-bg3/50 rounded-2xl" />
         </div>
     </div>
 );
@@ -67,44 +67,45 @@ const StudentDashboardPage: React.FC = () => {
                 description="Manage your elite mess subscriptions and track your meal history."
                 robots="noindex, nofollow"
             />
-            <div className="bg-primary/5 py-12 border-b border-primary/10">
-                <div className="container mx-auto px-4">
+            <div className="bg-bg/50 py-12 border-b border-white/5 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-primary-500/5 rounded-full blur-[100px] -mr-32 -mt-32 pointer-events-none" />
+                <div className="container mx-auto px-4 relative z-10">
                     <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-                        <div className="flex items-center space-x-4">
-                            <div className="w-20 h-20 rounded-2xl bg-primary flex items-center justify-center text-white text-3xl font-bold shadow-lg shadow-primary/20">
+                        <div className="flex items-center space-x-6">
+                            <div className="w-20 h-20 rounded-2xl bg-primary-500 flex items-center justify-center text-white text-3xl font-black italic shadow-2xl shadow-primary-500/20">
                                 {user?.name?.charAt(0) || 'U'}
                             </div>
                             <div>
-                                <h1 className="text-3xl font-heading font-bold font-outline">Hello, {user?.name || 'Student'}!</h1>
-                                <p className="text-gray-500">Manage your meals and subscriptions here.</p>
+                                <h1 className="text-4xl font-black italic tracking-tighter text-text-primary uppercase leading-tight">Hello, <br /> <span className="text-primary-500">{user?.name || 'Student'}!</span></h1>
+                                <p className="text-text-muted mt-2 font-black uppercase tracking-widest text-[10px] italic">Accessing Command Profile</p>
                             </div>
                         </div>
-                        <div className="flex space-x-3">
+                        <div className="flex space-x-4">
                             <Button
                                 variant="outline"
                                 size="sm"
-                                className="rounded-full bg-white text-text-primary"
+                                className="rounded-2xl border-white/10 bg-bg3/30 text-white px-8 py-5 font-black uppercase tracking-widest text-[10px] italic hover:bg-bg3"
                                 onClick={() => window.location.href = '/profile/settings'}
                             >
-                                <Settings size={18} className="mr-2" /> Settings
+                                <Settings size={18} className="mr-3 text-primary-500" /> Protocol
                             </Button>
                             <Button
                                 size="sm"
-                                className="rounded-full"
+                                className="rounded-2xl px-8 py-5 font-black uppercase tracking-widest text-[10px] shadow-2xl shadow-primary-500/10 italic"
                                 onClick={() => window.location.href = '/menu/today'}
                             >
-                                <Utensils size={18} className="mr-2" /> Today's Menu
+                                <Utensils size={18} className="mr-3" /> Signals
                             </Button>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div className="container mx-auto px-4 py-12">
-                <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <div className="container mx-auto px-4 py-16">
+                <div className="grid grid-cols-1 lg:grid-cols-4 gap-12">
                     {/* Sidebar Nav */}
                     <div className="lg:col-span-1">
-                        <div className="space-y-1">
+                        <div className="space-y-4">
                             {[
                                 { id: 'overview', icon: <User size={20} />, label: 'Overview', path: '/dashboard', active: true },
                                 { id: 'subscriptions', icon: <CreditCard size={20} />, label: 'Subscriptions', path: '/subscriptions' },
@@ -116,12 +117,12 @@ const StudentDashboardPage: React.FC = () => {
                                     aria-current={item.active ? 'page' : undefined}
                                     aria-busy={loading}
                                     aria-live="polite"
-                                    className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all font-medium ${item.active
-                                        ? 'bg-primary text-white shadow-md shadow-primary/20'
-                                        : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-dark-lighter'
+                                    className={`w-full flex items-center space-x-4 px-6 py-4 rounded-2xl transition-all font-black uppercase tracking-widest text-[10px] ${item.active
+                                        ? 'bg-primary-500 text-white shadow-2xl shadow-primary-500/20 italic'
+                                        : 'text-text-muted hover:bg-bg3/50 hover:text-white border border-transparent hover:border-white/5'
                                         }`}
                                 >
-                                    {item.icon}
+                                    <span className={item.active ? 'text-white' : 'text-primary-500'}>{item.icon}</span>
                                     <span>{item.label}</span>
                                 </button>
                             ))}
@@ -133,56 +134,61 @@ const StudentDashboardPage: React.FC = () => {
                         {loading ? <DashboardSkeleton /> : (
                             <>
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                    <Card className="p-6 bg-gradient-to-br from-primary to-primary-dark text-white border-none shadow-xl shadow-primary/20">
-                                        <p className="text-white/70 text-[10px] font-black uppercase tracking-[2px]">Subscriptions</p>
-                                        <p className="text-5xl font-black mt-2 tracking-tighter">{subscriptions.length}</p>
+                                    <Card className="p-8 bg-primary-500 text-white border-none shadow-2xl shadow-primary-500/20 rounded-[2.5rem] relative overflow-hidden group">
+                                        <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full blur-2xl -mr-8 -mt-8" />
+                                        <p className="text-white/60 text-[10px] font-black uppercase tracking-[0.4em] italic">Subscribed</p>
+                                        <p className="text-5xl font-black mt-4 tracking-tighter italic">{subscriptions.length}</p>
                                     </Card>
-                                    <Card className="p-6 bg-card dark:bg-dark-card border-border-color shadow-xl">
-                                        <p className="text-text-muted text-[10px] font-black uppercase tracking-[2px]">Plan Progress</p>
-                                        <p className="text-5xl font-black mt-2 tracking-tighter text-text-primary">
-                                            {subscriptions.length > 0 ? getDaysRemaining(subscriptions[0]) : '0'}
+                                    <Card className="p-8 bg-bg2/40 backdrop-blur-3xl border border-white/10 shadow-3xl rounded-[2.5rem] group hover:border-primary-500/30 transition-all">
+                                        <p className="text-text-muted text-[10px] font-black uppercase tracking-[0.4em] italic">Cycle Progress</p>
+                                        <p className="text-5xl font-black mt-4 tracking-tighter text-text-primary italic">
+                                            {subscriptions.length > 0 ? getDaysRemaining(subscriptions[0]).split(' ')[0] : '0'}<span className="text-xl ml-2 uppercase tracking-wide">Days</span>
                                         </p>
                                     </Card>
-                                    <Card className="p-6 bg-card dark:bg-dark-card border-border-color shadow-xl">
-                                        <p className="text-text-muted text-[10px] font-black uppercase tracking-[2px]">Total saving</p>
-                                        <p className="text-5xl font-black mt-2 tracking-tighter text-green-500">₹{subscriptions.length * 1500}</p>
+                                    <Card className="p-8 bg-bg2/40 backdrop-blur-3xl border border-white/10 shadow-3xl rounded-[2.5rem] group hover:border-green-500/30 transition-all">
+                                        <p className="text-text-muted text-[10px] font-black uppercase tracking-[0.4em] italic">Credits Saved</p>
+                                        <p className="text-5xl font-black mt-4 tracking-tighter text-green-500 italic">₹{subscriptions.length * 1500}</p>
                                     </Card>
                                 </div>
 
                                 <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
                                     <div className="xl:col-span-2 space-y-8">
-                                        <section className="space-y-4">
-                                            <div className="flex justify-between items-center">
-                                                <h2 className="text-2xl font-black tracking-tighter text-text-primary flex items-center">
-                                                    <CreditCard className="mr-3 text-primary" size={28} />
-                                                    Your <span className="text-primary-500 ml-2">Subscriptions</span>
+                                        <section className="space-y-6">
+                                            <div className="flex justify-between items-center px-2">
+                                                <h2 className="text-3xl font-black tracking-tighter text-text-primary flex items-center italic uppercase">
+                                                    <CreditCard className="mr-4 text-primary-500" size={32} />
+                                                    Active <span className="text-primary-500 ml-3">Nodes</span>
                                                 </h2>
-                                                <Button variant="ghost" size="sm" className="font-bold text-primary-500 uppercase tracking-widest text-[10px]" onClick={() => window.location.href = '/subscriptions'}>View All</Button>
+                                                <Button variant="ghost" size="sm" className="font-black text-text-muted hover:text-primary-500 hover:bg-primary-500/5 uppercase tracking-[0.3em] text-[9px] italic border border-white/5 rounded-xl px-6" onClick={() => window.location.href = '/subscriptions'}>View Matrix</Button>
                                             </div>
                                             {subscriptions.length > 0 ? (
-                                                <div className="space-y-4">
+                                                <div className="space-y-6">
                                                     {subscriptions.map((sub: Subscription) => (
-                                                        <Card key={sub.id} className="p-6 flex flex-col md:flex-row justify-between items-center gap-6 hover:shadow-lg transition-shadow border-border-color shadow-xl bg-card dark:bg-dark-card">
-                                                            <div className="flex items-center space-x-4">
-                                                                <div className="p-4 bg-primary/10 text-primary rounded-2xl">
-                                                                    <Utensils size={24} />
+                                                        <Card key={sub.id} className="p-8 flex flex-col md:flex-row justify-between items-center gap-8 hover:border-primary-500/30 transition-all border-white/5 shadow-3xl bg-bg2/40 backdrop-blur-3xl rounded-[2.5rem] relative overflow-hidden group">
+                                                            <div className="absolute top-0 right-0 w-32 h-32 bg-primary-500/5 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
+                                                            <div className="flex items-center space-x-6 relative z-10">
+                                                                <div className="p-5 bg-bg3/50 text-primary-500 rounded-[1.5rem] group-hover:scale-110 transition-transform duration-500 border border-white/5">
+                                                                    <Utensils size={28} />
                                                                 </div>
                                                                 <div>
-                                                                    <h4 className="font-black text-lg text-text-primary tracking-tight">{sub.mess?.name || 'Mess Name'}</h4>
-                                                                    <p className="text-[10px] font-black uppercase tracking-widest text-green-500 bg-green-500/10 px-2 py-1 rounded-full inline-block mt-1">
-                                                                        {sub.status || 'ACTIVE'}
-                                                                    </p>
+                                                                    <h4 className="font-black text-xl text-white tracking-tight italic uppercase">{sub.mess?.name || 'Mess Name'}</h4>
+                                                                    <div className="flex items-center mt-2 space-x-3">
+                                                                        <span className="text-[9px] font-black uppercase tracking-widest text-green-400 bg-green-400/10 px-4 py-1.5 rounded-lg border border-green-400/20 italic">
+                                                                            {sub.status || 'ACTIVE'}
+                                                                        </span>
+                                                                        <span className="text-[9px] font-black uppercase tracking-widest text-text-muted italic">Node ID: {sub.id.substring(0, 8)}</span>
+                                                                    </div>
                                                                 </div>
                                                             </div>
-                                                            <div className="flex items-center space-x-6">
+                                                            <div className="flex items-center space-x-8 relative z-10">
                                                                 <div className="text-right hidden md:block">
-                                                                    <p className="text-[10px] text-text-muted font-black uppercase tracking-widest">Plan Type</p>
-                                                                    <p className="font-black text-primary-500">{sub.plan_type || 'Monthly'}</p>
+                                                                    <p className="text-[9px] text-text-muted font-black uppercase tracking-widest italic">Protocol Type</p>
+                                                                    <p className="font-black text-primary-500 mt-1 uppercase italic tracking-tighter text-lg">{sub.plan_type || 'Monthly'}</p>
                                                                 </div>
                                                                 <Button
                                                                     variant="outline"
                                                                     size="sm"
-                                                                    className="rounded-xl px-6 h-12 font-black uppercase tracking-widest text-[10px]"
+                                                                    className="rounded-2xl border-white/10 bg-bg3/30 text-white px-10 h-14 font-black uppercase tracking-widest text-[10px] italic hover:bg-bg3"
                                                                     onClick={() => window.location.href = '/subscriptions'}
                                                                 >
                                                                     Manage
@@ -192,112 +198,120 @@ const StudentDashboardPage: React.FC = () => {
                                                     ))}
                                                 </div>
                                             ) : (
-                                                <EmptyState
-                                                    icon={Utensils}
-                                                    title="No Subscriptions"
-                                                    description="You haven't subscribed to any mess yet. Explore our elite network to get started."
-                                                    actionLabel="Browse Messes"
-                                                    onAction={() => window.location.href = '/find-mess'}
-                                                    className="py-12"
-                                                />
-                                            )}
-                                        </section>
-
-                                        <section className="space-y-4">
-                                            <div className="flex justify-between items-center">
-                                                <h2 className="text-2xl font-black tracking-tighter text-text-primary flex items-center">
-                                                    <Heart className="mr-3 text-red-500" size={28} />
-                                                    Favorite <span className="text-primary-500 ml-2">Messes</span>
-                                                </h2>
-                                                <Button variant="ghost" size="sm" className="font-bold text-primary-500 uppercase tracking-widest text-[10px]" onClick={() => window.location.href = '/find-mess'}>Manage</Button>
-                                            </div>
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                                <div className="col-span-full">
+                                                <Card className="min-h-[300px] bg-bg2/40 backdrop-blur-3xl border border-white/10 rounded-[2.5rem] flex items-center justify-center">
                                                     <EmptyState
-                                                        icon={Heart}
-                                                        title="No Favorites Yet"
-                                                        description="Save your favorite messes for quick access and real-time updates."
-                                                        actionLabel="Discover Messes"
+                                                        icon={Utensils}
+                                                        title="No Subscriptions"
+                                                        description="You haven't subscribed to any mess yet. Explore our elite network to get started."
+                                                        actionLabel="Browse Messes"
                                                         onAction={() => window.location.href = '/find-mess'}
                                                         className="py-12"
                                                     />
+                                                </Card>
+                                            )}
+                                        </section>
+
+                                        <section className="space-y-6">
+                                            <div className="flex justify-between items-center px-2">
+                                                <h2 className="text-3xl font-black tracking-tighter text-text-primary flex items-center italic uppercase">
+                                                    <Heart className="mr-4 text-red-500" size={32} />
+                                                    Favorite <span className="text-primary-500 ml-3">Messes</span>
+                                                </h2>
+                                                <Button variant="ghost" size="sm" className="font-black text-text-muted hover:text-primary-500 hover:bg-primary-500/5 uppercase tracking-[0.3em] text-[9px] italic border border-white/5 rounded-xl px-6" onClick={() => window.location.href = '/find-mess'}>Manage Pins</Button>
+                                            </div>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                <div className="col-span-full">
+                                                    <Card className="min-h-[300px] bg-bg2/40 backdrop-blur-3xl border border-white/10 rounded-[2.5rem] flex items-center justify-center">
+                                                        <EmptyState
+                                                            icon={Heart}
+                                                            title="No Favorites Yet"
+                                                            description="Save your favorite messes for quick access and real-time updates."
+                                                            actionLabel="Discover Messes"
+                                                            onAction={() => window.location.href = '/find-mess'}
+                                                            className="py-12"
+                                                        />
+                                                    </Card>
                                                 </div>
                                             </div>
                                         </section>
 
-                                        <section className="space-y-4">
-                                            <div className="flex justify-between items-center">
-                                                <h2 className="text-2xl font-black tracking-tighter text-text-primary flex items-center">
-                                                    <Star className="mr-3 text-yellow-500" size={28} />
-                                                    Recommended <span className="text-primary-500 ml-2">Messes</span>
+                                        <section className="space-y-6">
+                                            <div className="flex justify-between items-center px-2">
+                                                <h2 className="text-3xl font-black tracking-tighter text-text-primary flex items-center italic uppercase">
+                                                    <Star className="mr-4 text-yellow-500" size={32} />
+                                                    Top <span className="text-primary-500 ml-3">Signals</span>
                                                 </h2>
-                                                <Button variant="ghost" size="sm" className="font-bold text-primary-500 uppercase tracking-widest text-[10px]" onClick={() => window.location.href = '/find-mess'}>View All</Button>
+                                                <Button variant="ghost" size="sm" className="font-black text-text-muted hover:text-primary-500 hover:bg-primary-500/5 uppercase tracking-[0.3em] text-[9px] italic border border-white/5 rounded-xl px-6" onClick={() => window.location.href = '/find-mess'}>Scan All</Button>
                                             </div>
                                             {recommendedMesses.length > 0 ? (
                                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                                     {recommendedMesses.map((mess: Mess) => (
-                                                        <Card key={mess.id} className="overflow-hidden group border-border-color shadow-xl bg-card dark:bg-dark-card hover:shadow-2xl transition-all duration-500 rounded-3xl">
-                                                            <div className="h-40 bg-bg-section relative overflow-hidden">
+                                                        <Card key={mess.id} className="overflow-hidden group border-white/5 shadow-3xl bg-bg2/40 backdrop-blur-3xl hover:border-primary-500/30 transition-all duration-500 rounded-[2.5rem]">
+                                                            <div className="h-48 bg-bg3/50 relative overflow-hidden">
                                                                 {mess.imageUrl ? (
                                                                     <img
                                                                         src={mess.imageUrl}
                                                                         alt={mess.name}
-                                                                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                                                                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-80"
                                                                     />
                                                                 ) : (
-                                                                    <div className="w-full h-full flex items-center justify-center text-text-muted uppercase font-black text-[10px] tracking-widest">Premium Mess</div>
+                                                                    <div className="w-full h-full flex items-center justify-center text-text-muted uppercase font-black text-[10px] tracking-widest italic">Core Module Image</div>
                                                                 )}
-                                                                <div className="absolute top-4 right-4 bg-white/90 backdrop-blur px-3 py-1.5 rounded-xl flex items-center space-x-1 shadow-lg">
-                                                                    <Star size={14} className="text-yellow-500 fill-yellow-500" />
-                                                                    <span className="text-xs font-black">{Number(mess.rating).toFixed(1)}</span>
+                                                                <div className="absolute top-6 right-6 bg-black/60 backdrop-blur-xl px-4 py-2 rounded-2xl flex items-center space-x-2 border border-white/10 shadow-2xl">
+                                                                    <Star size={16} className="text-yellow-500 fill-yellow-500" />
+                                                                    <span className="text-sm font-black text-white italic tracking-tighter">{Number(mess.rating).toFixed(1)}</span>
                                                                 </div>
                                                             </div>
-                                                            <div className="p-6">
-                                                                <h4 className="font-black text-lg text-text-primary tracking-tight truncate">{mess.name}</h4>
-                                                                <p className="text-[10px] text-text-muted font-black uppercase tracking-widest mb-4">{mess.cuisine || 'Cuisine'} • {mess.address?.split(',')[0] || 'Address'}</p>
-                                                                <Button variant="primary" size="sm" className="w-full rounded-xl h-12 font-black uppercase tracking-widest text-[10px]" onClick={() => window.location.href = `/mess/${mess.id}`}>View Details</Button>
+                                                            <div className="p-8">
+                                                                <h4 className="font-black text-xl text-white tracking-tight truncate uppercase italic">{mess.name}</h4>
+                                                                <p className="text-[10px] text-text-muted font-black uppercase tracking-widest mb-6 mt-1 italic">{mess.cuisine || 'Cuisine'} • {mess.address?.split(',')[0] || 'Address'}</p>
+                                                                <Button variant="primary" size="sm" className="w-full rounded-[1.25rem] h-14 font-black uppercase tracking-widest text-[10px] italic shadow-2xl shadow-primary-500/20" onClick={() => window.location.href = `/mess/${mess.id}`}>Access Node</Button>
                                                             </div>
                                                         </Card>
                                                     ))}
                                                 </div>
                                             ) : (
-                                                <EmptyState
-                                                    icon={Star}
-                                                    title="No Recommendations"
-                                                    description="Browse more messes to help us personalize your experience."
-                                                    actionLabel="Explore Now"
-                                                    onAction={() => window.location.href = '/find-mess'}
-                                                    className="py-12"
-                                                />
+                                                <Card className="min-h-[300px] bg-bg2/40 backdrop-blur-3xl border border-white/10 rounded-[2.5rem] flex items-center justify-center">
+                                                    <EmptyState
+                                                        icon={Star}
+                                                        title="No Recommendations"
+                                                        description="Browse more messes to help us personalize your experience."
+                                                        actionLabel="Explore Now"
+                                                        onAction={() => window.location.href = '/find-mess'}
+                                                        className="py-12"
+                                                    />
+                                                </Card>
                                             )}
                                         </section>
                                     </div>
 
                                     <div className="space-y-8">
-                                        <section className="space-y-4">
-                                            <h2 className="text-2xl font-black tracking-tighter text-text-primary flex items-center">
-                                                <Bell className="mr-3 text-primary" size={28} />
-                                                Recent <span className="text-primary-500 ml-2">Activity</span>
+                                        <section className="space-y-6">
+                                            <h2 className="text-3xl font-black tracking-tighter text-text-primary flex items-center italic uppercase px-2">
+                                                <Bell className="mr-4 text-primary-500" size={32} />
+                                                Recent <span className="text-primary-500 ml-3">History</span>
                                             </h2>
-                                            <Card className="p-0 overflow-hidden border-border-color shadow-xl bg-card dark:bg-dark-card rounded-3xl">
-                                                <div className="divide-y divide-border-color">
+                                            <Card className="p-0 overflow-hidden border border-white/10 shadow-3xl bg-bg2/40 backdrop-blur-3xl rounded-[2.5rem]">
+                                                <div className="divide-y divide-white/10">
                                                     {recentActivity.length > 0 ? (
                                                         recentActivity.map((activity: Activity) => (
-                                                            <div key={activity.id} className="p-6 hover:bg-bg-section transition-colors group">
-                                                                <div className="flex justify-between items-start mb-2">
-                                                                    <p className="text-sm font-black text-text-primary uppercase tracking-tight group-hover:text-primary-500 transition-colors">{activity.title}</p>
-                                                                    <span className="text-[10px] font-black text-text-muted uppercase tracking-widest">{activity.time}</span>
+                                                            <div key={activity.id} className="p-8 hover:bg-white/5 transition-all group cursor-pointer">
+                                                                <div className="flex justify-between items-start mb-3">
+                                                                    <p className="text-sm font-black text-white uppercase tracking-wider group-hover:text-primary-500 transition-colors italic">{activity.title}</p>
+                                                                    <span className="text-[9px] font-black text-text-muted uppercase tracking-[0.2em] italic">{activity.time}</span>
                                                                 </div>
-                                                                <p className="text-xs text-text-muted font-bold leading-relaxed">{activity.desc}</p>
+                                                                <p className="text-[11px] text-text-muted font-black uppercase tracking-widest leading-relaxed italic">"{activity.desc}"</p>
                                                             </div>
                                                         ))
                                                     ) : (
-                                                        <EmptyState
-                                                            icon={Bell}
-                                                            title="Silence in the Hub"
-                                                            description="No recent activity detected. Your journey is just beginning."
-                                                            className="py-12 border-none shadow-none bg-transparent"
-                                                        />
+                                                        <div className="py-20">
+                                                            <EmptyState
+                                                                icon={Bell}
+                                                                title="Silence in the Hub"
+                                                                description="No recent activity detected. Your journey is just beginning."
+                                                                className="border-none shadow-none bg-transparent"
+                                                            />
+                                                        </div>
                                                     )}
                                                 </div>
                                             </Card>

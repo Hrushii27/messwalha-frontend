@@ -47,8 +47,8 @@ const UserDashboard: React.FC = () => {
     if (authLoading || !user) {
         return (
             <Layout>
-                <div className="min-h-screen flex items-center justify-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+                <div className="min-h-screen bg-bg flex items-center justify-center">
+                    <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary-500"></div>
                 </div>
             </Layout>
         );
@@ -97,71 +97,74 @@ const UserDashboard: React.FC = () => {
     const renderOverview = () => (
         <div className="space-y-12">
             <div className="space-y-6">
-                <div className="flex items-center justify-between">
-                    <h2 className="text-2xl font-black tracking-tight flex items-center">
-                        <Calendar className="mr-3 text-primary" /> Active Subscriptions
+                <div className="flex items-center justify-between px-2">
+                    <h2 className="text-3xl font-black tracking-tighter flex items-center italic uppercase text-text-primary">
+                        <Calendar className="mr-4 text-primary-500" size={32} /> Active <span className="text-primary-500 ml-3">Nodes</span>
                     </h2>
-                    <Link to="/find-mess" className="text-primary text-sm font-bold hover:underline flex items-center">
-                        Explore More <ArrowRight size={16} className="ml-1" />
+                    <Link to="/find-mess" className="text-primary-500 text-[10px] font-black uppercase tracking-[0.3em] hover:text-white transition-colors italic border border-white/5 rounded-xl px-6 py-2">
+                        Explore Matrix <ArrowRight size={14} className="ml-2 inline" />
                     </Link>
                 </div>
 
                 {subscriptions.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         {subscriptions.map((sub) => (
-                            <Card key={sub.id} className="p-8 hover:shadow-2xl transition-all border-none bg-white dark:bg-white/5 group overflow-hidden rounded-[2rem] border-l-4 border-primary shadow-lg">
-                                <div className="flex justify-between items-start">
-                                    <div className="flex items-center gap-5">
-                                        <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                            <Card key={sub.id} className="p-8 hover:border-primary-500/30 transition-all border-white/5 bg-bg2/40 backdrop-blur-3xl group overflow-hidden rounded-[2.5rem] relative shadow-3xl">
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-primary-500/5 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
+                                <div className="flex justify-between items-start relative z-10">
+                                    <div className="flex items-center gap-6">
+                                        <div className="w-16 h-16 bg-bg3/50 rounded-2xl flex items-center justify-center text-primary-500 group-hover:scale-110 transition-transform duration-500 border border-white/5">
                                             <Utensils size={28} />
                                         </div>
                                         <div>
-                                            <h3 className="text-xl font-black tracking-tight">{sub.mess_name}</h3>
-                                            <p className="text-gray-500 dark:text-gray-400 text-xs font-bold uppercase tracking-widest">{sub.plan_name}</p>
+                                            <h3 className="text-xl font-black tracking-tight italic uppercase text-white">{sub.mess_name}</h3>
+                                            <p className="text-text-muted text-[9px] font-black uppercase tracking-[0.2em] mt-1 italic">{sub.plan_name}</p>
                                         </div>
                                     </div>
-                                    <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${sub.status === 'active' ? 'bg-green-100 text-green-600' : 'bg-yellow-100 text-yellow-600'}`}>
+                                    <span className={`px-4 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest italic border ${sub.status === 'active' ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20'}`}>
                                         {sub.status}
                                     </span>
                                 </div>
-                                <div className="mt-6 pt-6 border-t border-gray-100 dark:border-white/5 flex items-center justify-between">
-                                    <div className="flex items-center text-[10px] font-black uppercase tracking-widest text-gray-400">
-                                        <Clock size={14} className="mr-2" />
-                                        Exps: {new Date(sub.expires_at).toLocaleDateString()}
+                                <div className="mt-8 pt-6 border-t border-white/5 flex items-center justify-between relative z-10">
+                                    <div className="flex items-center text-[9px] font-black uppercase tracking-[0.2em] text-text-muted italic">
+                                        <Clock size={14} className="mr-2 text-primary-500" />
+                                        Relay Expiry: {new Date(sub.expires_at).toLocaleDateString()}
                                     </div>
-                                    <Button variant="ghost" size="sm" className="text-primary font-black uppercase tracking-widest text-[9px]">Manage</Button>
+                                    <Button variant="ghost" size="sm" className="text-primary-500 font-black uppercase tracking-widest text-[9px] italic hover:bg-primary-500/5 rounded-xl px-6">Manage</Button>
                                 </div>
                             </Card>
                         ))}
                     </div>
                 ) : (
-                    <div className="text-center py-20 bg-gray-50 dark:bg-white/5 rounded-[3rem] border-2 border-dashed border-gray-200 dark:border-white/10">
-                        <div className="w-20 h-20 bg-white dark:bg-white/10 rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm">
-                            <Utensils size={32} className="text-gray-300" />
-                        </div>
-                        <h3 className="text-xl font-bold mb-2">No active meal protocols</h3>
-                        <p className="text-gray-500 mb-8 max-w-xs mx-auto text-sm">You haven't subscribed to any mess yet.</p>
-                        <Button onClick={() => navigate('/find-mess')} size="lg" className="rounded-full px-10 shadow-xl shadow-primary/20">Find Your Mess</Button>
+                <Card className="min-h-[350px] bg-bg2/40 backdrop-blur-3xl border border-white/10 rounded-[2.5rem] flex flex-col items-center justify-center text-center p-12">
+                    <div className="w-24 h-24 bg-bg3/50 rounded-full flex items-center justify-center mb-8 shadow-2xl border border-white/5 relative overflow-hidden group">
+                        <div className="absolute inset-0 bg-primary-500/10 blur-xl group-hover:bg-primary-500/20 transition-all" />
+                        <Utensils size={36} className="text-text-muted relative z-10" />
                     </div>
+                    <h3 className="text-2xl font-black mb-3 italic uppercase text-white tracking-tighter">No Active Protocols</h3>
+                    <p className="text-text-muted mb-10 max-w-xs mx-auto text-[11px] font-black uppercase tracking-widest italic leading-relaxed">System standby. No meal transmissions detected in your current grid.</p>
+                    <Button onClick={() => navigate('/find-mess')} size="lg" className="rounded-2xl px-12 py-6 shadow-2xl shadow-primary-500/20 font-black uppercase tracking-widest text-xs italic">Initiate Scan</Button>
+                </Card>
                 )}
             </div>
 
             {recentlyViewed.length > 0 && (
-                <div className="space-y-6">
-                    <h2 className="text-2xl font-black tracking-tight flex items-center">
-                        <Clock className="mr-3 text-primary" /> Recently Viewed
+                <div className="space-y-8">
+                    <h2 className="text-3xl font-black tracking-tighter flex items-center italic uppercase text-text-primary px-2">
+                        <Clock className="mr-4 text-primary-500" size={32} /> Recent <span className="text-primary-500 ml-3">Signals</span>
                     </h2>
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
                         {recentlyViewed.map((m) => (
                             <Link key={m.id} to={`/mess/${m.id}`}>
-                                <Card className="p-4 hover:scale-[1.05] transition-transform overflow-hidden rounded-2xl group border-none bg-white dark:bg-white/5 shadow-md">
-                                    <div className="aspect-square rounded-xl overflow-hidden mb-3">
-                                        <img src={m.image} alt={m.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform" />
+                                <Card className="p-4 hover:border-primary-500/30 transition-all overflow-hidden rounded-[1.5rem] group border-white/5 bg-bg2/40 backdrop-blur-3xl shadow-3xl">
+                                    <div className="aspect-square rounded-xl overflow-hidden mb-4 relative">
+                                        <img src={m.image} alt={m.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-80" />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                                     </div>
-                                    <h4 className="font-black text-[11px] uppercase tracking-tight line-clamp-1">{m.name}</h4>
-                                    <div className="flex items-center mt-1">
-                                        <Star size={10} className="text-yellow-400 fill-yellow-400 mr-1" />
-                                        <span className="text-[10px] font-black">{m.rating || '0.0'}</span>
+                                    <h4 className="font-black text-[10px] uppercase tracking-widest line-clamp-1 italic text-white group-hover:text-primary-500 transition-colors">{m.name}</h4>
+                                    <div className="flex items-center mt-2 bg-black/40 w-fit px-3 py-1 rounded-lg border border-white/5">
+                                        <Star size={10} className="text-yellow-400 fill-yellow-400 mr-1.5" />
+                                        <span className="text-[10px] font-black text-white italic">{m.rating || '0.0'}</span>
                                     </div>
                                 </Card>
                             </Link>
@@ -174,34 +177,34 @@ const UserDashboard: React.FC = () => {
 
     const renderFavorites = () => (
         <div className="space-y-8">
-            <h2 className="text-2xl font-black tracking-tight flex items-center">
-                <Heart className="mr-3 text-red-500" /> Saved Messes
+            <h2 className="text-3xl font-black tracking-tighter flex items-center italic uppercase text-text-primary px-2">
+                <Heart className="mr-4 text-red-500" size={32} /> Pinned <span className="text-primary-500 ml-3">Outposts</span>
             </h2>
             {favorites.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     {favorites.map((m) => (
-                        <Card key={m.id} className="p-0 overflow-hidden rounded-[2rem] border-none shadow-xl hover:shadow-2xl transition-all group bg-white dark:bg-white/5">
+                        <Card key={m.id} className="p-0 overflow-hidden rounded-[2.5rem] border-white/5 shadow-3xl hover:border-primary-500/30 transition-all group bg-bg2/40 backdrop-blur-3xl relative">
                             <div className="flex flex-col sm:flex-row h-full">
-                                <div className="sm:w-1/3 relative h-48 sm:h-auto">
-                                    <img src={getImageUrl(m.image_url) || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=400'} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt={m.name} />
-                                    <div className="absolute top-4 right-4 bg-white/20 backdrop-blur-md p-2 rounded-full text-white cursor-pointer" onClick={() => navigate(`/mess/${m.id}`)}>
-                                        <Heart size={16} fill="white" />
+                                <div className="sm:w-1/3 relative h-48 sm:h-auto overflow-hidden">
+                                    <img src={getImageUrl(m.image_url) || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=400'} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-80" alt={m.name} />
+                                    <div className="absolute top-4 right-4 bg-black/40 backdrop-blur-xl p-3 rounded-2xl text-red-500 cursor-pointer border border-white/10" onClick={() => navigate(`/mess/${m.id}`)}>
+                                        <Heart size={18} fill="currentColor" />
                                     </div>
                                 </div>
-                                <div className="p-8 flex-1 flex flex-col justify-between">
+                                <div className="p-8 flex-1 flex flex-col justify-between relative z-10">
                                     <div>
-                                        <h3 className="text-xl font-black uppercase tracking-tight italic line-clamp-1">{m.name}</h3>
-                                        <p className="text-gray-500 text-xs flex items-center mt-2 group-hover:text-primary transition-colors">
-                                            <MapPin size={12} className="mr-1" /> {m.city || 'Pune'}
+                                        <h3 className="text-xl font-black uppercase tracking-tight italic text-white line-clamp-1">{m.name}</h3>
+                                        <p className="text-text-muted text-[10px] font-black uppercase tracking-widest flex items-center mt-3 italic">
+                                            <MapPin size={12} className="mr-2 text-primary-500" /> {m.city || 'Pune'}
                                         </p>
                                     </div>
-                                    <div className="mt-6 flex items-center justify-between">
+                                    <div className="mt-8 flex items-center justify-between">
                                         <div className="flex items-center gap-2">
-                                            <div className="bg-yellow-400/10 text-yellow-600 px-3 py-1 rounded-lg text-xs font-black flex items-center">
-                                                <Star size={12} className="fill-yellow-600 mr-1" /> {m.rating || '4.0'}
+                                            <div className="bg-bg3/50 text-yellow-500 px-4 py-2 rounded-xl text-[11px] font-black flex items-center border border-white/5 italic">
+                                                <Star size={14} className="fill-yellow-500 mr-2" /> {m.rating || '4.0'}
                                             </div>
                                         </div>
-                                        <Link to={`/mess/${m.id}`} className="p-3 bg-primary/10 text-primary rounded-xl hover:bg-primary hover:text-white transition-all">
+                                        <Link to={`/mess/${m.id}`} className="p-4 bg-primary-500/10 text-primary-500 rounded-2xl hover:bg-primary-500 hover:text-white transition-all border border-primary-500/20 shadow-xl shadow-primary-500/10">
                                             <ArrowRight size={20} />
                                         </Link>
                                     </div>
@@ -211,71 +214,79 @@ const UserDashboard: React.FC = () => {
                     ))}
                 </div>
             ) : (
-                <div className="text-center py-24 bg-gray-50 dark:bg-white/5 rounded-[3rem]">
-                    <Heart size={64} className="mx-auto mb-6 text-gray-200" />
-                    <p className="font-black uppercase tracking-widest text-sm text-gray-400">No saved food outposts yet</p>
-                </div>
+                <Card className="min-h-[350px] bg-bg2/40 backdrop-blur-3xl border border-white/10 rounded-[2.5rem] flex flex-col items-center justify-center text-center p-12">
+                    <Heart size={64} className="mx-auto mb-8 text-text-muted opacity-20" />
+                    <p className="font-black uppercase tracking-[0.3em] text-[10px] text-text-muted italic">No pinned outposts detected</p>
+                </Card>
             )}
         </div>
     );
 
     const renderReviews = () => (
         <div className="space-y-8">
-            <h2 className="text-2xl font-black tracking-tight flex items-center">
-                <MessageSquare className="mr-3 text-primary" /> Your Signal Logs (Reviews)
+            <h2 className="text-3xl font-black tracking-tighter flex items-center italic uppercase text-text-primary px-2">
+                <MessageSquare className="mr-4 text-primary-500" size={32} /> Signal <span className="text-primary-500 ml-3">Logs</span>
             </h2>
             {userReviews.length > 0 ? (
-                <div className="grid grid-cols-1 gap-6">
+                <div className="grid grid-cols-1 gap-8">
                     {userReviews.map((r) => (
-                        <Card key={r.id} className="p-8 bg-white dark:bg-white/5 rounded-[2rem] border-none shadow-lg">
-                            <div className="flex justify-between items-start mb-6">
+                        <Card key={r.id} className="p-10 bg-bg2/40 backdrop-blur-3xl rounded-[2.5rem] border-white/5 shadow-3xl relative overflow-hidden group">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-primary-500/5 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
+                            <div className="flex justify-between items-start mb-8 relative z-10">
                                 <div>
-                                    <h4 className="font-black text-lg uppercase tracking-tight italic text-primary">{r.mess_name}</h4>
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mt-1">{new Date(r.created_at).toLocaleDateString()}</p>
+                                    <h4 className="font-black text-2xl uppercase tracking-tighter italic text-primary-500 leading-none">{r.mess_name}</h4>
+                                    <div className="flex items-center mt-3 space-x-4">
+                                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-text-muted italic">{new Date(r.created_at).toLocaleDateString()}</p>
+                                        <span className="w-1 h-1 bg-white/10 rounded-full" />
+                                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-text-muted italic">Log ID: {r.id.substring(0,8)}</p>
+                                    </div>
                                 </div>
-                                <div className="bg-yellow-400/10 px-3 py-1 rounded-full text-yellow-600 font-black flex items-center text-xs">
-                                    <Star size={12} className="fill-yellow-600 mr-1" /> {r.rating}.0
+                                <div className="bg-bg3/50 px-5 py-2.5 rounded-2xl text-yellow-500 font-black flex items-center text-sm border border-white/5 shadow-xl italic">
+                                    <Star size={16} className="fill-yellow-500 mr-2" /> {r.rating}.0
                                 </div>
                             </div>
-                            <p className="text-gray-600 dark:text-gray-300 italic font-medium">"{r.comment}"</p>
+                            <p className="text-text-secondary italic font-medium text-lg leading-relaxed relative z-10">"{r.comment}"</p>
                             {r.owner_response && (
-                                <div className="mt-6 p-6 bg-primary/5 rounded-2xl border-l-4 border-primary">
-                                    <p className="text-[11px] font-black uppercase text-primary mb-2 italic">Owner Response</p>
-                                    <p className="text-xs font-bold italic">"{r.owner_response}"</p>
+                                <div className="mt-8 p-8 bg-primary-500/5 rounded-[2rem] border border-primary-500/10 relative z-10">
+                                    <div className="flex items-center gap-3 mb-3">
+                                        <div className="w-1.5 h-1.5 bg-primary-500 rounded-full animate-pulse" />
+                                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary-500 italic">Central Response</p>
+                                    </div>
+                                    <p className="text-sm font-bold italic text-white/90 leading-relaxed">"{r.owner_response}"</p>
                                 </div>
                             )}
                         </Card>
                     ))}
                 </div>
             ) : (
-                <div className="text-center py-24 bg-gray-50 dark:bg-white/5 rounded-[3rem]">
-                    <MessageSquare size={64} className="mx-auto mb-6 text-gray-200" />
-                    <p className="font-black uppercase tracking-widest text-sm text-gray-400">You haven't posted any reviews yet</p>
-                </div>
+                <Card className="min-h-[350px] bg-bg2/40 backdrop-blur-3xl border border-white/10 rounded-[2.5rem] flex flex-col items-center justify-center text-center p-12">
+                    <MessageSquare size={64} className="mx-auto mb-8 text-text-muted opacity-20" />
+                    <p className="font-black uppercase tracking-[0.3em] text-[10px] text-text-muted italic">No signal logs transmitted</p>
+                </Card>
             )}
         </div>
     );
 
     const renderSettings = () => (
         <div className="space-y-8">
-            <h2 className="text-2xl font-black tracking-tight flex items-center">
-                <Settings className="mr-3 text-primary" /> Account Settings
+            <h2 className="text-3xl font-black tracking-tighter flex items-center italic uppercase text-text-primary px-2">
+                <Settings className="mr-4 text-primary-500" size={32} /> Command <span className="text-primary-500 ml-3">Center</span>
             </h2>
-            <Card className="p-10 bg-white dark:bg-white/5 rounded-[3rem] border-none shadow-xl">
-                <div className="space-y-8">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <Card className="p-12 bg-bg2/40 backdrop-blur-3xl rounded-[3rem] border-white/5 shadow-3xl">
+                <div className="space-y-10">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                         <div className="space-y-4">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-2">Display Name</label>
-                            <Input value={user.name} readOnly className="bg-gray-50 dark:bg-white/5 font-bold" />
+                            <label className="text-[10px] font-black uppercase tracking-[0.3em] text-text-muted ml-4 italic">User Identity</label>
+                            <Input value={user.name} readOnly className="bg-bg3/50 border-white/10 rounded-2xl h-16 px-8 font-black uppercase tracking-widest text-[11px] text-white italic" />
                         </div>
                         <div className="space-y-4">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-2">Email Identity</label>
-                            <Input value={user.email} readOnly className="bg-gray-50 dark:bg-white/5 font-bold" />
+                            <label className="text-[10px] font-black uppercase tracking-[0.3em] text-text-muted ml-4 italic">Neural Link (Email)</label>
+                            <Input value={user.email} readOnly className="bg-bg3/50 border-white/10 rounded-2xl h-16 px-8 font-black uppercase tracking-widest text-[11px] text-white italic" />
                         </div>
                     </div>
-                    <div className="pt-8 border-t border-gray-100 dark:border-white/5 flex flex-col sm:flex-row gap-4">
-                        <Button className="rounded-2xl px-8 font-black uppercase tracking-widest text-[10px] py-6 shadow-xl shadow-primary/20">Update Security Key</Button>
-                        <Button variant="outline" className="rounded-2xl px-8 font-black uppercase tracking-widest text-[10px] py-6" onClick={handleLogout}>Force Logout</Button>
+                    <div className="pt-10 border-t border-white/5 flex flex-col sm:flex-row gap-6">
+                        <Button className="rounded-2xl px-12 h-16 font-black uppercase tracking-widest text-[11px] italic shadow-2xl shadow-primary-500/20 bg-primary-500 hover:bg-primary-600 text-white border-none">Sync Grid Protocols</Button>
+                        <Button variant="outline" className="rounded-2xl px-12 h-16 font-black uppercase tracking-widest text-[11px] italic border-white/10 bg-transparent text-red-500 hover:bg-red-500/5 hover:border-red-500/30" onClick={handleLogout}>Terminate Session</Button>
                     </div>
                 </div>
             </Card>
@@ -285,63 +296,66 @@ const UserDashboard: React.FC = () => {
     return (
         <Layout>
             <Seo title="My Dashboard" description="Manage your FindMess account and subscriptions." />
-            <div className="container mx-auto px-4 py-8 max-w-6xl text-text-primary dark:text-text-inverse">
+            <div className="container mx-auto px-6 py-12 max-w-7xl">
                 {/* Profile Header */}
-                <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-10 p-8 bg-white dark:bg-dark-800 rounded-3xl border border-gray-100 dark:border-white/5 shadow-sm">
-                    <div className="flex flex-col md:flex-row items-center gap-6">
+                <div className="flex flex-col md:flex-row items-center justify-between gap-8 mb-12 p-10 bg-bg2/40 backdrop-blur-3xl rounded-[3rem] border border-white/5 shadow-3xl relative overflow-hidden group">
+                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary-500/50 to-transparent opacity-30" />
+                    <div className="flex flex-col md:flex-row items-center gap-10 relative z-10">
                         <div className="relative">
-                            <div className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center border-4 border-white dark:border-dark-900 shadow-lg overflow-hidden">
+                            <div className="w-32 h-32 rounded-full bg-bg3/50 flex items-center justify-center border-4 border-white/5 shadow-2xl overflow-hidden group-hover:border-primary-500/30 transition-all duration-500 p-1">
                                 {(user as any).profile_image || (user as any).avatar ? (
-                                    <img src={(user as any).profile_image || (user as any).avatar} alt={user.name} className="w-full h-full object-cover" />
+                                    <img src={(user as any).profile_image || (user as any).avatar} alt={user.name} className="w-full h-full object-cover rounded-full" />
                                 ) : (
-                                    <UserIcon size={40} className="text-primary" />
+                                    <div className="w-full h-full rounded-full bg-primary-500/10 flex items-center justify-center">
+                                        <UserIcon size={48} className="text-primary-500" />
+                                    </div>
                                 )}
                             </div>
-                            <div className="absolute bottom-0 right-0 w-8 h-8 bg-green-500 border-4 border-white dark:border-dark-900 rounded-full"></div>
+                            <div className="absolute bottom-2 right-2 w-7 h-7 bg-green-500 border-4 border-bg2 rounded-full shadow-lg shadow-green-500/20"></div>
                         </div>
                         <div className="text-center md:text-left">
-                            <h1 className="text-3xl font-heading font-black tracking-tight italic uppercase">{user.name}</h1>
-                            <p className="text-gray-500 dark:text-gray-400 font-medium">{user.email}</p>
-                            <div className="flex flex-wrap justify-center md:justify-start gap-2 mt-3">
-                                <span className="px-3 py-1 bg-primary/10 text-primary text-[10px] font-black rounded-full uppercase tracking-widest">
-                                    {user.role}
+                            <h1 className="text-5xl font-heading font-black tracking-tighter italic uppercase text-white mb-2">{user.name}</h1>
+                            <p className="text-text-muted font-black uppercase tracking-[0.2em] text-[11px] italic">{user.email}</p>
+                            <div className="flex flex-wrap justify-center md:justify-start gap-3 mt-6">
+                                <span className="px-5 py-2 bg-primary-500/10 text-primary-500 text-[10px] font-black rounded-xl uppercase tracking-widest border border-primary-500/20 italic">
+                                    {user.role} Protocol
                                 </span>
                                 {(user as any).google_id && (
-                                    <span className="px-3 py-1 bg-blue-50 dark:bg-blue-900/20 text-blue-500 text-[10px] font-black rounded-full uppercase tracking-widest flex items-center gap-1">
-                                        <ShieldCheck size={12} /> Google Verified
+                                    <span className="px-5 py-2 bg-blue-500/10 text-blue-400 text-[10px] font-black rounded-xl uppercase tracking-widest flex items-center gap-2 border border-blue-500/20 italic">
+                                        <ShieldCheck size={14} /> Neural-ID Verified
                                     </span>
                                 )}
                             </div>
                         </div>
                     </div>
-                    <div className="flex gap-3">
+                    <div className="flex gap-4 relative z-10">
                         <Button 
                             variant="outline" 
-                            size="sm" 
-                            className={`rounded-full shadow-sm transition-all border-2 font-black uppercase tracking-widest text-[9px] ${activeTab === 'settings' ? 'bg-primary text-white border-primary' : ''}`}
+                            size="lg" 
+                            className={`rounded-2xl h-16 px-10 shadow-2xl transition-all border border-white/10 font-black uppercase tracking-widest text-[10px] italic ${activeTab === 'settings' ? 'bg-primary-500 text-white border-primary-500 shadow-primary-500/20' : 'bg-transparent text-text-muted hover:bg-white/5'}`}
                             onClick={() => setActiveTab('settings')}
                         >
-                            <Settings size={18} className="mr-2" /> Command Center
+                            <Settings size={20} className="mr-3" /> Command Center
                         </Button>
                     </div>
                 </div>
 
-                <div className="flex overflow-x-auto pb-4 mb-8 gap-4 scrollbar-hide">
+                <div className="flex overflow-x-auto pb-6 mb-12 gap-5 scrollbar-hide px-2">
                     {[
-                        { id: 'overview', label: 'Protocol Overview', icon: Calendar },
-                        { id: 'favorites', label: 'Pinned Outposts', icon: Heart },
-                        { id: 'reviews', label: 'Signal Logs', icon: MessageSquare },
-                        { id: 'settings', label: 'Core Command', icon: Settings },
+                        { id: 'overview', label: 'Nodes', icon: Calendar },
+                        { id: 'favorites', label: 'Pins', icon: Heart },
+                        { id: 'reviews', label: 'Logs', icon: MessageSquare },
+                        { id: 'settings', label: 'Command', icon: Settings },
                     ].map((tab) => (
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id as Tab)}
-                            className={`flex items-center gap-3 px-8 py-4 rounded-full text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap shadow-sm border-2 ${activeTab === tab.id
-                                ? 'bg-primary border-primary text-white shadow-xl shadow-primary/30'
-                                : 'bg-white dark:bg-white/5 border-transparent text-gray-400 hover:border-primary/30'
+                            className={`flex items-center gap-4 px-10 py-5 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all whitespace-nowrap shadow-2xl border-2 italic ${activeTab === tab.id
+                                ? 'bg-primary-500 border-primary-500 text-white shadow-primary-500/30 -translate-y-1'
+                                : 'bg-bg2/40 backdrop-blur-3xl border-white/5 text-text-muted hover:border-primary-500/30'
                                 }`}
                         >
-                            <tab.icon size={16} />
+                            <tab.icon size={18} />
                             {tab.label}
                         </button>
                     ))}
@@ -349,9 +363,9 @@ const UserDashboard: React.FC = () => {
 
                 <div className="min-h-[400px]">
                     {isLoading ? (
-                        <div className="flex flex-col gap-6">
-                            {[1, 2, 3].map(i => (
-                                <div key={i} className="h-40 bg-gray-100 dark:bg-white/5 animate-pulse rounded-[2rem]"></div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            {[1, 2, 3, 4].map(i => (
+                                <div key={i} className="h-48 bg-bg2/40 backdrop-blur-3xl animate-pulse rounded-[2.5rem] border border-white/5 shadow-3xl"></div>
                             ))}
                         </div>
                     ) : (

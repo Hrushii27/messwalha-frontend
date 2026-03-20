@@ -50,9 +50,9 @@ export const MessCard: React.FC<MessCardProps> = ({ mess }) => {
     const isTopRated = rating >= 4.5;
 
     return (
-        <Card isHoverable className="overflow-hidden flex flex-col h-full bg-white dark:bg-dark-800 border border-border-color shadow-xl hover:shadow-2xl transition-all duration-500 rounded-[2rem] group border-b-8 border-b-transparent hover:border-b-primary-500/50">
+        <Card isHoverable className="overflow-hidden flex flex-col h-full bg-bg2 border border-white/10 shadow-xl hover:shadow-2xl transition-all duration-500 rounded-[2rem] group border-b-8 border-b-transparent hover:border-b-primary-500/50">
             <div className="relative h-56 sm:h-72 overflow-hidden">
-                <div className="absolute inset-0 bg-bg-section dark:bg-dark-700 animate-pulse" />
+                <div className="absolute inset-0 bg-bg3 animate-pulse" />
                 <AnimatePresence mode="wait">
                     <motion.img
                         key={currentImageIndex}
@@ -108,7 +108,7 @@ export const MessCard: React.FC<MessCardProps> = ({ mess }) => {
                                 e.stopPropagation();
                                 toggleFavorite(mess.id);
                             }}
-                            className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl backdrop-blur-xl border flex items-center justify-center transition-all shadow-2xl ${isFavorite(mess.id) ? 'bg-red-500 border-red-400 text-white' : 'bg-white/10 border-white/20 text-white hover:bg-white/30'}`}
+                            className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl backdrop-blur-xl border flex items-center justify-center transition-all shadow-2xl ${isFavorite(mess.id) ? 'bg-red-500 border-red-400 text-white' : 'bg-bg3/30 border-white/10 text-white hover:bg-bg3/50'}`}
                             aria-label={isFavorite(mess.id) ? "Remove from favorites" : "Add to favorites"}
                         >
                             <Heart className="w-4.5 h-4.5 sm:w-5 sm:h-5" fill={isFavorite(mess.id) ? 'currentColor' : 'none'} />
@@ -120,14 +120,14 @@ export const MessCard: React.FC<MessCardProps> = ({ mess }) => {
                     <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-4 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                         <button 
                             onClick={prevImage} 
-                            className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white hover:bg-primary-500 transition-colors"
+                            className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-bg3/30 backdrop-blur-md flex items-center justify-center text-white hover:bg-primary-500 transition-colors"
                             aria-label="Previous image"
                         >
                             <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
                         </button>
                         <button 
                             onClick={nextImage} 
-                            className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white hover:bg-primary-500 transition-colors"
+                            className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-bg3/30 backdrop-blur-md flex items-center justify-center text-white hover:bg-primary-500 transition-colors"
                             aria-label="Next image"
                         >
                             <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -139,7 +139,7 @@ export const MessCard: React.FC<MessCardProps> = ({ mess }) => {
                 <div className="absolute bottom-4 sm:bottom-6 left-4 sm:left-6 right-4 sm:right-6 flex justify-between items-end z-20">
                     <div className="flex flex-col gap-2">
                         <div className="flex gap-2">
-                            <div className="bg-white/10 backdrop-blur-xl border border-white/20 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl flex items-center shadow-2xl">
+                            <div className="bg-bg3/30 backdrop-blur-xl border border-white/10 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl flex items-center shadow-2xl">
                                 <Star aria-hidden="true" className="text-rating-color fill-rating-color mr-2 w-3 h-3 sm:w-3.5 sm:h-3.5" />
                                 <span className="text-[10px] sm:text-xs font-black text-white italic">{rating.toFixed(1)}</span>
                             </div>
@@ -162,7 +162,7 @@ export const MessCard: React.FC<MessCardProps> = ({ mess }) => {
 
             <div className="p-5 sm:p-10 flex-grow flex flex-col space-y-4 sm:space-y-6">
                 <div>
-                    <h3 className="text-2xl sm:text-3xl font-black text-text-primary dark:text-text-inverse line-clamp-1 group-hover:text-primary-500 transition-colors tracking-tighter italic mb-2 uppercase">
+                    <h3 className="text-2xl sm:text-3xl font-black text-text-primary line-clamp-1 group-hover:text-primary-500 transition-colors tracking-tighter italic mb-2 uppercase">
                         {mess.name}
                     </h3>
                     <div className="flex items-center gap-2 sm:gap-3 text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-text-secondary">
@@ -170,13 +170,13 @@ export const MessCard: React.FC<MessCardProps> = ({ mess }) => {
                         <span className="line-clamp-1">{mess.address}</span>
                     </div>
                 </div>
-                <p className="text-text-primary text-sm font-medium leading-relaxed italic border-l-4 border-primary-500/20 pl-4 py-2 line-clamp-2">
+                <p className="text-text-secondary text-sm font-medium leading-relaxed italic border-l-4 border-primary-500/20 pl-4 py-2 line-clamp-2">
                     "{mess.description || 'Excellent quality food with authentic taste and hygienic preparation.'}"
                 </p>
 
                 <div className="flex flex-wrap gap-2 pt-2">
                     {(mess.cuisine || 'North Indian').split(',').map((tag, i) => (
-                        <span key={i} className="text-[9px] font-black uppercase tracking-widest bg-bg-section dark:bg-dark-700 px-3 py-1.5 rounded-lg border border-border-color">
+                        <span key={i} className="text-[9px] font-black uppercase tracking-widest bg-bg3 px-3 py-1.5 rounded-lg border border-white/10">
                             {tag}
                         </span>
                     ))}
@@ -186,7 +186,7 @@ export const MessCard: React.FC<MessCardProps> = ({ mess }) => {
                     <Link to={`/mess/${mess.id}/menu`}>
                         <Button
                             variant="outline"
-                            className="w-full rounded-xl sm:rounded-2xl py-5 sm:py-7 border-2 border-border-color hover:border-primary-500 font-black uppercase tracking-widest text-[8px] sm:text-[9px]"
+                            className="w-full rounded-xl sm:rounded-2xl py-5 sm:py-7 border-2 border-white/10 hover:border-primary-500 font-black uppercase tracking-widest text-[8px] sm:text-[9px]"
                         >
                             View Menu
                         </Button>
