@@ -50,11 +50,6 @@ const ResetPasswordPage: React.FC = () => {
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
-        
-        if (errors[name]) {
-            const error = validateField(name, value);
-            setErrors(prev => ({ ...prev, [name]: error }));
-        }
     };
 
     const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
