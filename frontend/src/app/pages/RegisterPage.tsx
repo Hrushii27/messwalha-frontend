@@ -24,13 +24,14 @@ const RegisterPage: React.FC = () => {
         name: '',
         email: '',
         password: '',
+        confirmPassword: '',
         college: '',
         phone: '',
         messName: '',
         location: '',
         city: '',
     });
-    const [passwordError, setPasswordError] = useState<string | null>(null);
+    const [errors, setErrors] = useState<Record<string, string>>({});
     const [isLoading, setIsLoading] = useState(false);
     const { executeRecaptcha } = useGoogleReCaptcha();
 
@@ -84,9 +85,9 @@ const RegisterPage: React.FC = () => {
     };
 
     const validatePassword = (pass: string) => {
-        if (!pass) return null;
+        if (!pass) return "Password is required";
         if (weakPasswords.includes(pass.toLowerCase())) {
-            return 'This password is too common. Please choose a stronger password.';
+            return 'This password is too weak. Use a stronger password.';
         }
         if (pass.length < 6) return 'Password must be at least 6 characters long';
         if (!/[a-z]/.test(pass)) return 'Password must contain at least one lowercase letter';
@@ -95,19 +96,84 @@ const RegisterPage: React.FC = () => {
         return null;
     };
 
+    const validateField = (name: string, value: string) => {
+        let error = '';
+        switch (name) {
+            case 'name':
+                if (!/^[A-Za-z ]{2,}$/.test(value)) error = "Enter a valid full name (min 2 characters)";
+                break;
+            case 'email':
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) error = "Enter a valid email address";
+                break;
+            case 'phone':
+                if (role === 'OWNER' && !/^[0-9]{10}$/.test(value)) error = "Enter a valid 10-digit phone number";
+                break;
+            case 'messName':
+                if (role === 'OWNER' && !/^[A-Za-z0-9 ]{3,}$/.test(value)) error = "Mess name must be at least 3 characters";
+                break;
+            case 'city':
+                if (role === 'OWNER' && !/^[A-Za-z ]{2,}$/.test(value)) error = "Enter a valid city name";
+                break;
+            case 'password':
+                error = validatePassword(value) || '';
+                break;
+            case 'confirmPassword':
+                if (value !== formData.password) error = "Passwords do not match";
+                break;
+            case 'college':
+                if (role === 'STUDENT' && value.length < 2) error = "Enter a valid college name";
+                break;
+            case 'location':
+                if (role === 'OWNER' && value.length < 5) error = "Enter a valid location (min 5 characters)";
+                break;
+        }
+        return error;
+    };
+
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
         
-        // Clear error when user stays in valid state or re-types
-        if (name === 'password' && passwordError) {
-            const error = validatePassword(value);
-            if (!error) setPasswordError(null);
+        // Real-time error clearing
+        if (errors[name]) {
+            const error = validateField(name, value);
+            setErrors(prev => ({ ...prev, [name]: error }));
         }
+    };
+
+    const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        const error = validateField(name, value);
+        setErrors(prev => ({ ...prev, [name]: error }));
+    };
+
+    const isFormValid = () => {
+        const requiredFields = role === 'STUDENT' 
+            ? ['name', 'email', 'password', 'confirmPassword', 'college']
+            : ['name', 'email', 'password', 'confirmPassword', 'phone', 'messName', 'location', 'city'];
+        
+        return requiredFields.every(field => {
+            const val = formData[field as keyof typeof formData];
+            return val && !validateField(field, val);
+        });
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        
+        // Final validation check
+        const newErrors: Record<string, string> = {};
+        Object.keys(formData).forEach(key => {
+            const error = validateField(key, formData[key as keyof typeof formData]);
+            if (error) newErrors[key] = error;
+        });
+
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
+            toast.error("Please fix errors before submitting");
+            return;
+        }
+
         setIsLoading(true);
 
         let recaptchaToken = '';
@@ -119,34 +185,33 @@ const RegisterPage: React.FC = () => {
             console.error('reCAPTCHA execution failed:', reError);
         }
 
-        const passError = validatePassword(formData.password);
-        if (passError) {
-            setPasswordError(passError);
-            toast.error(passError);
-            setIsLoading(false);
-            return;
-        }
-
         try {
             let response;
+            const payload = {
+                ...formData,
+                name: formData.name.trim(),
+                email: formData.email.trim(),
+                recaptchaToken
+            };
+
             if (role === 'STUDENT') {
                 response = await api.post('/auth/register', {
-                    name: formData.name,
-                    email: formData.email,
-                    password: formData.password,
+                    name: payload.name,
+                    email: payload.email,
+                    password: payload.password,
                     role: 'STUDENT',
-                    college: formData.college,
+                    college: payload.college.trim(),
                     recaptchaToken
                 });
             } else {
                 response = await api.post('/auth/owner-register', {
-                    name: formData.name,
-                    email: formData.email,
-                    password: formData.password,
-                    phone: formData.phone,
-                    messName: formData.messName,
-                    location: formData.location,
-                    city: formData.city,
+                    name: payload.name,
+                    email: payload.email,
+                    password: payload.password,
+                    phone: payload.phone.trim(),
+                    messName: payload.messName.trim(),
+                    location: payload.location.trim(),
+                    city: payload.city.trim(),
                     recaptchaToken
                 });
             }
@@ -352,9 +417,11 @@ const RegisterPage: React.FC = () => {
                                         id="reg-name"
                                         label={role === 'OWNER' ? "Owner Name" : "Full Name"}
                                         name="name"
-                                        placeholder={role === 'OWNER' ? "Rajesh Kumar" : "Priya Sharma"}
+                                        placeholder="Enter your name"
                                         value={formData.name}
                                         onChange={handleInputChange}
+                                        onBlur={handleBlur}
+                                        error={errors.name}
                                         required
                                         className="h-14 lg:h-16"
                                     />
@@ -363,9 +430,11 @@ const RegisterPage: React.FC = () => {
                                             id="reg-college"
                                             label="College"
                                             name="college"
-                                            placeholder="COEP, Pune"
+                                            placeholder="Enter college name"
                                             value={formData.college}
                                             onChange={handleInputChange}
+                                            onBlur={handleBlur}
+                                            error={errors.college}
                                             required
                                             className="h-14 lg:h-16"
                                         />
@@ -375,9 +444,11 @@ const RegisterPage: React.FC = () => {
                                             label="Phone Number"
                                             name="phone"
                                             type="tel"
-                                            placeholder="+91 98765 43210"
+                                            placeholder="10-digit number"
                                             value={formData.phone}
                                             onChange={handleInputChange}
+                                            onBlur={handleBlur}
+                                            error={errors.phone}
                                             required
                                             className="h-14 lg:h-16"
                                         />
@@ -389,9 +460,11 @@ const RegisterPage: React.FC = () => {
                                                 id="reg-messName"
                                                 label="Mess Name"
                                                 name="messName"
-                                                placeholder="e.g. Shree Krishna Mess"
+                                                placeholder="Enter mess name"
                                                 value={formData.messName}
                                                 onChange={handleInputChange}
+                                                onBlur={handleBlur}
+                                                error={errors.messName}
                                                 required
                                                 className="h-14 lg:h-16"
                                             />
@@ -399,9 +472,11 @@ const RegisterPage: React.FC = () => {
                                                 id="reg-location"
                                                 label="Location / Area"
                                                 name="location"
-                                                placeholder="Deccan, Pune"
+                                                placeholder="Area name"
                                                 value={formData.location}
                                                 onChange={handleInputChange}
+                                                onBlur={handleBlur}
+                                                error={errors.location}
                                                 required
                                                 className="h-14 lg:h-16"
                                             />
@@ -409,9 +484,11 @@ const RegisterPage: React.FC = () => {
                                                 id="reg-city"
                                                 label="City"
                                                 name="city"
-                                                placeholder="e.g. Pune"
+                                                placeholder="City name"
                                                 value={formData.city}
                                                 onChange={handleInputChange}
+                                                onBlur={handleBlur}
+                                                error={errors.city}
                                                 required
                                                 className="h-14 lg:h-16"
                                             />
@@ -423,9 +500,11 @@ const RegisterPage: React.FC = () => {
                                         label="Email Address"
                                         name="email"
                                         type="email"
-                                        placeholder="your@email.com"
+                                        placeholder="Enter email address"
                                         value={formData.email}
                                         onChange={handleInputChange}
+                                        onBlur={handleBlur}
+                                        error={errors.email}
                                         required
                                         className={`h-14 lg:h-16 ${role === 'STUDENT' ? 'sm:col-span-2' : ''}`}
                                     />
@@ -434,11 +513,24 @@ const RegisterPage: React.FC = () => {
                                         label="Password"
                                         name="password"
                                         type="password"
-                                        placeholder="••••••••"
+                                        placeholder="Min 6 characters, mixed case"
                                         value={formData.password}
                                         onChange={handleInputChange}
-                                        onBlur={() => setPasswordError(validatePassword(formData.password))}
-                                        error={passwordError}
+                                        onBlur={handleBlur}
+                                        error={errors.password}
+                                        required
+                                        className="h-14 lg:h-16 sm:col-span-2"
+                                    />
+                                    <Input
+                                        id="reg-confirm-password"
+                                        label="Confirm Password"
+                                        name="confirmPassword"
+                                        type="password"
+                                        placeholder="Retype password"
+                                        value={formData.confirmPassword}
+                                        onChange={handleInputChange}
+                                        onBlur={handleBlur}
+                                        error={errors.confirmPassword}
                                         required
                                         className="h-14 lg:h-16 sm:col-span-2"
                                     />
@@ -446,13 +538,14 @@ const RegisterPage: React.FC = () => {
 
                                 <Button 
                                     type="submit" 
-                                    className="w-full h-14 md:h-18 bg-primary-500 py-6 shadow-2xl shadow-primary-500/20 font-black uppercase tracking-[0.2em] italic text-[11px]" 
+                                    className={`w-full h-14 md:h-18 py-6 shadow-2xl font-black uppercase tracking-[0.2em] italic text-[11px] transition-all ${isFormValid() ? 'bg-primary-500 shadow-primary-500/20 opacity-100' : 'bg-navy-800 opacity-50 cursor-not-allowed'}`}
                                     size="lg" 
                                     isLoading={isLoading}
+                                    disabled={!isFormValid() || isLoading}
                                 >
                                     <span className="flex items-center space-x-2">
-                                        <span>Create Account</span>
-                                        <ArrowRight size={20} />
+                                        <span>{isLoading ? 'Creating Account...' : 'Create Account'}</span>
+                                        {!isLoading && <ArrowRight size={20} />}
                                     </span>
                                 </Button>
                             </form>

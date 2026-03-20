@@ -22,11 +22,12 @@ const OwnerRegistrationPage: React.FC = () => {
         email: '',
         phone: '',
         password: '',
+        confirmPassword: '',
         messName: '',
         location: '',
         city: '',
     });
-    const [passwordError, setPasswordError] = useState<string | null>(null);
+    const [errors, setErrors] = useState<Record<string, string>>({});
     const [isLoading, setIsLoading] = useState(false);
 
     const dispatch = useAppDispatch();
@@ -36,16 +37,22 @@ const OwnerRegistrationPage: React.FC = () => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
 
-        if (name === 'password' && passwordError) {
-            const error = validatePassword(value);
-            if (!error) setPasswordError(null);
+        if (errors[name]) {
+            const error = validateField(name, value);
+            setErrors(prev => ({ ...prev, [name]: error }));
         }
     };
 
+    const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        const error = validateField(name, value);
+        setErrors(prev => ({ ...prev, [name]: error }));
+    };
+
     const validatePassword = (pass: string) => {
-        if (!pass) return null;
+        if (!pass) return "Password is required";
         if (weakPasswords.includes(pass.toLowerCase())) {
-            return 'This password is too common. Please choose a stronger password.';
+            return 'This password is too weak. Use a stronger password.';
         }
         if (pass.length < 6) return 'Password must be at least 6 characters long';
         if (!/[a-z]/.test(pass)) return 'Password must contain at least one lowercase letter';
@@ -54,21 +61,71 @@ const OwnerRegistrationPage: React.FC = () => {
         return null;
     };
 
+    const validateField = (name: string, value: string) => {
+        let error = '';
+        switch (name) {
+            case 'name':
+                if (!/^[A-Za-z ]{2,}$/.test(value)) error = "Enter a valid full name (min 2 characters)";
+                break;
+            case 'email':
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) error = "Enter a valid email address";
+                break;
+            case 'phone':
+                if (!/^[0-9]{10}$/.test(value)) error = "Enter a valid 10-digit phone number";
+                break;
+            case 'messName':
+                if (!/^[A-Za-z0-9 ]{3,}$/.test(value)) error = "Mess name must be at least 3 characters";
+                break;
+            case 'city':
+                if (!/^[A-Za-z ]{2,}$/.test(value)) error = "Enter a valid city name";
+                break;
+            case 'password':
+                error = validatePassword(value) || '';
+                break;
+            case 'confirmPassword':
+                if (value !== formData.password) error = "Passwords do not match";
+                break;
+            case 'location':
+                if (value.length < 5) error = "Enter a valid location (min 5 characters)";
+                break;
+        }
+        return error;
+    };
+
+    const isFormValid = () => {
+        const requiredFields = ['name', 'email', 'phone', 'password', 'confirmPassword', 'messName', 'location', 'city'];
+        return requiredFields.every(field => {
+            const val = formData[field as keyof typeof formData];
+            return val && !validateField(field, val);
+        });
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setIsLoading(true);
 
-        const passError = validatePassword(formData.password);
-        if (passError) {
-            setPasswordError(passError);
-            toast.error(passError);
-            setIsLoading(false);
+        const newErrors: Record<string, string> = {};
+        Object.keys(formData).forEach(key => {
+            const error = validateField(key, formData[key as keyof typeof formData]);
+            if (error) newErrors[key] = error;
+        });
+
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
+            toast.error("Please fix errors before submitting");
             return;
         }
+
+        setIsLoading(true);
 
         try {
             const response = await api.post('/auth/owner-register', {
                 ...formData,
+                name: formData.name.trim(),
+                email: formData.email.trim(),
+                phone: formData.phone.trim(),
+                messName: formData.messName.trim(),
+                location: formData.location.trim(),
+                city: formData.city.trim(),
                 recaptchaToken: 'bypassed'
             });
 
@@ -112,36 +169,43 @@ const OwnerRegistrationPage: React.FC = () => {
                             <h3 className="text-[10px] font-black uppercase tracking-widest text-primary-500 italic pb-2 border-b border-white/10">Owner Terminal Details</h3>
                             <Input
                                 id="owner-name" name="name" label="Full Name" type="text"
-                                placeholder="John Doe" value={formData.name} onChange={handleInputChange} required
+                                placeholder="Enter your full name" value={formData.name} 
+                                onChange={handleInputChange} onBlur={handleBlur} error={errors.name} required
                             />
                             <Input
                                 id="owner-email" name="email" label="Email Address" type="email"
-                                placeholder="john@example.com" value={formData.email} onChange={handleInputChange} required
+                                placeholder="Enter email address" value={formData.email} 
+                                onChange={handleInputChange} onBlur={handleBlur} error={errors.email} required
                             />
                             <Input
                                 id="owner-phone" name="phone" label="Phone Number" type="tel"
-                                placeholder="9876543210" value={formData.phone} onChange={handleInputChange} 
-                                pattern="[0-9]{10}" title="Must be exactly 10 digits" required
+                                placeholder="10-digit mobile number" value={formData.phone} 
+                                onChange={handleInputChange} onBlur={handleBlur} error={errors.phone} required
+                            />
+                             <Input
+                                id="owner-password" name="password" label="Password" type="password"
+                                placeholder="Min 6 chars, mixed case" value={formData.password} 
+                                onChange={handleInputChange} onBlur={handleBlur} error={errors.password} required
                             />
                             <Input
-                                id="owner-password" name="password" label="Password" type="password"
-                                placeholder="••••••••" value={formData.password} onChange={handleInputChange} 
-                                onBlur={() => setPasswordError(validatePassword(formData.password))}
-                                error={passwordError || undefined}
-                                required
+                                id="owner-confirm-password" name="confirmPassword" label="Confirm Password" type="password"
+                                placeholder="Retype password" value={formData.confirmPassword} 
+                                onChange={handleInputChange} onBlur={handleBlur} error={errors.confirmPassword} required
                             />
                         </div>
 
                         {/* Mess Information */}
                         <div className="space-y-6">
                             <h3 className="text-[10px] font-black uppercase tracking-widest text-primary-500 italic pb-2 border-b border-white/10">Mess Registry Profile</h3>
-                            <Input
+                             <Input
                                 id="mess-name" name="messName" label="Mess Name" type="text"
-                                placeholder="Elite Food Services" value={formData.messName} onChange={handleInputChange} required
+                                placeholder="Enter your mess name" value={formData.messName} 
+                                onChange={handleInputChange} onBlur={handleBlur} error={errors.messName} required
                             />
-                            <Input
+                             <Input
                                 id="mess-city" name="city" label="City" type="text"
-                                placeholder="Pune" value={formData.city} onChange={handleInputChange} required
+                                placeholder="e.g. Pune" value={formData.city} 
+                                onChange={handleInputChange} onBlur={handleBlur} error={errors.city} required
                             />
                             <div className="space-y-2">
                                 <label className="block text-[11px] font-black uppercase tracking-widest text-text-secondary">
@@ -149,18 +213,24 @@ const OwnerRegistrationPage: React.FC = () => {
                                 </label>
                                 <div className="relative group">
                                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-primary-500">
-                                        <MapPin size={18} />
+                                         <MapPin size={18} />
                                     </div>
                                     <input
                                         type="text"
                                         name="location"
-                                        className="w-full pl-12 pr-4 py-4 bg-bg3/20 border border-white/10 rounded-2xl focus:ring-2 focus:ring-primary-500 focus:border-transparent text-white placeholder-navy-500 transition-all font-medium italic"
+                                        className={`w-full pl-12 pr-4 py-4 bg-bg3/20 border ${errors.location ? 'border-red-500/50' : 'border-white/10'} rounded-2xl focus:ring-2 focus:ring-primary-500 focus:border-transparent text-white placeholder-navy-500 transition-all font-medium italic`}
                                         placeholder="Kothrud, near MIT College"
                                         value={formData.location}
                                         onChange={handleInputChange}
+                                        onBlur={handleBlur}
                                         required
                                     />
                                 </div>
+                                {errors.location && (
+                                    <p className="font-black italic px-1 mt-1" style={{ color: '#E84B4B', fontSize: '10px', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+                                        {errors.location}
+                                    </p>
+                                )}
                             </div>
                             <div className="p-6 bg-primary-500/10 rounded-[2rem] mt-6 border border-primary-500/20">
                                 <p className="text-[10px] text-text-secondary leading-relaxed text-center uppercase tracking-widest font-black">
@@ -171,8 +241,14 @@ const OwnerRegistrationPage: React.FC = () => {
                         </div>
                     </div>
 
-                    <Button type="submit" className="w-full" size="lg" isLoading={isLoading}>
-                        Complete Registration & Start Trial
+                     <Button 
+                        type="submit" 
+                        className={`w-full transition-all ${isFormValid() ? 'opacity-100' : 'opacity-50 cursor-not-allowed'}`} 
+                        size="lg" 
+                        isLoading={isLoading}
+                        disabled={!isFormValid() || isLoading}
+                    >
+                        {isLoading ? 'Processing Registration...' : 'Complete Registration & Start Trial'}
                     </Button>
                 </form>
 

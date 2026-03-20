@@ -17,33 +17,74 @@ const ResetPasswordPage: React.FC = () => {
     const { token } = useParams<{ token: string }>();
     const navigate = useNavigate();
 
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
-    const [showPassword, setShowPassword] = useState(false);
+    const [formData, setFormData] = useState({
+        password: '',
+        confirmPassword: '',
+    });
+    const [errors, setErrors] = useState<Record<string, string>>({});
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [passwordError, setPasswordError] = useState<string | null>(null);
+
+    const validatePassword = (pass: string) => {
+        if (!pass) return "Password is required";
+        if (weakPasswords.includes(pass.toLowerCase())) {
+            return 'This password is too weak. Use a stronger password.';
+        }
+        if (pass.length < 6) return 'Password must be at least 6 characters long';
+        if (!/[a-z]/.test(pass)) return 'Password must contain at least one lowercase letter';
+        if (!/[A-Z]/.test(pass)) return 'Password must contain at least one uppercase letter';
+        if (!/[0-9]/.test(pass)) return 'Password must contain at least one number';
+        return null;
+    };
+
+    const validateField = (name: string, value: string) => {
+        let error = '';
+        if (name === 'password') {
+            error = validatePassword(value) || '';
+        } else if (name === 'confirmPassword') {
+            if (value !== formData.password) error = "Passwords do not match";
+        }
+        return error;
+    };
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+        
+        if (errors[name]) {
+            const error = validateField(name, value);
+            setErrors(prev => ({ ...prev, [name]: error }));
+        }
+    };
+
+    const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        const error = validateField(name, value);
+        setErrors(prev => ({ ...prev, [name]: error }));
+    };
+
+    const isFormValid = () => {
+        return !validatePassword(formData.password) && formData.confirmPassword === formData.password && formData.password !== '';
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-
-        if (password !== confirmPassword) {
-            setError('Passwords do not match');
-            return;
-        }
-
-        const passError = validatePassword(password);
-        if (passError) {
-            setPasswordError(passError);
-            setError(passError);
+        
+        const passErr = validatePassword(formData.password);
+        const confErr = formData.confirmPassword !== formData.password ? "Passwords do not match" : "";
+        
+        if (passErr || confErr) {
+            setErrors({ password: passErr || '', confirmPassword: confErr });
             return;
         }
 
         setIsLoading(true);
-        setError(null);
-
+        setError(null); // Clear general error before new submission
         try {
-            await api.post('/auth/reset-password', { token, password });
+            await api.post('/auth/reset-password', {
+                token,
+                password: formData.password
+            });
             toast.success('Password reset successfully! Please login with your new password.');
             navigate('/login');
         } catch (error) {
@@ -54,18 +95,6 @@ const ResetPasswordPage: React.FC = () => {
         } finally {
             setIsLoading(false);
         }
-    };
-
-    const validatePassword = (pass: string) => {
-        if (!pass) return null;
-        if (weakPasswords.includes(pass.toLowerCase())) {
-            return 'This password is too common. Please choose a stronger password.';
-        }
-        if (pass.length < 6) return 'Password must be at least 6 characters long';
-        if (!/[a-z]/.test(pass)) return 'Password must contain at least one lowercase letter';
-        if (!/[A-Z]/.test(pass)) return 'Password must contain at least one uppercase letter';
-        if (!/[0-9]/.test(pass)) return 'Password must contain at least one number';
-        return null;
     };
 
     return (
@@ -87,43 +116,35 @@ const ResetPasswordPage: React.FC = () => {
                 )}
 
                 <form onSubmit={handleSubmit} className="space-y-6">
-                    <div className="relative">
-                        <Input
-                            label="New Password"
-                            type={showPassword ? "text" : "password"}
-                            placeholder="••••••••"
-                            value={password}
-                            onChange={(e) => {
-                                setPassword(e.target.value);
-                                if (passwordError) {
-                                    const err = validatePassword(e.target.value);
-                                    if (!err) setPasswordError(null);
-                                }
-                            }}
-                            onBlur={() => setPasswordError(validatePassword(password))}
-                            error={passwordError || undefined}
-                            required
-                        />
-                        <button
-                            type="button"
-                            onClick={() => setShowPassword(!showPassword)}
-                            className="absolute right-3 top-[38px] text-gray-400 hover:text-gray-600 transition-colors"
-                        >
-                            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                        </button>
-                    </div>
-
                     <Input
-                        label="Confirm New Password"
+                        label="New Password"
+                        name="password"
                         type="password"
-                        placeholder="••••••••"
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        placeholder="Min 6 characters, mixed case"
+                        value={formData.password}
+                        onChange={handleInputChange}
+                        onBlur={handleBlur}
+                        error={errors.password}
                         required
                     />
-
-                    <Button type="submit" className="w-full" size="lg" isLoading={isLoading}>
-                        Update Password
+                    <Input
+                        label="Confirm New Password"
+                        name="confirmPassword"
+                        type="password"
+                        placeholder="Retype your new password"
+                        value={formData.confirmPassword}
+                        onChange={handleInputChange}
+                        onBlur={handleBlur}
+                        error={errors.confirmPassword}
+                        required
+                    />
+                    <Button 
+                        type="submit" 
+                        className={`w-full ${isFormValid() ? 'opacity-100' : 'opacity-50 cursor-not-allowed'}`} 
+                        isLoading={isLoading}
+                        disabled={!isFormValid() || isLoading}
+                    >
+                        {isLoading ? 'Resetting...' : 'Reset Password'}
                     </Button>
 
                     <Link to="/login" className="flex items-center justify-center text-sm text-gray-400 hover:text-primary transition-colors gap-2">

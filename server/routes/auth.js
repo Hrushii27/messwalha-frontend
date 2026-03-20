@@ -13,7 +13,7 @@ const weakPasswords = [
 const passwordValidation = body('password')
     .custom((value) => {
         if (weakPasswords.includes(value.toLowerCase())) {
-            throw new Error('This password is too common. Please choose a stronger password.');
+            throw new Error('This password is too weak. Use a stronger password.');
         }
         return true;
     })
@@ -23,20 +23,20 @@ const passwordValidation = body('password')
     .matches(/[0-9]/).withMessage('Password must contain at least one number');
 
 const registerValidation = [
-    body('email').isEmail().normalizeEmail().withMessage('Invalid email address'),
+    body('email').isEmail().normalizeEmail().trim().withMessage('Enter a valid email address'),
+    body('name').trim().matches(/^[A-Za-z ]{2,}$/).withMessage('Enter a valid full name (min 2 characters)'),
     passwordValidation,
-    body('name').trim().notEmpty().withMessage('Name is required'),
-    body('phone').optional({ checkFalsy: true }).matches(/^[0-9]{10}$/).withMessage('Invalid phone number (10 digits required)')
+    body('college').optional().trim().isLength({ min: 2 }).withMessage('Enter a valid college name')
 ];
 
 const ownerRegisterValidation = [
-    body('email').isEmail().normalizeEmail().withMessage('Invalid email address'),
-    passwordValidation,
-    body('name').trim().notEmpty().withMessage('Name is required'),
-    body('messName').trim().notEmpty().withMessage('Mess Name is required'),
-    body('location').trim().notEmpty().withMessage('Location is required'),
-    body('city').trim().notEmpty().withMessage('City is required'),
-    body('phone').matches(/^[0-9]{10}$/).withMessage('Valid phone number (10 digits) is required for owners')
+    body('email').isEmail().normalizeEmail().trim().withMessage('Enter a valid email address'),
+    body('name').trim().matches(/^[A-Za-z ]{2,}$/).withMessage('Enter a valid full name (min 2 characters)'),
+    body('phone').trim().matches(/^[0-9]{10}$/).withMessage('Enter a valid 10-digit phone number'),
+    body('messName').trim().matches(/^[A-Za-z0-9 ]{3,}$/).withMessage('Mess name must be at least 3 characters'),
+    body('city').trim().matches(/^[A-Za-z ]{2,}$/).withMessage('Enter a valid city name'),
+    body('location').trim().isLength({ min: 5 }).withMessage('Enter a valid location (min 5 characters)'),
+    passwordValidation
 ];
 
 const loginValidation = [
