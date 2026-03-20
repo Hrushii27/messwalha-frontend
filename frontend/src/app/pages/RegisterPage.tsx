@@ -134,6 +134,10 @@ const RegisterPage: React.FC = () => {
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
+        // Clear error for the field as user types to avoid "check-type" feel
+        if (errors[name]) {
+            setErrors(prev => ({ ...prev, [name]: '' }));
+        }
     };
 
     const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
@@ -226,36 +230,7 @@ const RegisterPage: React.FC = () => {
         }
     };
 
-    const BenefitItem = ({ icon: Icon, title, desc }: { icon: any, title: string, desc: string }) => (
-        <div className="flex items-start space-x-6 p-6 rounded-3xl bg-white/5 border border-white/10 hover:border-primary-500/50 transition-all group overflow-hidden relative">
-            <div className="absolute inset-0 bg-primary-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-            <div className="p-4 bg-navy-800 rounded-2xl text-primary-500 shadow-lg group-hover:shadow-primary-500/20 group-hover:scale-110 transition-all relative z-10">
-                <Icon size={24} />
-            </div>
-            <div className="relative z-10">
-                <h3 className="font-black text-white uppercase tracking-widest text-[11px] mb-1 italic">{title}</h3>
-                <p className="text-navy-300 text-[10px] leading-relaxed uppercase tracking-widest">{desc}</p>
-            </div>
-        </div>
-    );
-
-    const Input = ({ label, id, error, ...props }: any) => (
-        <div className="space-y-2">
-            <label htmlFor={id} className="text-[10px] font-black uppercase tracking-[0.2em] text-navy-400 italic px-1 block">
-                {label}
-            </label>
-            <input
-                id={id}
-                {...props}
-                className={`w-full bg-navy-800/50 border border-white/5 rounded-2xl px-6 outline-none focus:border-primary-500/50 focus:bg-navy-800 transition-all text-white font-medium placeholder:text-navy-600 ${props.className || ''} ${touched[props.name] && error ? 'border-red-500/50' : ''}`}
-            />
-            {touched[props.name] && error && (
-                <p className="font-black italic px-1" style={{ color: '#E84B4B', fontSize: '10px', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
-                    {error}
-                </p>
-            )}
-        </div>
-    );
+    // Replaced by inline validation in handleSubmit for performance
 
     return (
         <div className="min-h-screen bg-navy-950 flex flex-col lg:flex-row relative overflow-hidden">
@@ -421,6 +396,7 @@ const RegisterPage: React.FC = () => {
                                         onChange={handleInputChange}
                                         onBlur={handleBlur}
                                         error={errors.name}
+                                        isTouched={touched.name}
                                         required
                                         className="h-14 lg:h-16"
                                     />
@@ -434,6 +410,7 @@ const RegisterPage: React.FC = () => {
                                             onChange={handleInputChange}
                                             onBlur={handleBlur}
                                             error={errors.college}
+                                            isTouched={touched.college}
                                             required
                                             className="h-14 lg:h-16"
                                         />
@@ -448,6 +425,7 @@ const RegisterPage: React.FC = () => {
                                             onChange={handleInputChange}
                                             onBlur={handleBlur}
                                             error={errors.phone}
+                                            isTouched={touched.phone}
                                             required
                                             className="h-14 lg:h-16"
                                         />
@@ -464,6 +442,7 @@ const RegisterPage: React.FC = () => {
                                                 onChange={handleInputChange}
                                                 onBlur={handleBlur}
                                                 error={errors.messName}
+                                                isTouched={touched.messName}
                                                 required
                                                 className="h-14 lg:h-16"
                                             />
@@ -476,6 +455,7 @@ const RegisterPage: React.FC = () => {
                                                 onChange={handleInputChange}
                                                 onBlur={handleBlur}
                                                 error={errors.location}
+                                                isTouched={touched.location}
                                                 required
                                                 className="h-14 lg:h-16"
                                             />
@@ -488,6 +468,7 @@ const RegisterPage: React.FC = () => {
                                                 onChange={handleInputChange}
                                                 onBlur={handleBlur}
                                                 error={errors.city}
+                                                isTouched={touched.city}
                                                 required
                                                 className="h-14 lg:h-16"
                                             />
@@ -504,6 +485,7 @@ const RegisterPage: React.FC = () => {
                                         onChange={handleInputChange}
                                         onBlur={handleBlur}
                                         error={errors.email}
+                                        isTouched={touched.email}
                                         required
                                         className={`h-14 lg:h-16 ${role === 'STUDENT' ? 'sm:col-span-2' : ''}`}
                                     />
@@ -517,6 +499,7 @@ const RegisterPage: React.FC = () => {
                                         onChange={handleInputChange}
                                         onBlur={handleBlur}
                                         error={errors.password}
+                                        isTouched={touched.password}
                                         required
                                         className="h-14 lg:h-16 sm:col-span-2"
                                     />
@@ -530,6 +513,7 @@ const RegisterPage: React.FC = () => {
                                         onChange={handleInputChange}
                                         onBlur={handleBlur}
                                         error={errors.confirmPassword}
+                                        isTouched={touched.confirmPassword}
                                         required
                                         className="h-14 lg:h-16 sm:col-span-2"
                                     />
@@ -579,5 +563,41 @@ const RegisterPage: React.FC = () => {
         </div>
     );
 };
+
+// --- Extracted Components for Performance ---
+
+const BenefitItem = ({ icon: Icon, title, desc }: { icon: any, title: string, desc: string }) => (
+    <div className="flex items-start space-x-6 p-6 rounded-3xl bg-white/5 border border-white/10 hover:border-primary-500/50 transition-all group overflow-hidden relative">
+        <div className="absolute inset-0 bg-primary-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+        <div className="p-4 bg-navy-800 rounded-2xl text-primary-500 shadow-lg group-hover:shadow-primary-500/20 group-hover:scale-110 transition-all relative z-10">
+            <Icon size={24} />
+        </div>
+        <div className="relative z-10">
+            <h3 className="font-black text-white uppercase tracking-widest text-[11px] mb-1 italic">{title}</h3>
+            <p className="text-navy-300 text-[10px] leading-relaxed uppercase tracking-widest">{desc}</p>
+        </div>
+    </div>
+);
+
+const Input = React.memo(({ label, id, error, isTouched, ...props }: any) => (
+    <div className="space-y-2">
+        <label htmlFor={id} className="text-[10px] font-black uppercase tracking-[0.2em] text-navy-400 italic px-1 block">
+            {label}
+        </label>
+        <input
+            id={id}
+            {...props}
+            className={`w-full bg-navy-800/50 border border-white/5 rounded-2xl px-6 outline-none focus:border-primary-500/50 focus:bg-navy-800 transition-all text-white font-medium placeholder:text-navy-600 ${props.className || ''} ${isTouched && error ? 'border-red-500/50' : ''}`}
+            autoComplete="off"
+        />
+        {isTouched && error && (
+            <p className="font-black italic px-1" style={{ color: '#E84B4B', fontSize: '10px', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+                {error}
+            </p>
+        )}
+    </div>
+));
+
+Input.displayName = 'FormInput';
 
 export default RegisterPage;

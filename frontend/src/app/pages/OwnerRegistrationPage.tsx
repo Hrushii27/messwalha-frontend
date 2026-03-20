@@ -37,6 +37,10 @@ const OwnerRegistrationPage: React.FC = () => {
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
+        // Clear error for the field as user types to avoid "check-type" feel
+        if (errors[name]) {
+            setErrors(prev => ({ ...prev, [name]: '' }));
+        }
     };
 
     const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
