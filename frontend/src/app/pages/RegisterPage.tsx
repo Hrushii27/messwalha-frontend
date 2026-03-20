@@ -11,6 +11,7 @@ import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 import Seo from '../components/common/Seo';
 import { motion, AnimatePresence } from 'framer-motion';
 
+// CACHE_BUST_v3_premium
 const RegisterPage: React.FC = () => {
     const [role, setRole] = useState<'STUDENT' | 'OWNER'>('STUDENT');
     const [formData, setFormData] = useState({

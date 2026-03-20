@@ -7,13 +7,19 @@ import { Utensils, User, Building } from 'lucide-react';
 import { useAppDispatch } from '../../hooks/redux';
 import { setCredentials } from '../../store/slices/authSlice';
 import api from '../api/axiosInstance';
+import { toast } from 'react-hot-toast';
 
+// CACHE_BUST_v3_simple
 const RegisterPage: React.FC = () => {
     const [formData, setFormData] = useState({
         name: '',
         email: '',
         password: '',
         role: 'STUDENT' as 'STUDENT' | 'OWNER',
+        phone: '',
+        messName: '',
+        location: '',
+        city: '',
     });
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -27,21 +33,34 @@ const RegisterPage: React.FC = () => {
         setError('');
 
         try {
-            // Call backend directly for registration
-            const response = await api.post('/auth/register', {
-                name: formData.name,
-                email: formData.email,
-                phone: '', // Added empty phone to prevent backend SQL errors
-                password: formData.password,
-                role: formData.role
-            });
+            let response;
+            if (formData.role === 'STUDENT') {
+                response = await api.post('/auth/register', {
+                    name: formData.name,
+                    email: formData.email,
+                    password: formData.password,
+                    role: 'STUDENT'
+                });
+            } else {
+                response = await api.post('/auth/owner-register', {
+                    name: formData.name,
+                    email: formData.email,
+                    password: formData.password,
+                    phone: formData.phone,
+                    messName: formData.messName,
+                    location: formData.location,
+                    city: formData.city
+                });
+            }
 
             dispatch(setCredentials(response.data));
-            navigate('/');
+            toast.success('Successfully registered!');
+            navigate(formData.role === 'OWNER' ? '/owner/dashboard' : '/find-mess');
         } catch (err: any) {
             console.error('Registration error:', err);
-            const errorMessage = err.response?.data?.message || err.response?.data?.error || 'Registration failed. Please try again.';
+            const errorMessage = err.response?.data?.message || err.response?.data?.error || err.response?.data?.errors?.[0]?.msg || 'Registration failed. Please try again.';
             setError(errorMessage);
+            toast.error(errorMessage);
         } finally {
             setIsLoading(false);
         }
@@ -104,7 +123,7 @@ const RegisterPage: React.FC = () => {
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <Input
-                            label="Full Name"
+                            label={formData.role === 'OWNER' ? "Owner Name" : "Full Name"}
                             placeholder="John Doe"
                             value={formData.name}
                             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -118,6 +137,40 @@ const RegisterPage: React.FC = () => {
                             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                             required
                         />
+                        
+                        {formData.role === 'OWNER' && (
+                            <>
+                                <Input
+                                    label="Phone Number"
+                                    placeholder="+91 98765 43210"
+                                    value={formData.phone}
+                                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                                    required
+                                />
+                                <Input
+                                    label="Mess Name"
+                                    placeholder="e.g. Shree Krishna Mess"
+                                    value={formData.messName}
+                                    onChange={(e) => setFormData({ ...formData, messName: e.target.value })}
+                                    required
+                                />
+                                <Input
+                                    label="Location / Area"
+                                    placeholder="Deccan, Pune"
+                                    value={formData.location}
+                                    onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                                    required
+                                />
+                                <Input
+                                    label="City"
+                                    placeholder="e.g. Pune"
+                                    value={formData.city}
+                                    onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                                    required
+                                />
+                            </>
+                        )}
+
                         <Input
                             label="Password"
                             type="password"
