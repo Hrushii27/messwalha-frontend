@@ -3,7 +3,7 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import { Button } from '../components/common/Button';
 import { Input } from '../components/common/Input';
 import { Card } from '../components/common/Card';
-import { Utensils, ArrowLeft, Eye, EyeOff, AlertCircle } from 'lucide-react';
+import { Utensils, ArrowLeft, AlertCircle } from 'lucide-react';
 import api from '../api/axiosInstance';
 import { toast } from 'react-hot-toast';
 
