@@ -32,6 +32,7 @@ const RegisterPage: React.FC = () => {
         city: '',
     });
     const [errors, setErrors] = useState<Record<string, string>>({});
+    const [touched, setTouched] = useState<Record<string, boolean>>({});
     const [isLoading, setIsLoading] = useState(false);
     const { executeRecaptcha } = useGoogleReCaptcha();
 
@@ -137,6 +138,7 @@ const RegisterPage: React.FC = () => {
 
     const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
+        setTouched(prev => ({ ...prev, [name]: true }));
         const error = validateField(name, value);
         setErrors(prev => ({ ...prev, [name]: error }));
     };
@@ -155,13 +157,16 @@ const RegisterPage: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         
-        // Final validation check
+        // Final validation check - mark all fields as touched
         const newErrors: Record<string, string> = {};
+        const newTouched: Record<string, boolean> = {};
         Object.keys(formData).forEach(key => {
+            newTouched[key] = true;
             const error = validateField(key, formData[key as keyof typeof formData]);
             if (error) newErrors[key] = error;
         });
 
+        setTouched(newTouched);
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
             toast.error("Please fix errors before submitting");
@@ -251,9 +256,9 @@ const RegisterPage: React.FC = () => {
             <input
                 id={id}
                 {...props}
-                className={`w-full bg-navy-800/50 border border-white/5 rounded-2xl px-6 outline-none focus:border-primary-500/50 focus:bg-navy-800 transition-all text-white font-medium placeholder:text-navy-600 ${props.className || ''} ${error ? 'border-red-500/50' : ''}`}
+                className={`w-full bg-navy-800/50 border border-white/5 rounded-2xl px-6 outline-none focus:border-primary-500/50 focus:bg-navy-800 transition-all text-white font-medium placeholder:text-navy-600 ${props.className || ''} ${touched[props.name] && error ? 'border-red-500/50' : ''}`}
             />
-            {error && (
+            {touched[props.name] && error && (
                 <p className="font-black italic px-1" style={{ color: '#E84B4B', fontSize: '10px', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
                     {error}
                 </p>

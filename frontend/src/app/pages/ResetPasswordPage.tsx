@@ -22,6 +22,7 @@ const ResetPasswordPage: React.FC = () => {
         confirmPassword: '',
     });
     const [errors, setErrors] = useState<Record<string, string>>({});
+    const [touched, setTouched] = useState<Record<string, boolean>>({});
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -54,6 +55,7 @@ const ResetPasswordPage: React.FC = () => {
 
     const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
+        setTouched(prev => ({ ...prev, [name]: true }));
         const error = validateField(name, value);
         setErrors(prev => ({ ...prev, [name]: error }));
     };
@@ -65,11 +67,19 @@ const ResetPasswordPage: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         
-        const passErr = validatePassword(formData.password);
-        const confErr = formData.confirmPassword !== formData.password ? "Passwords do not match" : "";
-        
-        if (passErr || confErr) {
-            setErrors({ password: passErr || '', confirmPassword: confErr });
+        // Final validation check - mark all as touched
+        const newErrors: Record<string, string> = {};
+        const newTouched: Record<string, boolean> = {};
+        Object.keys(formData).forEach(key => {
+            newTouched[key] = true;
+            const error = validateField(key, formData[key as keyof typeof formData]);
+            if (error) newErrors[key] = error;
+        });
+
+        setTouched(newTouched);
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
+            toast.error("Please fix errors before reset");
             return;
         }
 
@@ -115,22 +125,22 @@ const ResetPasswordPage: React.FC = () => {
                         label="New Password"
                         name="password"
                         type="password"
-                        placeholder="Min 6 characters, mixed case"
+                        placeholder="Enter new password"
                         value={formData.password}
                         onChange={handleInputChange}
                         onBlur={handleBlur}
-                        error={errors.password}
+                        error={touched.password ? errors.password : ''}
                         required
                     />
                     <Input
                         label="Confirm New Password"
                         name="confirmPassword"
                         type="password"
-                        placeholder="Retype your new password"
+                        placeholder="Confirm new password"
                         value={formData.confirmPassword}
                         onChange={handleInputChange}
                         onBlur={handleBlur}
-                        error={errors.confirmPassword}
+                        error={touched.confirmPassword ? errors.confirmPassword : ''}
                         required
                     />
                     <Button 

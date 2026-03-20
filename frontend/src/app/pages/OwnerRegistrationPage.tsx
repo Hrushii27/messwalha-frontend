@@ -28,6 +28,7 @@ const OwnerRegistrationPage: React.FC = () => {
         city: '',
     });
     const [errors, setErrors] = useState<Record<string, string>>({});
+    const [touched, setTouched] = useState<Record<string, boolean>>({});
     const [isLoading, setIsLoading] = useState(false);
 
     const dispatch = useAppDispatch();
@@ -40,6 +41,7 @@ const OwnerRegistrationPage: React.FC = () => {
 
     const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
+        setTouched(prev => ({ ...prev, [name]: true }));
         const error = validateField(name, value);
         setErrors(prev => ({ ...prev, [name]: error }));
     };
@@ -98,12 +100,16 @@ const OwnerRegistrationPage: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
+        // Final validation check - mark all fields as touched
         const newErrors: Record<string, string> = {};
+        const newTouched: Record<string, boolean> = {};
         Object.keys(formData).forEach(key => {
+            newTouched[key] = true;
             const error = validateField(key, formData[key as keyof typeof formData]);
             if (error) newErrors[key] = error;
         });
 
+        setTouched(newTouched);
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
             toast.error("Please fix errors before submitting");
@@ -169,29 +175,58 @@ const OwnerRegistrationPage: React.FC = () => {
                         <div className="space-y-6">
                             <h3 className="text-[10px] font-black uppercase tracking-widest text-primary-500 italic pb-2 border-b border-white/10">Owner Terminal Details</h3>
                             <Input
-                                id="owner-name" name="name" label="Full Name" type="text"
-                                placeholder="Enter your full name" value={formData.name} 
-                                onChange={handleInputChange} onBlur={handleBlur} error={errors.name} required
+                                label="Full Name"
+                                name="name"
+                                placeholder="Full Name"
+                                value={formData.name}
+                                onChange={handleInputChange}
+                                onBlur={handleBlur}
+                                error={touched.name ? errors.name : ''}
+                                required
                             />
                             <Input
-                                id="owner-email" name="email" label="Email Address" type="email"
-                                placeholder="Enter email address" value={formData.email} 
-                                onChange={handleInputChange} onBlur={handleBlur} error={errors.email} required
+                                label="Email Address"
+                                name="email"
+                                type="email"
+                                placeholder="Email Address"
+                                value={formData.email}
+                                onChange={handleInputChange}
+                                onBlur={handleBlur}
+                                error={touched.email ? errors.email : ''}
+                                required
                             />
                             <Input
-                                id="owner-phone" name="phone" label="Phone Number" type="tel"
-                                placeholder="10-digit mobile number" value={formData.phone} 
-                                onChange={handleInputChange} onBlur={handleBlur} error={errors.phone} required
+                                label="Phone Number"
+                                name="phone"
+                                type="tel"
+                                placeholder="10-digit number"
+                                value={formData.phone}
+                                onChange={handleInputChange}
+                                onBlur={handleBlur}
+                                error={touched.phone ? errors.phone : ''}
+                                required
                             />
                              <Input
-                                id="owner-password" name="password" label="Password" type="password"
-                                placeholder="Min 6 chars, mixed case" value={formData.password} 
-                                onChange={handleInputChange} onBlur={handleBlur} error={errors.password} required
+                                label="Password"
+                                name="password"
+                                type="password"
+                                placeholder="Min 6 characters, mixed case"
+                                value={formData.password}
+                                onChange={handleInputChange}
+                                onBlur={handleBlur}
+                                error={touched.password ? errors.password : ''}
+                                required
                             />
                             <Input
-                                id="owner-confirm-password" name="confirmPassword" label="Confirm Password" type="password"
-                                placeholder="Retype password" value={formData.confirmPassword} 
-                                onChange={handleInputChange} onBlur={handleBlur} error={errors.confirmPassword} required
+                                label="Confirm Password"
+                                name="confirmPassword"
+                                type="password"
+                                placeholder="Confirm Password"
+                                value={formData.confirmPassword}
+                                onChange={handleInputChange}
+                                onBlur={handleBlur}
+                                error={touched.confirmPassword ? errors.confirmPassword : ''}
+                                required
                             />
                         </div>
 
@@ -199,14 +234,24 @@ const OwnerRegistrationPage: React.FC = () => {
                         <div className="space-y-6">
                             <h3 className="text-[10px] font-black uppercase tracking-widest text-primary-500 italic pb-2 border-b border-white/10">Mess Registry Profile</h3>
                              <Input
-                                id="mess-name" name="messName" label="Mess Name" type="text"
-                                placeholder="Enter your mess name" value={formData.messName} 
-                                onChange={handleInputChange} onBlur={handleBlur} error={errors.messName} required
+                                label="Mess Name"
+                                name="messName"
+                                placeholder="Enter your mess name"
+                                value={formData.messName} 
+                                onChange={handleInputChange} 
+                                onBlur={handleBlur} 
+                                error={touched.messName ? errors.messName : ''} 
+                                required
                             />
-                             <Input
-                                id="mess-city" name="city" label="City" type="text"
-                                placeholder="e.g. Pune" value={formData.city} 
-                                onChange={handleInputChange} onBlur={handleBlur} error={errors.city} required
+                            <Input
+                                label="City"
+                                name="city"
+                                placeholder="City (e.g. Pune)"
+                                value={formData.city}
+                                onChange={handleInputChange}
+                                onBlur={handleBlur}
+                                error={touched.city ? errors.city : ''}
+                                required
                             />
                             <div className="space-y-2">
                                 <label className="block text-[11px] font-black uppercase tracking-widest text-text-secondary">
@@ -219,7 +264,7 @@ const OwnerRegistrationPage: React.FC = () => {
                                     <input
                                         type="text"
                                         name="location"
-                                        className={`w-full pl-12 pr-4 py-4 bg-bg3/20 border ${errors.location ? 'border-red-500/50' : 'border-white/10'} rounded-2xl focus:ring-2 focus:ring-primary-500 focus:border-transparent text-white placeholder-navy-500 transition-all font-medium italic`}
+                                        className={`w-full pl-12 pr-4 py-4 bg-bg3/20 border ${touched.location && errors.location ? 'border-red-500/50' : 'border-white/10'} rounded-2xl focus:ring-2 focus:ring-primary-500 focus:border-transparent text-white placeholder-navy-500 transition-all font-medium italic`}
                                         placeholder="Kothrud, near MIT College"
                                         value={formData.location}
                                         onChange={handleInputChange}
@@ -227,7 +272,7 @@ const OwnerRegistrationPage: React.FC = () => {
                                         required
                                     />
                                 </div>
-                                {errors.location && (
+                                {touched.location && errors.location && (
                                     <p className="font-black italic px-1 mt-1" style={{ color: '#E84B4B', fontSize: '10px', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
                                         {errors.location}
                                     </p>
