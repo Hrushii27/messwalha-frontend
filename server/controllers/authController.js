@@ -30,11 +30,20 @@ const authController = {
 
         console.log(`📝 Attempting registration for: ${email}, role: ${role || 'STUDENT'}`);
         try {
-            // Check if user exists
-            const existingOwner = await Owner.findByEmail(email);
-            if (existingOwner) {
-                console.warn(`⚠️ Registration failed: User ${email} already exists`);
-                return res.status(400).json({ message: 'User already exists' });
+            // Check if user exists by email
+            const existingEmail = await Owner.findByEmail(email);
+            if (existingEmail) {
+                console.warn(`⚠️ Registration failed: Email ${email} already exists`);
+                return res.status(400).json({ status: 'ERROR', message: 'Email already registered' });
+            }
+
+            // Check if user exists by phone
+            if (phone) {
+                const existingPhone = await Owner.findByPhone(phone);
+                if (existingPhone) {
+                    console.warn(`⚠️ Registration failed: Phone ${phone} already exists`);
+                    return res.status(400).json({ status: 'ERROR', message: 'Phone number already registered' });
+                }
             }
 
             const userRole = role || 'STUDENT';
@@ -80,11 +89,18 @@ const authController = {
 
         console.log(`📝 Attempting OWNER registration for: ${email}`);
         try {
-            // Check if user exists
-            const existingOwner = await Owner.findByEmail(email);
-            if (existingOwner) {
-                console.warn(`⚠️ Registration failed: User ${email} already exists`);
-                return res.status(400).json({ message: 'User already exists' });
+            // Check if user exists by email
+            const existingEmail = await Owner.findByEmail(email);
+            if (existingEmail) {
+                console.warn(`⚠️ Owner Registration failed: Email ${email} already exists`);
+                return res.status(400).json({ status: 'ERROR', message: 'Email already registered' });
+            }
+
+            // Check if user exists by phone
+            const existingPhone = await Owner.findByPhone(phone);
+            if (existingPhone) {
+                console.warn(`⚠️ Owner Registration failed: Phone ${phone} already exists`);
+                return res.status(400).json({ status: 'ERROR', message: 'Phone number already registered' });
             }
 
             // Hash the password

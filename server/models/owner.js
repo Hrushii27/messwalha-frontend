@@ -12,6 +12,10 @@ const Owner = {
         const result = await db.query('SELECT * FROM mess_owners WHERE email = $1', [email]);
         return result.rows[0];
     },
+    findByPhone: async (phone) => {
+        const result = await db.query('SELECT * FROM mess_owners WHERE phone = $1', [phone]);
+        return result.rows[0];
+    },
     findById: async (id) => {
         const result = await db.query('SELECT * FROM mess_owners WHERE id = $1', [id]);
         return result.rows[0];

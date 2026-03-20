@@ -220,8 +220,17 @@ const RegisterPage: React.FC = () => {
             toast.success(role === 'OWNER' ? 'Successfully registered! 60-day trial started.' : 'Welcome to FindMess!');
             navigate(role === 'OWNER' ? '/owner/dashboard' : '/find-mess');
         } catch (error: any) {
-            const errorMessage = error.response?.data?.message || error.response?.data?.errors?.[0]?.msg || 'Registration failed';
-            toast.error(errorMessage);
+            const errorMessage = error.response?.data?.message;
+            if (errorMessage === 'Email already registered') {
+                setErrors(prev => ({ ...prev, email: "Account already exists. Please sign in." }));
+                toast.error("This email is already registered");
+            } else if (errorMessage === 'Phone number already registered') {
+                setErrors(prev => ({ ...prev, phone: "This phone number is already registered" }));
+                toast.error("This phone number is already registered");
+            } else {
+                const finalMsg = error.response?.data?.message || error.response?.data?.errors?.[0]?.msg || 'Registration failed';
+                toast.error(finalMsg);
+            }
         } finally {
             setIsLoading(false);
         }

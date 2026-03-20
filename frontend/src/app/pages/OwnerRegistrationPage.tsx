@@ -133,12 +133,18 @@ const OwnerRegistrationPage: React.FC = () => {
             
             toast.success('Successfully registered! Your 60-day trial has started.', { duration: 5000 });
             navigate('/owner/dashboard');
-        } catch (error) {
-            const err = error as { response?: { data?: { message?: string, errors?: Array<{ msg: string }> } } };
-            if (err.response?.data?.errors && err.response.data.errors.length > 0) {
-                toast.error(err.response.data.errors[0].msg);
+        } catch (error: any) {
+            const errorMessage = error.response?.data?.message;
+            if (errorMessage === 'Email already registered') {
+                setErrors(prev => ({ ...prev, email: "Account already exists. Please sign in." }));
+                toast.error("This email is already registered");
+            } else if (errorMessage === 'Phone number already registered') {
+                setErrors(prev => ({ ...prev, phone: "This phone number is already registered" }));
+                toast.error("This phone number is already registered");
+            } else if (error.response?.data?.errors && error.response.data.errors.length > 0) {
+                toast.error(error.response.data.errors[0].msg);
             } else {
-                toast.error(err.response?.data?.message || 'Registration failed');
+                toast.error(error.response?.data?.message || 'Registration failed');
             }
         } finally {
             setIsLoading(false);
