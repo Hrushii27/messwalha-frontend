@@ -107,8 +107,7 @@ router.get('/my', async (req, res) => {
             return res.status(401).json({ message: 'Unauthorized' });
         }
         const messes = await Mess.findByOwnerId(req.user.id);
-        const mess = Array.isArray(messes) && messes.length > 0 ? messes[0] : null;
-        res.json({ data: mess }); 
+        res.json({ data: messes }); 
     } catch (err) {
         console.error('Error fetching owner mess:', err);
         res.status(500).json({ message: 'Error fetching mess details: ' + err.message });
@@ -127,7 +126,12 @@ router.put('/my', async (req, res) => {
             return res.status(403).json({ message: 'Subscription expired or inactive. Please renew to update your mess.' });
         }
 
-        const updatedMess = await Mess.update(req.user.id, req.body);
+        const { id, ...updateData } = req.body;
+        if (!id) {
+            return res.status(400).json({ message: 'Mess ID is required for update' });
+        }
+
+        const updatedMess = await Mess.update(id, req.user.id, updateData);
         res.json({ success: true, data: updatedMess });
     } catch (err) {
         console.error('Error updating owner mess:', err);

@@ -3,12 +3,12 @@ const db = require('../config/db');
 const Mess = {
     create: async (ownerId, name, address, monthlyPrice, description = '', cuisine = 'Indian', city = '', vegNonveg = 'Both', collegeTags = '', upiId = null, imageUrl = null) => {
         const result = await db.query(
-            'INSERT INTO mess_listings (mess_owner_id, name, address, monthly_price, description, cuisine, city, veg_nonveg, college_tags, status, upi_id, image_url) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING *',
-            [ownerId, name, address, monthlyPrice, description, cuisine, city, vegNonveg, collegeTags, 'pending', upiId, imageUrl]
+            'INSERT INTO mess_listings (mess_owner_id, name, address, monthly_price, description, cuisine, city, veg_nonveg, college_tags, status, upi_id, image_url, is_active) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING *',
+            [ownerId, name, address, monthlyPrice, description, cuisine, city, vegNonveg, collegeTags, 'approved', upiId, imageUrl, true]
         );
         return result.rows[0];
     },
-    update: async (ownerId, data) => {
+    update: async (messId, ownerId, data) => {
         const { name, address, description, cuisine, city, veg_nonveg, college_tags, status } = data;
         let query = `UPDATE mess_listings SET name = $1, address = $2, description = $3, cuisine = $4, city = $5, veg_nonveg = $6, college_tags = $7`;
         const values = [name, address, description, cuisine, city, veg_nonveg, college_tags];
@@ -16,26 +16,46 @@ const Mess = {
         if (status) {
             query += `, status = $8`;
             values.push(status);
-            query += ` WHERE mess_owner_id = $9 RETURNING *`;
-            values.push(ownerId);
+            query += ` WHERE id = $9 AND mess_owner_id = $10 RETURNING *`;
+            values.push(messId, ownerId);
         } else {
-            query += ` WHERE mess_owner_id = $8 RETURNING *`;
-            values.push(ownerId);
+            query += ` WHERE id = $8 AND mess_owner_id = $9 RETURNING *`;
+            values.push(messId, ownerId);
         }
 
         const result = await db.query(query, values);
         return result.rows[0];
     },
     findByOwnerId: async (ownerId) => {
-        const result = await db.query('SELECT * FROM mess_listings WHERE mess_owner_id = $1', [ownerId]);
+        const result = await db.query(`
+            SELECT 
+                id, name, address, city, cuisine, 
+                monthly_price as "monthlyPrice",
+                description, rating, verified, 
+                image_url as "imageUrl", 
+                is_active as "isActive",
+                veg_nonveg as "vegNonVeg",
+                college_tags as "collegeTags",
+                status, upi_id as "upiId"
+            FROM mess_listings 
+            WHERE mess_owner_id = $1
+            ORDER BY created_at DESC
+        `, [ownerId]);
         return result.rows;
     },
-    updateVisibility: async (ownerId, isActive) => {
+    updateVisibility: async (messId, ownerId, isActive) => {
         const result = await db.query(
-            'UPDATE mess_listings SET is_active = $1 WHERE mess_owner_id = $2 RETURNING *',
-            [isActive, ownerId]
+            'UPDATE mess_listings SET is_active = $1 WHERE id = $2 AND mess_owner_id = $3 RETURNING *',
+            [isActive, messId, ownerId]
         );
         return result.rows;
+    },
+    findByNameAndOwner: async (name, ownerId) => {
+        const result = await db.query(
+            'SELECT * FROM mess_listings WHERE name = $1 AND mess_owner_id = $2',
+            [name, ownerId]
+        );
+        return result.rows[0];
     },
     findAllActive: async () => {
         const result = await db.query(`

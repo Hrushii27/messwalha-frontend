@@ -36,7 +36,8 @@ const OwnerDashboardPage: React.FC = () => {
     const navigate = useNavigate();
     const { user } = useAppSelector((state: RootState) => state.auth);
     const [activeTab, setActiveTab] = useState<Tab>('overview');
-    const [mess, setMess] = useState<Mess | null>(null);
+    const [messes, setMesses] = useState<Mess[]>([]);
+    const [selectedMessId, setSelectedMessId] = useState<string | null>(null);
     const [subscribers, setSubscribers] = useState<Subscription[]>([]);
     const [menus, setMenus] = useState<Menu[]>([]);
     const [revenue, setRevenue] = useState<number>(0);
@@ -46,6 +47,8 @@ const OwnerDashboardPage: React.FC = () => {
     const [selectedDay, setSelectedDay] = useState('Monday');
     const [isBillingModalOpen, setIsBillingModalOpen] = useState(false);
     const [subscription, setSubscription] = useState<Subscription | null>(null);
+
+    const mess = messes.find(m => m.id === selectedMessId) || messes[0] || null;
     const [announcement, setAnnouncement] = useState('');
     const [sendingAnnouncement, setSendingAnnouncement] = useState(false);
     const [ownerReviews, setOwnerReviews] = useState<any[]>([]);
@@ -75,27 +78,33 @@ const OwnerDashboardPage: React.FC = () => {
                     api.get('/subscriptions/status')
                 ]);
 
-                setMess(messRes.data.data);
-                setMenus(messRes.data.data.menus || []);
+                const fetchedMesses = Array.isArray(messRes.data.data) ? messRes.data.data : (messRes.data.data ? [messRes.data.data] : []);
+                setMesses(fetchedMesses);
+                
+                const activeMess = fetchedMesses[0] || null;
+                if (activeMess) {
+                    setSelectedMessId(activeMess.id);
+                    setMenus(activeMess.menus || []);
+                    
+                    const reviewsRes = await api.get(`/reviews/${activeMess.id}`);
+                    setOwnerReviews(reviewsRes.data.data || []);
+                    
+                    setMessForm({
+                        name: activeMess.name || '',
+                        description: activeMess.description || '',
+                        address: activeMess.address || '',
+                        cuisine: activeMess.cuisine || '',
+                        contact: activeMess.contact || activeMess.mobile || '',
+                        city: activeMess.city || '',
+                        veg_nonveg: activeMess.vegNonVeg || 'Veg',
+                        college_tags: activeMess.collegeTags || '',
+                        images: activeMess.images || []
+                    });
+                }
+
                 setSubscribers(subsRes.data.data);
                 setRevenue(subsRes.data.totalRevenue || 0);
                 setSubscription(subStatusRes.data.data);
-                
-                if (messRes.data.data?.id) {
-                    const reviewsRes = await api.get(`/reviews/${messRes.data.data.id}`);
-                    setOwnerReviews(reviewsRes.data.data || []);
-                }
-                setMessForm({
-                    name: messRes.data.data?.name || '',
-                    description: messRes.data.data?.description || '',
-                    address: messRes.data.data?.address || '',
-                    cuisine: messRes.data.data?.cuisine || '',
-                    contact: messRes.data.data?.contact || '',
-                    city: messRes.data.data?.city || '',
-                    veg_nonveg: messRes.data.data?.veg_nonveg || 'Veg',
-                    college_tags: messRes.data.data?.college_tags || '',
-                    images: messRes.data.data?.images || []
-                });
             } catch (error) {
                 console.error('Error fetching owner data:', error);
                 toast.error('Failed to load dashboard data');
@@ -118,12 +127,42 @@ const OwnerDashboardPage: React.FC = () => {
         };
     }, [user, navigate]);
 
+    const handleMessSelect = async (messId: string) => {
+        try {
+            setLoading(true);
+            setSelectedMessId(messId);
+            const selected = messes.find(m => m.id === messId);
+            if (selected) {
+                setMenus(selected.menus || []);
+                const reviewsRes = await api.get(`/reviews/${messId}`);
+                setOwnerReviews(reviewsRes.data.data || []);
+                setMessForm({
+                    name: selected.name || '',
+                    description: selected.description || '',
+                    address: selected.address || '',
+                    cuisine: selected.cuisine || '',
+                    contact: selected.contact || selected.mobile || '',
+                    city: selected.city || '',
+                    veg_nonveg: selected.vegNonVeg || 'Veg',
+                    college_tags: selected.collegeTags || '',
+                    images: selected.images || []
+                });
+            }
+        } catch (error) {
+            console.error('Error switching mess:', error);
+            toast.error('Failed to load mess data');
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const handleUpdateMess = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
             setUpdating(true);
-            const response = await api.put('/messes/my', messForm);
-            setMess(response.data.data);
+            const response = await api.put('/messes/my', { ...messForm, id: selectedMessId });
+            // Update the messes array with new data
+            setMesses(prev => prev.map(m => m.id === selectedMessId ? response.data.data : m));
             toast.success('Mess profile updated successfully');
         } catch (error) {
             console.error('Failed to update mess profile:', error);
@@ -789,6 +828,19 @@ const OwnerDashboardPage: React.FC = () => {
                                 <h1 className="text-5xl md:text-8xl font-black italic tracking-tighter leading-none">
                                     CONTROL <br /> <span className="text-primary-500">CENTER</span>
                                 </h1>
+                                {messes.length > 1 && (
+                                    <div className="mt-6">
+                                        <select 
+                                            value={selectedMessId || ''} 
+                                            onChange={(e) => handleMessSelect(e.target.value)}
+                                            className="bg-bg2/50 border border-white/10 text-white rounded-xl px-4 py-2 text-xs font-black uppercase tracking-widest outline-none focus:ring-2 focus:ring-primary-500/50"
+                                        >
+                                            {messes.map(m => (
+                                                <option key={m.id} value={m.id}>{m.name}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                )}
                             </div>
                             <div className="flex flex-wrap justify-center gap-4">
                                 <Button 
