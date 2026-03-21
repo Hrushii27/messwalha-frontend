@@ -124,8 +124,9 @@ const AddMessPage: React.FC = () => {
         setLoading(true);
         setError(null);
 
-        if (!executeRecaptcha) {
-            setError('reCAPTCHA not initialized');
+        // Only throw error if we are on production and it's definitively not ready
+        if (!executeRecaptcha && window.location.hostname !== 'localhost') {
+            setError('reCAPTCHA security check is still loading. Please wait a moment and try again.');
             setLoading(false);
             return;
         }
@@ -134,15 +135,19 @@ const AddMessPage: React.FC = () => {
         try {
             if (executeRecaptcha) {
                 recaptchaToken = await executeRecaptcha('add_mess');
-            } else if (window.location.hostname !== 'localhost') {
-                throw new Error('reCAPTCHA not initialized');
+            } else if (window.location.hostname === 'localhost') {
+                console.log('Local environment detected, using bypass token');
+                recaptchaToken = 'bypassed_token';
+            } else {
+                throw new Error('reCAPTCHA not ready');
             }
         } catch (err) {
             console.warn('reCAPTCHA execution failed:', err);
             if (window.location.hostname !== 'localhost') {
-                throw err; // Re-throw so it hits the main catch block on production
+                setError('Security verification failed. Please refresh and try again.');
+                setLoading(false);
+                return;
             }
-            console.log('Local environment detected, using bypass token');
         }
 
         try {
