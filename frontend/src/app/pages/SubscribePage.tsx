@@ -16,6 +16,19 @@ interface RazorpayResponse {
 const SubscribePage: React.FC = () => {
     const [loading, setLoading] = useState(false);
 
+    const handleStartTrial = async () => {
+        setLoading(true);
+        try {
+            await api.post('/subscriptions/start-trial');
+            window.location.href = '/owner/add-mess';
+        } catch (err) {
+            console.error('Failed to start trial:', err);
+            alert('Failed to start trial. Please try again or contact support.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const handleSubscribe = async () => {
         setLoading(true);
         try {
@@ -145,6 +158,16 @@ const SubscribePage: React.FC = () => {
                                     >
                                         {loading ? <Loader2 className="animate-spin" /> : <>Subcribe Now <ArrowRight size={18} /></>}
                                     </Button>
+
+                                    <Button
+                                        onClick={handleStartTrial}
+                                        disabled={loading}
+                                        variant="outline"
+                                        className="w-full h-16 border-white/10 hover:bg-white/5 text-white/50 font-black uppercase tracking-[0.2em] text-[10px] rounded-2xl flex items-center justify-center gap-4 transition-all"
+                                    >
+                                        {loading ? <Loader2 className="animate-spin" size={14} /> : <>Claim Free Trial</>}
+                                    </Button>
+
                                     <div className="flex items-center justify-center gap-3 text-white/20">
                                         <Shield size={14} />
                                         <span className="text-[10px] font-bold uppercase tracking-widest">Secure Payment via Razorpay</span>

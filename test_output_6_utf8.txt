@@ -1,0 +1,84 @@
+﻿
+Running 1 test using 1 worker
+
+TEST: Navigating to registration page
+BROWSER: [vite] connecting...
+BROWSER: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+BROWSER: ≡ƒîÉ i18next is maintained with support from Locize ΓÇö consider powering your project with managed localization (AI, CDN, integrations): https://locize.com ≡ƒÆÖ
+BROWSER: ≡ƒÜÇ API_BASE_URL: http://localhost:5000/api
+BROWSER: ≡ƒôí Axios matches Base URL: http://localhost:5000/api
+BROWSER: [vite] connected.
+BROWSER: Unrecognized feature: 'web-share'.
+TEST: Clicking register button
+MOCK: Intercepted registration call
+TEST: Waiting for dashboard redirection
+MOCK: Intercepted favorites call
+TEST: Reached dashboard
+TEST: Navigating to add-mess page
+BROWSER: Unrecognized feature: 'web-share'.
+BROWSER: [vite] connecting...
+BROWSER: [vite] connected.
+BROWSER: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+BROWSER: ≡ƒîÉ i18next is maintained with support from Locize ΓÇö consider powering your project with managed localization (AI, CDN, integrations): https://locize.com ≡ƒÆÖ
+BROWSER: ≡ƒÜÇ API_BASE_URL: http://localhost:5000/api
+BROWSER: ≡ƒôí Axios matches Base URL: http://localhost:5000/api
+MOCK: Intercepted favorites call
+MOCK: Intercepted favorites call
+MOCK: Default success for GET http://localhost:5000/api/notifications
+MOCK: Intercepted subscription status check
+MOCK: Intercepted subscription status check
+MOCK: Default success for GET http://localhost:5000/api/notifications
+MOCK: Intercepted subscription status check
+MOCK: Intercepted subscription status check
+BROWSER: Failed to fetch notifications TypeError: response.data.data.filter is not a function
+    at http://localhost:5173/src/app/components/NotificationCenter.tsx:16:41
+    at async loadNotifications (http://localhost:5173/src/app/components/NotificationCenter.tsx:25:9)
+BROWSER: Failed to fetch notifications TypeError: response.data.data.filter is not a function
+    at http://localhost:5173/src/app/components/NotificationCenter.tsx:16:41
+    at async loadNotifications (http://localhost:5173/src/app/components/NotificationCenter.tsx:25:9)
+TEST: Current URL: http://localhost:5173/owner/add-mess
+TEST: Filling add-mess form
+TEST: Uploading image
+TEST: Submitting form
+BROWSER: Registration failed: Error: Invalid site key or not loaded in api.js: 6Ld48lssAAAAACSSpuDv2_NC8bNqQBol2lpFpsM7
+    at Array.<anonymous> (https://www.gstatic.com/recaptcha/releases/QvLuXwupqtKCyjBw2xIzFLIf/recaptcha__en.js:430:293)
+    at https://www.gstatic.com/recaptcha/releases/QvLuXwupqtKCyjBw2xIzFLIf/recaptcha__en.js:419:330
+    at http://localhost:5173/node_modules/.vite/deps/react-google-recaptcha-v3.js?v=4ff98194:163:14
+    at handleSubmit (http://localhost:5173/src/app/pages/AddMessPage.tsx:119:36)
+    at executeDispatch (http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=4ff98194:13622:11)
+    at runWithFiberInDEV (http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=4ff98194:997:72)
+    at processDispatchQueue (http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=4ff98194:13658:37)
+    at http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=4ff98194:14071:11
+    at batchedUpdates$1 (http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=4ff98194:2626:42)
+    at dispatchEventForPluginEventSystem (http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=4ff98194:13763:9)
+TEST: Verifying success message
+  Γ£ÿ  1 [chromium] ΓÇ║ e2e\add-mess.test.ts:4:7 ΓÇ║ Add Mess Functionality (Mocked) ΓÇ║ should allow an owner to add a new mess (17.8s)
+
+
+  1) [chromium] ΓÇ║ e2e\add-mess.test.ts:4:7 ΓÇ║ Add Mess Functionality (Mocked) ΓÇ║ should allow an owner to add a new mess 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: locator('text=Mess Registered!')
+    Expected: visible
+    Timeout: 10000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 10000ms[22m
+    [2m  - waiting for locator('text=Mess Registered!')[22m
+
+
+      153 |     // 6. Verify Success
+      154 |     console.log('TEST: Verifying success message');
+    > 155 |     await expect(page.locator('text=Mess Registered!')).toBeVisible({ timeout: 10000 });
+          |                                                         ^
+      156 |     
+      157 |     // 7. Verify Redirection
+      158 |     console.log('TEST: Waiting for final redirection to /find-mess');
+        at C:\Users\Admin\.gemini\antigravity\playground\sonic-pinwheel\messwalha\e2e\add-mess.test.ts:155:57
+
+    Error Context: test-results\add-mess-Add-Mess-Function-53408--an-owner-to-add-a-new-mess-chromium\error-context.md
+
+  1 failed
+    [chromium] ΓÇ║ e2e\add-mess.test.ts:4:7 ΓÇ║ Add Mess Functionality (Mocked) ΓÇ║ should allow an owner to add a new mess 

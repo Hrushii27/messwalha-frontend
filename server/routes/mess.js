@@ -103,10 +103,11 @@ router.get('/my', async (req, res) => {
             return res.status(401).json({ message: 'Unauthorized' });
         }
         const messes = await Mess.findByOwnerId(req.user.id);
-        res.json({ data: messes[0] || null }); // Return first mess or null
+        const mess = Array.isArray(messes) && messes.length > 0 ? messes[0] : null;
+        res.json({ data: mess }); 
     } catch (err) {
         console.error('Error fetching owner mess:', err);
-        res.status(500).json({ message: 'Error fetching mess details' });
+        res.status(500).json({ message: 'Error fetching mess details: ' + err.message });
     }
 });
 

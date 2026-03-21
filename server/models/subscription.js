@@ -2,6 +2,10 @@ const db = require('../config/db');
 
 const Subscription = {
     createTrial: async (ownerId) => {
+        // Check for existing trial
+        const existingSub = await Subscription.findByOwnerId(ownerId);
+        if (existingSub) return existingSub;
+
         const trialStart = new Date();
         const trialEnd = new Date();
         trialEnd.setDate(trialEnd.getDate() + 60);

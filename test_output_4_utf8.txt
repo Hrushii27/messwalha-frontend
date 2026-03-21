@@ -1,0 +1,91 @@
+﻿
+Running 1 test using 1 worker
+
+TEST: Navigating to registration page
+BROWSER: [vite] connecting...
+BROWSER: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+BROWSER: ≡ƒîÉ i18next is maintained with support from Locize ΓÇö consider powering your project with managed localization (AI, CDN, integrations): https://locize.com ≡ƒÆÖ
+BROWSER: ≡ƒÜÇ API_BASE_URL: http://localhost:5000/api
+BROWSER: ≡ƒôí Axios matches Base URL: http://localhost:5000/api
+BROWSER: [vite] connected.
+BROWSER: Unrecognized feature: 'web-share'.
+TEST: Clicking register button
+MOCK: Intercepted registration call
+TEST: Waiting for dashboard redirection
+TEST: Reached dashboard
+TEST: token in localStorage: fake-jwt-token
+TEST: user in localStorage: {"id":1,"name":"Test Owner","role":"OWNER","email":"testowner@example.com"}
+TEST: Navigating to add-mess page
+BROWSER: Unrecognized feature: 'web-share'.
+BROWSER: [vite] connecting...
+BROWSER: [vite] connected.
+BROWSER: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+BROWSER: ≡ƒîÉ i18next is maintained with support from Locize ΓÇö consider powering your project with managed localization (AI, CDN, integrations): https://locize.com ≡ƒÆÖ
+BROWSER: ≡ƒÜÇ API_BASE_URL: http://localhost:5000/api
+BROWSER: ≡ƒôí Axios matches Base URL: http://localhost:5000/api
+BROWSER: Failed to load resource: the server responded with a status of 401 (Unauthorized)
+BROWSER: ≡ƒôí API Error [401]: Unauthorized
+BROWSER: Error fetching favorites: AxiosError: Request failed with status code 401
+    at settle (http://localhost:5173/node_modules/.vite/deps/axios.js?v=4ff98194:1319:7)
+    at XMLHttpRequest.onloadend (http://localhost:5173/node_modules/.vite/deps/axios.js?v=4ff98194:1682:7)
+    at Axios.request (http://localhost:5173/node_modules/.vite/deps/axios.js?v=4ff98194:2328:41)
+    at async fetchFavorites (http://localhost:5173/src/app/context/FavoritesContext.tsx:20:26)
+BROWSER: Failed to load resource: the server responded with a status of 401 (Unauthorized)
+BROWSER: ≡ƒôí API Error [401]: Unauthorized
+BROWSER: Error fetching favorites: AxiosError: Request failed with status code 401
+    at settle (http://localhost:5173/node_modules/.vite/deps/axios.js?v=4ff98194:1319:7)
+    at XMLHttpRequest.onloadend (http://localhost:5173/node_modules/.vite/deps/axios.js?v=4ff98194:1682:7)
+    at Axios.request (http://localhost:5173/node_modules/.vite/deps/axios.js?v=4ff98194:2328:41)
+    at async fetchFavorites (http://localhost:5173/src/app/context/FavoritesContext.tsx:20:26)
+BROWSER: Unrecognized feature: 'web-share'.
+BROWSER: [vite] connecting...
+BROWSER: [vite] connected.
+BROWSER: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+BROWSER: ≡ƒîÉ i18next is maintained with support from Locize ΓÇö consider powering your project with managed localization (AI, CDN, integrations): https://locize.com ≡ƒÆÖ
+BROWSER: ≡ƒÜÇ API_BASE_URL: http://localhost:5000/api
+BROWSER: ≡ƒôí Axios matches Base URL: http://localhost:5000/api
+BROWSER: [GSI_LOGGER]: Provided button width is invalid: 100%
+TEST: Current URL: http://localhost:5173/login
+node.exe : TEST FAIL: 
+Redirected to login page!
+At line:1 char:1
++ & "C:\Program 
+Files\nodejs/node.exe" 
+"C:\Program 
+Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
+    + CategoryInfo         
+     : NotSpecified: (TES  
+  T FAIL: Redirected to    
+ login page!:String) []    
+, RemoteException
+    + FullyQualifiedErrorI 
+   d : NativeCommandError
+ 
+TEST: localStorage token on redirect: null
+TEST: Filling add-mess form
+  Γ£ÿ  1 [chromium] ΓÇ║ e2e\add-mess.test.ts:4:7 ΓÇ║ Add Mess Functionality (Mocked) ΓÇ║ should allow an owner to add a new mess (15.9s)
+
+
+  1) [chromium] ΓÇ║ e2e\add-mess.test.ts:4:7 ΓÇ║ Add Mess Functionality (Mocked) ΓÇ║ should allow an owner to add a new mess 
+
+    TimeoutError: locator.waitFor: Timeout 10000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('input[name="messName"]') to be visible[22m
+
+
+      103 |     // 3. Fill Add Mess form
+      104 |     console.log('TEST: Filling add-mess form');
+    > 105 |     await page.locator('input[name="messName"]').waitFor({ state: 'visible', timeout: 10000 });
+          |                                                  ^
+      106 |     await page.fill('input[name="messName"]', 'Test Mess 123');
+      107 |     await page.fill('input[name="ownerName"]', 'Test Owner');
+      108 |     await page.fill('input[name="mobile"]', '1234567890');
+        at C:\Users\Admin\.gemini\antigravity\playground\sonic-pinwheel\messwalha\e2e\add-mess.test.ts:105:50
+
+    Error Context: test-results\add-mess-Add-Mess-Function-53408--an-owner-to-add-a-new-mess-chromium\error-context.md
+
+  1 failed
+    [chromium] ΓÇ║ e2e\add-mess.test.ts:4:7 ΓÇ║ Add Mess Functionality (Mocked) ΓÇ║ should allow an owner to add a new mess 

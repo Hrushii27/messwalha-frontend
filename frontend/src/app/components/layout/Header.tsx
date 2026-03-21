@@ -90,7 +90,7 @@ export const Header: React.FC = () => {
                         <Link key={link.path} to={link.path} className="text-[10px] font-bold uppercase tracking-[0.2em] text-text-secondary hover:text-primary-500 transition-all">{link.label}</Link>
                     ))}
                     {user?.role === 'OWNER' && (
-                        <Link to="/owner-dashboard" className="text-[10px] font-bold uppercase tracking-[0.2em] text-text-secondary hover:text-primary-500 transition-all">Dashboard</Link>
+                        <Link to="/owner/dashboard" className="text-[10px] font-bold uppercase tracking-[0.2em] text-text-secondary hover:text-primary-500 transition-all">Dashboard</Link>
                     )}
                 </nav>
 
@@ -170,7 +170,7 @@ export const Header: React.FC = () => {
                                             <div className="px-4 space-y-1">
                                                 {[
                                                     { label: 'Profile', path: '/profile', icon: UserIcon },
-                                                    ...(user?.role === 'OWNER' ? [{ label: 'Dashboard', path: '/owner-dashboard', icon: Utensils }] : []),
+                                                    ...(user?.role === 'OWNER' ? [{ label: 'Dashboard', path: '/owner/dashboard', icon: Utensils }] : []),
                                                     { label: 'Subscriptions', path: '/subscriptions', icon: Utensils },
                                                     { label: 'Settings', path: '/profile', icon: Languages },
                                                 ].map((item) => (

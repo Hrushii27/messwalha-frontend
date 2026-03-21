@@ -1,0 +1,28 @@
+﻿
+Running 1 test using 1 worker
+
+  Γ£ÿ  1 [chromium] ΓÇ║ e2e\add-mess.test.ts:4:7 ΓÇ║ Add Mess Functionality (Mocked) ΓÇ║ should allow an owner to add a new mess (30.1s)
+
+
+  1) [chromium] ΓÇ║ e2e\add-mess.test.ts:4:7 ΓÇ║ Add Mess Functionality (Mocked) ΓÇ║ should allow an owner to add a new mess 
+
+    [31mTest timeout of 30000ms exceeded.[39m
+
+    Error: page.fill: Test timeout of 30000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('input[name="messName"]')[22m
+
+
+      74 |
+      75 |     // 3. Fill Add Mess form
+    > 76 |     await page.fill('input[name="messName"]', 'Test Mess 123');
+         |                ^
+      77 |     await page.fill('input[name="ownerName"]', 'Test Owner');
+      78 |     await page.fill('input[name="mobile"]', '1234567890');
+      79 |     await page.fill('input[name="address"]', 'Test Address, Pune');
+        at C:\Users\Admin\.gemini\antigravity\playground\sonic-pinwheel\messwalha\e2e\add-mess.test.ts:76:16
+
+    Error Context: test-results\add-mess-Add-Mess-Function-53408--an-owner-to-add-a-new-mess-chromium\error-context.md
+
+  1 failed
+    [chromium] ΓÇ║ e2e\add-mess.test.ts:4:7 ΓÇ║ Add Mess Functionality (Mocked) ΓÇ║ should allow an owner to add a new mess 

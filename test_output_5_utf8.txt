@@ -1,0 +1,9 @@
+﻿
+Running 1 test using 1 worker
+
+TEST: Navigating to registration page
+MOCK: Default success for GET http://localhost:5173/src/app/api/axiosInstance.ts
+BROWSER: Failed to load module script: Expected a JavaScript-or-Wasm module script but the server responded with a MIME type of "application/json". Strict MIME type checking is enforced for module scripts per HTML spec.
+BROWSER: [vite] connecting...
+BROWSER: [vite] connected.
+BROWSER: Unrecognized feature: 'web-share'.

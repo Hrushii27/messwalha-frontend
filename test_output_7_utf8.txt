@@ -1,0 +1,73 @@
+﻿
+Running 1 test using 1 worker
+
+TEST: Navigating to registration page
+BROWSER: [vite] connecting...
+BROWSER: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+BROWSER: ≡ƒîÉ i18next is maintained with support from Locize ΓÇö consider powering your project with managed localization (AI, CDN, integrations): https://locize.com ≡ƒÆÖ
+BROWSER: ≡ƒÜÇ API_BASE_URL: http://localhost:5000/api
+BROWSER: ≡ƒôí Axios matches Base URL: http://localhost:5000/api
+BROWSER: [vite] connected.
+BROWSER: Unrecognized feature: 'web-share'.
+TEST: Clicking register button
+MOCK: Intercepted registration call
+TEST: Waiting for dashboard redirection
+TEST: Reached dashboard
+TEST: Navigating to add-mess page
+MOCK: Intercepted favorites call
+BROWSER: [vite] connecting...
+BROWSER: Unrecognized feature: 'web-share'.
+BROWSER: [vite] connected.
+BROWSER: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+BROWSER: ≡ƒîÉ i18next is maintained with support from Locize ΓÇö consider powering your project with managed localization (AI, CDN, integrations): https://locize.com ≡ƒÆÖ
+BROWSER: ≡ƒÜÇ API_BASE_URL: http://localhost:5000/api
+BROWSER: ≡ƒôí Axios matches Base URL: http://localhost:5000/api
+MOCK: Intercepted favorites call
+MOCK: Intercepted favorites call
+MOCK: Default success for GET http://localhost:5000/api/notifications
+MOCK: Intercepted subscription status check
+MOCK: Intercepted subscription status check
+MOCK: Default success for GET http://localhost:5000/api/notifications
+MOCK: Intercepted subscription status check
+MOCK: Intercepted subscription status check
+BROWSER: Failed to fetch notifications TypeError: response.data.data.filter is not a function
+    at http://localhost:5173/src/app/components/NotificationCenter.tsx:16:41
+    at async loadNotifications (http://localhost:5173/src/app/components/NotificationCenter.tsx:25:9)
+BROWSER: Failed to fetch notifications TypeError: response.data.data.filter is not a function
+    at http://localhost:5173/src/app/components/NotificationCenter.tsx:16:41
+    at async loadNotifications (http://localhost:5173/src/app/components/NotificationCenter.tsx:25:9)
+TEST: Current URL: http://localhost:5173/owner/add-mess
+TEST: Filling add-mess form
+TEST: Uploading image
+TEST: Submitting form
+BROWSER: reCAPTCHA failed, using bypass token for local development: Error: Invalid site key or not loaded in api.js: 6Ld48lssAAAAACSSpuDv2_NC8bNqQBol2lpFpsM7
+    at Array.<anonymous> (https://www.gstatic.com/recaptcha/releases/qm3PSRIx10pekcnS9DjGnjPW/recaptcha__en.js:735:385)
+    at https://www.gstatic.com/recaptcha/releases/qm3PSRIx10pekcnS9DjGnjPW/recaptcha__en.js:757:149
+    at http://localhost:5173/node_modules/.vite/deps/react-google-recaptcha-v3.js?v=4ff98194:163:14
+    at handleSubmit (http://localhost:5173/src/app/pages/AddMessPage.tsx:121:32)
+    at executeDispatch (http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=4ff98194:13622:11)
+    at runWithFiberInDEV (http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=4ff98194:997:72)
+    at processDispatchQueue (http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=4ff98194:13658:37)
+    at http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=4ff98194:14071:11
+    at batchedUpdates$1 (http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=4ff98194:2626:42)
+    at dispatchEventForPluginEventSystem (http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=4ff98194:13763:9)
+MOCK: Intercepted messes call [POST]
+TEST: Verifying success message
+TEST: Waiting for final redirection to /find-mess
+MOCK: Default success for GET http://localhost:5000/api/notifications
+MOCK: Intercepted subscription status check
+MOCK: Intercepted messes call [GET]
+MOCK: Default success for GET http://localhost:5000/api/notifications
+MOCK: Intercepted subscription status check
+MOCK: Intercepted messes call [GET]
+BROWSER: Failed to fetch notifications TypeError: response.data.data.filter is not a function
+    at http://localhost:5173/src/app/components/NotificationCenter.tsx:16:41
+    at async loadNotifications (http://localhost:5173/src/app/components/NotificationCenter.tsx:25:9)
+BROWSER: Failed to fetch notifications TypeError: response.data.data.filter is not a function
+    at http://localhost:5173/src/app/components/NotificationCenter.tsx:16:41
+    at async loadNotifications (http://localhost:5173/src/app/components/NotificationCenter.tsx:25:9)
+TEST: Verifying mess appears in list
+TEST: All steps completed successfully
+  Γ£ô  1 [chromium] ΓÇ║ e2e\add-mess.test.ts:4:7 ΓÇ║ Add Mess Functionality (Mocked) ΓÇ║ should allow an owner to add a new mess (9.9s)
+
+  1 passed (18.0s)

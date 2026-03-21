@@ -23,6 +23,17 @@ const subscriptionController = {
         }
     },
 
+    getSubscribers: async (req, res) => {
+        try {
+            // This is a stub for now as student subscriptions aren't fully in DB yet
+            res.json({ success: true, data: [] });
+        } catch (err) {
+            console.error('Error fetching subscribers:', err);
+            res.status(500).json({ message: 'Error fetching subscribers' });
+        }
+    },
+
+
     getSubscriptions: async (req, res) => {
         try {
             const sub = await Subscription.findByOwnerId(req.user.id);
@@ -99,6 +110,18 @@ const subscriptionController = {
              res.json({ status: 'ok' });
         } else {
              res.status(400).send('Invalid signature');
+        }
+    },
+
+    startTrial: async (req, res) => {
+        try {
+            if (!req.user) return res.status(401).json({ message: 'Unauthorized' });
+            
+            const trial = await Subscription.createTrial(req.user.id);
+            res.json({ success: true, message: 'Free trial started', data: trial });
+        } catch (err) {
+            console.error('Error starting free trial:', err);
+            res.status(500).json({ message: 'Error starting free trial' });
         }
     }
 };

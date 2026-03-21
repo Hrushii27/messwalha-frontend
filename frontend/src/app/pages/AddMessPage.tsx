@@ -40,9 +40,12 @@ const AddMessPage: React.FC = () => {
                     const status = res.data.data.status;
                     // Check if trial/active date is actually valid
                     const now = new Date();
-                    const end = status === 'trial' ? new Date(res.data.data.trial_end) : new Date(res.data.data.subscription_end);
+                    // Fix: Use next_billing_date for paid subs, and handle trial_end_date fallback
+                    const endDate = status === 'trial' 
+                        ? (res.data.data.trial_end || res.data.data.trial_end_date)
+                        : (res.data.data.next_billing_date || res.data.data.subscription_end);
 
-                    if (end < now) {
+                    if (endDate && new Date(endDate) < now) {
                         setSubStatus('expired');
                     } else {
                         setSubStatus(status);
@@ -127,8 +130,22 @@ const AddMessPage: React.FC = () => {
             return;
         }
 
+        let recaptchaToken = 'bypassed_token';
         try {
-            const recaptchaToken = await executeRecaptcha('add_mess');
+            if (executeRecaptcha) {
+                recaptchaToken = await executeRecaptcha('add_mess');
+            } else if (window.location.hostname !== 'localhost') {
+                throw new Error('reCAPTCHA not initialized');
+            }
+        } catch (err) {
+            console.warn('reCAPTCHA execution failed:', err);
+            if (window.location.hostname !== 'localhost') {
+                throw err; // Re-throw so it hits the main catch block on production
+            }
+            console.log('Local environment detected, using bypass token');
+        }
+
+        try {
             const data = new FormData();
             Object.entries(formData).forEach(([key, value]) => {
                 data.append(key, value);

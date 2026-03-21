@@ -37,6 +37,7 @@
     "xss-clean": "^0.1.4"
   },
   "devDependencies": {
+    "@playwright/test": "^1.58.2",
     "@types/bcrypt": "^6.0.0",
     "@types/compression": "^1.8.1",
     "@types/cors": "^2.8.19",
