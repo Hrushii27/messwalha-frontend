@@ -1,18 +1,23 @@
 const db = require('../config/db');
 
-const mapMessFields = (mess) => {
+function mapMessFields(mess) {
     if (!mess) return null;
-    return {
-        ...mess,
-        monthlyPrice: mess.monthly_price ? parseFloat(mess.monthly_price) : 0,
-        imageUrl: mess.image_url,
-        isActive: mess.is_active,
-        vegNonVeg: mess.veg_nonveg,
-        collegeTags: mess.college_tags,
-        upiId: mess.upi_id,
-        // Preserve other fields
-    };
-};
+    try {
+        return {
+            ...mess,
+            monthlyPrice: mess.monthly_price ? parseFloat(mess.monthly_price) : 0,
+            imageUrl: mess.image_url,
+            isActive: mess.is_active,
+            vegNonVeg: mess.veg_nonveg,
+            collegeTags: mess.college_tags,
+            upiId: mess.upi_id,
+            // Preserve other fields
+        };
+    } catch (err) {
+        console.error('Error in mapMessFields:', err);
+        return mess;
+    }
+}
 
 const Mess = {
     create: async (ownerId, name, address, monthlyPrice, description = '', cuisine = 'Indian', city = '', vegNonveg = 'Both', collegeTags = '', upiId = null, imageUrl = null) => {
@@ -48,8 +53,13 @@ const Mess = {
         return mapMessFields(result.rows[0]);
     },
     findByOwnerId: async (ownerId) => {
-        const result = await db.query('SELECT * FROM mess_listings WHERE mess_owner_id = $1 LIMIT 1', [ownerId]);
-        return mapMessFields(result.rows[0]);
+        try {
+            const result = await db.query('SELECT * FROM mess_listings WHERE mess_owner_id = $1 LIMIT 1', [ownerId]);
+            return mapMessFields(result.rows[0]);
+        } catch (err) {
+            console.error('Error in findByOwnerId:', err);
+            throw err;
+        }
     },
     updateVisibility: async (ownerId, isActive) => {
         const result = await db.query(
@@ -73,13 +83,18 @@ const Mess = {
         return result.rows.map(mapMessFields);
     },
     findById: async (id) => {
-        const result = await db.query(`
-            SELECT ml.*, mo.name as "ownerName", mo.phone as "mobile"
-            FROM mess_listings ml
-            LEFT JOIN mess_owners mo ON ml.mess_owner_id = mo.id
-            WHERE ml.id = $1
-        `, [id]);
-        return mapMessFields(result.rows[0]);
+        try {
+            const result = await db.query(`
+                SELECT ml.*, mo.name as "ownerName", mo.phone as "mobile"
+                FROM mess_listings ml
+                LEFT JOIN mess_owners mo ON ml.mess_owner_id = mo.id
+                WHERE ml.id = $1
+            `, [id]);
+            return mapMessFields(result.rows[0]);
+        } catch (err) {
+            console.error('Error in findById:', err);
+            throw err;
+        }
     },
     findAllPending: async () => {
         const result = await db.query(`
