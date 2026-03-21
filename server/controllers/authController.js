@@ -21,12 +21,6 @@ const authController = {
             return res.status(400).json({ status: 'ERROR', errors: errors.array() });
         }
 
-        // 2. Verify reCAPTCHA
-        const isHuman = await verifyRecaptcha(recaptchaToken);
-        if (!isHuman && process.env.NODE_ENV === 'production') {
-            return res.status(403).json({ status: 'ERROR', message: 'reCAPTCHA verification failed' });
-        }
-
         console.log(`📝 Attempting registration for: ${email}, role: ${role || 'STUDENT'}`);
         try {
             // Check if user exists by email
@@ -143,12 +137,6 @@ const authController = {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({ status: 'ERROR', errors: errors.array() });
-        }
-
-        // 2. Verify reCAPTCHA
-        const isHuman = await verifyRecaptcha(recaptchaToken);
-        if (!isHuman && process.env.NODE_ENV === 'production') {
-            return res.status(403).json({ status: 'ERROR', message: 'reCAPTCHA verification failed' });
         }
 
         console.log(`🔑 Login attempt for: ${email}`);
