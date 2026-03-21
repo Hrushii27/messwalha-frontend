@@ -69,6 +69,14 @@ router.post('/', upload.fields([
             return res.status(403).json({ message: 'Subscription expired or inactive. Please pay ₹599 to activate.' });
         }
 
+        // Single Mess Check: One owner, one mess
+        const existing = await Mess.findByOwnerId(ownerId);
+        if (existing) {
+            return res.status(400).json({ 
+                message: "You have already registered a mess. You can edit it instead from your dashboard." 
+            });
+        }
+
         // Using fallbacks or renaming for model compatibility
         const name = messName;
         const monthlyPrice = pricePerMonth;
@@ -106,8 +114,8 @@ router.get('/my', async (req, res) => {
         if (!req.user) {
             return res.status(401).json({ message: 'Unauthorized' });
         }
-        const messes = await Mess.findByOwnerId(req.user.id);
-        res.json({ data: messes }); 
+        const mess = await Mess.findByOwnerId(req.user.id);
+        res.json({ data: mess }); 
     } catch (err) {
         console.error('Error fetching owner mess:', err);
         res.status(500).json({ message: 'Error fetching mess details: ' + err.message });
@@ -126,12 +134,7 @@ router.put('/my', async (req, res) => {
             return res.status(403).json({ message: 'Subscription expired or inactive. Please renew to update your mess.' });
         }
 
-        const { id, ...updateData } = req.body;
-        if (!id) {
-            return res.status(400).json({ message: 'Mess ID is required for update' });
-        }
-
-        const updatedMess = await Mess.update(id, req.user.id, updateData);
+        const updatedMess = await Mess.update(req.user.id, req.body);
         res.json({ success: true, data: updatedMess });
     } catch (err) {
         console.error('Error updating owner mess:', err);

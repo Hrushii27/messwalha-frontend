@@ -25,23 +25,27 @@ import { useEffect } from 'react';
 
 const AddMessPage: React.FC = () => {
     const navigate = useNavigate();
-    const [loading, setLoading] = useState(false);
+    const [hasMess, setHasMess] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [subStatus, setSubStatus] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        const checkSub = async () => {
+        const checkStatus = async () => {
             try {
-                const res = await api.get('/subscriptions/status');
-                if (res.data.data) {
-                    const status = res.data.data.status;
-                    // Check if trial/active date is actually valid
+                setLoading(true);
+                const [subRes, messRes] = await Promise.all([
+                    api.get('/subscriptions/status'),
+                    api.get('/messes/my')
+                ]);
+
+                if (subRes.data.data) {
+                    const status = subRes.data.data.status;
                     const now = new Date();
-                    // Fix: Use next_billing_date for paid subs, and handle trial_end_date fallback
                     const endDate = status === 'trial' 
-                        ? (res.data.data.trial_end || res.data.data.trial_end_date)
-                        : (res.data.data.next_billing_date || res.data.data.subscription_end);
+                        ? (subRes.data.data.trial_end || subRes.data.data.trial_end_date)
+                        : (subRes.data.data.next_billing_date || subRes.data.data.subscription_end);
 
                     if (endDate && new Date(endDate) < now) {
                         setSubStatus('expired');
@@ -51,13 +55,17 @@ const AddMessPage: React.FC = () => {
                 } else {
                     setSubStatus('none');
                 }
+
+                if (messRes.data.data) {
+                    setHasMess(true);
+                }
             } catch (err) {
-                console.error('Failed to check subscription', err);
+                console.error('Failed to check status', err);
             } finally {
-                // Done check
+                setLoading(false);
             }
         };
-        checkSub();
+        checkStatus();
     }, []);
 
     // Form State
@@ -152,6 +160,48 @@ const AddMessPage: React.FC = () => {
             setLoading(false);
         }
     };
+
+    if (loading) {
+        return (
+            <Layout>
+                <div className="min-h-[80vh] flex flex-col items-center justify-center space-y-4">
+                    <Loader2 className="w-12 h-12 text-primary-500 animate-spin" />
+                    <p className="text-text-muted font-black uppercase tracking-widest text-xs italic text-center">Checking Node Credentials...</p>
+                </div>
+            </Layout>
+        );
+    }
+
+    if (hasMess) {
+        return (
+            <Layout>
+                <div className="min-h-[80vh] flex items-center justify-center p-6">
+                    <motion.div
+                        initial={{ scale: 0.9, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        className="text-center space-y-8 p-12 bg-bg2/80 backdrop-blur-3xl rounded-[3rem] border border-white/10 shadow-3xl max-w-lg w-full"
+                    >
+                        <div className="w-24 h-24 bg-orange-500/20 rounded-full flex items-center justify-center mx-auto">
+                            <Utensils size={48} className="text-orange-500" />
+                        </div>
+                        <div className="space-y-4">
+                            <h2 className="text-3xl font-black italic tracking-tighter text-text-primary uppercase">Registration Blocked</h2>
+                            <p className="text-text-muted font-black uppercase tracking-widest text-[10px] italic leading-relaxed">
+                                You have already registered a mess service on this network. <br />
+                                Each owner is restricted to one active node.
+                            </p>
+                        </div>
+                        <Button 
+                            onClick={() => navigate('/owner/dashboard')}
+                            className="w-full py-6 rounded-2xl font-black uppercase tracking-widest text-xs italic"
+                        >
+                            Go to Dashboard to Edit
+                        </Button>
+                    </motion.div>
+                </div>
+            </Layout>
+        );
+    }
 
     if (success) {
         return (

@@ -8,7 +8,7 @@ const Mess = {
         );
         return result.rows[0];
     },
-    update: async (messId, ownerId, data) => {
+    update: async (ownerId, data) => {
         const { name, address, description, cuisine, city, veg_nonveg, college_tags, status } = data;
         let query = `UPDATE mess_listings SET name = $1, address = $2, description = $3, cuisine = $4, city = $5, veg_nonveg = $6, college_tags = $7`;
         const values = [name, address, description, cuisine, city, veg_nonveg, college_tags];
@@ -16,11 +16,11 @@ const Mess = {
         if (status) {
             query += `, status = $8`;
             values.push(status);
-            query += ` WHERE id = $9 AND mess_owner_id = $10 RETURNING *`;
-            values.push(messId, ownerId);
+            query += ` WHERE mess_owner_id = $9 RETURNING *`;
+            values.push(ownerId);
         } else {
-            query += ` WHERE id = $8 AND mess_owner_id = $9 RETURNING *`;
-            values.push(messId, ownerId);
+            query += ` WHERE mess_owner_id = $8 RETURNING *`;
+            values.push(ownerId);
         }
 
         const result = await db.query(query, values);
@@ -39,16 +39,16 @@ const Mess = {
                 status, upi_id as "upiId"
             FROM mess_listings 
             WHERE mess_owner_id = $1
-            ORDER BY created_at DESC
+            LIMIT 1
         `, [ownerId]);
-        return result.rows;
+        return result.rows[0];
     },
-    updateVisibility: async (messId, ownerId, isActive) => {
+    updateVisibility: async (ownerId, isActive) => {
         const result = await db.query(
-            'UPDATE mess_listings SET is_active = $1 WHERE id = $2 AND mess_owner_id = $3 RETURNING *',
-            [isActive, messId, ownerId]
+            'UPDATE mess_listings SET is_active = $1 WHERE mess_owner_id = $2 RETURNING *',
+            [isActive, ownerId]
         );
-        return result.rows;
+        return result.rows[0];
     },
     findByNameAndOwner: async (name, ownerId) => {
         const result = await db.query(

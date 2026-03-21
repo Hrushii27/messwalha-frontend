@@ -130,6 +130,20 @@ const createTables = async () => {
         IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='mess_listings' AND column_name='upi_id') THEN
             ALTER TABLE mess_listings ADD COLUMN upi_id VARCHAR(100);
         END IF;
+
+        -- Ensure unique mess per owner
+        IF NOT EXISTS (
+            SELECT 1 FROM information_schema.table_constraints 
+            WHERE table_name='mess_listings' AND constraint_type='UNIQUE' 
+            AND constraint_name='unique_owner_mess'
+        ) THEN
+            -- Note: This might fail if duplicates already exist.
+            BEGIN
+                ALTER TABLE mess_listings ADD CONSTRAINT unique_owner_mess UNIQUE (mess_owner_id);
+            EXCEPTION WHEN OTHERS THEN
+                RAISE NOTICE 'Could not add unique_owner_mess constraint, possibly due to existing duplicates.';
+            END;
+        END IF;
     END $$;
     `;
 
