@@ -7,7 +7,6 @@ import { useAppDispatch } from '../../hooks/redux';
 import { setCredentials } from '../../store/slices/authSlice';
 import api from '../api/axiosInstance';
 import { toast } from 'react-hot-toast';
-import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 import Seo from '../components/common/Seo';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -34,7 +33,6 @@ const RegisterPage: React.FC = () => {
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [touched, setTouched] = useState<Record<string, boolean>>({});
     const [isLoading, setIsLoading] = useState(false);
-    const { executeRecaptcha } = useGoogleReCaptcha();
 
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
@@ -170,14 +168,7 @@ const RegisterPage: React.FC = () => {
 
         setIsLoading(true);
 
-        let recaptchaToken = '';
-        try {
-            if (executeRecaptcha) {
-                recaptchaToken = await executeRecaptcha('signup');
-            }
-        } catch (reError) {
-            console.error('reCAPTCHA execution failed:', reError);
-        }
+        const recaptchaToken = 'off';
 
         try {
             let response;

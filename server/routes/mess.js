@@ -46,13 +46,6 @@ router.post('/', messValidation, validateRequest, async (req, res) => {
             return res.status(401).json({ message: 'Unauthorized. Please login again.' });
         }
 
-        const { recaptchaToken } = req.body;
-        const { verifyRecaptcha } = require('../utils/securityUtils');
-        const isHuman = await verifyRecaptcha(recaptchaToken);
-        
-        if (!isHuman && process.env.NODE_ENV === 'production') {
-            return res.status(403).json({ message: 'reCAPTCHA verification failed. Please try again.' });
-        }
 
         // Map frontend fields (FormData) to backend expectations
         const {

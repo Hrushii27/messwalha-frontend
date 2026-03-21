@@ -6,7 +6,6 @@ const crypto = require('crypto');
 const { sendResetPasswordEmail, sendOTPEmail } = require('../utils/emailService');
 const Otp = require('../models/otp');
 const { body, validationResult } = require('express-validator');
-const { verifyRecaptcha } = require('../utils/securityUtils');
 const { logSecurityEvent } = require('../middleware/activityLogger');
 
 const { OAuth2Client } = require('google-auth-library');
@@ -14,7 +13,7 @@ const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 const authController = {
     register: async (req, res) => {
-        const { name, email, phone, password, role, recaptchaToken } = req.body;
+        const { name, email, phone, password, role } = req.body;
         
         // 1. Check for Validation Errors
         const errors = validationResult(req);
@@ -77,15 +76,9 @@ const authController = {
     ownerRegister: async (req, res) => {
         const { 
             name, email, phone, password, 
-            messName, location, city, monthlyPrice,
-            recaptchaToken 
+            messName, location, city, monthlyPrice
         } = req.body;
         
-        // 1. Verify reCAPTCHA (Basic check, extend validation as needed)
-        const isHuman = await verifyRecaptcha(recaptchaToken);
-        if (!isHuman && process.env.NODE_ENV === 'production') {
-            return res.status(403).json({ status: 'ERROR', message: 'reCAPTCHA verification failed' });
-        }
 
         console.log(`📝 Attempting OWNER registration for: ${email}`);
         try {
@@ -144,7 +137,7 @@ const authController = {
         }
     },
     login: async (req, res) => {
-        const { email, password, recaptchaToken } = req.body;
+        const { email, password } = req.body;
 
         // 1. Check for Validation Errors
         const errors = validationResult(req);

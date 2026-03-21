@@ -22,11 +22,9 @@ import api from '../api/axiosInstance';
 import { useNavigate, Link } from 'react-router-dom';
 import Seo from '../components/common/Seo';
 import { useEffect } from 'react';
-import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 
 const AddMessPage: React.FC = () => {
     const navigate = useNavigate();
-    const { executeRecaptcha } = useGoogleReCaptcha();
     const [loading, setLoading] = useState(false);
     const [subStatus, setSubStatus] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
@@ -124,31 +122,8 @@ const AddMessPage: React.FC = () => {
         setLoading(true);
         setError(null);
 
-        // Only throw error if we are on production and it's definitively not ready
-        if (!executeRecaptcha && window.location.hostname !== 'localhost') {
-            setError('reCAPTCHA security check is still loading. Please wait a moment and try again.');
-            setLoading(false);
-            return;
-        }
 
-        let recaptchaToken = 'bypassed_token';
-        try {
-            if (executeRecaptcha) {
-                recaptchaToken = await executeRecaptcha('add_mess');
-            } else if (window.location.hostname === 'localhost') {
-                console.log('Local environment detected, using bypass token');
-                recaptchaToken = 'bypassed_token';
-            } else {
-                throw new Error('reCAPTCHA not ready');
-            }
-        } catch (err) {
-            console.warn('reCAPTCHA execution failed:', err);
-            if (window.location.hostname !== 'localhost') {
-                setError('Security verification failed. Please refresh and try again.');
-                setLoading(false);
-                return;
-            }
-        }
+        const recaptchaToken = 'off';
 
         try {
             const data = new FormData();

@@ -32,7 +32,6 @@ const AddMessPage = lazy(() => import('./app/pages/AddMessPage'));
 const SubscribePage = lazy(() => import('./app/pages/SubscribePage'));
 const MyReviewsPage = lazy(() => import('./app/pages/MyReviewsPage'));
 
-import { GoogleReCaptchaProvider } from 'react-google-recaptcha-v3';
 
 // Loading component for Suspense
 const PageLoader = () => (
@@ -45,14 +44,6 @@ const App: React.FC = () => {
 
   return (
     <Provider store={store}>
-      <GoogleReCaptchaProvider 
-        reCaptchaKey={import.meta.env.VITE_RECAPTCHA_SITE_KEY || "6Ld48lssAAAAACSSpuDv2_NC8bNqQBol2lpFpsM7"}
-        scriptProps={{
-          async: true,
-          defer: true,
-          appendTo: 'head',
-        }}
-      >
         <FavoritesProvider>
           <GlobalErrorBoundary>
             <Router>
@@ -92,7 +83,6 @@ const App: React.FC = () => {
             </Router>
           </GlobalErrorBoundary>
         </FavoritesProvider>
-      </GoogleReCaptchaProvider>
     </Provider>
   );
 };
