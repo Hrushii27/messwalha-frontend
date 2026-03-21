@@ -4,6 +4,7 @@ const Mess = require('../models/mess');
 const Subscription = require('../models/subscription');
 const { body } = require('express-validator');
 const { validateRequest } = require('../middleware/validation');
+const upload = require('../utils/multer');
 
 const messValidation = [
     body('messName').trim().notEmpty().escape().withMessage('Mess name is required'),
@@ -40,7 +41,10 @@ router.get('/:id', async (req, res) => {
 });
 
 // Protected CRUD for mess owners
-router.post('/', messValidation, validateRequest, async (req, res) => {
+router.post('/', upload.fields([
+    { name: 'mess_image', maxCount: 1 },
+    { name: 'menu_images', maxCount: 5 }
+]), messValidation, validateRequest, async (req, res) => {
     try {
         if (!req.user) {
             return res.status(401).json({ message: 'Unauthorized. Please login again.' });
@@ -70,6 +74,12 @@ router.post('/', messValidation, validateRequest, async (req, res) => {
         const monthlyPrice = pricePerMonth;
         const description = menuText || '';
 
+        // Use the first uploaded image as the main mess image
+        let imageUrl = null;
+        if (req.files && req.files['mess_image'] && req.files['mess_image'][0]) {
+            imageUrl = `/uploads/${req.files['mess_image'][0].filename}`;
+        }
+
         const mess = await Mess.create(
             ownerId, 
             name, 
@@ -80,7 +90,8 @@ router.post('/', messValidation, validateRequest, async (req, res) => {
             req.body.city || '',
             req.body.veg_nonveg || 'Veg',
             req.body.college_tags || '',
-            req.body.upiId || null
+            req.body.upiId || null,
+            imageUrl
         );
         res.status(201).json({ success: true, data: mess });
     } catch (err) {
