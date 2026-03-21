@@ -45,8 +45,8 @@ const App: React.FC = () => {
   return (
     <Provider store={store}>
         <FavoritesProvider>
-          <GlobalErrorBoundary>
-            <Router>
+          <Router>
+            <GlobalErrorBoundary>
               <Suspense fallback={<PageLoader />}>
                 <Routes>
                   <Route path="/" element={<LandingPage />} />
@@ -80,8 +80,8 @@ const App: React.FC = () => {
                   <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
               </Suspense>
-            </Router>
-          </GlobalErrorBoundary>
+            </GlobalErrorBoundary>
+          </Router>
         </FavoritesProvider>
     </Provider>
   );

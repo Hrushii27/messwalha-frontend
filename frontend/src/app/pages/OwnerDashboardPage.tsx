@@ -245,7 +245,7 @@ const OwnerDashboardPage: React.FC = () => {
                 {[
                     { label: 'Total Revenue', value: `₹${revenue.toLocaleString()}`, trend: '+12%', icon: <TrendingUp className="text-primary-500" /> },
                     { label: 'Active Students', value: subscribers.length.toString(), trend: '+5', icon: <Users className="text-indigo-400" /> },
-                    { label: 'Avg Rating', value: mess?.rating?.toFixed(1) || '0.0', trend: 'Global', icon: <Star className="text-orange-400" /> },
+                    { label: 'Avg Rating', value: mess?.rating ? Number(mess.rating).toFixed(1) : '0.0', trend: 'Global', icon: <Star className="text-orange-400" /> },
                 ].map((stat, i) => (
                     <Card key={i} className="p-8 bg-bg2/40 backdrop-blur-3xl border-white/10 rounded-[2.5rem] hover:border-primary-500/30 transition-all group overflow-hidden relative">
                         <div className="absolute top-0 right-0 w-24 h-24 bg-primary-500/5 rounded-full blur-3xl -mr-8 -mt-8" />
@@ -581,7 +581,7 @@ const OwnerDashboardPage: React.FC = () => {
                     </div>
                     <div className="flex items-center gap-5 px-8 py-5 bg-bg3/50 rounded-2xl border border-white/10">
                         <Star size={24} className="text-orange-400 fill-orange-400" />
-                        <span className="text-white font-black text-2xl md:text-3xl italic tracking-tighter">{mess?.rating?.toFixed(1) || '0.0'}</span>
+                        <span className="text-white font-black text-2xl md:text-3xl italic tracking-tighter">{mess?.rating ? Number(mess.rating).toFixed(1) : '0.0'}</span>
                         <div className="h-8 w-px bg-white/10 mx-2" />
                         <span className="text-text-muted text-[10px] font-black uppercase tracking-widest">Overall</span>
                     </div>

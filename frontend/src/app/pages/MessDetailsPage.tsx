@@ -301,7 +301,7 @@ const MessDetailsPage: React.FC = () => {
                                         <Star key={s} size={18} fill={s <= Math.round(mess.rating || 4) ? 'currentColor' : 'none'} />
                                     ))}
                                 </div>
-                                <span className="font-black text-2xl text-white italic tracking-tighter">{(mess.rating || 4.5).toFixed(1)}</span>
+                                <span className="font-black text-2xl text-white italic tracking-tighter">{Number(mess.rating || 4.5).toFixed(1)}</span>
                                 <span className="text-text-secondary text-[10px] font-black uppercase tracking-widest ml-1">{mess.reviews?.length || 0} Units Reported</span>
                             </div>
                             <div className="h-6 w-px bg-white/10 hidden md:block" />

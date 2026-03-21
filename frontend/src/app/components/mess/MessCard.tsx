@@ -46,7 +46,7 @@ export const MessCard: React.FC<MessCardProps> = ({ mess }) => {
         setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
     };
 
-    const rating = typeof mess.rating === 'number' ? mess.rating : 0;
+    const rating = Number(mess.rating) || 0;
     const isTopRated = rating >= 4.5;
 
     return (
