@@ -226,8 +226,8 @@ const RegisterPage: React.FC = () => {
     return (
         <div className="min-h-screen bg-navy-950 flex flex-col lg:flex-row relative overflow-hidden">
             <Seo 
-                title="Join FindMess | Create Your Elite Account" 
-                description="Join the elite discovery platform for mess & tiffin services. Create your account to start discovering or listing verified services." 
+                title="Join FindMess | Create Your Account" 
+                description="Join the best platform for find mess & tiffin services. Create your account to start discovering or listing mess services." 
             />
 
             {/* Background Gradients */}
@@ -249,11 +249,11 @@ const RegisterPage: React.FC = () => {
                     <div className="space-y-12">
                         <motion.div initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.1 }} className="space-y-4">
                             <h2 className="text-4xl xl:text-5xl font-black text-white italic leading-tight tracking-tighter">
-                                Start Your Culinary <br />
-                                <span className="text-primary-500 italic">Journey Today</span>
+                                Start Looking for <br />
+                                <span className="text-primary-500 italic">Great Food Today</span>
                             </h2>
                             <p className="text-navy-300 text-lg font-medium italic">
-                                Join the network of premium mess services and hungry students.
+                                Join the best network of messes and hungry students.
                             </p>
                         </motion.div>
 
@@ -270,8 +270,8 @@ const RegisterPage: React.FC = () => {
                             />
                             <BenefitItem 
                                 icon={BarChart} 
-                                title="Full owner dashboard" 
-                                desc="Manage photos, menus, reply to reviews, and track performance metrics." 
+                                title="Owner Dashboard" 
+                                desc="Manage photos, menus, reply to reviews, and track your mess stats." 
                             />
                         </div>
                     </div>
@@ -299,7 +299,7 @@ const RegisterPage: React.FC = () => {
                     <Card className="w-full p-8 md:p-12 bg-navy-900/50 backdrop-blur-3xl border border-white/5 rounded-[2.5rem] md:rounded-[3rem] shadow-2xl relative">
                         <div className="text-center space-y-3 mb-10">
                             <h1 className="text-3xl md:text-5xl font-black text-white italic tracking-tighter">Create Account</h1>
-                            <p className="text-navy-300 font-black uppercase tracking-[0.2em] text-[10px] md:text-xs italic">Join FindMess and start your journey</p>
+                            <p className="text-navy-300 font-black uppercase tracking-[0.2em] text-[10px] md:text-xs italic">Join FindMess and find your next meal</p>
                         </div>
 
                         <div className="space-y-8">

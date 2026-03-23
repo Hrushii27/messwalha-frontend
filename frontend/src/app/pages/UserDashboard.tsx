@@ -99,10 +99,10 @@ const UserDashboard: React.FC = () => {
             <div className="space-y-6">
                 <div className="flex items-center justify-between px-2">
                     <h2 className="text-3xl font-black tracking-tighter flex items-center italic uppercase text-text-primary">
-                        <Calendar className="mr-4 text-primary-500" size={32} /> Active <span className="text-primary-500 ml-3">Nodes</span>
+                        <Calendar className="mr-4 text-primary-500" size={32} /> My <span className="text-primary-500 ml-3">Subscriptions</span>
                     </h2>
                     <Link to="/find-mess" className="text-primary-500 text-[10px] font-black uppercase tracking-[0.3em] hover:text-white transition-colors italic border border-white/5 rounded-xl px-6 py-2">
-                        Explore Matrix <ArrowRight size={14} className="ml-2 inline" />
+                        Find a Mess <ArrowRight size={14} className="ml-2 inline" />
                     </Link>
                 </div>
 
@@ -128,7 +128,7 @@ const UserDashboard: React.FC = () => {
                                 <div className="mt-8 pt-6 border-t border-white/5 flex items-center justify-between relative z-10">
                                     <div className="flex items-center text-[9px] font-black uppercase tracking-[0.2em] text-text-muted italic">
                                         <Clock size={14} className="mr-2 text-primary-500" />
-                                        Relay Expiry: {new Date(sub.expires_at).toLocaleDateString()}
+                                        Expires on: {new Date(sub.expires_at).toLocaleDateString()}
                                     </div>
                                     <Button variant="ghost" size="sm" className="text-primary-500 font-black uppercase tracking-widest text-[9px] italic hover:bg-primary-500/5 rounded-xl px-6">Manage</Button>
                                 </div>
@@ -141,9 +141,9 @@ const UserDashboard: React.FC = () => {
                         <div className="absolute inset-0 bg-primary-500/10 blur-xl group-hover:bg-primary-500/20 transition-all" />
                         <Utensils size={36} className="text-text-muted relative z-10" />
                     </div>
-                    <h3 className="text-2xl font-black mb-3 italic uppercase text-white tracking-tighter">No Active Protocols</h3>
-                    <p className="text-text-muted mb-10 max-w-xs mx-auto text-[11px] font-black uppercase tracking-widest italic leading-relaxed">System standby. No meal transmissions detected in your current grid.</p>
-                    <Button onClick={() => navigate('/find-mess')} size="lg" className="rounded-2xl px-12 py-6 shadow-2xl shadow-primary-500/20 font-black uppercase tracking-widest text-xs italic">Initiate Scan</Button>
+                    <h3 className="text-2xl font-black mb-3 italic uppercase text-white tracking-tighter">No Active Subscriptions</h3>
+                    <p className="text-text-muted mb-10 max-w-xs mx-auto text-[11px] font-black uppercase tracking-widest italic leading-relaxed">No active meal plans found in your account.</p>
+                    <Button onClick={() => navigate('/find-mess')} size="lg" className="rounded-2xl px-12 py-6 shadow-2xl shadow-primary-500/20 font-black uppercase tracking-widest text-xs italic">Find a Mess</Button>
                 </Card>
                 )}
             </div>
@@ -151,14 +151,14 @@ const UserDashboard: React.FC = () => {
             {recentlyViewed.length > 0 && (
                 <div className="space-y-8">
                     <h2 className="text-3xl font-black tracking-tighter flex items-center italic uppercase text-text-primary px-2">
-                        <Clock className="mr-4 text-primary-500" size={32} /> Recent <span className="text-primary-500 ml-3">Signals</span>
+                        <Clock className="mr-4 text-primary-500" size={32} /> Recently <span className="text-primary-500 ml-3">Viewed</span>
                     </h2>
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
                         {recentlyViewed.map((m) => (
                             <Link key={m.id} to={`/mess/${m.id}`}>
                                 <Card className="p-4 hover:border-primary-500/30 transition-all overflow-hidden rounded-[1.5rem] group border-white/5 bg-bg2/40 backdrop-blur-3xl shadow-3xl">
                                     <div className="aspect-square rounded-xl overflow-hidden mb-4 relative">
-                                        <img src={m.image} alt={m.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-80" />
+                                        <img src={getImageUrl(m.image)} alt={m.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-80" />
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                                     </div>
                                     <h4 className="font-black text-[10px] uppercase tracking-widest line-clamp-1 italic text-white group-hover:text-primary-500 transition-colors">{m.name}</h4>
@@ -178,7 +178,7 @@ const UserDashboard: React.FC = () => {
     const renderFavorites = () => (
         <div className="space-y-8">
             <h2 className="text-3xl font-black tracking-tighter flex items-center italic uppercase text-text-primary px-2">
-                <Heart className="mr-4 text-red-500" size={32} /> Pinned <span className="text-primary-500 ml-3">Outposts</span>
+                <Heart className="mr-4 text-red-500" size={32} /> My <span className="text-primary-500 ml-3">Favorites</span>
             </h2>
             {favorites.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -216,7 +216,7 @@ const UserDashboard: React.FC = () => {
             ) : (
                 <Card className="min-h-[350px] bg-bg2/40 backdrop-blur-3xl border border-white/10 rounded-[2.5rem] flex flex-col items-center justify-center text-center p-12">
                     <Heart size={64} className="mx-auto mb-8 text-text-muted opacity-20" />
-                    <p className="font-black uppercase tracking-[0.3em] text-[10px] text-text-muted italic">No pinned outposts detected</p>
+                    <p className="font-black uppercase tracking-[0.3em] text-[10px] text-text-muted italic">No favorites found</p>
                 </Card>
             )}
         </div>
@@ -225,7 +225,7 @@ const UserDashboard: React.FC = () => {
     const renderReviews = () => (
         <div className="space-y-8">
             <h2 className="text-3xl font-black tracking-tighter flex items-center italic uppercase text-text-primary px-2">
-                <MessageSquare className="mr-4 text-primary-500" size={32} /> Signal <span className="text-primary-500 ml-3">Logs</span>
+                <MessageSquare className="mr-4 text-primary-500" size={32} /> My <span className="text-primary-500 ml-3">Reviews</span>
             </h2>
             {userReviews.length > 0 ? (
                 <div className="grid grid-cols-1 gap-8">
@@ -238,7 +238,7 @@ const UserDashboard: React.FC = () => {
                                     <div className="flex items-center mt-3 space-x-4">
                                         <p className="text-[10px] font-black uppercase tracking-[0.3em] text-text-muted italic">{new Date(r.created_at).toLocaleDateString()}</p>
                                         <span className="w-1 h-1 bg-white/10 rounded-full" />
-                                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-text-muted italic">Log ID: {r.id.substring(0,8)}</p>
+                                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-text-muted italic">Review ID: {r.id.substring(0,8)}</p>
                                     </div>
                                 </div>
                                 <div className="bg-bg3/50 px-5 py-2.5 rounded-2xl text-yellow-500 font-black flex items-center text-sm border border-white/5 shadow-xl italic">
@@ -250,7 +250,7 @@ const UserDashboard: React.FC = () => {
                                 <div className="mt-8 p-8 bg-primary-500/5 rounded-[2rem] border border-primary-500/10 relative z-10">
                                     <div className="flex items-center gap-3 mb-3">
                                         <div className="w-1.5 h-1.5 bg-primary-500 rounded-full animate-pulse" />
-                                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary-500 italic">Central Response</p>
+                                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary-500 italic">Owner Response</p>
                                     </div>
                                     <p className="text-sm font-bold italic text-white/90 leading-relaxed">"{r.owner_response}"</p>
                                 </div>
@@ -261,7 +261,7 @@ const UserDashboard: React.FC = () => {
             ) : (
                 <Card className="min-h-[350px] bg-bg2/40 backdrop-blur-3xl border border-white/10 rounded-[2.5rem] flex flex-col items-center justify-center text-center p-12">
                     <MessageSquare size={64} className="mx-auto mb-8 text-text-muted opacity-20" />
-                    <p className="font-black uppercase tracking-[0.3em] text-[10px] text-text-muted italic">No signal logs transmitted</p>
+                    <p className="font-black uppercase tracking-[0.3em] text-[10px] text-text-muted italic">No reviews found</p>
                 </Card>
             )}
         </div>
@@ -270,7 +270,7 @@ const UserDashboard: React.FC = () => {
     const renderSettings = () => (
         <div className="space-y-8">
             <h2 className="text-3xl font-black tracking-tighter flex items-center italic uppercase text-text-primary px-2">
-                <Settings className="mr-4 text-primary-500" size={32} /> Command <span className="text-primary-500 ml-3">Center</span>
+                <Settings className="mr-4 text-primary-500" size={32} /> Account <span className="text-primary-500 ml-3">Settings</span>
             </h2>
             <Card className="p-12 bg-bg2/40 backdrop-blur-3xl rounded-[3rem] border-white/5 shadow-3xl">
                 <div className="space-y-10">
@@ -280,13 +280,13 @@ const UserDashboard: React.FC = () => {
                             <Input value={user.name} readOnly className="bg-bg3/50 border-white/10 rounded-2xl h-16 px-8 font-black uppercase tracking-widest text-[11px] text-white italic" />
                         </div>
                         <div className="space-y-4">
-                            <label className="text-[10px] font-black uppercase tracking-[0.3em] text-text-muted ml-4 italic">Neural Link (Email)</label>
+                            <label className="text-[10px] font-black uppercase tracking-[0.3em] text-text-muted ml-4 italic">Email Address</label>
                             <Input value={user.email} readOnly className="bg-bg3/50 border-white/10 rounded-2xl h-16 px-8 font-black uppercase tracking-widest text-[11px] text-white italic" />
                         </div>
                     </div>
                     <div className="pt-10 border-t border-white/5 flex flex-col sm:flex-row gap-6">
-                        <Button className="rounded-2xl px-12 h-16 font-black uppercase tracking-widest text-[11px] italic shadow-2xl shadow-primary-500/20 bg-primary-500 hover:bg-primary-600 text-white border-none">Sync Grid Protocols</Button>
-                        <Button variant="outline" className="rounded-2xl px-12 h-16 font-black uppercase tracking-widest text-[11px] italic border-white/10 bg-transparent text-red-500 hover:bg-red-500/5 hover:border-red-500/30" onClick={handleLogout}>Terminate Session</Button>
+                        <Button className="rounded-2xl px-12 h-16 font-black uppercase tracking-widest text-[11px] italic shadow-2xl shadow-primary-500/20 bg-primary-500 hover:bg-primary-600 text-white border-none">Save Changes</Button>
+                        <Button variant="outline" className="rounded-2xl px-12 h-16 font-black uppercase tracking-widest text-[11px] italic border-white/10 bg-transparent text-red-500 hover:bg-red-500/5 hover:border-red-500/30" onClick={handleLogout}>Logout</Button>
                     </div>
                 </div>
             </Card>
@@ -318,11 +318,11 @@ const UserDashboard: React.FC = () => {
                             <p className="text-text-muted font-black uppercase tracking-[0.2em] text-[11px] italic">{user.email}</p>
                             <div className="flex flex-wrap justify-center md:justify-start gap-3 mt-6">
                                 <span className="px-5 py-2 bg-primary-500/10 text-primary-500 text-[10px] font-black rounded-xl uppercase tracking-widest border border-primary-500/20 italic">
-                                    {user.role} Protocol
+                                    {user.role} Account
                                 </span>
                                 {(user as any).google_id && (
                                     <span className="px-5 py-2 bg-blue-500/10 text-blue-400 text-[10px] font-black rounded-xl uppercase tracking-widest flex items-center gap-2 border border-blue-500/20 italic">
-                                        <ShieldCheck size={14} /> Neural-ID Verified
+                                        <ShieldCheck size={14} /> Verified with Google
                                     </span>
                                 )}
                             </div>
@@ -335,17 +335,17 @@ const UserDashboard: React.FC = () => {
                             className={`rounded-2xl h-16 px-10 shadow-2xl transition-all border border-white/10 font-black uppercase tracking-widest text-[10px] italic ${activeTab === 'settings' ? 'bg-primary-500 text-white border-primary-500 shadow-primary-500/20' : 'bg-transparent text-text-muted hover:bg-white/5'}`}
                             onClick={() => setActiveTab('settings')}
                         >
-                            <Settings size={20} className="mr-3" /> Command Center
+                            <Settings size={20} className="mr-3" /> Account Settings
                         </Button>
                     </div>
                 </div>
 
                 <div className="flex overflow-x-auto pb-6 mb-12 gap-5 scrollbar-hide px-2">
                     {[
-                        { id: 'overview', label: 'Nodes', icon: Calendar },
-                        { id: 'favorites', label: 'Pins', icon: Heart },
-                        { id: 'reviews', label: 'Logs', icon: MessageSquare },
-                        { id: 'settings', label: 'Command', icon: Settings },
+                        { id: 'overview', label: 'Dashboard', icon: Calendar },
+                        { id: 'favorites', label: 'Favorites', icon: Heart },
+                        { id: 'reviews', label: 'Reviews', icon: MessageSquare },
+                        { id: 'settings', label: 'Settings', icon: Settings },
                     ].map((tab) => (
                         <button
                             key={tab.id}

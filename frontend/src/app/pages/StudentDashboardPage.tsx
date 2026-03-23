@@ -9,6 +9,7 @@ import type { RootState } from '../../store';
 import api from '../api/axiosInstance';
 import type { Mess, Subscription, Activity } from '../types/mess';
 import Seo from '../components/common/Seo';
+import { getImageUrl } from '../api/axiosInstance';
 
 const DashboardSkeleton = () => (
     <div className="space-y-8 animate-pulse">
@@ -77,7 +78,7 @@ const StudentDashboardPage: React.FC = () => {
                             </div>
                             <div>
                                 <h1 className="text-4xl font-black italic tracking-tighter text-text-primary uppercase leading-tight">Hello, <br /> <span className="text-primary-500">{user?.name || 'Student'}!</span></h1>
-                                <p className="text-text-muted mt-2 font-black uppercase tracking-widest text-[10px] italic">Accessing Command Profile</p>
+                                <p className="text-text-muted mt-2 font-black uppercase tracking-widest text-[10px] italic">Welcome back 👋</p>
                             </div>
                         </div>
                         <div className="flex space-x-4">
@@ -87,14 +88,14 @@ const StudentDashboardPage: React.FC = () => {
                                 className="rounded-2xl border-white/10 bg-bg3/30 text-white px-8 py-5 font-black uppercase tracking-widest text-[10px] italic hover:bg-bg3"
                                 onClick={() => window.location.href = '/profile/settings'}
                             >
-                                <Settings size={18} className="mr-3 text-primary-500" /> Protocol
+                                <Settings size={18} className="mr-3 text-primary-500" /> Settings
                             </Button>
                             <Button
                                 size="sm"
                                 className="rounded-2xl px-8 py-5 font-black uppercase tracking-widest text-[10px] shadow-2xl shadow-primary-500/10 italic"
                                 onClick={() => window.location.href = '/menu/today'}
                             >
-                                <Utensils size={18} className="mr-3" /> Signals
+                                <Utensils size={18} className="mr-3" /> Menu
                             </Button>
                         </div>
                     </div>
@@ -136,17 +137,17 @@ const StudentDashboardPage: React.FC = () => {
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                     <Card className="p-8 bg-primary-500 text-white border-none shadow-2xl shadow-primary-500/20 rounded-[2.5rem] relative overflow-hidden group">
                                         <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full blur-2xl -mr-8 -mt-8" />
-                                        <p className="text-white/60 text-[10px] font-black uppercase tracking-[0.4em] italic">Subscribed</p>
+                                        <p className="text-white/60 text-[10px] font-black uppercase tracking-[0.4em] italic">Active Plans</p>
                                         <p className="text-5xl font-black mt-4 tracking-tighter italic">{subscriptions.length}</p>
                                     </Card>
                                     <Card className="p-8 bg-bg2/40 backdrop-blur-3xl border border-white/10 shadow-3xl rounded-[2.5rem] group hover:border-primary-500/30 transition-all">
-                                        <p className="text-text-muted text-[10px] font-black uppercase tracking-[0.4em] italic">Cycle Progress</p>
+                                        <p className="text-text-muted text-[10px] font-black uppercase tracking-[0.4em] italic">Days Left</p>
                                         <p className="text-5xl font-black mt-4 tracking-tighter text-text-primary italic">
                                             {subscriptions.length > 0 ? getDaysRemaining(subscriptions[0]).split(' ')[0] : '0'}<span className="text-xl ml-2 uppercase tracking-wide">Days</span>
                                         </p>
                                     </Card>
                                     <Card className="p-8 bg-bg2/40 backdrop-blur-3xl border border-white/10 shadow-3xl rounded-[2.5rem] group hover:border-green-500/30 transition-all">
-                                        <p className="text-text-muted text-[10px] font-black uppercase tracking-[0.4em] italic">Credits Saved</p>
+                                        <p className="text-text-muted text-[10px] font-black uppercase tracking-[0.4em] italic">Total Savings</p>
                                         <p className="text-5xl font-black mt-4 tracking-tighter text-green-500 italic">₹{subscriptions.length * 1500}</p>
                                     </Card>
                                 </div>
@@ -157,9 +158,9 @@ const StudentDashboardPage: React.FC = () => {
                                             <div className="flex justify-between items-center px-2">
                                                 <h2 className="text-3xl font-black tracking-tighter text-text-primary flex items-center italic uppercase">
                                                     <CreditCard className="mr-4 text-primary-500" size={32} />
-                                                    Active <span className="text-primary-500 ml-3">Nodes</span>
+                                                    My <span className="text-primary-500 ml-3">Subscriptions</span>
                                                 </h2>
-                                                <Button variant="ghost" size="sm" className="font-black text-text-muted hover:text-primary-500 hover:bg-primary-500/5 uppercase tracking-[0.3em] text-[9px] italic border border-white/5 rounded-xl px-6" onClick={() => window.location.href = '/subscriptions'}>View Matrix</Button>
+                                                <Button variant="ghost" size="sm" className="font-black text-text-muted hover:text-primary-500 hover:bg-primary-500/5 uppercase tracking-[0.3em] text-[9px] italic border border-white/5 rounded-xl px-6" onClick={() => window.location.href = '/subscriptions'}>View All</Button>
                                             </div>
                                             {subscriptions.length > 0 ? (
                                                 <div className="space-y-6">
@@ -176,13 +177,13 @@ const StudentDashboardPage: React.FC = () => {
                                                                         <span className="text-[9px] font-black uppercase tracking-widest text-green-400 bg-green-400/10 px-4 py-1.5 rounded-lg border border-green-400/20 italic">
                                                                             {sub.status || 'ACTIVE'}
                                                                         </span>
-                                                                        <span className="text-[9px] font-black uppercase tracking-widest text-text-muted italic">Node ID: {sub.id.substring(0, 8)}</span>
+                                                                        <span className="text-[9px] font-black uppercase tracking-widest text-text-muted italic">ID: {sub.id.substring(0, 8)}</span>
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                             <div className="flex items-center space-x-8 relative z-10">
                                                                 <div className="text-right hidden md:block">
-                                                                    <p className="text-[9px] text-text-muted font-black uppercase tracking-widest italic">Protocol Type</p>
+                                                                    <p className="text-[9px] text-text-muted font-black uppercase tracking-widest italic">Plan Type</p>
                                                                     <p className="font-black text-primary-500 mt-1 uppercase italic tracking-tighter text-lg">{sub.plan_type || 'Monthly'}</p>
                                                                 </div>
                                                                 <Button
@@ -202,7 +203,7 @@ const StudentDashboardPage: React.FC = () => {
                                                     <EmptyState
                                                         icon={Utensils}
                                                         title="No Subscriptions"
-                                                        description="You haven't subscribed to any mess yet. Explore our elite network to get started."
+                                                        description="You haven't subscribed to any mess yet. Find the best mess near you."
                                                         actionLabel="Browse Messes"
                                                         onAction={() => window.location.href = '/find-mess'}
                                                         className="py-12"
@@ -217,7 +218,7 @@ const StudentDashboardPage: React.FC = () => {
                                                     <Heart className="mr-4 text-red-500" size={32} />
                                                     Favorite <span className="text-primary-500 ml-3">Messes</span>
                                                 </h2>
-                                                <Button variant="ghost" size="sm" className="font-black text-text-muted hover:text-primary-500 hover:bg-primary-500/5 uppercase tracking-[0.3em] text-[9px] italic border border-white/5 rounded-xl px-6" onClick={() => window.location.href = '/find-mess'}>Manage Pins</Button>
+                                                <Button variant="ghost" size="sm" className="font-black text-text-muted hover:text-primary-500 hover:bg-primary-500/5 uppercase tracking-[0.3em] text-[9px] italic border border-white/5 rounded-xl px-6" onClick={() => window.location.href = '/find-mess'}>Manage Likes</Button>
                                             </div>
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                                 <div className="col-span-full">
@@ -239,18 +240,18 @@ const StudentDashboardPage: React.FC = () => {
                                             <div className="flex justify-between items-center px-2">
                                                 <h2 className="text-3xl font-black tracking-tighter text-text-primary flex items-center italic uppercase">
                                                     <Star className="mr-4 text-yellow-500" size={32} />
-                                                    Top <span className="text-primary-500 ml-3">Signals</span>
+                                                    Recommended <span className="text-primary-500 ml-3">Messes</span>
                                                 </h2>
-                                                <Button variant="ghost" size="sm" className="font-black text-text-muted hover:text-primary-500 hover:bg-primary-500/5 uppercase tracking-[0.3em] text-[9px] italic border border-white/5 rounded-xl px-6" onClick={() => window.location.href = '/find-mess'}>Scan All</Button>
+                                                <Button variant="ghost" size="sm" className="font-black text-text-muted hover:text-primary-500 hover:bg-primary-500/5 uppercase tracking-[0.3em] text-[9px] italic border border-white/5 rounded-xl px-6" onClick={() => window.location.href = '/find-mess'}>View All</Button>
                                             </div>
                                             {recommendedMesses.length > 0 ? (
                                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                                     {recommendedMesses.map((mess: Mess) => (
                                                         <Card key={mess.id} className="overflow-hidden group border-white/5 shadow-3xl bg-bg2/40 backdrop-blur-3xl hover:border-primary-500/30 transition-all duration-500 rounded-[2.5rem]">
                                                             <div className="h-48 bg-bg3/50 relative overflow-hidden">
-                                                                {mess.imageUrl ? (
+                                                                {mess.imageUrl || mess.messImage || (mess.images && mess.images[0]) ? (
                                                                     <img
-                                                                        src={mess.imageUrl}
+                                                                        src={getImageUrl(mess.imageUrl || mess.messImage || (mess.images && mess.images[0]))}
                                                                         alt={mess.name}
                                                                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-80"
                                                                     />
@@ -265,7 +266,7 @@ const StudentDashboardPage: React.FC = () => {
                                                             <div className="p-8">
                                                                 <h4 className="font-black text-xl text-white tracking-tight truncate uppercase italic">{mess.name}</h4>
                                                                 <p className="text-[10px] text-text-muted font-black uppercase tracking-widest mb-6 mt-1 italic">{mess.cuisine || 'Cuisine'} • {mess.address?.split(',')[0] || 'Address'}</p>
-                                                                <Button variant="primary" size="sm" className="w-full rounded-[1.25rem] h-14 font-black uppercase tracking-widest text-[10px] italic shadow-2xl shadow-primary-500/20" onClick={() => window.location.href = `/mess/${mess.id}`}>Access Node</Button>
+                                                                <Button variant="primary" size="sm" className="w-full rounded-[1.25rem] h-14 font-black uppercase tracking-widest text-[10px] italic shadow-2xl shadow-primary-500/20" onClick={() => window.location.href = `/mess/${mess.id}`}>View Details</Button>
                                                             </div>
                                                         </Card>
                                                     ))}
@@ -289,7 +290,7 @@ const StudentDashboardPage: React.FC = () => {
                                         <section className="space-y-6">
                                             <h2 className="text-3xl font-black tracking-tighter text-text-primary flex items-center italic uppercase px-2">
                                                 <Bell className="mr-4 text-primary-500" size={32} />
-                                                Recent <span className="text-primary-500 ml-3">History</span>
+                                                Recent <span className="text-primary-500 ml-3">Activity</span>
                                             </h2>
                                             <Card className="p-0 overflow-hidden border border-white/10 shadow-3xl bg-bg2/40 backdrop-blur-3xl rounded-[2.5rem]">
                                                 <div className="divide-y divide-white/10">
@@ -307,8 +308,8 @@ const StudentDashboardPage: React.FC = () => {
                                                         <div className="py-20">
                                                             <EmptyState
                                                                 icon={Bell}
-                                                                title="Silence in the Hub"
-                                                                description="No recent activity detected. Your journey is just beginning."
+                                                                title="No activity yet"
+                                                                description="Start exploring to see your recent visits here."
                                                                 className="border-none shadow-none bg-transparent"
                                                             />
                                                         </div>

@@ -8,14 +8,14 @@ export const Footer: React.FC = () => {
             <div className="container mx-auto px-4 py-12 sm:py-20">
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10 sm:gap-16">
                     <div className="space-y-6">
-                        <Link to="/" className="flex items-center space-x-3 group" aria-label="MessWalha Home">
+                        <Link to="/" className="flex items-center space-x-3 group" aria-label="FindMess Home">
                             <div className="w-10 h-10 bg-primary-500 rounded-xl flex items-center justify-center text-white shadow-lg shadow-primary-500/20 group-hover:scale-110 transition-transform">
                                 <Utensils size={20} />
                             </div>
-                            <span className="text-xl font-heading font-black tracking-tighter">Mess<span className="text-primary-500">Walha</span></span>
+                            <span className="text-xl font-heading font-black tracking-tighter">Find<span className="text-primary-500">Mess</span></span>
                         </Link>
                         <p className="text-sm text-text-secondary leading-relaxed font-medium">
-                            The #1 digital ecosystem for student meal management. Empowering students with healthy food and mess owners with smart technology.
+                            The #1 platform for student meal management. Helping students find great meals and mess owners grow their service.
                         </p>
                         <div className="flex space-x-4">
                             {[
@@ -66,12 +66,12 @@ export const Footer: React.FC = () => {
 
                 <div className="mt-12 sm:mt-20 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4">
                     <p className="text-[9px] font-black uppercase tracking-[0.2em] text-text-muted/40 text-center md:text-left">
-                        © {new Date().getFullYear()} MessWalha. All rights reserved.
+                        © {new Date().getFullYear()} FindMess. All rights reserved.
                     </p>
                     <div className="flex flex-wrap items-center justify-center md:justify-end gap-4 sm:gap-6">
                         <div className="flex items-center space-x-2">
                             <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted">System Status: Operational</span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted">FindMess is Online</span>
                         </div>
                     </div>
                 </div>

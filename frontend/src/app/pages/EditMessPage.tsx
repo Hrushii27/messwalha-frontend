@@ -22,6 +22,7 @@ import api from '../api/axiosInstance';
 import { useNavigate, Link } from 'react-router-dom';
 import Seo from '../components/common/Seo';
 import { uploadToCloudinary } from '../utils/cloudinary';
+import { getImageUrl } from '../api/axiosInstance';
 
 const EditMessPage: React.FC = () => {
     const navigate = useNavigate();
@@ -90,17 +91,15 @@ const EditMessPage: React.FC = () => {
                     });
 
                     if (mess.imageUrl) {
-                        const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
                         setPreviews(prev => ({
                             ...prev, 
-                            mess: mess.imageUrl.startsWith('http') ? mess.imageUrl : `${baseUrl}${mess.imageUrl}`
+                            mess: getImageUrl(mess.imageUrl)
                         }));
                     }
                     if (mess.menuImages && Array.isArray(mess.menuImages)) {
-                        const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
                         setPreviews(prev => ({
                             ...prev, 
-                            menus: mess.menuImages.map((url: string) => url.startsWith('http') ? url : `${baseUrl}${url}`)
+                            menus: mess.menuImages.map((url: string) => getImageUrl(url))
                         }));
                     }
                 } else {
@@ -258,7 +257,7 @@ const EditMessPage: React.FC = () => {
                     >
                         Update <span className="text-primary-500">Your</span> Mess
                     </motion.h1>
-                    <p className="text-text-muted font-black uppercase tracking-[0.4em] text-[10px] md:text-xs italic">Modify available details for your students</p>
+                    <p className="text-text-muted font-black uppercase tracking-[0.4em] text-[10px] md:text-xs italic">Update food details for your students</p>
                 </div>
             </div>
 
@@ -464,7 +463,7 @@ const EditMessPage: React.FC = () => {
                                     <div className="flex flex-col justify-center space-y-4 pr-8">
                                         <div className="flex items-center gap-3 text-primary-500">
                                             <ImageIcon size={16} />
-                                            <h4 className="text-[10px] font-black uppercase tracking-widest">Update Display Signal</h4>
+                                            <h4 className="text-[10px] font-black uppercase tracking-widest">Update Photo</h4>
                                         </div>
                                         <p className="text-[10px] font-medium leading-relaxed text-text-muted dark:text-white/30 italic">
                                             Uploading a new photo will replace your existing mess photo. Recommended: Clear photo of your special meal.

@@ -214,8 +214,8 @@ const ChatPage: React.FC = () => {
                             <div className="flex-grow flex items-center justify-center p-12">
                                 <EmptyState
                                     icon={MessageSquare}
-                                    title="Your Elite Inbox"
-                                    description="Select a conversation to start transmitting messages through our secure culinary frequency."
+                                    title="Your Messages"
+                                    description="Select a conversation to start chatting with mess owners or students."
                                     className="border-none shadow-none bg-transparent"
                                 />
                             </div>

@@ -138,8 +138,8 @@ const LoginPage: React.FC = () => {
     return (
         <div className="min-h-screen bg-navy-950 flex flex-col lg:flex-row relative overflow-hidden">
             <Seo 
-                title="Login | Access Your Elite Mess Terminal | FindMess" 
-                description="Sign in to your FindMess account to manage subscriptions, track meal plans, and communicate with verified mess owners." 
+                title="Login | Access Your Dashboard | FindMess" 
+                description="Sign in to your FindMess account to manage your plans and message mess owners." 
             />
 
             {/* Background Gradients */}
@@ -176,22 +176,22 @@ const LoginPage: React.FC = () => {
                                 className="text-4xl xl:text-5xl font-black text-white italic leading-tight tracking-tighter"
                                 style={{ textShadow: '0 0 20px rgba(232,98,42,0.25)' }}
                             >
-                                Elite Mess <br />
-                                <span className="text-primary-500 italic">Discovery Terminal</span>
+                                Best Mess <br />
+                                <span className="text-primary-500 italic">Discovery Platform</span>
                             </h2>
                             <p 
                                 className="text-lg font-medium italic"
                                 style={{ color: 'rgba(232,238,255,0.8)' }}
                             >
-                                Access your personalized dashboard and manage your culinary journey.
+                                Access your dashboard and manage your meal plans.
                             </p>
                         </motion.div>
 
                         <div className="space-y-8">
                             {[
-                                { icon: Zap, title: 'Instant Access', desc: 'Secure login with military-grade encryption.' },
-                                { icon: CreditCard, title: 'Smart Payments', desc: 'Track your subscriptions and digital receipts.' },
-                                { icon: BarChart3, title: 'Personalized Stats', desc: 'Monitor your nutrition and spending alerts.' }
+                                { icon: Zap, title: 'Quick Access', desc: 'Secure and fast login for your account.' },
+                                { icon: CreditCard, title: 'Easy Payments', desc: 'Track your plans and digital receipts.' },
+                                { icon: BarChart3, title: 'Simple Stats', desc: 'Monitor your spending and healthy eating.' }
                             ].map((feature, i) => (
                                 <motion.div 
                                     key={i}
@@ -249,7 +249,7 @@ const LoginPage: React.FC = () => {
                             className="font-black uppercase tracking-[0.2em] text-[10px] md:text-xs"
                             style={{ color: 'rgba(232,238,255,0.85)' }}
                         >
-                            Sign in to access your elite terminal
+                            Sign in to your dashboard
                         </p>
                     </div>
 
@@ -413,8 +413,8 @@ const LoginPage: React.FC = () => {
                     <div className="mt-16 sm:mt-24 space-y-12 lg:hidden">
                         <div className="h-px bg-white/5 w-full"></div>
                         {[
-                            { icon: Zap, title: 'Instant Access', desc: 'Secure login with military-grade encryption.' },
-                            { icon: CreditCard, title: 'Smart Payments', desc: 'Track your subscriptions and digital receipts.' }
+                            { icon: Zap, title: 'Quick Access', desc: 'Secure and fast login for your account.' },
+                            { icon: CreditCard, title: 'Easy Payments', desc: 'Track your plans and digital receipts.' }
                         ].map((feature, i) => (
                             <div key={i} className="flex items-start space-x-6">
                                 <div className="w-12 h-12 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center text-primary-500 shrink-0">

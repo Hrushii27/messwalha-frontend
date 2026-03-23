@@ -12,9 +12,9 @@ interface SeoProps {
 }
 
 const Seo: React.FC<SeoProps> = ({
-    title = 'FindMess – Elite Mess & Tiffin Discovery Platform',
-    description = 'Discover premium mess and tiffin services. FindMess provides students and PG residents with an elite culinary discovery experience with verified reviews and secure subscriptions.',
-    keywords = 'premium mess, tiffin service, student dining, elite mess discovery, verified mess reviews, FindMess',
+    title = 'FindMess – Best Mess & Tiffin Discovery Platform',
+    description = 'Discover the best mess and tiffin services. FindMess helps students and residents find great food options with verified reviews and easy subscriptions.',
+    keywords = 'best mess, tiffin service, student dining, mess search, verified mess reviews, FindMess',
     image = '/og-banner.png',
     url = window.location.href,
     schema,

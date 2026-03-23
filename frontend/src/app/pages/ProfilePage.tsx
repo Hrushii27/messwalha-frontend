@@ -157,8 +157,8 @@ const ProfilePage: React.FC = () => {
     return (
         <Layout>
             <Seo
-                title="Profile Discovery | MessWalha Dashboard"
-                description="Manage your professional mess subscription profile"
+                title="My Profile | FindMess"
+                description="Manage your account details, security settings, and view your recent activity."
             />
 
             <div className="min-h-screen bg-bg relative overflow-hidden pt-32 pb-24">
@@ -228,7 +228,7 @@ const ProfilePage: React.FC = () => {
                                         <div className="space-y-1">
                                             <h2 className="text-3xl font-black tracking-tighter text-white italic truncate">{user?.name}</h2>
                                             <p className="text-[10px] font-black uppercase tracking-[0.4em] text-primary-500">
-                                                {user?.role === 'OWNER' ? 'Mess Partner' : 'Student Member'}
+                                                {user?.role === 'OWNER' ? 'Mess Owner' : 'Student'}
                                             </p>
                                         </div>
 
@@ -311,8 +311,8 @@ const ProfilePage: React.FC = () => {
                                             >
                                                 <div className="flex justify-between items-center">
                                                     <div>
-                                                        <h3 className="text-4xl font-black text-white italic tracking-tighter">Profile <span className="text-primary-500">Information</span></h3>
-                                                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-text-muted mt-2">View and update your profile details</p>
+                                                        <h3 className="text-4xl font-black text-white italic tracking-tighter">My <span className="text-primary-500">Profile</span></h3>
+                                                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-text-muted mt-2">View and update your personal details</p>
                                                     </div>
                                                     {!isEditing && (
                                                         <Button
@@ -376,10 +376,10 @@ const ProfilePage: React.FC = () => {
                                                 <div className="p-10 bg-indigo-500/5 rounded-[2.5rem] border border-indigo-500/10 space-y-4">
                                                     <div className="flex items-center gap-4 text-indigo-400">
                                                         <CircleCheck size={20} />
-                                                        <span className="text-xs font-black uppercase tracking-widest italic">Compliance Status: Fully Aligned</span>
+                                                        <span className="text-xs font-black uppercase tracking-widest italic">Profile Status: Verified</span>
                                                     </div>
                                                     <p className="text-[10px] text-text-muted font-medium leading-relaxed italic">
-                                                        Your data is encrypted using 256-bit AES protocols and stored across decentralized nodes for maximum privacy and resilience.
+                                                        Your information is kept safe and secure with the latest security standards.
                                                     </p>
                                                 </div>
                                             </motion.div>
@@ -408,9 +408,9 @@ const ProfilePage: React.FC = () => {
                                                         </div>
                                                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                                             {[
-                                                                { label: 'Current Key', key: 'currentPassword', type: 'password' },
-                                                                { label: 'New Key', key: 'newPassword', type: 'password' },
-                                                                { label: 'Confirm Key', key: 'confirmPassword', type: 'password' }
+                                                                { label: 'Current Password', key: 'currentPassword', type: 'password' },
+                                                                { label: 'New Password', key: 'newPassword', type: 'password' },
+                                                                { label: 'Confirm Password', key: 'confirmPassword', type: 'password' }
                                                             ].map(p => (
                                                                 <div key={p.key} className="space-y-3">
                                                                     <label className="text-[9px] font-black uppercase text-text-muted ml-2 tracking-widest">{p.label}</label>
@@ -453,7 +453,7 @@ const ProfilePage: React.FC = () => {
                                                             </div>
                                                             <div className="flex items-center justify-between">
                                                                 <span className="text-[10px] font-black text-text-muted italic">currently 1 active session</span>
-                                                                <button className="text-[9px] font-black text-primary-500 uppercase tracking-widest">Wipe All</button>
+                                                                <button className="text-[9px] font-black text-primary-500 uppercase tracking-widest">Sign out all</button>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -503,7 +503,7 @@ const ProfilePage: React.FC = () => {
                                                                 </div>
                                                                 <p className="text-xl font-black text-white tracking-tight italic">"{act.desc}"</p>
                                                                 <div className="flex items-center gap-3 pt-2 text-white/30">
-                                                                    <span className="text-[9px] font-black uppercase tracking-widest">Verified Interaction</span>
+                                                                    <span className="text-[9px] font-black uppercase tracking-widest">Activity Logged</span>
                                                                     <ExternalLink size={12} className="opacity-40" />
                                                                 </div>
                                                             </div>

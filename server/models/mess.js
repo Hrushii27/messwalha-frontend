@@ -139,6 +139,19 @@ const Mess = {
             [avgRating, reviewCount, messId]
         );
         return mapMessFields(result.rows[0]);
+    },
+    getDashboardStats: async (ownerId) => {
+        const result = await db.query(`
+            SELECT 
+                ml.rating, 
+                ml.review_count as "reviewCount",
+                (SELECT COUNT(*) FROM student_subscriptions WHERE mess_id = ml.id AND status = 'active') as "activeStudents",
+                (SELECT COALESCE(SUM(amount), 0) FROM payments WHERE mess_id = ml.id AND status = 'SUCCESS') as "totalRevenue"
+            FROM mess_listings ml
+            WHERE ml.mess_owner_id = $1
+            LIMIT 1
+        `, [ownerId]);
+        return result.rows[0];
     }
 };
 

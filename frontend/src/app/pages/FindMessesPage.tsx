@@ -62,7 +62,7 @@ const FindMessesPage: React.FC = () => {
         setLoading(true);
         try {
             const params: Record<string, string | number | boolean> = {};
-            if (filters.cuisine && filters.cuisine !== 'All Signals') {
+            if (filters.cuisine && filters.cuisine !== 'All') {
                 params.cuisine = filters.cuisine;
             }
             if (filters.maxPrice) {
@@ -135,8 +135,8 @@ const FindMessesPage: React.FC = () => {
     return (
         <Layout>
             <Seo 
-                title="Premium Mess Discovery & Weekly Menu Feed | FindMess"
-                description="Explore verified elite mess services. Filter by cuisine, pricing, and college terminals. Access premium meal plans with healthy standards across major student hubs."
+                title="Find the Best Mess Food & Weekly Menus | FindMess"
+                description="Search for the best mess food near you. Filter by food type, price, and college areas. View weekly menus and find high-quality meals."
             />
 
             {/* Premium Header/Search Section */}
@@ -159,7 +159,7 @@ const FindMessesPage: React.FC = () => {
                                 Find Your <span className="text-primary-500">Perfect Mess</span>
                             </motion.h1>
                             <p className="text-text-secondary font-black uppercase tracking-[0.2em] md:tracking-[0.4em] text-[8px] md:text-xs">
-                                Discover verified mess services near your college terminal
+                                Find the best mess food near your college area
                             </p>
                         </div>
 
@@ -202,7 +202,7 @@ const FindMessesPage: React.FC = () => {
                                     className={`w-full md:w-auto h-14 md:h-20 md:px-12 rounded-full font-black uppercase tracking-[0.2em] text-[10px] md:text-xs flex items-center justify-center gap-3 shadow-2xl transition-all duration-500 ${showFilters ? 'bg-white/10 border border-white/20 text-white' : 'bg-primary-500 text-white shadow-primary-500/40'}`}
                                 >
                                     <Filter size={18} />
-                                    <span>{showFilters ? 'Close Filters' : 'Filter Options'}</span>
+                                    <span>{showFilters ? 'Hide Filters' : 'Show Filters'}</span>
                                 </Button>
                             </div>
                         </motion.div>
@@ -232,7 +232,7 @@ const FindMessesPage: React.FC = () => {
                                 >
                                     <div className="lg:p-12 lg:bg-bg2/95 lg:backdrop-blur-3xl lg:rounded-[3rem] lg:shadow-3xl lg:border lg:border-white/10 lg:sticky lg:top-32">
                                         <div className="flex items-center justify-between mb-8 lg:mb-10">
-                                            <h2 className="font-black text-[11px] uppercase tracking-[0.4em] text-primary-500 italic">Filter Registry</h2>
+                                            <h2 className="font-black text-[11px] uppercase tracking-[0.4em] text-primary-500 italic">Filter Results</h2>
                                             <button
                                                 onClick={() => setShowFilters(false)}
                                                 className="p-3 bg-white/5 rounded-xl text-text-muted hover:text-white transition-all lg:hidden"
@@ -244,13 +244,13 @@ const FindMessesPage: React.FC = () => {
                                         <div className="space-y-10 lg:space-y-12">
                                             {/* Cuisine Filter */}
                                             <div className="space-y-4 lg:space-y-6">
-                                                <h2 className="text-[10px] font-black uppercase tracking-widest text-text-secondary">Cuisine Selection</h2>
+                                                <h2 className="text-[10px] font-black uppercase tracking-widest text-text-secondary">Food Type</h2>
                                                 <div className="grid grid-cols-2 gap-2 md:gap-3">
                                                     <button
                                                         onClick={() => setFilters({ ...filters, cuisine: '' })}
                                                         className={`px-4 py-3 rounded-2xl text-[9px] font-black uppercase tracking-widest transition-all border ${!filters.cuisine ? 'bg-primary-500 border-primary-500 text-white shadow-xl shadow-primary-500/20' : 'bg-white/5 border-white/5 text-text-muted hover:bg-white/10 hover:text-white'}`}
                                                     >
-                                                        All Signals
+                                                        Show All
                                                     </button>
                                                     {cuisines.map(c => (
                                                         <button
@@ -267,7 +267,7 @@ const FindMessesPage: React.FC = () => {
                                             {/* Price Filter */}
                                             <div className="space-y-6">
                                                 <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest">
-                                                    <span className="text-text-secondary">Price Protocol</span>
+                                                    <span className="text-text-secondary">Price Range</span>
                                                     <span className="text-white italic">Up to ₹{filters.maxPrice}</span>
                                                 </div>
                                                 <div className="relative pt-2">
@@ -285,14 +285,14 @@ const FindMessesPage: React.FC = () => {
 
                                             {/* Trust Filter */}
                                             <div className="space-y-4 lg:space-y-6">
-                                                <h2 className="text-[10px] font-black uppercase tracking-widest text-text-secondary">Network Trust</h2>
+                                                <h2 className="text-[10px] font-black uppercase tracking-widest text-text-secondary">Verified Only</h2>
                                                 <button
                                                     onClick={() => setFilters({ ...filters, verified: !filters.verified })}
                                                     className={`w-full h-16 flex items-center justify-between px-6 rounded-[1.2rem] border-2 transition-all duration-500 ${filters.verified ? 'border-primary-500 bg-primary-500/10 text-white' : 'border-white/5 bg-white/5 text-text-muted hover:border-white/20'}`}
                                                 >
                                                     <div className="flex items-center gap-4">
                                                         <ShieldCheck size={20} className={filters.verified ? 'text-primary-500' : 'text-white/20'} />
-                                                        <span className="text-[10px] font-black uppercase tracking-widest">Verified Assets</span>
+                                                        <span className="text-[10px] font-black uppercase tracking-widest">Verified Messes Only</span>
                                                     </div>
                                                     <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${filters.verified ? 'bg-primary-500 border-primary-500' : 'border-white/20'}`}>
                                                         {filters.verified && <CircleCheck size={12} className="text-white" />}
@@ -335,15 +335,15 @@ const FindMessesPage: React.FC = () => {
                         <div className="flex flex-col md:flex-row justify-between items-center bg-bg2/90 backdrop-blur-3xl p-6 md:p-10 rounded-[1.5rem] md:rounded-[2.5rem] border border-white/10 shadow-3xl relative overflow-hidden">
                             <div className="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-primary-500 to-indigo-600"></div>
                             <div className="space-y-1 md:space-y-2 text-center md:text-left">
-                                <p className="text-[8px] md:text-[9px] text-text-muted font-black uppercase tracking-[0.4em]">Signal Detected</p>
+                                <p className="text-[8px] md:text-[9px] text-text-muted font-black uppercase tracking-[0.4em]">Looking for food</p>
                                 <h2 className="text-xl md:text-3xl font-black italic tracking-tighter text-white">
-                                    Found <span className="text-primary-500">{filteredMesses.length}</span> Premium <span className="text-text-muted">Messes</span>
+                                    Found <span className="text-primary-500">{filteredMesses.length}</span> Top <span className="text-text-muted">Messes</span>
                                 </h2>
                             </div>
                             <div className="hidden md:flex items-center gap-8">
                                 <div className="h-12 w-px bg-white/5"></div>
                                 <div className="flex items-center gap-4">
-                                    <span className="text-[9px] font-black text-text-muted/40 uppercase tracking-widest">Sorting Method:</span>
+                                    <span className="text-[9px] font-black text-text-muted/40 uppercase tracking-widest">Sort By:</span>
                                     <div className="relative">
                                         <select
                                             className="bg-white/5 font-black text-[10px] uppercase tracking-[0.2em] focus:outline-none py-4 px-8 rounded-2xl cursor-pointer text-white border border-white/10 appearance-none pr-12"
@@ -396,8 +396,8 @@ const FindMessesPage: React.FC = () => {
                         ) : (
                             <EmptyState
                                 icon={SearchIcon}
-                                title="No mess signals detected"
-                                description="Try adjusting your filters or search terminal."
+                                title="No messes found"
+                                description="Try changing your filters or searching another area."
                                 actionLabel="Reset Filters"
                                 onAction={() => {
                                     setLocationTerm('');

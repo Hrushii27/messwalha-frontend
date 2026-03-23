@@ -24,8 +24,8 @@ const LandingPage: React.FC = () => {
         <Layout>
             <div className="bg-bg-main">
                 <Seo
-                    title="Elite Mess Discovery & Culinary Market | FindMess"
-                    description="The ultimate discovery platform for students and PG residents. Find, compare, and subscribe to premium mess services near your campus with verified integrity."
+                    title="Best Mess Food & Student Meal Plans | FindMess"
+                    description="The easiest way for students to find and subscribe to the best mess food near campus. Compare menus, prices, and read real student reviews."
                 />
 
                 {/* Hero Section */}
@@ -56,7 +56,7 @@ const LandingPage: React.FC = () => {
                                     className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-4"
                                 >
                                     <div className="px-6 py-2 rounded-full bg-primary-500/10 border border-primary-500/20 text-primary-500 text-[10px] font-black uppercase tracking-[0.4em]">
-                                        Elite Mess Marketplace
+                                        Best Mess Options
                                     </div>
                                     <div className="px-6 py-2 rounded-full bg-orange-500 text-white text-[10px] font-black uppercase tracking-[0.2em] shadow-lg shadow-orange-500/20">
                                         60-Day Free Trial for Owners
@@ -67,8 +67,8 @@ const LandingPage: React.FC = () => {
                                     <span className="text-primary-500 italic">Mess in Seconds</span>
                                 </h1>
                                 <p className="text-sm sm:text-lg md:text-xl lg:text-2xl text-text-secondary font-medium max-w-3xl mx-auto leading-relaxed italic mt-6 px-4">
-                                    Discover verified mess services near your college campus. <br className="hidden md:block" />
-                                    Compare menus, prices, and subscribe with professional ease.
+                                    Find the best mess food near your college campus. <br className="hidden md:block" />
+                                    Check menus, compare prices, and subscribe in a few taps.
                                 </p>
                             </motion.div>
 
@@ -106,7 +106,7 @@ const LandingPage: React.FC = () => {
                                         className="w-full md:w-auto md:px-12 lg:px-16 h-16 sm:h-20 rounded-[1.5rem] md:rounded-full shadow-2xl shadow-primary-500/40 font-black uppercase tracking-[0.3em] text-[11px] hover:scale-105 transition-all duration-500 flex items-center justify-center gap-3 bg-primary-500"
                                     >
                                         <SearchIcon size={20} />
-                                        Find Mess
+                                        Find a Mess
                                     </Button>
                                 </div>
                             </motion.div>
@@ -119,9 +119,9 @@ const LandingPage: React.FC = () => {
                                 className="flex flex-wrap justify-center gap-4 sm:gap-10 pt-4"
                             >
                                 {[
-                                    { icon: CircleCheck, text: 'Verified Mess Owners' },
-                                    { icon: CircleCheck, text: 'Affordable Monthly Plans' },
-                                    { icon: CircleCheck, text: 'Healthy & Hygienic Food' }
+                                    { icon: CircleCheck, text: 'Verified Messes' },
+                                    { icon: CircleCheck, text: 'Cheap Monthly Plans' },
+                                    { icon: CircleCheck, text: 'Clean & Healthy Food' }
                                 ].map((feature, i) => (
                                     <div key={i} className="flex items-center space-x-3 text-text-secondary group hover:text-white transition-colors cursor-default">
                                         <feature.icon aria-hidden="true" size={18} className="text-primary-500 group-hover:scale-125 transition-transform" />
@@ -142,10 +142,10 @@ const LandingPage: React.FC = () => {
                     <div className="container mx-auto px-4">
                         <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-12">
                             {[
-                                { label: 'Listings', value: '150+' },
-                                { label: 'Students', value: '8,000+' },
+                                { label: 'Total Messes', value: '150+' },
+                                { label: 'Happy Students', value: '8,000+' },
                                 { label: 'Cities', value: '12+' },
-                                { label: 'Rating', value: '4.9/5' }
+                                { label: 'Average Rating', value: '4.9/5' }
                             ].map((stat, i) => (
                                 <div key={i} className="text-center group">
                                     <div className="text-3xl sm:text-4xl md:text-5xl font-black text-text-primary mb-2 group-hover:text-primary-500 transition-colors">
@@ -177,19 +177,19 @@ const LandingPage: React.FC = () => {
                             {[
                                 {
                                     title: 'Search Area',
-                                    desc: 'Find verified mess services near your college or area.',
+                                    desc: 'Find the best mess options near your college or area.',
                                     icon: SearchIcon,
                                     step: '01'
                                 },
                                 {
                                     title: 'Compare Plans',
-                                    desc: 'Check menus, monthly pricing, and genuine student reviews.',
+                                    desc: 'Check menus, monthly prices, and honest reviews from students.',
                                     icon: ClipboardList,
                                     step: '02'
                                 },
                                 {
                                     title: 'Subscribe',
-                                    desc: 'Book your plan digitally and enjoy healthy meals instantly.',
+                                    desc: 'Subscribe online and enjoy healthy meals every day.',
                                     icon: CreditCard,
                                     step: '03'
                                 }
@@ -220,7 +220,7 @@ const LandingPage: React.FC = () => {
                     <div className="container mx-auto px-4">
                         <div className="flex flex-col md:flex-row justify-between items-center md:items-end mb-16 sm:mb-24 gap-8">
                             <div className="space-y-4 text-center md:text-left">
-                                <span className="text-primary-500 text-[10px] font-black uppercase tracking-[0.3em]">Student Voice</span>
+                                <span className="text-primary-500 text-[10px] font-black uppercase tracking-[0.3em]">What Students Say</span>
                                 <h2 className="text-3xl sm:text-4xl md:text-6xl font-black tracking-tighter">
                                     Thousands of Students <br />
                                     <span className="text-primary-500 italic">Love Us</span>
@@ -233,8 +233,8 @@ const LandingPage: React.FC = () => {
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
                             {[
-                                { name: 'Rahul S.', role: 'Engineering Student', text: 'MessWalha saved me from eating bad food. The verification system works!' },
-                                { name: 'Priya K.', role: 'Medical Student', text: 'Managing subscriptions is so easy now. I can skip meals and save money too.' },
+                                { name: 'Rahul S.', role: 'Engineering Student', text: 'FindMess saved me from eating bad food. The verified mess system really works!' },
+                                { name: 'Priya K.', role: 'Medical Student', text: 'Managing my plan is so easy now. I can skip meals and save money too.' },
                                 { name: 'Amit J.', role: 'Management Student', text: 'Literally found my mess in 2 minutes after arriving in Pune. Lifesaver!' }
                             ].map((testi, i) => (
                                 <motion.div
@@ -281,7 +281,7 @@ const LandingPage: React.FC = () => {
                                         onClick={() => navigate('/find-mess')}
                                         className="bg-white text-primary-500 hover:bg-gray-100 px-8 sm:px-12 py-4 sm:py-6 rounded-full font-black uppercase tracking-[0.2em] text-[10px] sm:text-xs h-16 sm:h-20 shadow-2xl"
                                     >
-                                        Browse Messes
+                                        Find a Mess
                                     </Button>
                                     <Button
                                         variant="outline"
@@ -304,7 +304,7 @@ const LandingPage: React.FC = () => {
                         className="w-full h-16 rounded-2xl bg-primary-500 text-white font-black uppercase tracking-[0.3em] text-[11px] shadow-2xl shadow-primary-500/30 flex items-center justify-center gap-3 italic"
                     >
                         <SearchIcon size={18} />
-                        Explore All Messes
+                        View All Messes
                     </Button>
                 </div>
             </div>

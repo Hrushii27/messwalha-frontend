@@ -1,17 +1,17 @@
 {
   "common": {
     "welcome": "Welcome to MessWalha",
-    "find_mess": "Find Mess",
-    "subscriptions": "Subscriptions",
+    "find_mess": "Find a Mess",
+    "subscriptions": "My Plans",
     "about": "About Us",
     "login": "Log in",
     "get_started": "Get Started",
     "dashboard": "Dashboard",
-    "messages": "Messages"
+    "messages": "Chats"
   },
   "landing": {
-    "hero_title": "Find the Best Mess Near Your Campus",
-    "hero_subtitle": "Discover, subscribe and enjoy healthy meals every day.",
-    "search_placeholder": "Enter your college or area..."
+    "hero_title": "Find the Best Mess Food Near You",
+    "hero_subtitle": "Search, subscribe, and enjoy healthy meals every day.",
+    "search_placeholder": "Enter area or college name..."
   }
 }

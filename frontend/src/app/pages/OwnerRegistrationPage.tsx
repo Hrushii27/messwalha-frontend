@@ -158,7 +158,7 @@ const OwnerRegistrationPage: React.FC = () => {
             <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-indigo-500/10 rounded-full blur-[120px] -ml-32 -mb-32 pointer-events-none" />
             <Seo 
                 title="Partner with FindMess | 60-Day Free Trial for Owners" 
-                description="List your mess on India's elite discovery platform. Start your 60-day free trial, reach thousands of students, and manage your culinary business with ease." 
+                description="List your mess on India's best discovery platform. Start your 60-day free trial, reach thousands of students, and manage your mess with ease." 
             />
             <Card className="w-full max-w-4xl p-8 sm:p-12 bg-bg2/50 backdrop-blur-3xl border border-white/10 relative z-10 rounded-[3rem] shadow-2xl">
                 <div className="text-center space-y-4 mb-10">
@@ -172,7 +172,7 @@ const OwnerRegistrationPage: React.FC = () => {
                 <form onSubmit={handleSubmit} className="space-y-8">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div className="space-y-6">
-                            <h3 className="text-[10px] font-black uppercase tracking-widest text-primary-500 italic pb-2 border-b border-white/10">Owner Terminal Details</h3>
+                            <h3 className="text-[10px] font-black uppercase tracking-widest text-primary-500 italic pb-2 border-b border-white/10">Personal Details</h3>
                             <Input
                                 label="Full Name"
                                 name="name"
@@ -232,7 +232,7 @@ const OwnerRegistrationPage: React.FC = () => {
 
                         {/* Mess Information */}
                         <div className="space-y-6">
-                            <h3 className="text-[10px] font-black uppercase tracking-widest text-primary-500 italic pb-2 border-b border-white/10">Mess Registry Profile</h3>
+                            <h3 className="text-[10px] font-black uppercase tracking-widest text-primary-500 italic pb-2 border-b border-white/10">Mess Details</h3>
                              <Input
                                 label="Mess Name"
                                 name="messName"
@@ -281,7 +281,7 @@ const OwnerRegistrationPage: React.FC = () => {
                             <div className="p-6 bg-primary-500/10 rounded-[2rem] mt-6 border border-primary-500/20">
                                 <p className="text-[10px] text-text-secondary leading-relaxed text-center uppercase tracking-widest font-black">
                                     <span className="text-primary-500 block mb-2 italic">🎁 60-Day Premium Trial</span>
-                                    Your secure listing will begin a free trial automatically. <br /> No financial details required.
+                                    Your listing will start with a free trial automatically. <br /> No card details required.
                                 </p>
                             </div>
                         </div>
@@ -293,7 +293,7 @@ const OwnerRegistrationPage: React.FC = () => {
                         isLoading={isLoading}
                         disabled={isLoading}
                     >
-                        <span>{isLoading ? 'Processing Registration...' : 'Start My 60-Day Free Trial'}</span>
+                        <span>{isLoading ? 'Creating Account...' : 'Start My 60-Day Free Trial'}</span>
                     </Button>
                 </form>
 

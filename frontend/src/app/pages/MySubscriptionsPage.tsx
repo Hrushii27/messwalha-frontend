@@ -38,7 +38,7 @@ const MySubscriptionsPage: React.FC = () => {
             <div className="container mx-auto px-4 py-8 space-y-8">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
-                        <h1 className="text-3xl font-black uppercase italic tracking-tighter text-text-primary">My Subscriptions <span className="text-[10px] bg-primary-500 text-white px-2 py-0.5 rounded-full not-italic tracking-normal align-middle">v2.1</span></h1>
+                        <h1 className="text-3xl font-black uppercase italic tracking-tighter text-text-primary">My Subscriptions</h1>
                         <p className="text-text-secondary italic">Manage your active and past meal plans</p>
                     </div>
                     <div className="flex items-center space-x-3 w-full md:w-auto">
@@ -132,7 +132,7 @@ const MySubscriptionsPage: React.FC = () => {
                     <EmptyState
                         icon={RefreshCw}
                         title="No Subscriptions Found"
-                        description="You haven't subscribed to any mess yet. Explore our elite network of mess services and start your trial today."
+                        description="You haven't subscribed to any mess yet. Explore our network of mess services and start your trial today."
                         actionLabel="Find a Mess"
                         onAction={() => window.location.href = '/find-mess'}
                     />

@@ -126,7 +126,7 @@ const AdminDashboardPage: React.FC = () => {
 
             <section className="space-y-6">
                 <h3 className="text-lg font-black uppercase tracking-[0.3em] flex items-center gap-3 text-text-primary px-2 italic">
-                    <Activity size={20} className="text-primary-500" /> Infrastructure <span className="text-primary-500">Allocation</span>
+                    <Activity size={20} className="text-primary-500" /> Subscription <span className="text-primary-500">Stats</span>
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     {[
@@ -150,7 +150,7 @@ const AdminDashboardPage: React.FC = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <section className="space-y-6">
                     <h3 className="text-lg font-black uppercase tracking-[0.3em] flex items-center gap-3 text-text-primary px-2 italic">
-                        <UserPlus size={20} className="text-indigo-500" /> Neural <span className="text-indigo-500">Ingress</span>
+                        <UserPlus size={20} className="text-indigo-500" /> Recent <span className="text-indigo-500">Signups</span>
                     </h3>
                     <Card className="p-0 overflow-hidden border-white/5 bg-bg2/40 backdrop-blur-3xl shadow-3xl rounded-[2rem]">
                         <div className="divide-y divide-white/5">
@@ -174,7 +174,7 @@ const AdminDashboardPage: React.FC = () => {
 
                 <section className="space-y-6">
                     <h3 className="text-lg font-black uppercase tracking-[0.3em] flex items-center gap-3 text-text-primary px-2 italic">
-                        <Building size={20} className="text-secondary" /> Pending <span className="text-primary-500">Transmissions</span>
+                        <Building size={20} className="text-secondary" /> Pending <span className="text-primary-500">Approvals</span>
                     </h3>
                     <Card className="p-0 overflow-hidden border-white/5 bg-bg2/40 backdrop-blur-3xl shadow-3xl rounded-[2rem]">
                         <div className="divide-y divide-white/5">
@@ -190,7 +190,7 @@ const AdminDashboardPage: React.FC = () => {
                                             className="flex-1 sm:flex-none text-[9px] font-black uppercase tracking-[0.2em] py-3 h-10 px-8 rounded-xl italic shadow-2xl shadow-primary-500/20"
                                             onClick={() => handleApproveMess(m.id)}
                                         >
-                                            Authorize
+                                            Approve
                                         </Button>
                                         <Button
                                             variant="outline"
@@ -205,7 +205,7 @@ const AdminDashboardPage: React.FC = () => {
                             )) : (
                                 <div className="p-20 text-center">
                                     <CircleCheck size={48} className="mx-auto mb-4 opacity-20 text-green-500 animate-pulse" />
-                                    <p className="text-[11px] font-black text-text-muted uppercase tracking-[0.3em] italic leading-relaxed">System Sync 100%. No pending transmissions in the grid.</p>
+                                    <p className="text-[11px] font-black text-text-muted uppercase tracking-[0.3em] italic leading-relaxed">Everything is up to date. No pending approvals.</p>
                                 </div>
                             )}
                         </div>
@@ -220,7 +220,7 @@ const AdminDashboardPage: React.FC = () => {
             <div className="p-8 border-b border-white/5 flex flex-col sm:flex-row justify-between items-center gap-6">
                 <div className="relative w-full sm:max-w-md">
                     <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-text-muted" size={18} />
-                    <input type="text" placeholder="Scan neural signatures (name/email)..." className="w-full pl-14 pr-6 h-14 rounded-2xl bg-bg3/50 border-white/10 text-sm font-black text-white italic placeholder:text-text-muted/50 focus:border-primary-500/50 transition-all outline-none" />
+                    <input type="text" placeholder="Search for users (name/email)..." className="w-full pl-14 pr-6 h-14 rounded-2xl bg-bg3/50 border-white/10 text-sm font-black text-white italic placeholder:text-text-muted/50 focus:border-primary-500/50 transition-all outline-none" />
                 </div>
                 <div className="flex gap-4 w-full sm:w-auto">
                     <Button variant="outline" className="flex-1 sm:flex-none h-14 px-8 rounded-2xl border-white/10 text-[10px] font-black uppercase tracking-widest italic hover:bg-white/5">Export Registry</Button>
@@ -230,10 +230,10 @@ const AdminDashboardPage: React.FC = () => {
                 <table className="w-full text-left">
                     <thead>
                         <tr className="border-b border-white/5 bg-bg3/30">
-                            <th className="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-text-muted italic">Entity</th>
-                            <th className="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-text-muted italic">Protocol</th>
-                            <th className="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-text-muted italic">Timestamp</th>
-                            <th className="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-text-muted italic text-right">Ops</th>
+                            <th className="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-text-muted italic">User</th>
+                            <th className="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-text-muted italic">Role</th>
+                            <th className="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-text-muted italic">Joined On</th>
+                            <th className="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-text-muted italic text-right">Actions</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-white/5">
@@ -296,7 +296,7 @@ const AdminDashboardPage: React.FC = () => {
                             className="flex-1 md:flex-none rounded-2xl px-10 text-[10px] font-black uppercase tracking-widest h-14 italic shadow-2xl shadow-primary-500/20"
                             onClick={() => handleApproveMess(m.id)}
                         >
-                            Authorize Listing
+                            Approve Listing
                         </Button>
                         <Button
                             variant="outline"
@@ -312,8 +312,8 @@ const AdminDashboardPage: React.FC = () => {
             {messes.length === 0 && (
                 <Card className="p-24 text-center bg-bg2/40 backdrop-blur-3xl rounded-[3rem] border border-white/5 shadow-3xl">
                     <CircleCheck size={64} className="mx-auto text-green-500 mb-8 opacity-20 animate-pulse" />
-                    <h3 className="text-2xl font-black uppercase tracking-[0.3em] text-white italic">Registry Synchronized</h3>
-                    <p className="text-text-muted text-[11px] font-black uppercase tracking-widest mt-4 italic opacity-60">All mess transmissions have been authorized or declined.</p>
+                    <h3 className="text-2xl font-black uppercase tracking-[0.3em] text-white italic">All Clear</h3>
+                    <p className="text-text-muted text-[11px] font-black uppercase tracking-widest mt-4 italic opacity-60">All mess approvals have been handled.</p>
                 </Card>
             )}
         </div>
@@ -327,10 +327,10 @@ const AdminDashboardPage: React.FC = () => {
                 <div className="container mx-auto px-6 relative z-10">
                     <div className="flex flex-col md:flex-row items-center justify-between gap-10">
                         <div className="space-y-4 text-center md:text-left">
-                            <h1 className="text-6xl font-heading font-black tracking-tighter italic uppercase text-white leading-none">COMMAND <span className="text-primary-500">OPS</span></h1>
+                            <h1 className="text-6xl font-heading font-black tracking-tighter italic uppercase text-white leading-none">ADMIN <span className="text-primary-500">PANEL</span></h1>
                             <div className="flex items-center justify-center md:justify-start space-x-3 text-primary-500">
                                 <Shield size={20} className="animate-pulse" />
-                                <p className="text-[11px] font-black uppercase tracking-[0.4em] italic leading-none">Security Clearance: LEVEL-87</p>
+                                <p className="text-[11px] font-black uppercase tracking-[0.4em] italic leading-none">Authorized Admin Access</p>
                             </div>
                         </div>
                         <Button
@@ -342,7 +342,7 @@ const AdminDashboardPage: React.FC = () => {
                                 fetchData().then(() => setRefreshing(false));
                             }}
                         >
-                            <RefreshCw size={20} className={`mr-3 ${refreshing ? 'animate-spin' : ''}`} /> Snyc Grid
+                            <RefreshCw size={20} className={`mr-3 ${refreshing ? 'animate-spin' : ''}`} /> Refresh Stats
                         </Button>
                     </div>
                 </div>
@@ -353,10 +353,10 @@ const AdminDashboardPage: React.FC = () => {
                     <div className="lg:col-span-1">
                         <Card className="p-3 space-y-2 sticky top-28 shadow-3xl rounded-[2rem] bg-bg2/80 backdrop-blur-3xl border border-white/10">
                             {[
-                                { id: 'overview', icon: <LayoutDashboard size={22} />, label: 'GRID OVERVIEW' },
-                                { id: 'users', icon: <Users size={22} />, label: 'ENTITY REGISTRY' },
-                                { id: 'messes', icon: <Building size={22} />, label: 'NODE VERIFICATION' },
-                                { id: 'settings', icon: <SettingsIcon size={22} />, label: 'SYSTEM CORES' },
+                                { id: 'overview', icon: <LayoutDashboard size={22} />, label: 'DASHBOARD' },
+                                { id: 'users', icon: <Users size={22} />, label: 'USER REGISTRY' },
+                                { id: 'messes', icon: <Building size={22} />, label: 'MESS VERIFICATION' },
+                                { id: 'settings', icon: <SettingsIcon size={22} />, label: 'SYSTEM STATS' },
                             ].map((item) => (
                                 <button
                                     key={item.id}
@@ -395,10 +395,10 @@ const AdminDashboardPage: React.FC = () => {
                                             <div className="flex flex-col lg:flex-row items-center justify-between gap-12 relative z-10">
                                                 <div className="space-y-4 text-center lg:text-left">
                                                     <h3 className="text-3xl font-black tracking-tighter flex items-center justify-center lg:justify-start gap-4 italic uppercase text-white">
-                                                        <Activity className="text-primary-500 animate-pulse" size={32} /> Platform <span className="text-primary-500">Cores</span>
+                                                        <Activity className="text-primary-500 animate-pulse" size={32} /> Platform <span className="text-primary-500">Status</span>
                                                     </h3>
                                                     <p className="text-text-muted font-black uppercase tracking-widest text-[11px] max-w-md italic leading-relaxed">
-                                                        Real-time surveillance of platform-wide activity, visitor engagement metrics, and neural link health.
+                                                        View real-time platform activity, visitor engagement metrics, and system performance.
                                                     </p>
                                                 </div>
                                                 <div className="flex gap-6">
@@ -412,9 +412,9 @@ const AdminDashboardPage: React.FC = () => {
 
                                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                                             {[
-                                                { label: 'Neural Ingress (Daily)', value: '18', icon: <Users />, color: 'text-indigo-500' },
-                                                { label: 'Cloud Status', value: 'SYNCED', icon: <Activity />, color: 'text-emerald-500' },
-                                                { label: 'Matrix Encryption', value: 'ACTIVE', icon: <Shield />, color: 'text-amber-500' },
+                                                { label: 'New Signups (Daily)', value: '18', icon: <Users />, color: 'text-indigo-500' },
+                                                { label: 'Server Status', value: 'ACTIVE', icon: <Activity />, color: 'text-emerald-500' },
+                                                { label: 'Secure Data', value: 'ENCRYPTED', icon: <Shield />, color: 'text-amber-500' },
                                             ].map((item, i) => (
                                                 <Card key={i} className="p-8 border-white/5 bg-bg2/40 backdrop-blur-3xl shadow-3xl hover:border-white/20 transition-all rounded-[2rem] group h-full">
                                                     <div className="flex flex-col items-center text-center gap-6">

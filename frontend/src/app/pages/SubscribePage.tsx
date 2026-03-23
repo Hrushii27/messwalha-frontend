@@ -42,7 +42,7 @@ const SubscribePage: React.FC = () => {
                 amount,
                 currency,
                 name: 'MessWalha',
-                description: 'Elite Listing Plan Subscription',
+                description: 'Owner Plan Subscription',
                 order_id: orderId,
                 handler: async (response: RazorpayResponse) => {
                     try {
@@ -81,8 +81,8 @@ const SubscribePage: React.FC = () => {
     return (
         <Layout>
             <Seo
-                title="Subscribe | messWalha Business"
-                description="Subscribe to messWalha elite listing plan and grow your mess business."
+                title="Business Plan | FindMess Business"
+                description="Upgrade to the FindMess Owner plan and grow your mess business."
             />
 
             <div className="grad-dark py-32 relative overflow-hidden">
@@ -92,9 +92,9 @@ const SubscribePage: React.FC = () => {
                         animate={{ y: 0, opacity: 1 }}
                         className="text-6xl md:text-8xl font-black tracking-tighter text-white italic"
                     >
-                        UNLEASH YOUR <span className="text-primary-500">POTENTIAL</span>
+                        GROW YOUR <span className="text-primary-500">BUSINESS</span>
                     </motion.h1>
-                    <p className="text-white/70 font-black uppercase tracking-[0.4em] text-[10px] md:text-xs">MessWalha Elite Listing Plan</p>
+                    <p className="text-white/70 font-black uppercase tracking-[0.4em] text-[10px] md:text-xs">FindMess Owner Plan</p>
                 </div>
             </div>
 
@@ -104,10 +104,10 @@ const SubscribePage: React.FC = () => {
                     <div className="space-y-12">
                         <div className="space-y-6">
                             <h2 className="text-4xl font-black tracking-tight text-white italic uppercase">
-                                Why Upgrade to <span className="text-primary-500 underline decoration-4 underline-offset-8">Elite?</span>
+                                Why Upgrade to <span className="text-primary-500 underline decoration-4 underline-offset-8">Business?</span>
                             </h2>
                             <p className="text-white/60 text-lg leading-relaxed font-medium">
-                                Join the ranks of successful mess owners who are transforming their business through MessWalha's digital ecosystem.
+                                Join the ranks of successful mess owners who are growing their business through the FindMess platform.
                             </p>
                         </div>
 
@@ -137,7 +137,7 @@ const SubscribePage: React.FC = () => {
                         <Card className="p-1 w-full bg-gradient-to-br from-primary-500 to-primary-700 rounded-[3rem] shadow-3xl shadow-primary-500/20">
                             <div className="bg-dark-900 rounded-[2.8rem] p-12 space-y-10">
                                 <div className="space-y-4">
-                                    <span className="bg-primary-500/10 text-primary-500 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border border-primary-500/20">FindMess Listing Plan</span>
+                                    <span className="bg-primary-500/10 text-primary-500 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border border-primary-500/20">Mess Owner Plan</span>
                                     <div className="flex items-baseline gap-2">
                                         <span className="text-6xl font-black text-white italic">₹499</span>
                                         <span className="text-white/70 font-bold uppercase tracking-widest text-sm">/ Month</span>
@@ -170,7 +170,7 @@ const SubscribePage: React.FC = () => {
 
                                     <div className="flex items-center justify-center gap-3 text-white/20">
                                         <Shield size={14} />
-                                        <span className="text-[10px] font-bold uppercase tracking-widest">Secure Payment via Razorpay</span>
+                                        <span className="text-[10px] font-bold uppercase tracking-widest">Safe & Secure Payment via Razorpay</span>
                                     </div>
                                 </div>
                             </div>

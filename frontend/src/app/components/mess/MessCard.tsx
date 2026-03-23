@@ -21,7 +21,9 @@ interface MessCardProps {
         description: string;
         address: string;
         rating: number;
-        images: string[];
+        images?: string[];
+        imageUrl?: string;
+        menuImages?: string[];
         priceRange?: string;
         monthlyPrice?: number;
         verified?: boolean;
@@ -32,7 +34,15 @@ interface MessCardProps {
 export const MessCard: React.FC<MessCardProps> = ({ mess }) => {
     const { isFavorite, toggleFavorite } = useFavorites();
     const [currentImageIndex, setCurrentImageIndex] = React.useState(0);
-    const images = mess.images?.length > 0 ? mess.images : ['https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'];
+    const allImages = React.useMemo(() => {
+        const imgs = [];
+        if (mess.imageUrl) imgs.push(mess.imageUrl);
+        if (mess.images && mess.images.length > 0) imgs.push(...mess.images);
+        if (mess.menuImages && mess.menuImages.length > 0) imgs.push(...mess.menuImages);
+        return imgs.length > 0 ? imgs : ['https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'];
+    }, [mess.imageUrl, mess.images, mess.menuImages]);
+
+    const images = allImages;
 
     const nextImage = (e: React.MouseEvent) => {
         e.preventDefault();

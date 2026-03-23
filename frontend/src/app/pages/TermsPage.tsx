@@ -9,7 +9,7 @@ const TermsPage: React.FC = () => {
         <Layout>
             <Seo 
                 title="Terms & Conditions | FindMess" 
-                description="Read the terms and conditions for using FindMess, the elite discovery platform for student mess and tiffin services."
+                description="Read the terms and conditions for using FindMess, the platform for student mess and tiffin services."
             />
             <div className="grad-dark py-32">
                 <div className="container mx-auto px-4">
@@ -26,11 +26,11 @@ const TermsPage: React.FC = () => {
                 <div className="max-w-4xl space-y-12 dark:text-white/70 font-medium leading-relaxed italic">
                     <section className="space-y-6">
                         <h2 className="text-2xl font-black uppercase tracking-widest text-primary-500">1. Introduction</h2>
-                        <p>Welcome to MessWalha. By using our services, you agree to comply with and be bound by the following terms and conditions. Please review them carefully.</p>
+                        <p>Welcome to FindMess. By using our services, you agree to comply with and be bound by the following terms and conditions. Please review them carefully.</p>
                     </section>
                     <section className="space-y-6">
                         <h2 className="text-2xl font-black uppercase tracking-widest text-primary-500">2. Service Description</h2>
-                        <p>MessWalha provides a platform to discover, compare, and subscribe to mess services. We facilitate the connection between students and mess owners but are not responsible for the food quality directly.</p>
+                        <p>FindMess provides a platform to discover, compare, and subscribe to mess services. We facilitate the connection between students and mess owners but are not responsible for the food quality directly.</p>
                     </section>
                     <section className="space-y-6">
                         <h2 className="text-2xl font-black uppercase tracking-widest text-primary-500">3. User Responsibilities</h2>

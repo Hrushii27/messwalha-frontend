@@ -40,6 +40,7 @@ const OwnerDashboardPage: React.FC = () => {
     const [subscribers, setSubscribers] = useState<Subscription[]>([]);
     const [menus, setMenus] = useState<Menu[]>([]);
     const [revenue, setRevenue] = useState<number>(0);
+    const [activeStudentsCount, setActiveStudentsCount] = useState<number>(0);
     const [loading, setLoading] = useState(true);
     const [updating, setUpdating] = useState(false);
     const [savingMenu, setSavingMenu] = useState(false);
@@ -79,6 +80,7 @@ const OwnerDashboardPage: React.FC = () => {
                 setMenus(messRes.data.data?.menus || []);
                 setSubscribers(subsRes.data.data);
                 setRevenue(subsRes.data.totalRevenue || 0);
+                setActiveStudentsCount(subsRes.data.data.length);
                 setSubscription(subStatusRes.data.data);
                 
                 if (messRes.data.data?.id) {
@@ -105,7 +107,29 @@ const OwnerDashboardPage: React.FC = () => {
             }
         };
 
-        if (user && user.role === 'OWNER') fetchOwnerData();
+        const pollDashboardStats = async () => {
+            try {
+                const response = await api.get('/dashboard/owner/stats');
+                if (response.data.success) {
+                    const stats = response.data.data;
+                    setMess(prev => prev ? { 
+                        ...prev, 
+                        rating: stats.rating, 
+                        reviewCount: stats.reviewCount 
+                    } : null);
+                    setRevenue(stats.totalRevenue);
+                    setActiveStudentsCount(stats.activeStudents);
+                }
+            } catch (err) {
+                console.error('Polling error:', err);
+            }
+        };
+
+        if (user && user.role === 'OWNER') {
+            fetchOwnerData();
+            const interval = setInterval(pollDashboardStats, 5000);
+            return () => clearInterval(interval);
+        }
 
         const script = document.createElement('script');
         script.src = 'https://checkout.razorpay.com/v1/checkout.js';
@@ -229,9 +253,9 @@ const OwnerDashboardPage: React.FC = () => {
             <div className="p-6 bg-orange-500/20 text-orange-500 rounded-2xl mb-4 shadow-2xl shadow-orange-500/10">
                 <CreditCard size={48} />
             </div>
-            <h3 className="text-2xl md:text-3xl font-black text-white italic tracking-tighter uppercase">Subscription Required</h3>
+            <h3 className="text-2xl md:text-3xl font-black text-white italic tracking-tighter uppercase">{featureName} Locked</h3>
             <p className="text-text-muted max-w-md mx-auto text-sm md:text-base font-medium italic">
-                Your subscription has expired or is inactive. You must renew your Elite Listing Plan to access {featureName} and continue finding students.
+                Your subscription has expired or is inactive. Please renew your plan to keep your mess visible to students.
             </p>
             <Button onClick={() => navigate('/owner/subscribe')} size="lg" className="rounded-2xl px-12 py-6 text-xs font-black uppercase tracking-widest shadow-2xl shadow-primary-500/20">
                 Renew Subscription for ₹499/mo
@@ -244,7 +268,7 @@ const OwnerDashboardPage: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
                 {[
                     { label: 'Total Revenue', value: `₹${revenue.toLocaleString()}`, trend: '+12%', icon: <TrendingUp className="text-primary-500" /> },
-                    { label: 'Active Students', value: subscribers.length.toString(), trend: '+5', icon: <Users className="text-indigo-400" /> },
+                    { label: 'Active Students', value: activeStudentsCount.toString(), trend: '+5', icon: <Users className="text-indigo-400" /> },
                     { label: 'Avg Rating', value: mess?.rating ? Number(mess.rating).toFixed(1) : '0.0', trend: 'Global', icon: <Star className="text-orange-400" /> },
                 ].map((stat, i) => (
                     <Card key={i} className="p-8 bg-bg2/40 backdrop-blur-3xl border-white/10 rounded-[2.5rem] hover:border-primary-500/30 transition-all group overflow-hidden relative">
@@ -268,9 +292,9 @@ const OwnerDashboardPage: React.FC = () => {
                         <Utensils size={64} />
                     </div>
                     <div className="space-y-4 max-w-2xl mx-auto">
-                        <h2 className="text-4xl md:text-5xl font-black italic tracking-tighter text-white uppercase">Initialize Your Node</h2>
+                        <h2 className="text-4xl md:text-5xl font-black italic tracking-tighter text-white uppercase">Add Your Mess</h2>
                         <p className="text-text-muted text-sm md:text-base font-medium italic">
-                            You haven't listed your mess service yet. Secure your sector and start finding students by deploying your mess credentials to the network.
+                            You haven't listed your mess yet. Create a listing to start finding students near you.
                         </p>
                     </div>
                     <Button 
@@ -278,13 +302,13 @@ const OwnerDashboardPage: React.FC = () => {
                         size="lg"
                         className="rounded-2xl px-16 py-8 font-black uppercase tracking-widest text-sm shadow-3xl shadow-primary-500/30 hover:scale-[1.05] transition-all"
                     >
-                        Deploy Mess Listing
+                        Create Listing
                     </Button>
                 </Card>
             )}
 
             <section className="space-y-6">
-                <h2 className="text-[10px] font-black text-text-muted uppercase tracking-[0.4em] ml-2 italic">Operational Status</h2>
+                <h2 className="text-[10px] font-black text-text-muted uppercase tracking-[0.4em] ml-2 italic">Your Status</h2>
                 <Card className="p-8 md:p-10 overflow-hidden border-2 border-primary-500/10 bg-bg2/40 backdrop-blur-3xl rounded-[2.5rem] relative">
                     <div className="absolute bottom-0 right-0 w-64 h-64 bg-primary-500/5 rounded-full blur-[100px] -mr-32 -mb-32 pointer-events-none" />
                     <div className="flex flex-col xl:flex-row items-center justify-between gap-10 relative z-10">
@@ -298,7 +322,7 @@ const OwnerDashboardPage: React.FC = () => {
                             <div>
                                 <div className="flex flex-col sm:flex-row items-center sm:space-x-4 mb-4 space-y-3 sm:space-y-0">
                                     <h3 className="text-2xl md:text-3xl font-black text-white italic tracking-tighter uppercase leading-none">
-                                        {subscription?.status === 'trial' ? 'Free Protocol' : 'Elite Plan'}
+                                        {subscription?.status === 'trial' ? 'Free Trial' : 'Owner Plan'}
                                     </h3>
                                     <span className={`text-[9px] font-black px-4 py-1.5 rounded-lg uppercase tracking-widest ${subscription?.status === 'trial' ? 'bg-orange-500 text-white' :
                                         (subscription?.status as string) === 'active' ? 'bg-primary-500 text-white' :
@@ -316,7 +340,7 @@ const OwnerDashboardPage: React.FC = () => {
                                                     const end = new Date(subscription.trial_end!);
                                                     const now = new Date();
                                                     const diff = Math.ceil((end.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-                                                    return `${Math.max(0, diff)} Cycles`;
+                                                    return `${Math.max(0, diff)} Days`;
                                                 })()}
                                             </span>
                                         </div>
@@ -358,16 +382,16 @@ const OwnerDashboardPage: React.FC = () => {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12">
                 <section className="space-y-6">
-                    <h2 className="text-[10px] font-black text-text-muted uppercase tracking-[0.4em] ml-2 italic">Broadcast System</h2>
+                    <h2 className="text-[10px] font-black text-text-muted uppercase tracking-[0.4em] ml-2 italic">Announcements</h2>
                     <Card className="p-8 border-2 border-primary-500/10 bg-bg2/40 backdrop-blur-3xl rounded-[2.5rem] relative overflow-hidden">
                         <div className="absolute top-0 right-0 w-32 h-32 bg-primary-500/5 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
                         <div className="space-y-6 relative z-10">
-                            <p className="text-[11px] text-text-muted font-medium italic leading-relaxed">Broadcast a priority transmission to all student units connected to your node.</p>
+                            <p className="text-[11px] text-text-muted font-medium italic leading-relaxed">Send a message to all students who have subscribed to your mess.</p>
                             <textarea
                                 value={announcement}
                                 onChange={(e) => setAnnouncement(e.target.value)}
                                 className="w-full bg-bg3/30 p-6 rounded-2xl border border-white/10 outline-none focus:ring-2 focus:ring-primary-500/50 text-white text-sm min-h-[140px] font-black uppercase tracking-widest italic placeholder:text-text-muted/50"
-                                placeholder="E.g., Closed for maintenance today..."
+                                placeholder="E.g., Closed for holiday tomorrow..."
                             />
                             <div className="flex justify-end">
                                 <Button
@@ -375,7 +399,7 @@ const OwnerDashboardPage: React.FC = () => {
                                     isLoading={sendingAnnouncement}
                                     className="rounded-xl px-10 py-5 text-[10px] font-black uppercase tracking-widest shadow-xl shadow-primary-500/10"
                                 >
-                                    Deploy Signal
+                                    Send Message
                                 </Button>
                             </div>
                         </div>
@@ -383,12 +407,12 @@ const OwnerDashboardPage: React.FC = () => {
                 </section>
 
                 <section className="space-y-6">
-                    <h2 className="text-[10px] font-black text-text-muted uppercase tracking-[0.4em] ml-2 italic">Recent Log</h2>
+                    <h2 className="text-[10px] font-black text-text-muted uppercase tracking-[0.4em] ml-2 italic">Recent Activity</h2>
                     <Card className="p-8 bg-bg2/40 backdrop-blur-3xl border-white/10 rounded-[2.5rem] flex flex-col items-center justify-center min-h-[300px]">
                         <EmptyState
                             icon={Clock}
-                            title="Log Empty"
-                            description="No incoming transmissions detected in this cycle."
+                            title="No Activity"
+                            description="No recent activity found in this cycle."
                             className="bg-transparent border-none shadow-none text-center"
                         />
                     </Card>
@@ -403,15 +427,15 @@ const OwnerDashboardPage: React.FC = () => {
             <div className="space-y-10">
                 <div className="flex flex-col md:flex-row justify-between items-center gap-8 bg-bg2/40 backdrop-blur-3xl p-8 md:p-10 rounded-[2.5rem] border border-white/10">
                     <div className="space-y-2 text-center md:text-left">
-                        <h2 className="text-3xl md:text-4xl font-black text-white italic tracking-tighter uppercase leading-none">Menu Console</h2>
-                        <p className="text-text-muted text-[10px] font-black uppercase tracking-[0.3em] italic">Configuring Weekly Signals</p>
+                        <h2 className="text-3xl md:text-4xl font-black text-white italic tracking-tighter uppercase leading-none">Your Menu</h2>
+                        <p className="text-text-muted text-[10px] font-black uppercase tracking-[0.3em] italic">Manage your weekly food list</p>
                     </div>
                     <Button
                         onClick={handleMenuSave}
                         isLoading={savingMenu}
                         className="bg-primary-500 hover:bg-primary-400 px-12 py-6 rounded-2xl font-black uppercase tracking-widest text-[11px] shadow-2xl shadow-primary-500/20 w-full md:w-auto"
                     >
-                        Save Configuration
+                        Save Changes
                     </Button>
                 </div>
 
@@ -441,19 +465,19 @@ const OwnerDashboardPage: React.FC = () => {
                                     value={item.name}
                                     onChange={(e) => handleItemChange(selectedDay, idx, 'name', e.target.value)}
                                     className="w-full h-14 md:h-16 bg-bg3/30 border border-white/10 p-6 rounded-2xl text-white outline-none focus:ring-2 focus:ring-primary-500/50 transition-all font-black uppercase tracking-widest text-[10px] italic placeholder:text-text-muted/50"
-                                    placeholder="Enter dish designation..."
+                                    placeholder="Enter dish name..."
                                 />
                             </div>
                             <div className="w-full lg:w-64 space-y-4">
-                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted ml-2">Node Type</label>
+                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted ml-2">Food Type</label>
                                 <div className="relative">
                                     <select
                                         value={item.type}
                                         onChange={(e) => handleItemChange(selectedDay, idx, 'type', e.target.value)}
                                         className="w-full h-14 md:h-16 bg-bg3/30 border border-white/10 pl-6 pr-12 rounded-2xl text-white outline-none focus:ring-2 focus:ring-primary-500/50 transition-all appearance-none font-black uppercase tracking-widest text-[10px] italic"
                                     >
-                                        <option value="Veg" className="bg-bg2">VEG PROTOCOL</option>
-                                        <option value="Non-Veg" className="bg-bg2">NON-VEG SIGNAL</option>
+                                        <option value="Veg" className="bg-bg2">VEG</option>
+                                        <option value="Non-Veg" className="bg-bg2">VEG & NON-VEG</option>
                                     </select>
                                     <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-navy-500">
                                         <Clock size={16} />
@@ -473,9 +497,9 @@ const OwnerDashboardPage: React.FC = () => {
                         <Card className="min-h-[400px] bg-navy-900/40 backdrop-blur-3xl border-navy-800 rounded-[2.5rem] flex items-center justify-center">
                             <EmptyState
                                 icon={Utensils}
-                                title="Console Offline"
-                                description={`Deploy signals for ${selectedDay} to update student feeds.`}
-                                actionLabel="Add Entry"
+                                title="No Data Yet"
+                                description={`Add your menu items for ${selectedDay} to show them to students.`}
+                                actionLabel="Add Item"
                                 onAction={() => handleAddItem(selectedDay)}
                             />
                         </Card>
@@ -486,7 +510,7 @@ const OwnerDashboardPage: React.FC = () => {
                         className="w-full border-2 border-dashed border-white/10 py-16 rounded-[2.5rem] text-[10px] font-black uppercase tracking-[0.4em] text-text-muted hover:border-primary-500/50 hover:text-primary-500 hover:bg-primary-500/5 transition-all group relative overflow-hidden"
                     >
                         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-primary-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                        <span className="group-hover:scale-110 transition-transform inline-block relative z-10 font-black italic">+ Initialize New Signal</span>
+                        <span className="group-hover:scale-110 transition-transform inline-block relative z-10 font-black italic">+ Add New Item</span>
                     </button>
                 </div>
             </div>
@@ -499,12 +523,12 @@ const OwnerDashboardPage: React.FC = () => {
             <div className="space-y-8">
                 <div className="flex flex-col md:flex-row justify-between items-center bg-bg2/40 backdrop-blur-3xl p-8 md:p-10 rounded-[2.5rem] border border-white/10 gap-8">
                     <div className="space-y-2 text-center md:text-left">
-                        <h2 className="text-3xl md:text-4xl font-black text-white italic tracking-tighter uppercase leading-none">Student Units</h2>
-                        <p className="text-text-muted text-[10px] font-black uppercase tracking-[0.3em] italic">Active Node Subscribers</p>
+                        <h2 className="text-3xl md:text-4xl font-black text-white italic tracking-tighter uppercase leading-none">Your Students</h2>
+                        <p className="text-text-muted text-[10px] font-black uppercase tracking-[0.3em] italic">Active Subscribers</p>
                     </div>
                     <div className="px-10 py-5 bg-bg3/50 rounded-2xl border border-white/10 flex items-center gap-4">
-                        <span className="text-primary-500 font-black text-3xl italic tracking-tighter">{subscribers.length}</span>
-                        <span className="text-text-muted text-[10px] font-black uppercase tracking-widest">Units Connected</span>
+                        <span className="text-primary-500 font-black text-3xl italic tracking-tighter">{activeStudentsCount}</span>
+                        <span className="text-text-muted text-[10px] font-black uppercase tracking-widest">Active Students</span>
                     </div>
                 </div>
 
@@ -514,11 +538,11 @@ const OwnerDashboardPage: React.FC = () => {
                             <table className="w-full text-left border-collapse min-w-[800px]">
                                 <thead>
                                     <tr className="bg-bg3/50">
-                                        <th className="px-10 py-6 text-[10px] font-black text-text-muted uppercase tracking-[0.2em]">Identification</th>
-                                        <th className="px-10 py-6 text-[10px] font-black text-text-muted uppercase tracking-[0.2em]">Node Protocol</th>
-                                        <th className="px-10 py-6 text-[10px] font-black text-text-muted uppercase tracking-[0.2em]">Timestamp</th>
+                                        <th className="px-10 py-6 text-[10px] font-black text-text-muted uppercase tracking-[0.2em]">Student</th>
+                                        <th className="px-10 py-6 text-[10px] font-black text-text-muted uppercase tracking-[0.2em]">Plan</th>
+                                        <th className="px-10 py-6 text-[10px] font-black text-text-muted uppercase tracking-[0.2em]">Joined Date</th>
                                         <th className="px-10 py-6 text-[10px] font-black text-text-muted uppercase tracking-[0.2em]">Status</th>
-                                        <th className="px-10 py-6 text-[10px] font-black text-text-muted uppercase tracking-[0.2em]">Command</th>
+                                        <th className="px-10 py-6 text-[10px] font-black text-text-muted uppercase tracking-[0.2em]">Remove</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-white/5">
@@ -544,7 +568,7 @@ const OwnerDashboardPage: React.FC = () => {
                                                 {sub.created_at ? new Date(sub.created_at).toLocaleDateString() : '—'}
                                             </td>
                                             <td className="px-10 py-8">
-                                                <span className="text-[9px] font-black px-4 py-1.5 bg-green-500/10 text-green-400 rounded-lg uppercase tracking-widest border border-green-500/20 italic">Node Active</span>
+                                                <span className="text-[9px] font-black px-4 py-1.5 bg-green-500/10 text-green-400 rounded-lg uppercase tracking-widest border border-green-500/20 italic">Active</span>
                                             </td>
                                             <td className="px-10 py-8">
                                                 <button className="p-4 bg-bg3/50 text-text-muted rounded-xl hover:bg-red-500/10 hover:text-red-500 transition-all border border-white/10 hover:border-red-500/20">
@@ -561,8 +585,8 @@ const OwnerDashboardPage: React.FC = () => {
                     <Card className="min-h-[400px] bg-bg2/40 backdrop-blur-3xl border-white/10 rounded-[2.5rem] flex items-center justify-center">
                         <EmptyState
                             icon={Users}
-                            title="Zero Units"
-                            description="No student signals detected yet. Optimize your node to attract units."
+                            title="No Students"
+                            description="No students have subscribed yet. Complete your profile to attract more students."
                         />
                     </Card>
                 )}
@@ -576,8 +600,8 @@ const OwnerDashboardPage: React.FC = () => {
             <div className="space-y-10">
                 <div className="flex flex-col md:flex-row justify-between items-center bg-bg2/40 backdrop-blur-3xl p-8 md:p-10 rounded-[2.5rem] border border-white/10 gap-8">
                     <div className="space-y-2 text-center md:text-left">
-                        <h2 className="text-3xl md:text-4xl font-black text-white italic tracking-tighter uppercase leading-none">Feedback Matrix</h2>
-                        <p className="text-text-muted text-[10px] font-black uppercase tracking-[0.3em] italic">Analyzing Unit Transmissions</p>
+                        <h2 className="text-3xl md:text-4xl font-black text-white italic tracking-tighter uppercase leading-none">Reviews</h2>
+                        <p className="text-text-muted text-[10px] font-black uppercase tracking-[0.3em] italic">What students are saying</p>
                     </div>
                     <div className="flex items-center gap-5 px-8 py-5 bg-bg3/50 rounded-2xl border border-white/10">
                         <Star size={24} className="text-orange-400 fill-orange-400" />
@@ -611,7 +635,7 @@ const OwnerDashboardPage: React.FC = () => {
                             {review.owner_response ? (
                                 <div className="p-8 bg-bg3/30 rounded-3xl border-l-4 border-primary-500/40 space-y-4 relative z-10">
                                     <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-[0.3em] text-primary-500 italic">
-                                        <span>Merchant Transmission</span>
+                                        <span>Your Reply</span>
                                         <MessageSquare size={16} />
                                     </div>
                                     <p className="text-text-muted italic font-black uppercase tracking-widest leading-relaxed">"{review.owner_response}"</p>
@@ -623,7 +647,7 @@ const OwnerDashboardPage: React.FC = () => {
                                             <textarea
                                                 value={responseText}
                                                 onChange={(e) => setResponseText(e.target.value)}
-                                                placeholder="Compose signal response..."
+                                                placeholder="Write your reply..."
                                                 className="w-full h-16 lg:h-18 bg-bg3/30 p-8 rounded-3xl border border-white/10 outline-none focus:ring-2 focus:ring-primary-500/50 text-white text-sm min-h-[140px] font-black uppercase tracking-widest italic leading-relaxed placeholder:text-text-muted/50"
                                             />
                                             <div className="flex flex-wrap gap-4">
@@ -632,18 +656,18 @@ const OwnerDashboardPage: React.FC = () => {
                                                     onClick={async () => {
                                                         try {
                                                             await api.post(`/reviews/${review.id}/respond`, { response: responseText });
-                                                            toast.success('Response Deployed');
+                                                            toast.success('Reply Sent');
                                                             const res = await api.get(`/reviews/${mess?.id}`);
                                                             setOwnerReviews(res.data.data);
                                                             setRespondingTo(null);
                                                             setResponseText('');
                                                         } catch (err) {
-                                                            toast.error('Deployment Failed');
+                                                            toast.error('Failed to send reply');
                                                         }
                                                     }}
                                                     className="rounded-2xl px-12 py-5 font-black uppercase tracking-widest text-[10px] grow md:grow-0"
                                                 >
-                                                    Transmit Signal
+                                                    Send Reply
                                                 </Button>
                                                 <Button
                                                     variant="ghost"
@@ -651,7 +675,7 @@ const OwnerDashboardPage: React.FC = () => {
                                                     onClick={() => setRespondingTo(null)}
                                                     className="rounded-2xl px-12 py-5 font-black uppercase tracking-widest text-[10px] text-text-muted border border-white/10 hover:bg-bg3 grow md:grow-0 italic"
                                                 >
-                                                    Cancel Transmit
+                                                    Cancel
                                                 </Button>
                                             </div>
                                         </div>
@@ -661,7 +685,7 @@ const OwnerDashboardPage: React.FC = () => {
                                             className="rounded-2xl font-black uppercase tracking-widest text-[10px] px-10 py-5 bg-bg3 text-white border border-white/10 hover:border-primary-500 hover:text-primary-500 transition-all flex items-center gap-4 italic"
                                         >
                                             <MessageSquare size={18} className="text-primary-500" />
-                                            Respond to Signal
+                                            Reply to Review
                                         </button>
                                     )}
                                 </div>
@@ -671,8 +695,8 @@ const OwnerDashboardPage: React.FC = () => {
                         <Card className="min-h-[400px] bg-bg2/40 backdrop-blur-3xl border-white/10 rounded-[2.5rem] flex items-center justify-center">
                             <EmptyState
                                 icon={MessageSquare}
-                                title="No Signals"
-                                description="Inbound student feedback will appear here."
+                                title="No Reviews"
+                                description="Student reviews will appear here."
                             />
                         </Card>
                     )}
@@ -687,47 +711,47 @@ const OwnerDashboardPage: React.FC = () => {
             <div className="space-y-10">
                 <Card className="bg-bg2/40 backdrop-blur-3xl p-8 md:p-12 rounded-[2.5rem] border border-white/10">
                     <div className="space-y-2 mb-10 text-center md:text-left">
-                        <h2 className="text-3xl md:text-4xl font-black text-white italic tracking-tighter uppercase leading-none">Node Settings</h2>
-                        <p className="text-text-muted text-[10px] font-black uppercase tracking-[0.3em] italic">Configuring Metadata Relays</p>
+                        <h2 className="text-3xl md:text-4xl font-black text-white italic tracking-tighter uppercase leading-none">Settings</h2>
+                        <p className="text-text-muted text-[10px] font-black uppercase tracking-[0.3em] italic">Manage your mess details</p>
                     </div>
                     <form onSubmit={handleUpdateMess} className="space-y-8">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <Input
-                                label="Operational Name"
+                                label="Mess Name"
                                 value={messForm.name}
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMessForm({ ...messForm, name: e.target.value })}
-                                placeholder="Designation"
+                                placeholder="Public name of your mess"
                                 className="h-14 md:h-16"
                                 id="mess-name-input"
                             />
                             <Input
-                                label="Cuisine Type"
+                                label="Cuisine"
                                 value={messForm.cuisine}
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMessForm({ ...messForm, cuisine: e.target.value })}
-                                placeholder="Signals (e.g. Maharashtrian)"
+                                placeholder="E.g. Maharashtrian, South Indian"
                                 className="h-14 md:h-16"
                                 id="mess-cuisine-input"
                             />
                             <div className="md:col-span-2 space-y-4">
-                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted ml-2 italic">Broadcast Description</label>
+                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted ml-2 italic">Description</label>
                                 <textarea
                                     rows={4}
                                     value={messForm.description}
                                     onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setMessForm({ ...messForm, description: e.target.value })}
                                     className="w-full bg-bg3/30 border border-white/10 p-8 rounded-[2rem] text-white outline-none focus:ring-2 focus:ring-primary-500/50 transition-all font-black uppercase tracking-widest leading-relaxed text-sm italic placeholder:text-text-muted/50"
-                                    placeholder="Briefly describe your culinary node..."
+                                    placeholder="Tell students about your food..."
                                 />
                             </div>
                             <Input
-                                label="Physical Location"
+                                label="Address"
                                 value={messForm.address}
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMessForm({ ...messForm, address: e.target.value })}
-                                placeholder="Coordinates"
+                                placeholder="Full address"
                                 className="h-14 md:h-16"
                                 id="mess-address-input"
                             />
                             <Input
-                                label="Signal Frequency (Phone)"
+                                label="Phone Number"
                                 value={messForm.contact}
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMessForm({ ...messForm, contact: e.target.value })}
                                 placeholder="+91 XXXX"
@@ -735,7 +759,7 @@ const OwnerDashboardPage: React.FC = () => {
                                 id="mess-contact-input"
                             />
                             <Input
-                                label="Metropolitan Sector (City)"
+                                label="City"
                                 value={messForm.city}
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMessForm({ ...messForm, city: e.target.value })}
                                 placeholder="E.g. Pune"
@@ -743,7 +767,7 @@ const OwnerDashboardPage: React.FC = () => {
                                 id="mess-city-input"
                             />
                             <div className="space-y-4">
-                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted ml-2 italic">Dietary Matrix</label>
+                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted ml-2 italic">Food Category</label>
                                 <div className="relative">
                                     <select
                                         value={messForm.veg_nonveg}
@@ -751,7 +775,7 @@ const OwnerDashboardPage: React.FC = () => {
                                         className="w-full h-14 md:h-16 bg-bg3/30 border border-white/10 pl-6 pr-12 rounded-2xl text-white outline-none focus:ring-2 focus:ring-primary-500/50 transition-all appearance-none font-black uppercase tracking-widest text-[10px] italic"
                                     >
                                         <option value="Veg" className="bg-bg2 uppercase">Pure Veg</option>
-                                        <option value="Non-Veg" className="bg-bg2 uppercase">Hybrid (Veg + Non-Veg)</option>
+                                        <option value="Non-Veg" className="bg-bg2 uppercase">Veg & Non-Veg</option>
                                     </select>
                                     <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-text-muted">
                                         <ChevronRight size={18} className="rotate-90" />
@@ -760,10 +784,10 @@ const OwnerDashboardPage: React.FC = () => {
                             </div>
                             <div className="md:col-span-2">
                                 <Input
-                                    label="Target College Nodes"
+                                    label="Nearby Colleges"
                                     value={messForm.college_tags}
                                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMessForm({ ...messForm, college_tags: e.target.value })}
-                                    placeholder="Comma separatedInstitution tags..."
+                                    placeholder="Enter nearby college names..."
                                     className="h-14 md:h-16"
                                     id="mess-tags-input"
                                 />
@@ -776,7 +800,7 @@ const OwnerDashboardPage: React.FC = () => {
                                 isLoading={updating} 
                                 className="w-full md:w-auto rounded-2xl px-16 py-6 font-black uppercase tracking-[0.2em] italic text-xs shadow-2xl shadow-primary-500/20"
                             >
-                                <Save size={18} className="mr-3" /> Transmit Signal
+                                <Save size={18} className="mr-3" /> Save Changes
                             </Button>
                         </div>
                     </form>
@@ -790,7 +814,7 @@ const OwnerDashboardPage: React.FC = () => {
             <Layout>
                 <div className="min-h-screen bg-bg flex flex-col items-center justify-center p-6 sm:p-12 lg:p-24 relative z-10 w-full">
                     <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary-500 mb-4"></div>
-                    <p className="text-text-muted font-black uppercase tracking-[0.2em] text-xs">Initializing Terminal...</p>
+                    <p className="text-text-muted font-black uppercase tracking-[0.2em] text-xs">Loading Dashboard...</p>
                 </div>
             </Layout>
         );
@@ -811,24 +835,24 @@ const OwnerDashboardPage: React.FC = () => {
                                     <span className="text-[10px] font-black uppercase tracking-[0.4em] italic">{mess?.name || 'Inbound'}</span>
                                 </div>
                                 <h1 className="text-5xl md:text-8xl font-black italic tracking-tighter leading-none">
-                                    CONTROL <br /> <span className="text-primary-500">CENTER</span>
+                                    OWNER <br /> <span className="text-primary-500">DASHBOARD</span>
                                 </h1>
                             </div>
                             <div className="flex flex-wrap justify-center gap-4">
-                                <Button 
+                                    <Button 
                                     onClick={() => navigate('/owner/edit-mess')}
                                     variant="primary" 
                                     size="lg" 
                                     className="rounded-2xl bg-primary-500 text-white hover:bg-primary-400 px-10 py-6 font-black uppercase tracking-widest text-[10px] shadow-3xl shadow-primary-500/20"
                                 >
-                                    <Utensils size={18} className="mr-3" /> Edit Mess Profile
+                                    <Utensils size={18} className="mr-3" /> Edit Profile
                                 </Button>
                                 <Button 
                                     variant="outline" 
                                     size="lg" 
                                     className="rounded-2xl border-white/10 bg-bg3/30 backdrop-blur-xl text-white hover:bg-bg3 px-10 py-6 font-black uppercase tracking-widest text-[10px] shadow-3xl"
                                 >
-                                    <ImageIcon size={18} className="mr-3 text-primary-500" /> Manage Hub Photos
+                                    <ImageIcon size={18} className="mr-3 text-primary-500" /> Manage Photos
                                 </Button>
                             </div>
                         </div>
@@ -841,9 +865,9 @@ const OwnerDashboardPage: React.FC = () => {
                         <div className="lg:sticky lg:top-32 flex lg:flex-col overflow-x-auto lg:overflow-x-visible pb-4 lg:pb-0 gap-3 scrollbar-hide">
                             {[
                                 { id: 'overview', icon: <LayoutDashboard size={20} />, label: 'Dashboard' },
-                                { id: 'menu', icon: <Utensils size={20} />, label: 'Menu Logic' },
-                                { id: 'subscribers', icon: <Users size={20} />, label: 'Connected Units' },
-                                { id: 'reviews', icon: <MessageSquare size={20} />, label: 'Signal Feedback' },
+                                { id: 'menu', icon: <Utensils size={20} />, label: 'Menu' },
+                                { id: 'subscribers', icon: <Users size={20} />, label: 'Students' },
+                                { id: 'reviews', icon: <MessageSquare size={20} />, label: 'Reviews' },
                                 { id: 'settings', icon: <Settings size={20} />, label: 'Settings' },
                             ].map((item) => (
                                 <button

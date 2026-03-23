@@ -27,6 +27,7 @@ const menuRoutes = require('./routes/menu');
 const orderRoutes = require('./routes/order');
 const reviewsRoutes = require('./routes/reviews');
 const googleAuthRoutes = require('./routes/googleAuth');
+const dashboardRoutes = require('./routes/dashboard');
 
 console.log('🚀 Server starting process...');
 const app = express();
@@ -145,6 +146,7 @@ app.use('/api/activity', activityRoutes);
 app.use('/api/menu', menuRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/reviews', reviewsRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
 // Basic Route
 app.get('/', (req, res) => {

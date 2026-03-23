@@ -141,7 +141,7 @@ export const Header: React.FC = () => {
 
                                             <div className="px-10 pb-6 border-b border-white/5 mb-4 relative overflow-hidden">
                                                 <div className="absolute top-0 right-0 w-24 h-24 bg-primary-500/10 rounded-full blur-2xl -mr-12 -mt-12" />
-                                                <p className="text-[9px] font-black text-primary-500 uppercase tracking-[0.4em] mb-2 relative z-10">{user?.role === 'OWNER' ? 'Owner Account' : 'Student Account'}</p>
+                                                <p className="text-[9px] font-black text-primary-500 uppercase tracking-[0.4em] mb-2 relative z-10">{user?.role === 'OWNER' ? 'Mess Owner' : 'Student'}</p>
                                                 <p className="text-xs font-black text-white truncate italic relative z-10">{user?.email}</p>
                                             </div>
 
@@ -172,7 +172,7 @@ export const Header: React.FC = () => {
                                                     { label: 'Profile', path: '/profile', icon: UserIcon },
                                                     ...(user?.role === 'OWNER' ? [{ label: 'Dashboard', path: '/owner/dashboard', icon: Utensils }] : []),
                                                     { label: 'Subscriptions', path: '/subscriptions', icon: Utensils },
-                                                    { label: 'Settings', path: '/profile', icon: Languages },
+                                                    { label: 'Account Settings', path: '/profile', icon: Languages },
                                                 ].map((item) => (
                                                     <Link
                                                         key={item.label}
@@ -194,7 +194,7 @@ export const Header: React.FC = () => {
                                                     }}
                                                     className="w-full text-left py-2 text-[10px] font-black text-red-500/70 hover:text-red-500 transition-all uppercase tracking-[0.3em] flex items-center justify-between"
                                                 >
-                                                    Logout
+                                                    Sign Out
                                                     <LogOut size={14} />
                                                 </button>
                                             </div>
@@ -209,7 +209,7 @@ export const Header: React.FC = () => {
                                 <Button variant="ghost" size="sm" className="text-white/60 hover:text-primary-500 font-bold uppercase tracking-[0.1em] text-[11px] px-2 sm:px-4">Login</Button>
                             </Link>
                             <Link to="/register">
-                                <Button size="lg" className="rounded-xl sm:rounded-2xl px-4 sm:px-8 shadow-2xl shadow-primary-500/20 font-bold uppercase tracking-[0.1em] text-[11px] h-10 sm:h-12 bg-primary-500 hover:bg-primary-600 border-none">Join Free</Button>
+                                <Button size="lg" className="rounded-xl sm:rounded-2xl px-4 sm:px-8 shadow-2xl shadow-primary-500/20 font-bold uppercase tracking-[0.1em] text-[11px] h-10 sm:h-12 bg-primary-500 hover:bg-primary-600 border-none">Get Started</Button>
                             </Link>
                         </div>
                     )}
@@ -302,7 +302,7 @@ export const Header: React.FC = () => {
                                             <Button variant="outline" className="w-full h-14 font-black uppercase tracking-widest text-[11px] border-white/10 text-white">Login</Button>
                                         </Link>
                                         <Link to="/register" onClick={() => setIsMenuOpen(false)}>
-                                            <Button className="w-full h-14 font-black uppercase tracking-widest text-[11px] bg-primary-500 shadow-xl shadow-primary-500/20">Join Free</Button>
+                                            <Button className="w-full h-14 font-black uppercase tracking-widest text-[11px] bg-primary-500 shadow-xl shadow-primary-500/20">Get Started</Button>
                                         </Link>
                                     </div>
                                 ) : (
@@ -314,7 +314,7 @@ export const Header: React.FC = () => {
                                         className="w-full flex items-center justify-center gap-3 p-6 rounded-2xl bg-red-500/10 text-red-500 font-black uppercase tracking-[0.3em] text-[11px] border border-red-500/20"
                                     >
                                         <LogOut size={18} />
-                                        Logout
+                                        Sign Out
                                     </button>
                                 )}
                             </div>

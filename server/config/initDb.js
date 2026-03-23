@@ -64,6 +64,28 @@ const createTables = async () => {
       created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
       UNIQUE(user_id, mess_id)
     );
+
+    CREATE TABLE IF NOT EXISTS student_subscriptions (
+      id SERIAL PRIMARY KEY,
+      user_id INTEGER REFERENCES mess_owners(id) ON DELETE CASCADE,
+      mess_id INTEGER REFERENCES mess_listings(id) ON DELETE CASCADE,
+      plan_type VARCHAR(50) DEFAULT 'monthly',
+      status VARCHAR(20) DEFAULT 'active',
+      start_date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+      end_date TIMESTAMP WITH TIME ZONE,
+      created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+      UNIQUE(user_id, mess_id)
+    );
+
+    CREATE TABLE IF NOT EXISTS payments (
+      id SERIAL PRIMARY KEY,
+      user_id INTEGER REFERENCES mess_owners(id) ON DELETE CASCADE,
+      mess_id INTEGER REFERENCES mess_listings(id) ON DELETE CASCADE,
+      amount DECIMAL(10, 2) NOT NULL,
+      status VARCHAR(20) DEFAULT 'SUCCESS',
+      transaction_id VARCHAR(255),
+      created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    );
     
     CREATE TABLE IF NOT EXISTS otp_verifications (
       id SERIAL PRIMARY KEY,

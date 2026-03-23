@@ -180,7 +180,7 @@ const AddMessPage: React.FC = () => {
             <Layout>
                 <div className="min-h-[80vh] flex flex-col items-center justify-center space-y-4">
                     <Loader2 className="w-12 h-12 text-primary-500 animate-spin" />
-                    <p className="text-text-muted font-black uppercase tracking-widest text-xs italic text-center">Checking Node Credentials...</p>
+                    <p className="text-text-muted font-black uppercase tracking-widest text-xs italic text-center">Verifying details...</p>
                 </div>
             </Layout>
         );
@@ -202,8 +202,8 @@ const AddMessPage: React.FC = () => {
                             <CheckCircle2 size={48} className="text-primary-500" />
                         </div>
                         <div className="space-y-4">
-                            <h2 className="text-4xl font-black italic tracking-tighter text-text-primary uppercase">Mess Registered!</h2>
-                            <p className="text-text-muted font-black uppercase tracking-widest text-[10px] italic">Your mess has been added to the network successfully. Redirecting to exploration page...</p>
+                            <h2 className="text-4xl font-black italic tracking-tighter text-text-primary uppercase">Mess Added!</h2>
+                            <p className="text-text-muted font-black uppercase tracking-widest text-[10px] italic">Your mess has been added successfully. Redirecting to your dashboard...</p>
                         </div>
                     </motion.div>
                 </div>
@@ -214,7 +214,7 @@ const AddMessPage: React.FC = () => {
     return (
         <Layout>
             <Seo
-                title="Register Your Mess | MessWalha"
+                title="Register Your Mess | FindMess"
                 description="Join the elite network of student mess services. Register your mess and reach thousands of students today."
             />
 
@@ -235,9 +235,9 @@ const AddMessPage: React.FC = () => {
                         animate={{ y: 0, opacity: 1 }}
                         className="text-6xl md:text-8xl font-black tracking-tighter text-white italic"
                     >
-                        Join the <span className="text-primary-500">Elite</span> Network
+                        Join the <span className="text-primary-500">Best</span> Network
                     </motion.h1>
-                    <p className="text-text-muted font-black uppercase tracking-[0.4em] text-[10px] md:text-xs italic">Register your mess service on MessWalha</p>
+                    <p className="text-text-muted font-black uppercase tracking-[0.4em] text-[10px] md:text-xs italic">Add your mess to FindMess</p>
                 </div>
             </div>
 
@@ -447,7 +447,7 @@ const AddMessPage: React.FC = () => {
                                     <div className="flex flex-col justify-center space-y-4 pr-8">
                                         <div className="flex items-center gap-3 text-primary-500">
                                             <ImageIcon size={16} />
-                                            <h4 className="text-[10px] font-black uppercase tracking-widest">Main Display Signal</h4>
+                                            <h4 className="text-[10px] font-black uppercase tracking-widest">Main Photo</h4>
                                         </div>
                                         <p className="text-[10px] font-medium leading-relaxed text-text-muted dark:text-white/30 italic">
                                             This will be the first image students see when browsing. We recommend a clear photo of your special meal plate.
@@ -508,7 +508,7 @@ const AddMessPage: React.FC = () => {
                                 <Loader2 className="animate-spin" />
                             ) : (
                                 <>
-                                    Submit Mess Registry
+                                    Submit Mess Details
                                     <ArrowRight size={20} />
                                 </>
                             )}
