@@ -190,8 +190,8 @@ app.get('/', (req, res) => {
 });
 
 // Start Server
-const server = app.listen(PORT, '0.0.0.0', () => {
-  console.log(`✅ Server successfully listening on 0.0.0.0:${PORT}`);
+const server = app.listen(PORT, () => {
+  console.log(`✅ Server successfully listening on port ${PORT}`);
 });
 
 // Error handling

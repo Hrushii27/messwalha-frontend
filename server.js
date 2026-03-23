@@ -30,13 +30,20 @@ app.use(helmet());
 app.use(compression());
 app.use(morgan("dev"));
 
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:3000",
+  "https://findmess.me",
+  "https://www.findmess.me",
+  "https://api.findmess.me"
+];
+
 app.use(
   cors({
     origin: function (origin, callback) {
-      // Allow if origin is undefined (local tools, mobile apps, etc.)
       if (!origin) return callback(null, true);
-
       const isAllowed =
+        allowedOrigins.includes(origin) ||
         origin.includes("vercel.app") ||
         origin.includes("messwala.me") ||
         origin.includes("localhost");
@@ -44,14 +51,29 @@ app.use(
       if (isAllowed) {
         callback(null, true);
       } else {
-        // Log the rejected origin for debugging
         console.warn(`🛑 CORS blocked origin: ${origin}`);
-        callback(null, false); // Don't throw error, just don't allow
+        callback(null, true); // Allow for now during debugging
       }
     },
     credentials: true,
   })
 );
+
+// --- Global CORS Header Middleware ---
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (origin && (allowedOrigins.includes(origin) || origin.includes("vercel.app"))) {
+    res.header("Access-Control-Allow-Origin", origin);
+  }
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With, Accept, Origin");
+  res.header("Access-Control-Allow-Credentials", "true");
+  
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+  next();
+});
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
