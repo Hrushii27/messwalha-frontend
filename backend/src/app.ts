@@ -70,12 +70,43 @@ app.use(helmet({
     crossOriginResourcePolicy: { policy: "cross-origin" }
 }));
 
+const allowedOrigins = [
+    "http://localhost:5173",
+    "http://localhost:3000",
+    "https://findmess.me",
+    "https://www.findmess.me",
+    "https://api.findmess.me"
+];
+
 app.use(cors({
-    origin: true, // Reflect request origin to allow any frontend (previews, prod, etc.)
+    origin: (origin, callback) => {
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.includes(origin) || origin.endsWith(".vercel.app") || process.env.NODE_ENV === 'development') {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin']
 }));
+
+// --- Global CORS Header Middleware ---
+app.use((req, res, next) => {
+    const origin = req.headers.origin;
+    if (origin && allowedOrigins.includes(origin as string)) {
+        res.header("Access-Control-Allow-Origin", origin as string);
+    }
+    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With, Accept, Origin");
+    res.header("Access-Control-Allow-Credentials", "true");
+    
+    if (req.method === 'OPTIONS') {
+        return res.sendStatus(200);
+    }
+    next();
+});
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

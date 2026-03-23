@@ -167,9 +167,24 @@ const AddMessPage: React.FC = () => {
             setSuccess(true);
             setTimeout(() => navigate('/owner/dashboard'), 3000);
         } catch (error) {
-            const err = error as { response?: { data?: { message?: string } } };
+            const err = error as any;
             console.error('Registration failed:', err);
-            setError(err.response?.data?.message || 'Failed to register mess. Please try again.');
+            
+            let errorMessage = 'Failed to register mess. Please try again.';
+            
+            if (err.response) {
+                // Server responded with a status code outside the 2xx range
+                errorMessage = err.response.data?.message || `Server error: ${err.response.status}`;
+            } else if (err.request) {
+                // Request was made but no response was received
+                errorMessage = "Network Error: Cannot reach the server. Please check your internet or CORS settings.";
+            } else {
+                // Something happened in setting up the request
+                errorMessage = err.message;
+            }
+            
+            setError(errorMessage);
+            alert(`Error: ${errorMessage}`);
         } finally {
             setLoading(false);
         }
