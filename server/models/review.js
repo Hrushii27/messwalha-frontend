@@ -36,6 +36,20 @@ const Review = {
             [userId]
         );
         return result.rows;
+    },
+    checkExistingReview: async (messId, userId) => {
+        const result = await db.query(
+            'SELECT * FROM reviews WHERE mess_id = $1 AND user_id = $2 LIMIT 1',
+            [messId, userId]
+        );
+        return result.rows[0];
+    },
+    calculateAverageRating: async (messId) => {
+        const result = await db.query(
+            'SELECT AVG(rating)::numeric(3,2) as average, COUNT(*) as count FROM reviews WHERE mess_id = $1',
+            [messId]
+        );
+        return result.rows[0];
     }
 };
 

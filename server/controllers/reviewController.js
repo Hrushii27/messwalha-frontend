@@ -1,4 +1,5 @@
 const Review = require('../models/review');
+const Mess = require('../models/mess');
 const db = require('../config/db');
 
 const addReview = async (req, res) => {
@@ -10,11 +11,25 @@ const addReview = async (req, res) => {
             return res.status(400).json({ message: 'Mess ID and rating are required' });
         }
 
+        // 1. One user = One review per mess (FIX 6)
+        const existing = await Review.checkExistingReview(mess_id, userId);
+        if (existing) {
+            return res.status(400).json({ message: 'You have already reviewed this mess' });
+        }
+
+        // 2. Save review (FIX 7)
         const review = await Review.create(mess_id, userId, rating, comment);
+
+        // 3. Update Mess Rating (FIX 8)
+        const ratingStats = await Review.calculateAverageRating(mess_id);
+        if (ratingStats) {
+            await Mess.updateRating(mess_id, ratingStats.average, ratingStats.count);
+        }
+
         res.status(201).json({ success: true, data: review });
     } catch (err) {
         console.error('Error adding review:', err);
-        res.status(500).json({ message: 'Error adding review' });
+        res.status(500).json({ message: 'Error adding review: ' + err.message });
     }
 };
 

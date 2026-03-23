@@ -26,6 +26,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
 import type { Mess, Menu } from '../types/mess';
 import Seo from '../components/common/Seo';
+import { LoginPromptModal } from '../components/auth/LoginPromptModal';
 
 interface Plan {
     title: string;
@@ -55,6 +56,7 @@ const MessDetailsPage: React.FC = () => {
     const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
     const [subscribing, setSubscribing] = useState(false);
     const [reviewForm, setReviewForm] = useState({ rating: 5, comment: '', show: false });
+    const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
     const { isFavorite, toggleFavorite } = useFavorites();
     const { user } = useAppSelector((state: RootState) => state.auth);
 
@@ -175,6 +177,12 @@ const MessDetailsPage: React.FC = () => {
 
     const handleReviewSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        
+        if (!user) {
+            setIsLoginModalOpen(true);
+            return;
+        }
+
         try {
             const { data } = await api.post('/reviews', {
                 mess_id: id,
@@ -182,14 +190,21 @@ const MessDetailsPage: React.FC = () => {
                 comment: reviewForm.comment
             });
             if (data.success) {
-                alert('Review submitted successfully!');
+                toast.success('Review broadcast successful!');
                 setReviewForm({ rating: 5, comment: '', show: false });
-                const reviewsRes = await api.get(`/reviews/${id}`);
+                
+                // Re-fetch mess and reviews to update stats instantly
+                const [messRes, reviewsRes] = await Promise.all([
+                    api.get(`/messes/${id}`),
+                    api.get(`/reviews/${id}`)
+                ]);
+                setMess(messRes.data.data);
                 setReviews(reviewsRes.data.data || []);
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error('Review submission failed', error);
-            alert('Failed to submit review. Make sure you are logged in.');
+            const msg = error.response?.data?.message || 'Failed to submit review.';
+            toast.error(msg);
         }
     };
 
@@ -302,7 +317,7 @@ const MessDetailsPage: React.FC = () => {
                                     ))}
                                 </div>
                                 <span className="font-black text-2xl text-white italic tracking-tighter">{Number(mess.rating || 4.5).toFixed(1)}</span>
-                                <span className="text-text-secondary text-[10px] font-black uppercase tracking-widest ml-1">{mess.reviews?.length || 0} Units Reported</span>
+                                <span className="text-text-secondary text-[10px] font-black uppercase tracking-widest ml-1">{mess.reviewCount || 0} Units Reported</span>
                             </div>
                             <div className="h-6 w-px bg-white/10 hidden md:block" />
                             <div className="flex items-center gap-3 text-text-secondary font-black uppercase tracking-widest text-[10px] italic">
@@ -445,9 +460,15 @@ const MessDetailsPage: React.FC = () => {
                                             <Button
                                                 variant="outline"
                                                 className="rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] py-5 px-10 border-white/10 bg-bg3/50 text-white hover:border-primary-500 italic transition-all w-full sm:w-auto"
-                                                onClick={() => setReviewForm(prev => ({ ...prev, show: !prev.show }))}
+                                                onClick={() => {
+                                                    if (!user) {
+                                                        setIsLoginModalOpen(true);
+                                                    } else {
+                                                        setReviewForm(prev => ({ ...prev, show: !prev.show }));
+                                                    }
+                                                }}
                                             >
-                                                {reviewForm.show ? 'Abort Entry' : 'Post Transmission'}
+                                                {reviewForm.show ? 'Abort Entry' : (user ? 'Post Transmission' : 'Sign in to Rate')}
                                             </Button>
                                         </div>
 
@@ -666,6 +687,10 @@ const MessDetailsPage: React.FC = () => {
                     </div>
                 </div>
             </div>
+            <LoginPromptModal 
+                isOpen={isLoginModalOpen} 
+                onClose={() => setIsLoginModalOpen(false)} 
+            />
         </Layout>
     );
 };

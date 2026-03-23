@@ -12,6 +12,7 @@ function mapMessFields(mess) {
             collegeTags: mess.college_tags,
             upiId: mess.upi_id,
             menuImages: mess.menu_images || [],
+            reviewCount: mess.review_count ? parseInt(mess.review_count) : 0,
             // Preserve other fields
         };
     } catch (err) {
@@ -129,6 +130,13 @@ const Mess = {
         const result = await db.query(
             "UPDATE mess_listings SET status = $1 WHERE id = $2 RETURNING *",
             [status, messId]
+        );
+        return mapMessFields(result.rows[0]);
+    },
+    updateRating: async (messId, avgRating, reviewCount) => {
+        const result = await db.query(
+            "UPDATE mess_listings SET rating = $1, review_count = $2 WHERE id = $3 RETURNING *",
+            [avgRating, reviewCount, messId]
         );
         return mapMessFields(result.rows[0]);
     }
