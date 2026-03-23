@@ -32,6 +32,7 @@ const AddMessPage = lazy(() => import('./app/pages/AddMessPage'));
 const EditMessPage = lazy(() => import('./app/pages/EditMessPage'));
 const SubscribePage = lazy(() => import('./app/pages/SubscribePage'));
 const MyReviewsPage = lazy(() => import('./app/pages/MyReviewsPage'));
+const PhotosPage = lazy(() => import('./app/pages/PhotosPage'));
 
 
 // Loading component for Suspense
@@ -78,6 +79,12 @@ const App: React.FC = () => {
                   <Route path="/owner/subscribe" element={<ProtectedRoute allowedRoles={['OWNER']}><SubscribePage /></ProtectedRoute>} />
                   <Route path="/owner/add-mess" element={<ProtectedRoute allowedRoles={['OWNER']}><AddMessPage /></ProtectedRoute>} />
                   <Route path="/owner/edit-mess" element={<ProtectedRoute allowedRoles={['OWNER']}><EditMessPage /></ProtectedRoute>} />
+                  
+                  {/* New Owner Dashboard Routes */}
+                  <Route path="/owner-dashboard/add-mess" element={<ProtectedRoute allowedRoles={['OWNER']}><AddMessPage /></ProtectedRoute>} />
+                  <Route path="/owner-dashboard/edit-mess" element={<ProtectedRoute allowedRoles={['OWNER']}><EditMessPage /></ProtectedRoute>} />
+                  <Route path="/owner-dashboard/photos" element={<ProtectedRoute allowedRoles={['OWNER']}><PhotosPage /></ProtectedRoute>} />
+
                   <Route path="/admin/dashboard" element={<ProtectedRoute allowedRoles={['ADMIN']}><AdminDashboardPage /></ProtectedRoute>} />
                   <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>

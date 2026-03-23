@@ -54,8 +54,10 @@ app.use(
 // --- 2. CORS Configuration ---
 const allowedOrigins = [
   "http://localhost:5173",
+  "http://localhost:3000",
   "https://findmess.me",
-  "https://www.findmess.me"
+  "https://www.findmess.me",
+  "https://api.findmess.me"
 ];
 
 app.use(
@@ -80,6 +82,9 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"]
   })
 );
+
+// Global Preflight Request Handler
+app.options("*", cors());
 
 // --- 3. Body & Cookie Parsers ---
 app.use(express.json({ limit: '10kb' })); 
@@ -108,7 +113,7 @@ app.get('/api/health', async (req, res) => {
   try {
     const dbResult = await db.query('SELECT NOW()');
     res.json({
-      status: 'UP',
+      status: 'ok',
       database: 'CONNECTED',
       time: dbResult.rows[0].now
     });

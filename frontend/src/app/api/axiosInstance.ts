@@ -4,13 +4,13 @@ import axios from "axios";
 const API_BASE_URL =
   import.meta.env.VITE_API_URL
     ? (import.meta.env.VITE_API_URL.endsWith('/api') ? import.meta.env.VITE_API_URL : `${import.meta.env.VITE_API_URL}/api`)
-    : "https://messwalha-api-pg-360404ae0804.herokuapp.com/api";
+    : "https://api.findmess.me/api";
 
 console.log('🚀 API_BASE_URL:', API_BASE_URL);
 
 const api = axios.create({
   baseURL: API_BASE_URL,
-  withCredentials: false,
+  withCredentials: true,
   headers: {
     "Content-Type": "application/json",
   },
