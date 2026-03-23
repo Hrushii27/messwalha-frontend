@@ -26,7 +26,21 @@ const PORT = process.env.PORT || 5000;
 
 app.set("trust proxy", 1); // required for Heroku
 
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "https://*.google.com", "https://*.gstatic.com", "https://*.razorpay.com", "https://checkout.razorpay.com"],
+        frameSrc: ["'self'", "https://*.google.com", "https://recaptcha.google.com", "https://*.razorpay.com", "https://checkout.razorpay.com"],
+        connectSrc: ["'self'", "https://*.google.com", "https://*.gstatic.com", "https://api.findmess.me", "https://*.razorpay.com", "https://api.cloudinary.com"],
+        imgSrc: ["'self'", "data:", "blob:", "https://*.gstatic.com", "https://*.google.com", "https://res.cloudinary.com"],
+        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://accounts.google.com"],
+        fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      },
+    },
+  })
+);
 app.use(compression());
 app.use(morgan("dev"));
 
