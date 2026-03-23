@@ -130,6 +130,9 @@ const createTables = async () => {
         IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='mess_listings' AND column_name='upi_id') THEN
             ALTER TABLE mess_listings ADD COLUMN upi_id VARCHAR(100);
         END IF;
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='mess_listings' AND column_name='menu_images') THEN
+            ALTER TABLE mess_listings ADD COLUMN menu_images TEXT[] DEFAULT '{}';
+        END IF;
 
         -- Ensure unique mess per owner
         IF NOT EXISTS (

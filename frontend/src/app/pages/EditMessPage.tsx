@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Layout } from '../components/layout/Layout';
 import { Button } from '../components/common/Button';
 import { Card } from '../components/common/Card';
@@ -21,51 +21,14 @@ import { motion } from 'framer-motion';
 import api from '../api/axiosInstance';
 import { useNavigate, Link } from 'react-router-dom';
 import Seo from '../components/common/Seo';
-import { useEffect } from 'react';
+import { uploadToCloudinary } from '../utils/cloudinary';
 
-const AddMessPage: React.FC = () => {
+const EditMessPage: React.FC = () => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
     const [subStatus, setSubStatus] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
     const [error, setError] = useState<string | null>(null);
-
-    useEffect(() => {
-        const checkStatus = async () => {
-            try {
-                setLoading(true);
-                const [subRes, messRes] = await Promise.all([
-                    api.get('/subscriptions/status'),
-                    api.get('/messes/my')
-                ]);
-
-                if (subRes.data.data) {
-                    const status = subRes.data.data.status;
-                    const now = new Date();
-                    const endDate = status === 'trial' 
-                        ? (subRes.data.data.trial_end || subRes.data.data.trial_end_date)
-                        : (subRes.data.data.next_billing_date || subRes.data.data.subscription_end);
-
-                    if (endDate && new Date(endDate) < now) {
-                        setSubStatus('expired');
-                    } else {
-                        setSubStatus(status);
-                    }
-                } else {
-                    setSubStatus('none');
-                }
-
-                if (messRes.data.data) {
-                    navigate('/owner/edit-mess', { replace: true });
-                }
-            } catch (err) {
-                console.error('Failed to check status', err);
-            } finally {
-                setLoading(false);
-            }
-        };
-        checkStatus();
-    }, []);
 
     // Form State
     const [formData, setFormData] = useState({
@@ -86,6 +49,66 @@ const AddMessPage: React.FC = () => {
         mess: null,
         menus: []
     });
+
+    useEffect(() => {
+        const checkStatusAndFetchMess = async () => {
+            try {
+                setLoading(true);
+                const [subRes, messRes] = await Promise.all([
+                    api.get('/subscriptions/status').catch(() => ({ data: { data: null } })),
+                    api.get('/messes/my').catch(() => ({ data: { data: null } }))
+                ]);
+
+                if (subRes.data.data) {
+                    const status = subRes.data.data.status;
+                    const now = new Date();
+                    const endDate = status === 'trial' 
+                        ? (subRes.data.data.trial_end || subRes.data.data.trial_end_date)
+                        : (subRes.data.data.next_billing_date || subRes.data.data.subscription_end);
+
+                    if (endDate && new Date(endDate) < now) {
+                        setSubStatus('expired');
+                    } else {
+                        setSubStatus(status);
+                    }
+                } else {
+                    setSubStatus('none');
+                }
+
+                if (messRes.data.data) {
+                    const mess = messRes.data.data;
+                    setFormData({
+                        messName: mess.name || '',
+                        ownerName: mess.ownerName || '',
+                        mobile: mess.mobile || '',
+                        address: mess.address || '',
+                        pricePerMonth: mess.monthlyPrice?.toString() || '',
+                        pricePerWeek: '',
+                        pricePerDay: '',
+                        menuText: mess.description || '',
+                        upiId: mess.upiId || ''
+                    });
+
+                    if (mess.imageUrl) {
+                        const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+                        setPreviews(prev => ({
+                            ...prev, 
+                            mess: mess.imageUrl.startsWith('http') ? mess.imageUrl : `${baseUrl}${mess.imageUrl}`
+                        }));
+                    }
+                } else {
+                    // No mess found, redirect to creation page
+                    navigate('/owner/add-mess', { replace: true });
+                }
+            } catch (err) {
+                console.error('Failed to init edit page', err);
+                setError('Failed to load mess data');
+            } finally {
+                setLoading(false);
+            }
+        };
+        checkStatusAndFetchMess();
+    }, [navigate]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -126,17 +149,9 @@ const AddMessPage: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Validation rules
+        
         if (formData.messName.length < 3) {
             setError("Mess Name must be at least 3 characters");
-            return;
-        }
-        if (formData.ownerName.length < 2) {
-            setError("Owner Name must be at least 2 characters");
-            return;
-        }
-        if (!/^[0-9]{10}$/.test(formData.mobile)) {
-            setError("Mobile Number must be exactly 10 digits");
             return;
         }
         if (formData.address.length < 2) {
@@ -147,29 +162,24 @@ const AddMessPage: React.FC = () => {
         setLoading(true);
         setError(null);
 
-
         try {
-            const data = new FormData();
-            Object.entries(formData).forEach(([key, value]) => {
-                data.append(key, value);
-            });
-
+            let imageUrl = null;
             if (messImage) {
-                data.append('mess_image', messImage);
+                imageUrl = await uploadToCloudinary(messImage);
             }
-            menuImages.forEach(file => {
-                data.append('menu_images', file);
-            });
 
-            await api.post('/messes', data, {
-                headers: { 'Content-Type': 'multipart/form-data' }
-            });
+            const payload = {
+                ...formData,
+                imageUrl // Pass the Cloudinary URL
+            };
+
+            await api.put('/messes/my', payload);
             setSuccess(true);
             setTimeout(() => navigate('/owner/dashboard'), 3000);
         } catch (error) {
             const err = error as { response?: { data?: { message?: string } } };
-            console.error('Registration failed:', err);
-            setError(err.response?.data?.message || 'Failed to register mess. Please try again.');
+            console.error('Update failed:', err);
+            setError(err.response?.data?.message || 'Failed to update mess. Please try again.');
         } finally {
             setLoading(false);
         }
@@ -180,19 +190,16 @@ const AddMessPage: React.FC = () => {
             <Layout>
                 <div className="min-h-[80vh] flex flex-col items-center justify-center space-y-4">
                     <Loader2 className="w-12 h-12 text-primary-500 animate-spin" />
-                    <p className="text-text-muted font-black uppercase tracking-widest text-xs italic text-center">Checking Node Credentials...</p>
+                    <p className="text-text-muted font-black uppercase tracking-widest text-xs italic text-center">Loading Mess Details...</p>
                 </div>
             </Layout>
         );
     }
 
-    // The hasMess block was removed as we now redirect directly.
-
-
     if (success) {
         return (
             <Layout>
-                <div className="min-h-[80vh] flex items-center justify-center">
+                <div className="min-h-[80vh] flex items-center justify-center p-6">
                     <motion.div
                         initial={{ scale: 0.9, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
@@ -202,8 +209,8 @@ const AddMessPage: React.FC = () => {
                             <CheckCircle2 size={48} className="text-primary-500" />
                         </div>
                         <div className="space-y-4">
-                            <h2 className="text-4xl font-black italic tracking-tighter text-text-primary uppercase">Mess Registered!</h2>
-                            <p className="text-text-muted font-black uppercase tracking-widest text-[10px] italic">Your mess has been added to the network successfully. Redirecting to exploration page...</p>
+                            <h2 className="text-4xl font-black italic tracking-tighter text-text-primary uppercase">Mess Updated!</h2>
+                            <p className="text-text-muted font-black uppercase tracking-widest text-[10px] italic">Your mess details have been successfully updated. Redirecting to dashboard...</p>
                         </div>
                     </motion.div>
                 </div>
@@ -214,8 +221,8 @@ const AddMessPage: React.FC = () => {
     return (
         <Layout>
             <Seo
-                title="Register Your Mess | MessWalha"
-                description="Join the elite network of student mess services. Register your mess and reach thousands of students today."
+                title="Edit Your Mess | MessWalha"
+                description="Update your mess details and reach thousands of students today."
             />
 
             {subStatus === 'expired' && (
@@ -235,9 +242,9 @@ const AddMessPage: React.FC = () => {
                         animate={{ y: 0, opacity: 1 }}
                         className="text-6xl md:text-8xl font-black tracking-tighter text-white italic"
                     >
-                        Join the <span className="text-primary-500">Elite</span> Network
+                        Update <span className="text-primary-500">Your</span> Mess
                     </motion.h1>
-                    <p className="text-text-muted font-black uppercase tracking-[0.4em] text-[10px] md:text-xs italic">Register your mess service on MessWalha</p>
+                    <p className="text-text-muted font-black uppercase tracking-[0.4em] text-[10px] md:text-xs italic">Modify available details for your students</p>
                 </div>
             </div>
 
@@ -278,30 +285,28 @@ const AddMessPage: React.FC = () => {
                                 </div>
                             </div>
                             <div className="space-y-3">
-                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted ml-2">Owner Name</label>
+                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted ml-2">Owner Name (Optional)</label>
                                 <div className="relative group">
                                     <User size={16} className="absolute left-6 top-1/2 -translate-y-1/2 text-primary-500" />
                                     <input
                                         type="text"
                                         name="ownerName"
-                                        required
                                         placeholder="FULL NAME"
-                                        className="w-full bg-bg3/30 border border-white/10 text-text-primary pl-14 pr-6 py-5 rounded-2xl focus:ring-2 focus:ring-primary-500/50 outline-none transition-all font-black tracking-widest text-[10px] uppercase italic"
+                                        className="w-full bg-bg3/30 border border-white/10 text-text-primary pl-14 pr-6 py-5 rounded-2xl focus:ring-2 focus:ring-primary-500/50 outline-none transition-all font-black tracking-widest text-[10px] uppercase italic opacity-70"
                                         value={formData.ownerName}
                                         onChange={handleInputChange}
                                     />
                                 </div>
                             </div>
                             <div className="space-y-3">
-                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted ml-2">Mobile Number</label>
+                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted ml-2">Mobile Number (Optional)</label>
                                 <div className="relative group">
                                     <Phone size={16} className="absolute left-6 top-1/2 -translate-y-1/2 text-primary-500" />
                                     <input
                                         type="tel"
                                         name="mobile"
-                                        required
                                         placeholder="10 DIGIT NUMBER"
-                                        className="w-full bg-bg3/30 border border-white/10 text-text-primary pl-14 pr-6 py-5 rounded-2xl focus:ring-2 focus:ring-primary-500/50 outline-none transition-all font-black tracking-widest text-[10px] uppercase italic"
+                                        className="w-full bg-bg3/30 border border-white/10 text-text-primary pl-14 pr-6 py-5 rounded-2xl focus:ring-2 focus:ring-primary-500/50 outline-none transition-all font-black tracking-widest text-[10px] uppercase italic opacity-70"
                                         value={formData.mobile}
                                         onChange={handleInputChange}
                                     />
@@ -349,30 +354,28 @@ const AddMessPage: React.FC = () => {
                                 </div>
                             </div>
                             <div className="space-y-3">
-                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted ml-2">Cost Per Week</label>
+                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted ml-2">Cost Per Week (Optional)</label>
                                 <div className="relative group">
                                     <IndianRupee size={16} className="absolute left-6 top-1/2 -translate-y-1/2 text-primary-500" />
                                     <input
                                         type="number"
                                         name="pricePerWeek"
-                                        required
                                         placeholder="₹ 800"
-                                        className="w-full bg-bg3/30 border border-white/10 text-text-primary pl-14 pr-6 py-5 rounded-2xl focus:ring-2 focus:ring-primary-500/50 outline-none transition-all font-black tracking-widest text-[10px] uppercase italic"
+                                        className="w-full bg-bg3/30 border border-white/10 text-text-primary pl-14 pr-6 py-5 rounded-2xl focus:ring-2 focus:ring-primary-500/50 outline-none transition-all font-black tracking-widest text-[10px] uppercase italic opacity-70"
                                         value={formData.pricePerWeek}
                                         onChange={handleInputChange}
                                     />
                                 </div>
                             </div>
                             <div className="space-y-3">
-                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted ml-2">Cost Per Day</label>
+                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted ml-2">Cost Per Day (Optional)</label>
                                 <div className="relative group">
                                     <IndianRupee size={16} className="absolute left-6 top-1/2 -translate-y-1/2 text-primary-500" />
                                     <input
                                         type="number"
                                         name="pricePerDay"
-                                        required
                                         placeholder="₹ 120"
-                                        className="w-full bg-bg3/30 border border-white/10 text-text-primary pl-14 pr-6 py-5 rounded-2xl focus:ring-2 focus:ring-primary-500/50 outline-none transition-all font-black tracking-widest text-[10px] uppercase italic"
+                                        className="w-full bg-bg3/30 border border-white/10 text-text-primary pl-14 pr-6 py-5 rounded-2xl focus:ring-2 focus:ring-primary-500/50 outline-none transition-all font-black tracking-widest text-[10px] uppercase italic opacity-70"
                                         value={formData.pricePerDay}
                                         onChange={handleInputChange}
                                     />
@@ -380,7 +383,7 @@ const AddMessPage: React.FC = () => {
                             </div>
                             {/* UPI ID Field */}
                             <div className="space-y-3 md:col-span-3">
-                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted ml-2">UPI ID for Payments (For Students to pay you)</label>
+                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted ml-2">UPI ID for Payments</label>
                                 <div className="relative group">
                                     <Zap size={16} className="absolute left-6 top-1/2 -translate-y-1/2 text-primary-500" />
                                     <input
@@ -407,7 +410,7 @@ const AddMessPage: React.FC = () => {
                             {/* Text Menu */}
                             <div className="space-y-4">
                                 <div className="flex items-center justify-between">
-                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted ml-2">Menu Description (Optional)</label>
+                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted ml-2">Menu Description</label>
                                     <span className="text-[8px] font-black uppercase tracking-widest text-primary-500/60 bg-primary-500/5 px-3 py-1 rounded-full border border-primary-500/10 italic">Text Option</span>
                                 </div>
                                 <textarea
@@ -422,7 +425,7 @@ const AddMessPage: React.FC = () => {
 
                             {/* Main Image */}
                             <div className="space-y-6">
-                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted dark:text-white/70 ml-2">Mess Display Photo (Plate Image)</label>
+                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted dark:text-white/70 ml-2">Mess Display Photo</label>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                     <div
                                         onClick={() => document.getElementById('messImageInput')?.click()}
@@ -433,7 +436,7 @@ const AddMessPage: React.FC = () => {
                                         ) : (
                                             <>
                                                 <Upload size={32} className="text-text-muted group-hover:text-primary-500 transition-colors" />
-                                                <span className="text-[9px] font-black uppercase tracking-widest text-text-muted">Click to Upload</span>
+                                                <span className="text-[9px] font-black uppercase tracking-widest text-text-muted">Click to Upload New Photo</span>
                                             </>
                                         )}
                                         <input
@@ -447,51 +450,12 @@ const AddMessPage: React.FC = () => {
                                     <div className="flex flex-col justify-center space-y-4 pr-8">
                                         <div className="flex items-center gap-3 text-primary-500">
                                             <ImageIcon size={16} />
-                                            <h4 className="text-[10px] font-black uppercase tracking-widest">Main Display Signal</h4>
+                                            <h4 className="text-[10px] font-black uppercase tracking-widest">Update Display Signal</h4>
                                         </div>
                                         <p className="text-[10px] font-medium leading-relaxed text-text-muted dark:text-white/30 italic">
-                                            This will be the first image students see when browsing. We recommend a clear photo of your special meal plate.
+                                            Uploading a new photo will replace your existing mess photo. Recommended: Clear photo of your special meal.
                                         </p>
                                     </div>
-                                </div>
-                            </div>
-
-                            {/* Menu Images */}
-                            <div className="space-y-6">
-                                <div className="flex items-center justify-between">
-                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted dark:text-text-muted ml-2">Gallery / Menu Board Photos (Max 5)</label>
-                                    <span className="text-[8px] font-black uppercase tracking-widest text-primary-500/60 bg-primary-500/5 px-3 py-1 rounded-full border border-primary-500/10 italic">Image Option</span>
-                                </div>
-                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-6">
-                                    {previews.menus.map((url, i) => (
-                                        <div key={i} className="aspect-square rounded-2xl overflow-hidden relative group border border-border-color">
-                                            <img src={url} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt={`Menu ${i}`} />
-                                            <button
-                                                type="button"
-                                                onClick={() => removeMenuImage(i)}
-                                                className="absolute top-2 right-2 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity"
-                                            >
-                                                <X size={12} />
-                                            </button>
-                                        </div>
-                                    ))}
-                                    {menuImages.length < 5 && (
-                                        <div
-                                            onClick={() => document.getElementById('menuImagesInput')?.click()}
-                                            className="aspect-square border-2 border-dashed border-white/10 rounded-2xl flex flex-col items-center justify-center gap-2 hover:border-primary-500/50 hover:bg-bg3/30 cursor-pointer transition-all group"
-                                        >
-                                            <Upload size={20} className="text-text-muted group-hover:text-primary-500" />
-                                            <span className="text-[8px] font-black uppercase tracking-widest text-text-muted">Add</span>
-                                            <input
-                                                id="menuImagesInput"
-                                                type="file"
-                                                multiple
-                                                hidden
-                                                accept="image/*"
-                                                onChange={handleMenuImagesChange}
-                                            />
-                                        </div>
-                                    )}
                                 </div>
                             </div>
                         </div>
@@ -508,7 +472,7 @@ const AddMessPage: React.FC = () => {
                                 <Loader2 className="animate-spin" />
                             ) : (
                                 <>
-                                    Submit Mess Registry
+                                    Save Changes
                                     <ArrowRight size={20} />
                                 </>
                             )}
@@ -520,4 +484,4 @@ const AddMessPage: React.FC = () => {
     );
 };
 
-export default AddMessPage;
+export default EditMessPage;

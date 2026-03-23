@@ -29,6 +29,7 @@ const FAQPage = lazy(() => import('./app/pages/FAQPage'));
 const ProfilePage = lazy(() => import('./app/pages/ProfilePage'));
 const TodayMenuPage = lazy(() => import('./app/pages/TodayMenuPage'));
 const AddMessPage = lazy(() => import('./app/pages/AddMessPage'));
+const EditMessPage = lazy(() => import('./app/pages/EditMessPage'));
 const SubscribePage = lazy(() => import('./app/pages/SubscribePage'));
 const MyReviewsPage = lazy(() => import('./app/pages/MyReviewsPage'));
 
@@ -76,6 +77,7 @@ const App: React.FC = () => {
                   <Route path="/owner/dashboard" element={<ProtectedRoute allowedRoles={['OWNER']}><OwnerDashboardPage /></ProtectedRoute>} />
                   <Route path="/owner/subscribe" element={<ProtectedRoute allowedRoles={['OWNER']}><SubscribePage /></ProtectedRoute>} />
                   <Route path="/owner/add-mess" element={<ProtectedRoute allowedRoles={['OWNER']}><AddMessPage /></ProtectedRoute>} />
+                  <Route path="/owner/edit-mess" element={<ProtectedRoute allowedRoles={['OWNER']}><EditMessPage /></ProtectedRoute>} />
                   <Route path="/admin/dashboard" element={<ProtectedRoute allowedRoles={['ADMIN']}><AdminDashboardPage /></ProtectedRoute>} />
                   <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>

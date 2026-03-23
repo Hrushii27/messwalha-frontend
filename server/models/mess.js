@@ -11,6 +11,7 @@ function mapMessFields(mess) {
             vegNonVeg: mess.veg_nonveg,
             collegeTags: mess.college_tags,
             upiId: mess.upi_id,
+            menuImages: mess.menu_images || [],
             // Preserve other fields
         };
     } catch (err) {
@@ -20,23 +21,41 @@ function mapMessFields(mess) {
 }
 
 const Mess = {
-    create: async (ownerId, name, address, monthlyPrice, description = '', cuisine = 'Indian', city = '', vegNonveg = 'Both', collegeTags = '', upiId = null, imageUrl = null) => {
+    create: async (ownerId, name, address, monthlyPrice, description = '', cuisine = 'Indian', city = '', vegNonveg = 'Both', collegeTags = '', upiId = null, imageUrl = null, menuImages = []) => {
         const result = await db.query(
-            'INSERT INTO mess_listings (mess_owner_id, name, address, monthly_price, description, cuisine, city, veg_nonveg, college_tags, status, upi_id, image_url, is_active) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING *',
-            [ownerId, name, address, monthlyPrice, description, cuisine, city, vegNonveg, collegeTags, 'approved', upiId, imageUrl, true]
+            'INSERT INTO mess_listings (mess_owner_id, name, address, monthly_price, description, cuisine, city, veg_nonveg, college_tags, status, upi_id, image_url, menu_images, is_active) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) RETURNING *',
+            [ownerId, name, address, monthlyPrice, description, cuisine, city, vegNonveg, collegeTags, 'approved', upiId, imageUrl, menuImages, true]
         );
         return mapMessFields(result.rows[0]);
     },
     update: async (ownerId, data) => {
-        const { name, address, description, cuisine, city, veg_nonveg, college_tags, status, upi_id } = data;
+        const { name, address, description, cuisine, city, veg_nonveg, college_tags, status, upi_id, monthlyPrice, imageUrl, menuImages } = data;
+        
         let query = `UPDATE mess_listings SET name = $1, address = $2, description = $3, cuisine = $4, city = $5, veg_nonveg = $6, college_tags = $7`;
         const values = [name, address, description, cuisine, city, veg_nonveg, college_tags];
-        
-        // Handle optional upi_id
         let paramIdx = 8;
+
+        if (monthlyPrice !== undefined) {
+            query += `, monthly_price = $${paramIdx}`;
+            values.push(monthlyPrice);
+            paramIdx++;
+        }
+
+        if (imageUrl !== undefined) {
+            query += `, image_url = $${paramIdx}`;
+            values.push(imageUrl);
+            paramIdx++;
+        }
+
         if (upi_id !== undefined) {
             query += `, upi_id = $${paramIdx}`;
             values.push(upi_id);
+            paramIdx++;
+        }
+        
+        if (menuImages !== undefined) {
+            query += `, menu_images = $${paramIdx}`;
+            values.push(menuImages);
             paramIdx++;
         }
 

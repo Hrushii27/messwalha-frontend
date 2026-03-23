@@ -41,7 +41,10 @@ router.get('/my', async (req, res) => {
 });
 
 // Update logged-in owner's mess
-router.put('/my', async (req, res) => {
+router.put('/my', upload.fields([
+    { name: 'mess_image', maxCount: 1 },
+    { name: 'menu_images', maxCount: 5 }
+]), messValidation, validateRequest, async (req, res) => {
     try {
         if (!req.user) {
             return res.status(401).json({ message: 'Unauthorized' });
@@ -52,7 +55,42 @@ router.put('/my', async (req, res) => {
             return res.status(403).json({ message: 'Subscription expired or inactive. Please renew to update your mess.' });
         }
 
-        const updatedMess = await Mess.update(req.user.id, req.body);
+        const existing = await Mess.findByOwnerId(req.user.id);
+        if (!existing) {
+            return res.status(404).json({ message: 'Mess not found' });
+        }
+
+        const {
+            messName,
+            address,
+            pricePerMonth,
+            menuText,
+            cuisine,
+            city,
+            veg_nonveg,
+            college_tags,
+            upiId,
+            imageUrl // Cloudinary URL from frontend
+        } = req.body;
+
+        const updateData = {
+            name: messName || existing.name,
+            address: address || existing.address,
+            description: menuText !== undefined ? menuText : existing.description,
+            cuisine: cuisine || existing.cuisine,
+            city: city !== undefined ? city : existing.city,
+            veg_nonveg: veg_nonveg || existing.vegNonVeg,
+            college_tags: college_tags !== undefined ? college_tags : existing.collegeTags,
+            upi_id: upiId !== undefined ? upiId : existing.upiId,
+            monthlyPrice: pricePerMonth ? parseFloat(pricePerMonth) : existing.monthlyPrice,
+            imageUrl: imageUrl || existing.imageUrl // Use Cloudinary URL if provided
+        };
+
+        if (req.files && req.files['mess_image'] && req.files['mess_image'][0]) {
+            updateData.imageUrl = `/uploads/${req.files['mess_image'][0].filename}`;
+        }
+
+        const updatedMess = await Mess.update(req.user.id, updateData);
         res.json({ success: true, data: updatedMess });
     } catch (err) {
         console.error('Error updating owner mess:', err);

@@ -816,6 +816,14 @@ const OwnerDashboardPage: React.FC = () => {
                             </div>
                             <div className="flex flex-wrap justify-center gap-4">
                                 <Button 
+                                    onClick={() => navigate('/owner/edit-mess')}
+                                    variant="primary" 
+                                    size="lg" 
+                                    className="rounded-2xl bg-primary-500 text-white hover:bg-primary-400 px-10 py-6 font-black uppercase tracking-widest text-[10px] shadow-3xl shadow-primary-500/20"
+                                >
+                                    <Utensils size={18} className="mr-3" /> Edit Mess Profile
+                                </Button>
+                                <Button 
                                     variant="outline" 
                                     size="lg" 
                                     className="rounded-2xl border-white/10 bg-bg3/30 backdrop-blur-xl text-white hover:bg-bg3 px-10 py-6 font-black uppercase tracking-widest text-[10px] shadow-3xl"
