@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const { getOwnerDashboardStats } = require('../controllers/dashboardController');
-const { authenticate } = require('../middleware/auth');
+const authenticateToken = require('../middleware/auth');
 
-router.get('/owner/stats', authenticate, getOwnerDashboardStats);
+router.get('/owner/stats', authenticateToken, getOwnerDashboardStats);
 
 module.exports = router;
