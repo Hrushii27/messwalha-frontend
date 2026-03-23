@@ -32,6 +32,7 @@ const dashboardRoutes = require('./routes/dashboard');
 console.log('🚀 Server starting process...');
 const app = express();
 const PORT = process.env.PORT || 5000;
+app.set('trust proxy', 1); // Required for Heroku to handle X-Forwarded-For correctly
 console.log('✅ Express initialized. Port:', PORT);
 
 // --- 1. Security Headers (Helmet) ---
@@ -51,7 +52,6 @@ app.use(
   })
 );
 
-// --- 2. CORS Configuration ---
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:3000",
@@ -60,31 +60,32 @@ const allowedOrigins = [
   "https://api.findmess.me"
 ];
 
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      // Allow requests with no origin (like mobile apps or curl requests)
-      if (!origin) return callback(null, true);
-      
-      if (
-        allowedOrigins.includes(origin) || 
-        origin.endsWith(".vercel.app") ||
-        process.env.NODE_ENV === 'development'
-      ) {
-        callback(null, true);
-      } else {
-        console.warn(`[CORS] Rejected origin: ${origin}`);
-        callback(new Error('Not allowed by CORS'));
-      }
-    },
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"]
-  })
-);
+const corsOptions = {
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    const isAllowed = 
+      allowedOrigins.includes(origin) || 
+      origin.endsWith(".vercel.app") ||
+      process.env.NODE_ENV === 'development';
+
+    if (isAllowed) {
+      callback(null, true);
+    } else {
+      console.warn(`[CORS] Rejected origin: ${origin}`);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With", "Accept", "Origin"]
+};
+
+app.use(cors(corsOptions));
 
 // Global Preflight Request Handler
-app.options("*", cors());
+app.options("*", cors(corsOptions));
 
 // --- 3. Body & Cookie Parsers ---
 app.use(express.json({ limit: '10kb' })); 

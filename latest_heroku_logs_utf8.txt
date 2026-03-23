@@ -1,0 +1,200 @@
+﻿2026-03-07T06:14:36.798558+00:00 app[web.1]: }
+2026-03-07T06:14:46.348925+00:00 app[web.1]: ValidationError: The 'X-Forwarded-For' header is set but the Express 'trust proxy' setting is false (default). This could indicate a misconfiguration which would prevent express-rate-limit from accurately identifying users. See https://express-rate-limit.github.io/ERR_ERL_UNEXPECTED_X_FORWARDED_FOR/ for more information.
+2026-03-07T06:14:46.348953+00:00 app[web.1]: at Object.xForwardedForHeader (file:///app/backend/node_modules/express-rate-limit/dist/index.mjs:337:13)
+2026-03-07T06:14:46.348954+00:00 app[web.1]: at wrappedValidations.<computed> [as xForwardedForHeader] (file:///app/backend/node_modules/express-rate-limit/dist/index.mjs:651:22)
+2026-03-07T06:14:46.348965+00:00 app[web.1]: at Object.keyGenerator (file:///app/backend/node_modules/express-rate-limit/dist/index.mjs:754:20)
+2026-03-07T06:14:46.348966+00:00 app[web.1]: at file:///app/backend/node_modules/express-rate-limit/dist/index.mjs:815:32
+2026-03-07T06:14:46.348967+00:00 app[web.1]: at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+2026-03-07T06:14:46.348967+00:00 app[web.1]: at async file:///app/backend/node_modules/express-rate-limit/dist/index.mjs:796:5 {
+2026-03-07T06:14:46.348967+00:00 app[web.1]: code: 'ERR_ERL_UNEXPECTED_X_FORWARDED_FOR',
+2026-03-07T06:14:46.348967+00:00 app[web.1]: help: 'https://express-rate-limit.github.io/ERR_ERL_UNEXPECTED_X_FORWARDED_FOR/'
+2026-03-07T06:14:46.348968+00:00 app[web.1]: }
+2026-03-07T06:14:46.638318+00:00 app[web.1]: [ERROR] 2026-03-07T06:14:46.637Z: Forgot password error: Error: 16 UNAUTHENTICATED: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/identity/sign-in/web/devconsole-project.
+2026-03-07T06:14:46.638335+00:00 app[web.1]: at callErrorFromStatus (/app/backend/node_modules/@grpc/grpc-js/build/src/call.js:32:19)
+2026-03-07T06:14:46.638336+00:00 app[web.1]: at Object.onReceiveStatus (/app/backend/node_modules/@grpc/grpc-js/build/src/client.js:359:73)
+2026-03-07T06:14:46.638336+00:00 app[web.1]: at Object.onReceiveStatus (/app/backend/node_modules/@grpc/grpc-js/build/src/client-interceptors.js:327:181)
+2026-03-07T06:14:46.638336+00:00 app[web.1]: at /app/backend/node_modules/@grpc/grpc-js/build/src/resolving-call.js:135:78
+2026-03-07T06:14:46.638336+00:00 app[web.1]: at process.processTicksAndRejections (node:internal/process/task_queues:85:11)
+2026-03-07T06:14:46.638337+00:00 app[web.1]: for call at
+2026-03-07T06:14:46.638337+00:00 app[web.1]: at ServiceClientImpl.makeServerStreamRequest (/app/backend/node_modules/@grpc/grpc-js/build/src/client.js:342:32)
+2026-03-07T06:14:46.638338+00:00 app[web.1]: at ServiceClientImpl.<anonymous> (/app/backend/node_modules/@grpc/grpc-js/build/src/make-client.js:105:19)
+2026-03-07T06:14:46.638338+00:00 app[web.1]: at /app/backend/node_modules/@google-cloud/firestore/build/src/v1/firestore_client.js:242:33
+2026-03-07T06:14:46.638338+00:00 app[web.1]: at /app/backend/node_modules/google-gax/build/src/streamingCalls/streamingApiCaller.js:38:28
+2026-03-07T06:14:46.638338+00:00 app[web.1]: at /app/backend/node_modules/google-gax/build/src/normalCalls/timeout.js:44:16
+2026-03-07T06:14:46.638338+00:00 app[web.1]: at Object.request (/app/backend/node_modules/google-gax/build/src/streamingCalls/streaming.js:234:40)
+2026-03-07T06:14:46.638340+00:00 app[web.1]: at makeRequest (/app/backend/node_modules/retry-request/index.js:159:28)
+2026-03-07T06:14:46.638340+00:00 app[web.1]: at retryRequest (/app/backend/node_modules/retry-request/index.js:119:5)
+2026-03-07T06:14:46.638340+00:00 app[web.1]: at StreamProxy.setStream (/app/backend/node_modules/google-gax/build/src/streamingCalls/streaming.js:225:37)
+2026-03-07T06:14:46.638340+00:00 app[web.1]: at StreamingApiCaller.call (/app/backend/node_modules/google-gax/build/src/streamingCalls/streamingApiCaller.js:54:16)
+2026-03-07T06:14:46.638343+00:00 app[web.1]: Caused by: Error
+2026-03-07T06:14:46.638343+00:00 app[web.1]: at QueryUtil._getResponse (/app/backend/node_modules/@google-cloud/firestore/build/src/reference/query-util.js:44:23)
+2026-03-07T06:14:46.638343+00:00 app[web.1]: at Query._getResponse (/app/backend/node_modules/@google-cloud/firestore/build/src/reference/query.js:784:32)
+2026-03-07T06:14:46.638343+00:00 app[web.1]: at Query._get (/app/backend/node_modules/@google-cloud/firestore/build/src/reference/query.js:777:35)
+2026-03-07T06:14:46.638343+00:00 app[web.1]: at /app/backend/node_modules/@google-cloud/firestore/build/src/reference/query.js:745:43
+2026-03-07T06:14:46.638343+00:00 app[web.1]: at /app/backend/node_modules/@google-cloud/firestore/build/src/telemetry/enabled-trace-util.js:110:30
+2026-03-07T06:14:46.638344+00:00 app[web.1]: at NoopContextManager.with (/app/backend/node_modules/@opentelemetry/api/build/src/context/NoopContextManager.js:25:19)
+2026-03-07T06:14:46.638344+00:00 app[web.1]: at ContextAPI.with (/app/backend/node_modules/@opentelemetry/api/build/src/api/context.js:60:46)
+2026-03-07T06:14:46.638344+00:00 app[web.1]: at NoopTracer.startActiveSpan (/app/backend/node_modules/@opentelemetry/api/build/src/trace/NoopTracer.js:65:31)
+2026-03-07T06:14:46.638344+00:00 app[web.1]: at ProxyTracer.startActiveSpan (/app/backend/node_modules/@opentelemetry/api/build/src/trace/ProxyTracer.js:36:24)
+2026-03-07T06:14:46.638344+00:00 app[web.1]: at EnabledTraceUtil.startActiveSpan (/app/backend/node_modules/@google-cloud/firestore/build/src/telemetry/enabled-trace-util.js:102:28) {
+2026-03-07T06:14:46.638344+00:00 app[web.1]: code: 16,
+2026-03-07T06:14:46.638345+00:00 app[web.1]: details: 'Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/identity/sign-in/web/devconsole-project.',
+2026-03-07T06:14:46.638346+00:00 app[web.1]: metadata: Metadata {
+2026-03-07T06:14:46.638346+00:00 app[web.1]: internalRepr: Map(2) {
+2026-03-07T06:14:46.638346+00:00 app[web.1]: 'www-authenticate' => [Array],
+2026-03-07T06:14:46.638347+00:00 app[web.1]: 'x-debug-tracking-id' => [Array]
+2026-03-07T06:14:46.638347+00:00 app[web.1]: },
+2026-03-07T06:14:46.638347+00:00 app[web.1]: opaqueData: Map(0) {},
+2026-03-07T06:14:46.638347+00:00 app[web.1]: options: {}
+2026-03-07T06:14:46.638348+00:00 app[web.1]: }
+2026-03-07T06:14:46.638348+00:00 app[web.1]: }
+2026-03-07T06:14:46.638727+00:00 app[web.1]: [ERROR] 2026-03-07T06:14:46.638Z: 16 UNAUTHENTICATED: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/identity/sign-in/web/devconsole-project. Error: 16 UNAUTHENTICATED: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/identity/sign-in/web/devconsole-project.
+2026-03-07T06:14:46.638727+00:00 app[web.1]: at callErrorFromStatus (/app/backend/node_modules/@grpc/grpc-js/build/src/call.js:32:19)
+2026-03-07T06:14:46.638728+00:00 app[web.1]: at Object.onReceiveStatus (/app/backend/node_modules/@grpc/grpc-js/build/src/client.js:359:73)
+2026-03-07T06:14:46.638728+00:00 app[web.1]: at Object.onReceiveStatus (/app/backend/node_modules/@grpc/grpc-js/build/src/client-interceptors.js:327:181)
+2026-03-07T06:14:46.638728+00:00 app[web.1]: at /app/backend/node_modules/@grpc/grpc-js/build/src/resolving-call.js:135:78
+2026-03-07T06:14:46.638728+00:00 app[web.1]: at process.processTicksAndRejections (node:internal/process/task_queues:85:11)
+2026-03-07T06:14:46.638728+00:00 app[web.1]: for call at
+2026-03-07T06:14:46.638728+00:00 app[web.1]: at ServiceClientImpl.makeServerStreamRequest (/app/backend/node_modules/@grpc/grpc-js/build/src/client.js:342:32)
+2026-03-07T06:14:46.638728+00:00 app[web.1]: at ServiceClientImpl.<anonymous> (/app/backend/node_modules/@grpc/grpc-js/build/src/make-client.js:105:19)
+2026-03-07T06:14:46.638728+00:00 app[web.1]: at /app/backend/node_modules/@google-cloud/firestore/build/src/v1/firestore_client.js:242:33
+2026-03-07T06:14:46.638729+00:00 app[web.1]: at /app/backend/node_modules/google-gax/build/src/streamingCalls/streamingApiCaller.js:38:28
+2026-03-07T06:14:46.638729+00:00 app[web.1]: at /app/backend/node_modules/google-gax/build/src/normalCalls/timeout.js:44:16
+2026-03-07T06:14:46.638729+00:00 app[web.1]: at Object.request (/app/backend/node_modules/google-gax/build/src/streamingCalls/streaming.js:234:40)
+2026-03-07T06:14:46.638729+00:00 app[web.1]: at makeRequest (/app/backend/node_modules/retry-request/index.js:159:28)
+2026-03-07T06:14:46.638729+00:00 app[web.1]: at retryRequest (/app/backend/node_modules/retry-request/index.js:119:5)
+2026-03-07T06:14:46.638729+00:00 app[web.1]: at StreamProxy.setStream (/app/backend/node_modules/google-gax/build/src/streamingCalls/streaming.js:225:37)
+2026-03-07T06:14:46.638729+00:00 app[web.1]: at StreamingApiCaller.call (/app/backend/node_modules/google-gax/build/src/streamingCalls/streamingApiCaller.js:54:16)
+2026-03-07T06:14:46.638730+00:00 app[web.1]: Caused by: Error
+2026-03-07T06:14:46.638730+00:00 app[web.1]: at QueryUtil._getResponse (/app/backend/node_modules/@google-cloud/firestore/build/src/reference/query-util.js:44:23)
+2026-03-07T06:14:46.638730+00:00 app[web.1]: at Query._getResponse (/app/backend/node_modules/@google-cloud/firestore/build/src/reference/query.js:784:32)
+2026-03-07T06:14:46.638730+00:00 app[web.1]: at Query._get (/app/backend/node_modules/@google-cloud/firestore/build/src/reference/query.js:777:35)
+2026-03-07T06:14:46.638730+00:00 app[web.1]: at /app/backend/node_modules/@google-cloud/firestore/build/src/reference/query.js:745:43
+2026-03-07T06:14:46.638730+00:00 app[web.1]: at /app/backend/node_modules/@google-cloud/firestore/build/src/telemetry/enabled-trace-util.js:110:30
+2026-03-07T06:14:46.638731+00:00 app[web.1]: at NoopContextManager.with (/app/backend/node_modules/@opentelemetry/api/build/src/context/NoopContextManager.js:25:19)
+2026-03-07T06:14:46.638731+00:00 app[web.1]: at ContextAPI.with (/app/backend/node_modules/@opentelemetry/api/build/src/api/context.js:60:46)
+2026-03-07T06:14:46.638731+00:00 app[web.1]: at NoopTracer.startActiveSpan (/app/backend/node_modules/@opentelemetry/api/build/src/trace/NoopTracer.js:65:31)
+2026-03-07T06:14:46.638731+00:00 app[web.1]: at ProxyTracer.startActiveSpan (/app/backend/node_modules/@opentelemetry/api/build/src/trace/ProxyTracer.js:36:24)
+2026-03-07T06:14:46.638731+00:00 app[web.1]: at EnabledTraceUtil.startActiveSpan (/app/backend/node_modules/@google-cloud/firestore/build/src/telemetry/enabled-trace-util.js:102:28)
+2026-03-07T06:14:46.641324+00:00 heroku[router]: at=info method=POST path="/api/auth/forgot-password" host=messwalha-api-pg-360404ae0804.herokuapp.com request_id=5000fbd9-ad8a-57a7-abd0-0bd0a4d491be fwd="14.139.114.4" dyno=web.1 connect=0ms service=304ms status=500 bytes=271 protocol=http1.1 tls=true tls_version=unknown
+2026-03-07T06:14:46.641961+00:00 app[web.1]: [0mPOST /api/auth/forgot-password [31m500[0m 291.815 ms - 271[0m
+2026-03-07T06:14:49.944379+00:00 app[api]: Log session created by user hrushikeshjagtap143@gmail.com
+2026-03-07T06:15:05.592041+00:00 app[api]: Starting process with command `date` by user hrushikeshjagtap143@gmail.com
+2026-03-07T06:15:10.392222+00:00 heroku[run.7678]: State changed from starting to up
+2026-03-07T06:15:40.403129+00:00 heroku[run.7678]: Process exited with status 128
+2026-03-07T06:15:40.424941+00:00 heroku[run.7678]: State changed from up to complete
+2026-03-07T06:16:37.000000+00:00 app[api]: Build started by user hrushikeshjagtap143@gmail.com
+2026-03-07T06:17:06.149933+00:00 app[api]: Deploy 194b87a6 by user hrushikeshjagtap143@gmail.com
+2026-03-07T06:17:06.149933+00:00 app[api]: Release v55 created by user hrushikeshjagtap143@gmail.com
+2026-03-07T06:17:06.577861+00:00 heroku[web.1]: Restarting
+2026-03-07T06:17:06.632929+00:00 heroku[web.1]: State changed from up to starting
+2026-03-07T06:17:07.458102+00:00 heroku[web.1]: Stopping all processes with SIGTERM
+2026-03-07T06:17:07.540475+00:00 heroku[web.1]: Process exited with status 143
+2026-03-07T06:17:09.000000+00:00 app[api]: Build succeeded
+2026-03-07T06:17:10.883191+00:00 heroku[web.1]: Starting process with command `cd backend && node dist/server.js`
+2026-03-07T06:17:11.624344+00:00 app[web.1]: [dotenv@17.3.1] injecting env (0) from .env -- tip: ≡ƒöÉ encrypt with Dotenvx: https://dotenvx.com
+2026-03-07T06:17:11.718705+00:00 app[web.1]: Firebase initialization module loading...
+2026-03-07T06:17:11.718787+00:00 app[web.1]: DEBUG: Falling back to ENV, length: 1
+2026-03-07T06:17:11.718866+00:00 app[web.1]: Γ¥î Failed to parse FIREBASE_SERVICE_ACCOUNT from ENV
+2026-03-07T06:17:11.718915+00:00 app[web.1]: ΓÜá∩╕Å No Firebase Service Account found. Firebase features will be limited.
+2026-03-07T06:17:11.817820+00:00 app[web.1]: [WARN] 2026-03-07T06:17:11.817Z: Email service: No SMTP settings found. Emails will be logged to console instead.
+2026-03-07T06:17:11.887382+00:00 app[web.1]: (node:2) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-03-07T06:17:11.887404+00:00 app[web.1]: (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-03-07T06:17:11.887692+00:00 app[web.1]: [INFO] 2026-03-07T06:17:11.887Z: Server running in production mode on port 16824
+2026-03-07T06:17:12.551043+00:00 heroku[web.1]: State changed from starting to up
+2026-03-07T06:17:37.089354+00:00 app[web.1]: ValidationError: The 'X-Forwarded-For' header is set but the Express 'trust proxy' setting is false (default). This could indicate a misconfiguration which would prevent express-rate-limit from accurately identifying users. See https://express-rate-limit.github.io/ERR_ERL_UNEXPECTED_X_FORWARDED_FOR/ for more information.
+2026-03-07T06:17:37.089369+00:00 app[web.1]: at Object.xForwardedForHeader (file:///app/backend/node_modules/express-rate-limit/dist/index.mjs:337:13)
+2026-03-07T06:17:37.089371+00:00 app[web.1]: at wrappedValidations.<computed> [as xForwardedForHeader] (file:///app/backend/node_modules/express-rate-limit/dist/index.mjs:651:22)
+2026-03-07T06:17:37.089371+00:00 app[web.1]: at Object.keyGenerator (file:///app/backend/node_modules/express-rate-limit/dist/index.mjs:754:20)
+2026-03-07T06:17:37.089372+00:00 app[web.1]: at file:///app/backend/node_modules/express-rate-limit/dist/index.mjs:815:32
+2026-03-07T06:17:37.089373+00:00 app[web.1]: at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+2026-03-07T06:17:37.089373+00:00 app[web.1]: at async file:///app/backend/node_modules/express-rate-limit/dist/index.mjs:796:5 {
+2026-03-07T06:17:37.089374+00:00 app[web.1]: code: 'ERR_ERL_UNEXPECTED_X_FORWARDED_FOR',
+2026-03-07T06:17:37.089375+00:00 app[web.1]: help: 'https://express-rate-limit.github.io/ERR_ERL_UNEXPECTED_X_FORWARDED_FOR/'
+2026-03-07T06:17:37.089376+00:00 app[web.1]: }
+2026-03-07T06:17:37.092457+00:00 app[web.1]: [ERROR] 2026-03-07T06:17:37.092Z: Database not configured Error: Database not configured
+2026-03-07T06:17:37.092458+00:00 app[web.1]: at forgotPassword (file:///app/backend/dist/controllers/authController.js:201:25)
+2026-03-07T06:17:37.092459+00:00 app[web.1]: at Layer.handleRequest (/app/backend/node_modules/router/lib/layer.js:152:17)
+2026-03-07T06:17:37.092461+00:00 app[web.1]: at next (/app/backend/node_modules/router/lib/route.js:157:13)
+2026-03-07T06:17:37.092461+00:00 app[web.1]: at Route.dispatch (/app/backend/node_modules/router/lib/route.js:117:3)
+2026-03-07T06:17:37.092462+00:00 app[web.1]: at handle (/app/backend/node_modules/router/index.js:435:11)
+2026-03-07T06:17:37.092462+00:00 app[web.1]: at Layer.handleRequest (/app/backend/node_modules/router/lib/layer.js:152:17)
+2026-03-07T06:17:37.092463+00:00 app[web.1]: at /app/backend/node_modules/router/index.js:295:15
+2026-03-07T06:17:37.092464+00:00 app[web.1]: at processParams (/app/backend/node_modules/router/index.js:582:12)
+2026-03-07T06:17:37.092464+00:00 app[web.1]: at next (/app/backend/node_modules/router/index.js:291:5)
+2026-03-07T06:17:37.092465+00:00 app[web.1]: at router.handle (/app/backend/node_modules/router/index.js:186:3)
+2026-03-07T06:17:37.095422+00:00 heroku[router]: at=info method=POST path="/api/auth/forgot-password" host=messwalha-api-pg-360404ae0804.herokuapp.com request_id=1368884a-993d-43f0-5001-84663515f526 fwd="14.139.114.4" dyno=web.1 connect=0ms service=20ms status=500 bytes=66 protocol=http1.1 tls=true tls_version=unknown
+2026-03-07T06:17:37.096029+00:00 app[web.1]: [0mPOST /api/auth/forgot-password [31m500[0m 8.815 ms - 66[0m
+2026-03-07T06:17:49.224833+00:00 app[api]: Log session created by user hrushikeshjagtap143@gmail.com
+2026-03-07T06:18:06.578552+00:00 app[web.1]: [ERROR] 2026-03-07T06:18:06.578Z: Database not configured Error: Database not configured
+2026-03-07T06:18:06.578565+00:00 app[web.1]: at forgotPassword (file:///app/backend/dist/controllers/authController.js:201:25)
+2026-03-07T06:18:06.578566+00:00 app[web.1]: at Layer.handleRequest (/app/backend/node_modules/router/lib/layer.js:152:17)
+2026-03-07T06:18:06.578567+00:00 app[web.1]: at next (/app/backend/node_modules/router/lib/route.js:157:13)
+2026-03-07T06:18:06.578568+00:00 app[web.1]: at Route.dispatch (/app/backend/node_modules/router/lib/route.js:117:3)
+2026-03-07T06:18:06.578568+00:00 app[web.1]: at handle (/app/backend/node_modules/router/index.js:435:11)
+2026-03-07T06:18:06.578568+00:00 app[web.1]: at Layer.handleRequest (/app/backend/node_modules/router/lib/layer.js:152:17)
+2026-03-07T06:18:06.578570+00:00 app[web.1]: at /app/backend/node_modules/router/index.js:295:15
+2026-03-07T06:18:06.578570+00:00 app[web.1]: at processParams (/app/backend/node_modules/router/index.js:582:12)
+2026-03-07T06:18:06.578570+00:00 app[web.1]: at next (/app/backend/node_modules/router/index.js:291:5)
+2026-03-07T06:18:06.578571+00:00 app[web.1]: at router.handle (/app/backend/node_modules/router/index.js:186:3)
+2026-03-07T06:18:06.578997+00:00 app[web.1]: [0mPOST /api/auth/forgot-password [31m500[0m 0.910 ms - 66[0m
+2026-03-07T06:18:06.579119+00:00 heroku[router]: at=info method=POST path="/api/auth/forgot-password" host=messwalha-api-pg-360404ae0804.herokuapp.com request_id=71873300-a4ad-ebcf-2534-2af64dd74407 fwd="14.139.114.4" dyno=web.1 connect=0ms service=2ms status=500 bytes=66 protocol=http1.1 tls=true tls_version=unknown
+2026-03-07T06:18:10.518157+00:00 app[api]: Log session created by user hrushikeshjagtap143@gmail.com
+2026-03-07T06:18:48.447096+00:00 app[web.1]: [ERROR] 2026-03-07T06:18:48.446Z: Database not configured Error: Database not configured
+2026-03-07T06:18:48.447113+00:00 app[web.1]: at protect (file:///app/backend/dist/middleware/auth.js:7:25)
+2026-03-07T06:18:48.447113+00:00 app[web.1]: at Layer.handleRequest (/app/backend/node_modules/router/lib/layer.js:152:17)
+2026-03-07T06:18:48.447114+00:00 app[web.1]: at trimPrefix (/app/backend/node_modules/router/index.js:342:13)
+2026-03-07T06:18:48.447115+00:00 app[web.1]: at /app/backend/node_modules/router/index.js:297:9
+2026-03-07T06:18:48.447115+00:00 app[web.1]: at processParams (/app/backend/node_modules/router/index.js:582:12)
+2026-03-07T06:18:48.447115+00:00 app[web.1]: at next (/app/backend/node_modules/router/index.js:291:5)
+2026-03-07T06:18:48.447116+00:00 app[web.1]: at router.handle (/app/backend/node_modules/router/index.js:186:3)
+2026-03-07T06:18:48.447116+00:00 app[web.1]: at router (/app/backend/node_modules/router/index.js:60:12)
+2026-03-07T06:18:48.447117+00:00 app[web.1]: at Layer.handleRequest (/app/backend/node_modules/router/lib/layer.js:152:17)
+2026-03-07T06:18:48.447117+00:00 app[web.1]: at trimPrefix (/app/backend/node_modules/router/index.js:342:13)
+2026-03-07T06:18:48.447589+00:00 heroku[router]: at=info method=POST path="/api/favorites/toggle/9" host=messwalha-api-pg-360404ae0804.herokuapp.com request_id=af85d56e-bc58-7741-7bd7-a59f7c3fd56a fwd="14.139.114.4" dyno=web.1 connect=0ms service=2ms status=500 bytes=66 protocol=http1.1 tls=true tls_version=unknown
+2026-03-07T06:18:48.447691+00:00 app[web.1]: [0mPOST /api/favorites/toggle/9 [31m500[0m 1.016 ms - 66[0m
+2026-03-07T06:19:18.000000+00:00 app[api]: Build started by user hrushikeshjagtap143@gmail.com
+2026-03-07T06:19:49.763707+00:00 app[api]: Deploy 841ee248 by user hrushikeshjagtap143@gmail.com
+2026-03-07T06:19:49.763707+00:00 app[api]: Release v56 created by user hrushikeshjagtap143@gmail.com
+2026-03-07T06:19:50.106044+00:00 heroku[web.1]: Restarting
+2026-03-07T06:19:50.109223+00:00 heroku[web.1]: State changed from up to starting
+2026-03-07T06:19:50.863018+00:00 heroku[web.1]: Stopping all processes with SIGTERM
+2026-03-07T06:19:50.934997+00:00 heroku[web.1]: Process exited with status 143
+2026-03-07T06:19:54.384174+00:00 heroku[web.1]: Starting process with command `cd backend && node dist/server.js`
+2026-03-07T06:19:55.205166+00:00 app[web.1]: [dotenv@17.3.1] injecting env (0) from .env -- tip: ΓÜÖ∩╕Å  load multiple .env files with { path: ['.env.local', '.env'] }
+2026-03-07T06:19:55.313429+00:00 app[web.1]: Firebase initialization module loading...
+2026-03-07T06:19:55.313519+00:00 app[web.1]: DEBUG: FIREBASE_SERVICE_ACCOUNT found in ENV, length: 1
+2026-03-07T06:19:55.313589+00:00 app[web.1]: ΓÜá∩╕Å Direct JSON parse failed, trying repair for private_key newlines...
+2026-03-07T06:19:55.313650+00:00 app[web.1]: ΓÜá∩╕Å Repair failed, trying Base64 decode...
+2026-03-07T06:19:55.313735+00:00 app[web.1]: Γ¥î ALL Firebase parsing methods failed: Unexpected end of JSON input
+2026-03-07T06:19:55.313754+00:00 app[web.1]: ΓÜá∩╕Å No Firebase Service Account found. Firebase features will be limited.
+2026-03-07T06:19:55.418076+00:00 app[web.1]: [WARN] 2026-03-07T06:19:55.417Z: Email service: No SMTP settings found. Emails will be logged to console instead.
+2026-03-07T06:19:55.493400+00:00 app[web.1]: (node:2) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-03-07T06:19:55.493426+00:00 app[web.1]: (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-03-07T06:19:55.493699+00:00 app[web.1]: [INFO] 2026-03-07T06:19:55.493Z: Server running in production mode on port 17078
+2026-03-07T06:19:56.002746+00:00 heroku[web.1]: State changed from starting to up
+2026-03-07T06:19:57.000000+00:00 app[api]: Build succeeded
+2026-03-07T06:20:08.084767+00:00 app[web.1]: ValidationError: The 'X-Forwarded-For' header is set but the Express 'trust proxy' setting is false (default). This could indicate a misconfiguration which would prevent express-rate-limit from accurately identifying users. See https://express-rate-limit.github.io/ERR_ERL_UNEXPECTED_X_FORWARDED_FOR/ for more information.
+2026-03-07T06:20:08.084781+00:00 app[web.1]: at Object.xForwardedForHeader (file:///app/backend/node_modules/express-rate-limit/dist/index.mjs:337:13)
+2026-03-07T06:20:08.084782+00:00 app[web.1]: at wrappedValidations.<computed> [as xForwardedForHeader] (file:///app/backend/node_modules/express-rate-limit/dist/index.mjs:651:22)
+2026-03-07T06:20:08.084782+00:00 app[web.1]: at Object.keyGenerator (file:///app/backend/node_modules/express-rate-limit/dist/index.mjs:754:20)
+2026-03-07T06:20:08.084783+00:00 app[web.1]: at file:///app/backend/node_modules/express-rate-limit/dist/index.mjs:815:32
+2026-03-07T06:20:08.084783+00:00 app[web.1]: at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+2026-03-07T06:20:08.084783+00:00 app[web.1]: at async file:///app/backend/node_modules/express-rate-limit/dist/index.mjs:796:5 {
+2026-03-07T06:20:08.084784+00:00 app[web.1]: code: 'ERR_ERL_UNEXPECTED_X_FORWARDED_FOR',
+2026-03-07T06:20:08.084784+00:00 app[web.1]: help: 'https://express-rate-limit.github.io/ERR_ERL_UNEXPECTED_X_FORWARDED_FOR/'
+2026-03-07T06:20:08.084784+00:00 app[web.1]: }
+2026-03-07T06:20:08.088169+00:00 app[web.1]: [ERROR] 2026-03-07T06:20:08.088Z: Database not configured Error: Database not configured
+2026-03-07T06:20:08.088170+00:00 app[web.1]: at forgotPassword (file:///app/backend/dist/controllers/authController.js:201:25)
+2026-03-07T06:20:08.088170+00:00 app[web.1]: at Layer.handleRequest (/app/backend/node_modules/router/lib/layer.js:152:17)
+2026-03-07T06:20:08.088171+00:00 app[web.1]: at next (/app/backend/node_modules/router/lib/route.js:157:13)
+2026-03-07T06:20:08.088171+00:00 app[web.1]: at Route.dispatch (/app/backend/node_modules/router/lib/route.js:117:3)
+2026-03-07T06:20:08.088171+00:00 app[web.1]: at handle (/app/backend/node_modules/router/index.js:435:11)
+2026-03-07T06:20:08.088181+00:00 app[web.1]: at Layer.handleRequest (/app/backend/node_modules/router/lib/layer.js:152:17)
+2026-03-07T06:20:08.088181+00:00 app[web.1]: at /app/backend/node_modules/router/index.js:295:15
+2026-03-07T06:20:08.088181+00:00 app[web.1]: at processParams (/app/backend/node_modules/router/index.js:582:12)
+2026-03-07T06:20:08.088182+00:00 app[web.1]: at next (/app/backend/node_modules/router/index.js:291:5)
+2026-03-07T06:20:08.088182+00:00 app[web.1]: at router.handle (/app/backend/node_modules/router/index.js:186:3)
+2026-03-07T06:20:08.091196+00:00 heroku[router]: at=info method=POST path="/api/auth/forgot-password" host=messwalha-api-pg-360404ae0804.herokuapp.com request_id=5b2539bb-5c5c-44db-890b-b841eb498fc0 fwd="14.139.114.4" dyno=web.1 connect=0ms service=21ms status=500 bytes=66 protocol=http1.1 tls=true tls_version=unknown
+2026-03-07T06:20:08.091952+00:00 app[web.1]: [0mPOST /api/auth/forgot-password [31m500[0m 9.270 ms - 66[0m
+2026-03-07T06:20:11.105968+00:00 app[api]: Log session created by user hrushikeshjagtap143@gmail.com
