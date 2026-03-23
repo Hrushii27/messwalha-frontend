@@ -96,6 +96,13 @@ const EditMessPage: React.FC = () => {
                             mess: mess.imageUrl.startsWith('http') ? mess.imageUrl : `${baseUrl}${mess.imageUrl}`
                         }));
                     }
+                    if (mess.menuImages && Array.isArray(mess.menuImages)) {
+                        const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+                        setPreviews(prev => ({
+                            ...prev, 
+                            menus: mess.menuImages.map((url: string) => url.startsWith('http') ? url : `${baseUrl}${url}`)
+                        }));
+                    }
                 } else {
                     // No mess found, redirect to creation page
                     navigate('/owner/add-mess', { replace: true });
@@ -168,9 +175,16 @@ const EditMessPage: React.FC = () => {
                 imageUrl = await uploadToCloudinary(messImage);
             }
 
+            const menuUrls = [];
+            for (const file of menuImages) {
+                const url = await uploadToCloudinary(file);
+                menuUrls.push(url);
+            }
+
             const payload = {
                 ...formData,
-                imageUrl // Pass the Cloudinary URL
+                imageUrl, // Pass the Cloudinary URL
+                menuImages: menuUrls.length > 0 ? menuUrls : undefined
             };
 
             await api.put('/messes/my', payload);
@@ -456,6 +470,42 @@ const EditMessPage: React.FC = () => {
                                             Uploading a new photo will replace your existing mess photo. Recommended: Clear photo of your special meal.
                                         </p>
                                     </div>
+                                </div>
+                            </div>
+
+                            {/* Menu Images */}
+                            <div className="space-y-6">
+                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted dark:text-white/70 ml-2">Weekly Menu Photos (Up to 5)</label>
+                                <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                                    {previews.menus.map((url, index) => (
+                                        <div key={index} className="aspect-square rounded-2xl border border-white/10 overflow-hidden relative group">
+                                            <img src={url} className="w-full h-full object-cover" alt={`Menu ${index + 1}`} />
+                                            <button
+                                                type="button"
+                                                onClick={() => removeMenuImage(index)}
+                                                className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                                            >
+                                                <X size={12} />
+                                            </button>
+                                        </div>
+                                    ))}
+                                    {previews.menus.length < 5 && (
+                                        <div
+                                            onClick={() => document.getElementById('menuImagesInput')?.click()}
+                                            className="aspect-square border-2 border-dashed border-white/10 rounded-2xl flex flex-col items-center justify-center gap-2 hover:border-primary-500/50 hover:bg-bg3/30 cursor-pointer transition-all"
+                                        >
+                                            <Upload size={20} className="text-text-muted" />
+                                            <span className="text-[8px] font-black uppercase tracking-widest text-text-muted px-2 text-center">Add Photo</span>
+                                            <input
+                                                id="menuImagesInput"
+                                                type="file"
+                                                multiple
+                                                hidden
+                                                accept="image/*"
+                                                onChange={handleMenuImagesChange}
+                                            />
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </div>

@@ -70,7 +70,8 @@ router.put('/my', upload.fields([
             veg_nonveg,
             college_tags,
             upiId,
-            imageUrl // Cloudinary URL from frontend
+            imageUrl, // Cloudinary URL from frontend
+            menuImages // Array of Cloudinary URLs from frontend
         } = req.body;
 
         const updateData = {
@@ -83,7 +84,8 @@ router.put('/my', upload.fields([
             college_tags: college_tags !== undefined ? college_tags : existing.collegeTags,
             upi_id: upiId !== undefined ? upiId : existing.upiId,
             monthlyPrice: pricePerMonth ? parseFloat(pricePerMonth) : existing.monthlyPrice,
-            imageUrl: imageUrl || existing.imageUrl // Use Cloudinary URL if provided
+            imageUrl: imageUrl || existing.imageUrl, // Use Cloudinary URL if provided
+            menuImages: menuImages || existing.menuImages // Use Cloudinary URLs if provided
         };
 
         if (req.files && req.files['mess_image'] && req.files['mess_image'][0]) {
