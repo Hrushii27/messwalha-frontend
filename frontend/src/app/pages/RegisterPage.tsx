@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '../components/common/Button';
 import { Card } from '../components/common/Card';
-import { Utensils, User, Building, Rocket, CreditCard, BarChart, CheckCircle2, ArrowRight, ChevronLeft } from 'lucide-react';
+import { Utensils, User, Building, Rocket, CreditCard, BarChart, CheckCircle2, ArrowRight, ChevronLeft, Eye, EyeOff } from 'lucide-react';
 import { useAppDispatch } from '../../hooks/redux';
 import { setCredentials } from '../../store/slices/authSlice';
 import api from '../api/axiosInstance';
@@ -570,24 +570,42 @@ const BenefitItem = ({ icon: Icon, title, desc }: { icon: any, title: string, de
     </div>
 );
 
-const Input = React.memo(({ label, id, error, isTouched, ...props }: any) => (
+const Input = React.memo(({ label, id, error, isTouched, type, ...props }: any) => {
+    const [showPassword, setShowPassword] = useState(false);
+    const isPasswordType = type === 'password';
+    const inputType = isPasswordType && showPassword ? 'text' : type;
+
+    return (
     <div className="space-y-2">
         <label htmlFor={id} className="text-[10px] font-black uppercase tracking-[0.2em] text-navy-400 italic px-1 block">
             {label}
         </label>
-        <input
-            id={id}
-            {...props}
-            className={`w-full bg-navy-800/50 border border-white/5 rounded-2xl px-6 outline-none focus:border-primary-500/50 focus:bg-navy-800 transition-all text-white font-medium placeholder:text-navy-600 ${props.className || ''} ${isTouched && error ? 'border-red-500/50' : ''}`}
-            autoComplete="off"
-        />
+        <div className="relative">
+            <input
+                id={id}
+                type={inputType}
+                {...props}
+                className={`w-full bg-navy-800/50 border border-white/5 rounded-2xl px-6 outline-none focus:border-primary-500/50 focus:bg-navy-800 transition-all text-white font-medium placeholder:text-navy-600 ${isPasswordType ? 'pr-10' : ''} ${props.className || ''} ${isTouched && error ? 'border-red-500/50' : ''}`}
+                autoComplete="off"
+            />
+            {isPasswordType && (
+                <button
+                    type="button"
+                    onClick={() => setShowPassword(prev => !prev)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-navy-400 hover:text-primary-500 transition-colors"
+                >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+            )}
+        </div>
         {isTouched && error && (
             <p className="font-black italic px-1" style={{ color: '#E84B4B', fontSize: '10px', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
                 {error}
             </p>
         )}
     </div>
-));
+    );
+});
 
 Input.displayName = 'FormInput';
 

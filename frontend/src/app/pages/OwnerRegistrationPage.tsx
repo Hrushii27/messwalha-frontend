@@ -55,10 +55,11 @@ const OwnerRegistrationPage: React.FC = () => {
         if (weakPasswords.includes(pass.toLowerCase())) {
             return 'This password is too weak. Use a stronger password.';
         }
-        if (pass.length < 6) return 'Password must be at least 6 characters long';
+        if (pass.length < 8) return 'Password must be at least 8 characters long';
         if (!/[a-z]/.test(pass)) return 'Password must contain at least one lowercase letter';
         if (!/[A-Z]/.test(pass)) return 'Password must contain at least one uppercase letter';
         if (!/[0-9]/.test(pass)) return 'Password must contain at least one number';
+        if (!/[!@#$%^&*(),.?":{}|<>]/.test(pass)) return 'Password must contain at least one special character';
         return null;
     };
 
@@ -117,6 +118,7 @@ const OwnerRegistrationPage: React.FC = () => {
         setIsLoading(true);
 
         try {
+            console.log("Creating owner:", formData);
             const response = await api.post('/auth/owner-register', {
                 ...formData,
                 name: formData.name.trim(),
@@ -124,8 +126,7 @@ const OwnerRegistrationPage: React.FC = () => {
                 phone: formData.phone.trim(),
                 messName: formData.messName.trim(),
                 location: formData.location.trim(),
-                city: formData.city.trim(),
-                recaptchaToken: 'bypassed'
+                city: formData.city.trim()
             });
 
             dispatch(setCredentials(response.data));
@@ -192,6 +193,7 @@ const OwnerRegistrationPage: React.FC = () => {
                                 onBlur={handleBlur}
                                 error={touched.email ? errors.email : ''}
                                 required
+                                autoComplete="off"
                             />
                             <Input
                                 label="Phone Number"

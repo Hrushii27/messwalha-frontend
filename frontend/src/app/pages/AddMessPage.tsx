@@ -127,18 +127,33 @@ const AddMessPage: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        // Validation rules
+        if (formData.messName.length < 3) {
+            setError("Mess Name must be at least 3 characters");
+            return;
+        }
+        if (formData.ownerName.length < 2) {
+            setError("Owner Name must be at least 2 characters");
+            return;
+        }
+        if (!/^[0-9]{10}$/.test(formData.mobile)) {
+            setError("Mobile Number must be exactly 10 digits");
+            return;
+        }
+        if (formData.address.length < 2) {
+            setError("Mess Address must be at least 2 characters");
+            return;
+        }
+
         setLoading(true);
         setError(null);
 
-
-        const recaptchaToken = 'off';
 
         try {
             const data = new FormData();
             Object.entries(formData).forEach(([key, value]) => {
                 data.append(key, value);
             });
-            data.append('recaptchaToken', recaptchaToken);
 
             if (messImage) {
                 data.append('mess_image', messImage);
@@ -151,7 +166,7 @@ const AddMessPage: React.FC = () => {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
             setSuccess(true);
-            setTimeout(() => navigate('/find-mess'), 3000);
+            setTimeout(() => navigate('/owner/dashboard'), 3000);
         } catch (error) {
             const err = error as { response?: { data?: { message?: string } } };
             console.error('Registration failed:', err);

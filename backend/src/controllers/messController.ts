@@ -36,14 +36,12 @@ export const getAllMesses = async (req: Request, res: Response, next: NextFuncti
                 .get();
             const subData = !subSnapshot.empty ? subSnapshot.docs[0].data() : null;
 
-            // Filter by subscription status
-            if (subData && (subData.status === 'TRIAL' || subData.status === 'ACTIVE')) {
-                return {
-                    ...messData,
-                    owner: ownerData ? { name: ownerData.name, avatar: ownerData.avatar } : null
-                };
-            }
-            return null;
+            // TRIAL and ACTIVE must be visible. If isVisible is true, we simply map it.
+            return {
+                ...messData,
+                owner: ownerData ? { name: ownerData.name, avatar: ownerData.avatar } : null,
+                subscriptionStatus: subData ? subData.status : 'TRIAL'
+            };
         }));
 
         const filteredMesses = messes.filter(m => m !== null);
@@ -105,9 +103,25 @@ export const createMess = async (req: AuthRequest, res: Response, next: NextFunc
 
         const { name, description, address, latitude, longitude, cuisine, contact, images } = req.body;
 
+        console.log("Creating mess:", req.body);
+
+        // Check if owner already has a mess
+        const existingMess = await db.collection('messes').where('ownerId', '==', req.user!.id).limit(1).get();
+        if (!existingMess.empty) {
+            return next(new AppError('You already added a mess. Please edit your existing mess.', 400));
+        }
+
+        const trialStart = new Date();
+        const trialEnd = new Date();
+        trialEnd.setDate(trialEnd.getDate() + 60);
+
         const messRef = db.collection('messes').doc();
         const messData = {
             id: messRef.id,
+            isVisible: true,
+            subscriptionStatus: 'TRIAL',
+            trialStartDate: trialStart,
+            trialEndDate: trialEnd,
             name,
             description,
             address,
@@ -125,6 +139,8 @@ export const createMess = async (req: AuthRequest, res: Response, next: NextFunc
         };
 
         await messRef.set(messData);
+
+        console.log("Saved mess:", messData);
 
         res.status(201).json({ success: true, data: messData });
     } catch (error) {
