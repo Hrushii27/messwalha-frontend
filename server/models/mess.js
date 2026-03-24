@@ -103,6 +103,68 @@ const Mess = {
         `);
         return result.rows.map(mapMessFields);
     },
+    findWithFilters: async (filters = {}) => {
+        const { sort, foodType, cuisine, maxPrice, minRating, verified } = filters;
+        let query = `
+            SELECT * FROM mess_listings 
+            WHERE is_active = TRUE AND status = 'approved'
+        `;
+        const values = [];
+        let paramIdx = 1;
+
+        if (foodType && foodType !== 'all') {
+            // Map 'veg' -> 'Veg', 'non-veg' -> 'Non-Veg', 'nonveg' -> 'Non-Veg'
+            let type = foodType.toLowerCase();
+            if (type === 'veg') type = 'Veg';
+            else if (type === 'non-veg' || type === 'nonveg') type = 'Non-Veg';
+            else type = 'Both';
+            
+            query += ` AND veg_nonveg = $${paramIdx}`;
+            values.push(type);
+            paramIdx++;
+        }
+
+        if (cuisine && cuisine !== 'All' && cuisine !== '') {
+            if (cuisine === 'Veg' || cuisine === 'Non-Veg') {
+                query += ` AND veg_nonveg = $${paramIdx}`;
+                values.push(cuisine);
+            } else {
+                query += ` AND cuisine = $${paramIdx}`;
+                values.push(cuisine);
+            }
+            paramIdx++;
+        }
+
+        if (maxPrice) {
+            query += ` AND monthly_price <= $${paramIdx}`;
+            values.push(maxPrice);
+            paramIdx++;
+        }
+
+        if (minRating) {
+            query += ` AND rating >= $${paramIdx}`;
+            values.push(minRating);
+            paramIdx++;
+        }
+
+        if (verified === true || verified === 'true') {
+            query += ` AND verified = TRUE`;
+        }
+
+        // Sorting
+        if (sort === 'rating' || sort === 'Best Rated') {
+            query += ` ORDER BY rating DESC`;
+        } else if (sort === 'price_low' || sort === 'Price: Low to High') {
+            query += ` ORDER BY monthly_price ASC`;
+        } else if (sort === 'newest' || sort === 'Newest First') {
+            query += ` ORDER BY created_at DESC`;
+        } else {
+            query += ` ORDER BY created_at DESC`; // Default
+        }
+
+        const result = await db.query(query, values);
+        return result.rows.map(mapMessFields);
+    },
     findById: async (id) => {
         try {
             const result = await db.query(`

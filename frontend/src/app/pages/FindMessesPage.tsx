@@ -9,7 +9,8 @@ import {
     Utensils,
     ArrowRight,
     X,
-    ShieldCheck
+    ShieldCheck,
+    Star
 } from 'lucide-react';
 import api from '../api/axiosInstance';
 import { Button } from '../components/common/Button';
@@ -25,7 +26,6 @@ const FindMessesPage: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [locationTerm, setLocationTerm] = useState('');
     const [debouncedLocationTerm, setDebouncedLocationTerm] = useState('');
-    const [mealType, setMealType] = useState('');
     const [showFilters, setShowFilters] = useState(false);
     
     // Auto-show filters on desktop, hide on mobile
@@ -62,12 +62,12 @@ const FindMessesPage: React.FC = () => {
         setLoading(true);
         try {
             const params: Record<string, string | number | boolean> = {};
-            if (filters.cuisine && filters.cuisine !== 'All') {
-                params.cuisine = filters.cuisine;
-            }
-            if (filters.maxPrice) {
-                params.maxPrice = filters.maxPrice;
-            }
+            if (filters.cuisine && filters.cuisine !== 'All') params.cuisine = filters.cuisine;
+            if (filters.maxPrice) params.maxPrice = filters.maxPrice;
+            if (filters.veg_nonveg) params.foodType = filters.veg_nonveg;
+            if (filters.sort) params.sort = filters.sort;
+            if (filters.minRating) params.minRating = filters.minRating;
+            if (filters.verified) params.verified = filters.verified;
 
             const response = await api.get('/messes', { params });
             const data = response.data.data || [];
@@ -78,40 +78,25 @@ const FindMessesPage: React.FC = () => {
         } finally {
             setLoading(false);
         }
-    }, [filters.cuisine, filters.maxPrice]);
+    }, [filters]);
 
     useEffect(() => {
         fetchMesses();
     }, [fetchMesses]);
 
-    const filteredMesses = messes
-        .filter((mess: Mess) => {
-            const locationLower = debouncedLocationTerm.toLowerCase().trim();
+    const filteredMesses = messes.filter((mess: Mess) => {
+        const locationLower = debouncedLocationTerm.toLowerCase().trim();
 
-            const matchesLocation = !debouncedLocationTerm ||
-                (mess.address && mess.address.toLowerCase().includes(locationLower)) ||
-                (mess.city && mess.city.toLowerCase().includes(locationLower)) ||
-                (mess.name && mess.name.toLowerCase().includes(locationLower)) ||
-                (mess.collegeTags && mess.collegeTags.toLowerCase().includes(locationLower));
+        const matchesLocation = !debouncedLocationTerm ||
+            (mess.address && mess.address.toLowerCase().includes(locationLower)) ||
+            (mess.city && mess.city.toLowerCase().includes(locationLower)) ||
+            (mess.name && mess.name.toLowerCase().includes(locationLower)) ||
+            (mess.collegeTags && mess.collegeTags.toLowerCase().includes(locationLower));
 
-            const matchesMealType = !filters.veg_nonveg || 
-                (mess.vegNonVeg === filters.veg_nonveg);
+        const matchesVisibility = mess.isVisible !== false;
 
-            const matchesCollege = !filters.college ||
-                (mess.collegeTags && mess.collegeTags.toLowerCase().includes(filters.college.toLowerCase()));
-
-            const matchesVerified = !filters.verified || mess.verified;
-            const matchesRating = (mess.rating || 0) >= filters.minRating;
-            const matchesVisibility = mess.isVisible !== false;
-
-            return matchesLocation && matchesMealType && matchesCollege && matchesVerified && matchesRating && matchesVisibility;
-        })
-        .sort((a: Mess, b: Mess) => {
-            if (filters.sort === 'Best Rated') return (b.rating || 0) - (a.rating || 0);
-            if (filters.sort === 'Price: Low to High') return (a.monthlyPrice || 0) - (b.monthlyPrice || 0);
-            if (filters.sort === 'Newest First') return new Date(b.createdAt || '').getTime() - new Date(a.createdAt || '').getTime();
-            return 0;
-        });
+        return matchesLocation && matchesVisibility;
+    });
 
     const groupedMesses = filteredMesses.reduce((acc: Record<string, Mess[]>, mess: Mess) => {
         const city = mess.city || 'Other';
@@ -186,8 +171,8 @@ const FindMessesPage: React.FC = () => {
                                     <Utensils className="absolute left-6 top-1/2 -translate-y-1/2 text-primary-500 z-10" size={18} />
                                     <select
                                         className="w-full h-14 md:h-20 bg-bg3/50 border-none text-text-primary pl-14 pr-10 rounded-full focus:ring-2 focus:ring-primary-500/50 transition-all font-black uppercase tracking-widest text-[10px] md:text-xs appearance-none cursor-pointer outline-none"
-                                        value={mealType}
-                                        onChange={(e) => setMealType(e.target.value)}
+                                        value={filters.veg_nonveg}
+                                        onChange={(e) => setFilters({ ...filters, veg_nonveg: e.target.value })}
                                         aria-label="Filter by meal type"
                                     >
                                         <option value="" className="bg-bg2 text-white">🍛 Veg / Non-Veg</option>
@@ -274,12 +259,33 @@ const FindMessesPage: React.FC = () => {
                                                     <input
                                                         type="range"
                                                         min="1000"
-                                                        max="6000"
+                                                        max="10000"
                                                         step="100"
                                                         value={filters.maxPrice}
                                                         onChange={(e) => setFilters({ ...filters, maxPrice: parseInt(e.target.value) })}
                                                         className="w-full accent-primary-500 h-1 bg-white/10 rounded-full appearance-none cursor-pointer"
                                                     />
+                                                </div>
+                                            </div>
+
+                                            {/* Rating Filter */}
+                                            <div className="space-y-4 lg:space-y-6">
+                                                <h2 className="text-[10px] font-black uppercase tracking-widest text-text-secondary">Minimum Rating</h2>
+                                                <div className="flex flex-wrap gap-2">
+                                                    {[0, 3, 4, 4.5].map((r) => (
+                                                        <button
+                                                            key={r}
+                                                            onClick={() => setFilters({ ...filters, minRating: r })}
+                                                            className={`px-4 py-3 rounded-2xl text-[9px] font-black uppercase tracking-widest transition-all border flex items-center gap-2 ${filters.minRating === r ? 'bg-primary-500 border-primary-500 text-white shadow-xl shadow-primary-500/20' : 'bg-white/5 border-white/5 text-text-muted hover:bg-white/10 hover:text-white'}`}
+                                                        >
+                                                            {r === 0 ? 'All' : (
+                                                                <>
+                                                                    <Star size={10} fill={filters.minRating === r ? "currentColor" : "none"} />
+                                                                    {r}+ 
+                                                                </>
+                                                            )}
+                                                        </button>
+                                                    ))}
                                                 </div>
                                             </div>
 
@@ -401,7 +407,6 @@ const FindMessesPage: React.FC = () => {
                                 actionLabel="Reset Filters"
                                 onAction={() => {
                                     setLocationTerm('');
-                                    setMealType('');
                                     setFilters({ cuisine: '', verified: false, minRating: 0, maxPrice: 6000, distance: 5, sort: 'Best Rated', college: '', veg_nonveg: '' });
                                 }}
                             />

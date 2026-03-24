@@ -17,11 +17,12 @@ const messValidation = [
     body('displayPhoto').optional().trim()
 ];
 
-// Public route to get all active messes
+// Public route to get all active messes with filters
 router.get('/', async (req, res) => {
     try {
-        const messes = await Mess.findAllActive();
-        res.json({ data: messes }); // Frontend expects { data: [...] }
+        const { sort, foodType, cuisine, maxPrice, minRating, verified } = req.query;
+        const messes = await Mess.findWithFilters({ sort, foodType, cuisine, maxPrice, minRating, verified });
+        res.json({ data: messes }); 
     } catch (err) {
         console.error('Error fetching messes:', err);
         res.status(500).json({ message: 'Error fetching active messes' });
