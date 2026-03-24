@@ -7,12 +7,14 @@ const { validateRequest } = require('../middleware/validation');
 const upload = require('../utils/multer');
 
 const messValidation = [
-    body('messName').trim().notEmpty().escape().withMessage('Mess name is required'),
-    body('address').trim().notEmpty().escape().withMessage('Address is required'),
+    body('name').trim().notEmpty().escape().withMessage('Mess name is required (min 3 chars)').isLength({ min: 3 }),
+    body('location').trim().notEmpty().escape().withMessage('Location is required (min 2 chars)').isLength({ min: 2 }),
+    body('city').trim().notEmpty().escape().withMessage('City is required (min 2 chars)').isLength({ min: 2 }),
     body('pricePerMonth').isNumeric().withMessage('Invalid monthly price'),
     body('pricePerWeek').optional().isNumeric(),
     body('pricePerDay').optional().isNumeric(),
-    body('menuText').optional().trim().escape()
+    body('description').optional().trim().escape(),
+    body('displayPhoto').optional().trim()
 ];
 
 // Public route to get all active messes
@@ -61,30 +63,30 @@ router.put('/my', upload.fields([
         }
 
         const {
-            messName,
-            address,
-            pricePerMonth,
-            menuText,
-            cuisine,
+            name,
+            location,
             city,
+            pricePerMonth,
+            description,
+            cuisine,
             veg_nonveg,
             college_tags,
             upiId,
-            imageUrl, // Cloudinary URL from frontend
+            displayPhoto, // Cloudinary URL from frontend
             menuImages // Array of Cloudinary URLs from frontend
         } = req.body;
 
         const updateData = {
-            name: messName || existing.name,
-            address: address || existing.address,
-            description: menuText !== undefined ? menuText : existing.description,
+            name: name || existing.name,
+            address: location || existing.address,
+            description: description !== undefined ? description : existing.description,
             cuisine: cuisine || existing.cuisine,
             city: city !== undefined ? city : existing.city,
             veg_nonveg: veg_nonveg || existing.vegNonVeg,
             college_tags: college_tags !== undefined ? college_tags : existing.collegeTags,
             upi_id: upiId !== undefined ? upiId : existing.upiId,
             monthlyPrice: pricePerMonth ? parseFloat(pricePerMonth) : existing.monthlyPrice,
-            imageUrl: imageUrl || existing.imageUrl, // Use Cloudinary URL if provided
+            imageUrl: displayPhoto || existing.imageUrl, // Use displayPhoto as Cloudinary URL
             menuImages: menuImages || existing.menuImages // Use Cloudinary URLs if provided
         };
 
@@ -128,13 +130,18 @@ router.post('/', upload.fields([
 
         // Map frontend fields (FormData) to backend expectations
         const {
-            messName,
-            address,
+            name,
+            location,
             pricePerMonth,
             pricePerWeek,
             pricePerDay,
-            menuText,
-            cuisine
+            description,
+            cuisine,
+            city,
+            veg_nonveg,
+            college_tags,
+            upiId,
+            displayPhoto
         } = req.body;
 
         const ownerId = req.user.id;
@@ -152,29 +159,18 @@ router.post('/', upload.fields([
             });
         }
 
-        // Using fallbacks or renaming for model compatibility
-        const name = messName;
-        const monthlyPrice = pricePerMonth;
-        const description = menuText || '';
-
-        // Use the first uploaded image as the main mess image
-        let imageUrl = null;
-        if (req.files && req.files['mess_image'] && req.files['mess_image'][0]) {
-            imageUrl = `/uploads/${req.files['mess_image'][0].filename}`;
-        }
-
         const mess = await Mess.create(
             ownerId, 
             name, 
-            address, 
-            monthlyPrice, 
-            description, 
+            location, 
+            pricePerMonth, 
+            description || '', 
             cuisine || 'Indian',
-            req.body.city || '',
-            req.body.veg_nonveg || 'Veg',
-            req.body.college_tags || '',
-            req.body.upiId || null,
-            imageUrl
+            city || '',
+            veg_nonveg || 'Veg',
+            college_tags || '',
+            upiId || null,
+            displayPhoto || imageUrl
         );
         res.status(201).json({ success: true, data: mess });
     } catch (err) {

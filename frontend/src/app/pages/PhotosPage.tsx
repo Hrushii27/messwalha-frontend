@@ -130,8 +130,8 @@ const PhotosPage: React.FC = () => {
             }
 
             await api.put('/messes/my', {
-                mess_image,
-                menu_images: menu_images
+                displayPhoto: mess_image,
+                menuImages: menu_images
             });
 
             setSuccess(true);
