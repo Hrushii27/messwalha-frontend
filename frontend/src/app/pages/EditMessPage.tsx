@@ -51,7 +51,7 @@ const EditMessPage: React.FC = () => {
         mess: null,
         menus: []
     });
-    const [existingMessUrl, setExistingMessUrl] = useState<string | null>(null);
+    const [displayPhoto, setDisplayPhoto] = useState<string | null>(null);
     const [existingMenuUrls, setExistingMenuUrls] = useState<string[]>([]);
 
     useEffect(() => {
@@ -94,11 +94,12 @@ const EditMessPage: React.FC = () => {
                         upiId: mess.upiId || ''
                     });
 
-                    if (mess.imageUrl) {
-                        setExistingMessUrl(mess.imageUrl);
+                    if (mess.displayPhoto || mess.imageUrl) {
+                        const imgUrl = mess.displayPhoto || mess.imageUrl;
+                        setDisplayPhoto(imgUrl);
                         setPreviews(prev => ({
                             ...prev, 
-                            mess: getImageUrl(mess.imageUrl)
+                            mess: getImageUrl(imgUrl)
                         }));
                     }
                     if (mess.menuImages && Array.isArray(mess.menuImages)) {
@@ -188,7 +189,7 @@ const EditMessPage: React.FC = () => {
         setError(null);
 
         try {
-            let mess_image = existingMessUrl;
+            let mess_image = displayPhoto;
             if (messImage) {
                 mess_image = await uploadImage(messImage);
             }

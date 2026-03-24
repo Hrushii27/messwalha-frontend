@@ -7,6 +7,7 @@ function mapMessFields(mess) {
             ...mess,
             monthlyPrice: mess.monthly_price ? parseFloat(mess.monthly_price) : 0,
             imageUrl: mess.image_url,
+            displayPhoto: mess.image_url, // Map to displayPhoto for frontend consistency
             isActive: mess.is_active,
             vegNonVeg: mess.veg_nonveg,
             collegeTags: mess.college_tags,
@@ -30,10 +31,10 @@ const Mess = {
         return mapMessFields(result.rows[0]);
     },
     update: async (ownerId, data) => {
-        const { name, address, description, cuisine, city, veg_nonveg, college_tags, status, upi_id, monthlyPrice, imageUrl, menuImages } = data;
+        const { name, address, description, cuisine, city, vegNonveg, college_tags, status, upi_id, monthlyPrice, imageUrl, displayPhoto, menuImages } = data;
         
         let query = `UPDATE mess_listings SET name = $1, address = $2, description = $3, cuisine = $4, city = $5, veg_nonveg = $6, college_tags = $7`;
-        const values = [name, address, description, cuisine, city, veg_nonveg, college_tags];
+        const values = [name, address, description, cuisine, city, vegNonveg, college_tags];
         let paramIdx = 8;
 
         if (monthlyPrice !== undefined) {
@@ -42,9 +43,9 @@ const Mess = {
             paramIdx++;
         }
 
-        if (imageUrl !== undefined) {
+        if (imageUrl !== undefined || displayPhoto !== undefined) {
             query += `, image_url = $${paramIdx}`;
-            values.push(imageUrl);
+            values.push(displayPhoto || imageUrl);
             paramIdx++;
         }
 

@@ -82,16 +82,16 @@ router.put('/my', upload.fields([
             description: description !== undefined ? description : existing.description,
             cuisine: cuisine || existing.cuisine,
             city: city !== undefined ? city : existing.city,
-            veg_nonveg: veg_nonveg || existing.vegNonVeg,
+            vegNonveg: veg_nonveg || existing.vegNonVeg,
             college_tags: college_tags !== undefined ? college_tags : existing.collegeTags,
             upi_id: upiId !== undefined ? upiId : existing.upiId,
             monthlyPrice: pricePerMonth ? parseFloat(pricePerMonth) : existing.monthlyPrice,
-            imageUrl: displayPhoto || existing.imageUrl, // Use displayPhoto as Cloudinary URL
+            displayPhoto: displayPhoto || existing.displayPhoto || existing.imageUrl, // Map to displayPhoto
             menuImages: menuImages || existing.menuImages // Use Cloudinary URLs if provided
         };
 
         if (req.files && req.files['mess_image'] && req.files['mess_image'][0]) {
-            updateData.imageUrl = `/uploads/${req.files['mess_image'][0].filename}`;
+            updateData.displayPhoto = `/uploads/${req.files['mess_image'][0].filename}`;
         }
 
         const updatedMess = await Mess.update(req.user.id, updateData);
@@ -170,7 +170,7 @@ router.post('/', upload.fields([
             veg_nonveg || 'Veg',
             college_tags || '',
             upiId || null,
-            displayPhoto || imageUrl
+            displayPhoto
         );
         res.status(201).json({ success: true, data: mess });
     } catch (err) {

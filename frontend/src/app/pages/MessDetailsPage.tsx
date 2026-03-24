@@ -70,6 +70,7 @@ const MessDetailsPage: React.FC = () => {
                     api.get(`/reviews/${id}`)
                 ]);
                 setMess(messRes.data.data);
+                console.log("MESS DATA:", messRes.data.data);
                 setNotifications(notifRes.data.data || []);
                 setReviews(reviewsRes.data.data || []);
 
@@ -77,7 +78,7 @@ const MessDetailsPage: React.FC = () => {
                     const m = messRes.data.data;
                     const history = JSON.parse(localStorage.getItem('recentlyViewed') || '[]');
                     const updated = [
-                        { id: m.id, name: m.name, image: getImageUrl(m.imageUrl || m.messImage || (m.images && m.images[0])), rating: m.rating },
+                        { id: m.id, name: m.name, image: getImageUrl(m.displayPhoto || m.imageUrl || m.messImage || (m.images && m.images[0])), rating: m.rating },
                         ...history.filter((item: any) => item.id !== m.id)
                     ].slice(0, 10);
                     localStorage.setItem('recentlyViewed', JSON.stringify(updated));
@@ -269,7 +270,7 @@ const MessDetailsPage: React.FC = () => {
                 {/* Photos / Hero Section */}
                 <div className="relative h-[400px] md:h-[550px] rounded-[3rem] overflow-hidden mb-12 shadow-2xl group border border-white/5">
                     <img
-                        src={getImageUrl(mess.imageUrl || mess.messImage || (mess.images && mess.images[0])) || 'https://images.unsplash.com/photo-1547523199-467464010617?auto=format&fit=crop&q=80&w=1400'}
+                        src={getImageUrl(mess.displayPhoto || mess.imageUrl || mess.messImage || (mess.images && mess.images[0])) || 'https://images.unsplash.com/photo-1547523199-467464010617?auto=format&fit=crop&q=80&w=1400'}
                         className="w-full h-full object-cover transition-transform duration-[3s] group-hover:scale-110"
                         alt={mess.name}
                         onError={(e) => {

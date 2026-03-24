@@ -32,6 +32,7 @@ export interface Mess {
     reviewCount?: number;
     images: string[];
     imageUrl?: string;
+    displayPhoto?: string;
     messImage?: string; // Some pages use messImage
     priceRange?: string;
     monthlyPrice?: number;
