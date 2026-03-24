@@ -14,7 +14,7 @@ import { motion } from 'framer-motion';
 import api from '../api/axiosInstance';
 import { useNavigate } from 'react-router-dom';
 import Seo from '../components/common/Seo';
-import { uploadToCloudinary } from '../utils/cloudinary';
+import { uploadImage } from '../utils/cloudinary';
 import { getImageUrl } from '../api/axiosInstance';
 import { toast } from 'react-hot-toast';
 
@@ -118,20 +118,20 @@ const PhotosPage: React.FC = () => {
         setError(null);
 
         try {
-            let imageUrl = existingMessUrl;
+            let mess_image = existingMessUrl;
             if (messImage) {
-                imageUrl = await uploadToCloudinary(messImage);
+                mess_image = await uploadImage(messImage);
             }
 
-            const menuUrls = [...existingMenuUrls];
+            const menu_images = [...existingMenuUrls];
             for (const file of menuImages) {
-                const url = await uploadToCloudinary(file);
-                menuUrls.push(url);
+                const url = await uploadImage(file);
+                menu_images.push(url);
             }
 
             await api.put('/messes/my', {
-                imageUrl,
-                menuImages: menuUrls
+                mess_image,
+                menu_images: menu_images
             });
 
             setSuccess(true);

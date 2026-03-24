@@ -21,7 +21,7 @@ import { motion } from 'framer-motion';
 import api from '../api/axiosInstance';
 import { useNavigate, Link } from 'react-router-dom';
 import Seo from '../components/common/Seo';
-import { uploadToCloudinary } from '../utils/cloudinary';
+import { uploadImage } from '../utils/cloudinary';
 import { getImageUrl } from '../api/axiosInstance';
 
 const EditMessPage: React.FC = () => {
@@ -169,21 +169,29 @@ const EditMessPage: React.FC = () => {
         setError(null);
 
         try {
-            let imageUrl = null;
+            let mess_image = null;
             if (messImage) {
-                imageUrl = await uploadToCloudinary(messImage);
+                mess_image = await uploadImage(messImage);
             }
 
-            const menuUrls = [];
+            const menu_images = [];
             for (const file of menuImages) {
-                const url = await uploadToCloudinary(file);
-                menuUrls.push(url);
+                const url = await uploadImage(file);
+                menu_images.push(url);
             }
 
             const payload = {
-                ...formData,
-                imageUrl, // Pass the Cloudinary URL
-                menuImages: menuUrls.length > 0 ? menuUrls : undefined
+                mess_name: formData.messName,
+                owner_name: formData.ownerName,
+                mobile: formData.mobile,
+                address: formData.address,
+                price_per_month: parseInt(formData.pricePerMonth),
+                price_per_week: parseInt(formData.pricePerWeek) || 0,
+                price_per_day: parseInt(formData.pricePerDay) || 0,
+                menu_text: formData.menuText,
+                upi_id: formData.upiId,
+                mess_image,
+                menu_images: menu_images.length > 0 ? menu_images : undefined
             };
 
             await api.put('/messes/my', payload);
