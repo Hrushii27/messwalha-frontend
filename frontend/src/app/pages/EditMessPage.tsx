@@ -51,6 +51,8 @@ const EditMessPage: React.FC = () => {
         mess: null,
         menus: []
     });
+    const [existingMessUrl, setExistingMessUrl] = useState<string | null>(null);
+    const [existingMenuUrls, setExistingMenuUrls] = useState<string[]>([]);
 
     useEffect(() => {
         const checkStatusAndFetchMess = async () => {
@@ -93,12 +95,14 @@ const EditMessPage: React.FC = () => {
                     });
 
                     if (mess.imageUrl) {
+                        setExistingMessUrl(mess.imageUrl);
                         setPreviews(prev => ({
                             ...prev, 
                             mess: getImageUrl(mess.imageUrl)
                         }));
                     }
                     if (mess.menuImages && Array.isArray(mess.menuImages)) {
+                        setExistingMenuUrls(mess.menuImages);
                         setPreviews(prev => ({
                             ...prev, 
                             menus: mess.menuImages.map((url: string) => getImageUrl(url))

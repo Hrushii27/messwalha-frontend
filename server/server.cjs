@@ -44,7 +44,7 @@ app.use(
         scriptSrc: ["'self'", "'unsafe-inline'", "https://*.google.com", "https://*.gstatic.com", "https://*.razorpay.com", "https://checkout.razorpay.com"],
         frameSrc: ["'self'", "https://*.google.com", "https://recaptcha.google.com", "https://*.razorpay.com", "https://checkout.razorpay.com"],
         connectSrc: ["'self'", "https://*.google.com", "https://*.gstatic.com", "https://api.findmess.me", "https://*.razorpay.com", "https://api.cloudinary.com"],
-        imgSrc: ["'self'", "data:", "blob:", "https://*.gstatic.com", "https://*.google.com", "https://res.cloudinary.com"],
+        imgSrc: ["'self'", "data:", "blob:", "https://*.gstatic.com", "https://*.google.com", "https://res.cloudinary.com", "https://images.unsplash.com"],
         styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://accounts.google.com"],
         fontSrc: ["'self'", "https://fonts.gstatic.com"],
       },
@@ -115,6 +115,7 @@ app.options("*", cors(corsOptions));
 // --- 3. Body & Cookie Parsers ---
 app.use(express.json({ limit: '10kb' })); 
 app.use(cookieParser());
+app.use('/uploads', express.static('uploads'));
 
 // --- 4. Custom Security Layer (Rate Limiting, XSS, HPP) ---
 setupSecurity(app);

@@ -272,6 +272,10 @@ const MessDetailsPage: React.FC = () => {
                         src={getImageUrl(mess.imageUrl || mess.messImage || (mess.images && mess.images[0])) || 'https://images.unsplash.com/photo-1547523199-467464010617?auto=format&fit=crop&q=80&w=1400'}
                         className="w-full h-full object-cover transition-transform duration-[3s] group-hover:scale-110"
                         alt={mess.name}
+                        onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.src = 'https://images.unsplash.com/photo-1547523199-467464010617?auto=format&fit=crop&q=80&w=1400';
+                        }}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-bg via-bg/40 to-transparent" />
 
@@ -385,6 +389,10 @@ const MessDetailsPage: React.FC = () => {
                                                                 src={getImageUrl(img)}
                                                                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[2s]"
                                                                 alt={`Intel ${i}`}
+                                                                onError={(e) => {
+                                                                    const target = e.target as HTMLImageElement;
+                                                                    target.src = 'https://images.unsplash.com/photo-1547523199-467464010617?auto=format&fit=crop&q=80&w=1400';
+                                                                }}
                                                             />
                                                         </div>
                                                     ))}
