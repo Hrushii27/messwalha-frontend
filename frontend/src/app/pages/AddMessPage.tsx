@@ -69,30 +69,34 @@ const AddMessPage: React.FC = () => {
 
     // Form State
     const [formData, setFormData] = useState({
-        messName: '',
+        name: '',
         ownerName: '',
         mobile: '',
         city: '',
-        address: '',
+        location: '',
         pricePerMonth: '',
         pricePerWeek: '',
         pricePerDay: '',
-        menuText: '',
+        description: '',
         upiId: ''
     });
 
-    const [messImage, setMessImage] = useState<File | null>(null);
-    const [menuImages, setMenuImages] = useState<File[]>([]);
+    // Image states (currently unused in strict JSON flow)
+    // const [messImage, setMessImage] = useState<File | null>(null);
+    // const [menuImages, setMenuImages] = useState<File[]>([]);
+    /*
     const [previews, setPreviews] = useState<{ mess: string | null; menus: string[] }>({
         mess: null,
         menus: []
     });
+    */
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
+    /* 
     const handleMessImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
@@ -104,14 +108,13 @@ const AddMessPage: React.FC = () => {
     const handleMenuImagesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = Array.from(e.target.files || []);
         if (files.length + menuImages.length > 5) {
-            alert('Maximum 5 menu images allowed');
+            alert("Maximum 5 menu images allowed");
             return;
         }
-        const newFiles = [...menuImages, ...files];
-        setMenuImages(newFiles);
+        setMenuImages(prev => [...prev, ...files]);
         setPreviews(prev => ({
             ...prev,
-            menus: newFiles.map(f => URL.createObjectURL(f))
+            menus: [...prev.menus, ...files.map(f => URL.createObjectURL(f))]
         }));
     };
 
@@ -124,20 +127,21 @@ const AddMessPage: React.FC = () => {
             menus: newFiles.map(f => URL.createObjectURL(f))
         }));
     };
+    */
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        // ✅ STEP 1 — FIX PAYLOAD (JSON)
+        // ✅ STEP 1 — FIX PAYLOAD (JSON - CANONICAL)
         const payload = {
-            name: formData.messName?.trim(),
-            location: formData.address?.trim(),
+            name: formData.name?.trim(),
+            location: formData.location?.trim(),
             city: formData.city?.trim(),
             pricePerMonth: Number(formData.pricePerMonth),
             foodType: "veg",
             cuisine: "indian",
-            description: formData.menuText || "",
-            displayPhoto: null // Step 1 specifies imageUrl || null, but we'll use null for pure JSON test
+            description: formData.description || "",
+            displayPhoto: null
         };
 
         // ✅ STEP 2 — DEBUG PAYLOAD
@@ -178,9 +182,8 @@ const AddMessPage: React.FC = () => {
 
         try {
             // ✅ STEP 5 — FIX API CALL (JSON)
-            // Note: If images are needed, this should be FormData, but Step 5 specifically says payload object.
-            // We'll try JSON first as requested to fix the 400 error.
-            await api.post('/messes', payload);
+            const response = await api.post('/messes', payload);
+            console.log("SUCCESS:", response.data);
             
             setSuccess(true);
             setTimeout(() => navigate('/owner/dashboard'), 3000);
@@ -189,17 +192,21 @@ const AddMessPage: React.FC = () => {
             
             // ✅ STEP 7 (DEBUG) — LOG ERROR
             if (err.response) {
-                console.log("ERROR:", err.response.data);
+                console.log("ERROR DATA:", err.response.data);
+                const backendMsg = err.response.data?.message;
+                const errors = err.response.data?.errors;
+                if (errors && errors.length > 0) {
+                    const firstError = errors[0].msg || errors[0].message;
+                    alert(`Validation Error: ${firstError} (${errors[0].path || errors[0].param})`);
+                } else {
+                    alert(`Error: ${backendMsg || "Server error"}`);
+                }
+            } else {
+                alert(`Error: ${err.message}`);
             }
             
             console.error('Registration failed:', err);
-            
-            let errorMessage = 'Failed to register mess. Please try again.';
-            if (err.response) {
-                errorMessage = err.response.data?.message || `Server error: ${err.response.status}`;
-            }
-            setError(errorMessage);
-            alert(`Error: ${errorMessage}`);
+            setError(err.response?.data?.message || err.message);
         } finally {
             setLoading(false);
         }
@@ -293,18 +300,18 @@ const AddMessPage: React.FC = () => {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div className="space-y-3">
-                                <label htmlFor="messName" className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted ml-2">Mess Name</label>
+                                <label htmlFor="name" className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted ml-2">Mess Name</label>
                                 <div className="relative group">
                                     <Utensils size={16} className="absolute left-6 top-1/2 -translate-y-1/2 text-primary-500" />
                                     <input
                                         type="text"
-                                        id="messName"
-                                        name="messName"
+                                        id="name"
+                                        name="name"
                                         autoComplete="organization"
                                         required
                                         placeholder="E.G. SAI DARBAR MESS"
                                         className="w-full bg-bg3/30 border border-white/10 text-text-primary pl-14 pr-6 py-5 rounded-2xl focus:ring-2 focus:ring-primary-500/50 outline-none transition-all font-black tracking-widest text-[10px] uppercase italic"
-                                        value={formData.messName}
+                                        value={formData.name}
                                         onChange={handleInputChange}
                                     />
                                 </div>
@@ -361,18 +368,18 @@ const AddMessPage: React.FC = () => {
                                 </div>
                             </div>
                             <div className="space-y-3 md:col-span-2">
-                                <label htmlFor="address" className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted ml-2">Mess Address / Location</label>
+                                <label htmlFor="location" className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted ml-2">Mess Address / Location</label>
                                 <div className="relative group">
                                     <MapPin size={16} className="absolute left-6 top-1/2 -translate-y-1/2 text-primary-500" />
                                     <input
                                         type="text"
-                                        id="address"
-                                        name="address"
+                                        id="location"
+                                        name="location"
                                         autoComplete="street-address"
                                         required
                                         placeholder="AREA / NEAR COLLEGE"
                                         className="w-full bg-bg3/30 border border-white/10 text-text-primary pl-14 pr-6 py-5 rounded-2xl focus:ring-2 focus:ring-primary-500/50 outline-none transition-all font-black tracking-widest text-[10px] uppercase italic"
-                                        value={formData.address}
+                                        value={formData.location}
                                         onChange={handleInputChange}
                                     />
                                 </div>
@@ -470,17 +477,17 @@ const AddMessPage: React.FC = () => {
                             {/* Text Menu */}
                              <div className="space-y-4">
                                 <div className="flex items-center justify-between">
-                                    <label htmlFor="menuText" className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted ml-2">Menu Description (Optional)</label>
+                                    <label htmlFor="description" className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted ml-2">Menu Description (Optional)</label>
                                     <span className="text-[8px] font-black uppercase tracking-widest text-primary-500/60 bg-primary-500/5 px-3 py-1 rounded-full border border-primary-500/10 italic">Text Option</span>
                                 </div>
                                 <textarea
-                                    id="menuText"
-                                    name="menuText"
+                                    id="description"
+                                    name="description"
                                     autoComplete="off"
                                     placeholder="MONDAY: POHA, DAL RICE..."
                                     rows={4}
                                     className="w-full bg-bg3/30 border border-white/10 text-text-primary px-8 py-6 rounded-3xl focus:ring-2 focus:ring-primary-500/50 outline-none transition-all font-black tracking-widest text-[10px] uppercase italic"
-                                    value={formData.menuText}
+                                    value={formData.description}
                                     onChange={handleInputChange}
                                 />
                             </div>
@@ -493,20 +500,13 @@ const AddMessPage: React.FC = () => {
                                         onClick={() => document.getElementById('messImageInput')?.click()}
                                         className="h-64 border-2 border-dashed border-white/10 rounded-[2rem] flex flex-col items-center justify-center gap-4 hover:border-primary-500/50 hover:bg-bg3/30 cursor-pointer transition-all group overflow-hidden relative"
                                     >
-                                        {previews.mess ? (
-                                            <img src={previews.mess} className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700" alt="Preview" />
-                                        ) : (
-                                            <>
-                                                <Upload size={32} className="text-text-muted group-hover:text-primary-500 transition-colors" />
-                                                <span className="text-[9px] font-black uppercase tracking-widest text-text-muted">Click to Upload</span>
-                                            </>
-                                        )}
+                                        <Upload size={32} className="text-text-muted group-hover:text-primary-500 transition-colors" />
+                                        <span className="text-[9px] font-black uppercase tracking-widest text-text-muted">Click to Upload</span>
                                         <input
                                             id="messImageInput"
                                             type="file"
                                             hidden
                                             accept="image/*"
-                                            onChange={handleMessImageChange}
                                         />
                                     </div>
                                     <div className="flex flex-col justify-center space-y-4 pr-8">
@@ -528,35 +528,20 @@ const AddMessPage: React.FC = () => {
                                     <span className="text-[8px] font-black uppercase tracking-widest text-primary-500/60 bg-primary-500/5 px-3 py-1 rounded-full border border-primary-500/10 italic">Image Option</span>
                                 </div>
                                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-6">
-                                    {previews.menus.map((url, i) => (
-                                        <div key={i} className="aspect-square rounded-2xl overflow-hidden relative group border border-border-color">
-                                            <img src={url} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt={`Menu ${i}`} />
-                                            <button
-                                                type="button"
-                                                onClick={() => removeMenuImage(i)}
-                                                className="absolute top-2 right-2 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity"
-                                            >
-                                                <X size={12} />
-                                            </button>
-                                        </div>
-                                    ))}
-                                    {menuImages.length < 5 && (
-                                        <div
-                                            onClick={() => document.getElementById('menuImagesInput')?.click()}
-                                            className="aspect-square border-2 border-dashed border-white/10 rounded-2xl flex flex-col items-center justify-center gap-2 hover:border-primary-500/50 hover:bg-bg3/30 cursor-pointer transition-all group"
-                                        >
-                                            <Upload size={20} className="text-text-muted group-hover:text-primary-500" />
-                                            <span className="text-[8px] font-black uppercase tracking-widest text-text-muted">Add</span>
-                                            <input
-                                                id="menuImagesInput"
-                                                type="file"
-                                                multiple
-                                                hidden
-                                                accept="image/*"
-                                                onChange={handleMenuImagesChange}
-                                            />
-                                        </div>
-                                    )}
+                                    <div
+                                        onClick={() => document.getElementById('menuImagesInput')?.click()}
+                                        className="aspect-square border-2 border-dashed border-white/10 rounded-2xl flex flex-col items-center justify-center gap-2 hover:border-primary-500/50 hover:bg-bg3/30 cursor-pointer transition-all group"
+                                    >
+                                        <Upload size={20} className="text-text-muted group-hover:text-primary-500" />
+                                        <span className="text-[8px] font-black uppercase tracking-widest text-text-muted">Add</span>
+                                        <input
+                                            id="menuImagesInput"
+                                            type="file"
+                                            multiple
+                                            hidden
+                                            accept="image/*"
+                                        />
+                                    </div>
                                 </div>
                             </div>
                         </div>
