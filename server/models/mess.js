@@ -216,6 +216,10 @@ const Mess = {
             LIMIT 1
         `, [ownerId]);
         return result.rows[0];
+    },
+    resetAll: async () => {
+        await db.query("TRUNCATE TABLE mess_listings CASCADE");
+        return true;
     }
 };
 
