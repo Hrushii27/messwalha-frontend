@@ -103,6 +103,18 @@ router.put('/my', upload.fields([
     }
 });
 
+// TEMPORARY: Reset mess system (DELETE ALL DATA)
+// WARNING: ONLY FOR DEVELOPMENT USE
+router.get('/reset-system/confirm', async (req, res) => {
+    try {
+        await db.query("TRUNCATE TABLE mess_listings CASCADE");
+        res.json({ success: true, message: "System reset successfully. All mess data deleted." });
+    } catch (err) {
+        console.error('Error resetting system:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // Get single mess by ID
 router.get('/:id', async (req, res) => {
     try {
@@ -194,5 +206,14 @@ router.post('/', upload.fields([
     }
 });
 
-
-module.exports = router;
+// TEMPORARY: Reset mess system (DELETE ALL DATA)
+// WARNING: ONLY FOR DEVELOPMENT USE
+router.get('/reset-system/confirm', async (req, res) => {
+    try {
+        await db.query("TRUNCATE TABLE mess_listings CASCADE");
+        res.json({ success: true, message: "System reset successfully. All mess data deleted." });
+    } catch (err) {
+        console.error('Error resetting system:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
