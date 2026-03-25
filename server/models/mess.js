@@ -25,8 +25,8 @@ function mapMessFields(mess) {
 const Mess = {
     create: async (ownerId, name, address, monthlyPrice, description = '', cuisine = 'Indian', city = '', vegNonveg = 'Both', collegeTags = '', upiId = null, imageUrl = null, menuImages = []) => {
         const result = await db.query(
-            'INSERT INTO mess_listings (mess_owner_id, name, address, monthly_price, description, cuisine, city, veg_nonveg, college_tags, status, upi_id, image_url, menu_images, is_active) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) RETURNING *',
-            [ownerId, name, address, monthlyPrice, description, cuisine, city, vegNonveg, collegeTags, 'approved', upiId, imageUrl, menuImages, true]
+            'INSERT INTO mess_listings (mess_owner_id, name, address, monthly_price, description, cuisine, city, veg_nonveg, college_tags, status, upi_id, image_url, display_photo, menu_images, is_active) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) RETURNING *',
+            [ownerId, name, address, monthlyPrice, description, cuisine, city, vegNonveg, collegeTags, 'approved', upiId, imageUrl, imageUrl, menuImages, true]
         );
         return mapMessFields(result.rows[0]);
     },

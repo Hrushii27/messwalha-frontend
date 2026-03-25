@@ -111,6 +111,8 @@ router.get('/:id', async (req, res) => {
             return res.status(404).json({ message: 'Mess not found' });
         }
         
+        console.log("DB ROW:", row); // ✅ STEP 4 — DEBUG API
+
         // ✅ STEP 3 — FIX API RESPONSE (EXACT MAPPING)
         const responseData = {
             id: row.id,
@@ -121,7 +123,7 @@ router.get('/:id', async (req, res) => {
             displayPhoto: row.display_photo || row.image_url || null
         };
 
-        console.log("API RESPONSE:", responseData); // ✅ STEP 4 — DEBUG API
+        console.log("API OUTPUT:", responseData); // ✅ STEP 4 — DEBUG API
         res.json({ data: responseData });
     } catch (err) {
         console.error('Error fetching mess by ID:', err);
