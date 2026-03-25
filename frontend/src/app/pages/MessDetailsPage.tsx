@@ -268,14 +268,14 @@ const MessDetailsPage: React.FC = () => {
                 )}
 
                 {/* Photos / Hero Section */}
-                <div className="relative h-[400px] md:h-[550px] rounded-[3rem] overflow-hidden mb-12 shadow-2xl group border border-white/5">
-                    <img
-                        src={getImageUrl(mess.displayPhoto || mess.imageUrl || mess.messImage || (mess.images && mess.images[0])) || 'https://images.unsplash.com/photo-1547523199-467464010617?auto=format&fit=crop&q=80&w=1400'}
-                        className="w-full h-full object-cover transition-transform duration-[3s] group-hover:scale-110"
-                        alt={mess.name}
-                        onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            target.src = 'https://images.unsplash.com/photo-1547523199-467464010617?auto=format&fit=crop&q=80&w=1400';
+                <div className="relative h-[400px] md:h-[550px] rounded-[3rem] overflow-hidden mb-12 shadow-2xl group border border-white/5 bg-bg3">
+                    <motion.div
+                        initial={{ scale: 1.2 }}
+                        animate={{ scale: 1 }}
+                        transition={{ duration: 1.5, ease: "easeOut" }}
+                        className="absolute inset-0 bg-cover bg-center transition-transform duration-[3s] group-hover:scale-110"
+                        style={{
+                            backgroundImage: `url(${getImageUrl(mess.displayPhoto || mess.imageUrl || mess.messImage || (mess.images && mess.images[0])) || 'https://images.unsplash.com/photo-1547523199-467464010617?auto=format&fit=crop&q=80&w=1400'})`
                         }}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-bg via-bg/40 to-transparent" />
