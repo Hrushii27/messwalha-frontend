@@ -275,8 +275,8 @@ const MessDetailsPage: React.FC = () => {
                             ? mess.displayPhoto
                             : "/default-mess.jpg";
                         
-                        // ✅ STEP 6 — DEBUG FRONTEND
-                        console.log("FRONTEND IMAGE:", mess.displayPhoto);
+                        // ✅ STEP 5 — DEBUG
+                        console.log("IMAGE:", mess.displayPhoto);
                         
                         return (
                             <motion.div
