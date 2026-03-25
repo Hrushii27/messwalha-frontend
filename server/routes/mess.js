@@ -145,7 +145,10 @@ router.post('/', upload.fields([
         }
 
 
-        // Map frontend fields (FormData) to backend expectations
+        // ✅ STEP 2 (BACKEND DEBUG)
+        console.log("BACKEND PAYLOAD:", req.body);
+
+        // Map frontend fields (FormData or JSON) to backend expectations
         const {
             name,
             location,
@@ -154,6 +157,7 @@ router.post('/', upload.fields([
             cuisine,
             city,
             veg_nonveg,
+            foodType, // Mapped from frontend JSON
             college_tags,
             upiId,
             displayPhoto

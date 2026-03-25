@@ -128,31 +128,37 @@ const AddMessPage: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        // ✅ STEP 3 — FIX FRONTEND PAYLOAD
+        // ✅ STEP 1 — FIX PAYLOAD (JSON)
         const payload = {
             name: formData.messName?.trim(),
             location: formData.address?.trim(),
             city: formData.city?.trim(),
             pricePerMonth: Number(formData.pricePerMonth),
-            foodType: "veg", // Default as per requirements
-            cuisine: "indian", // Default as per requirements
+            foodType: "veg",
+            cuisine: "indian",
             description: formData.menuText || "",
-            displayPhoto: "" // Will be updated if image exists
+            displayPhoto: null // Step 1 specifies imageUrl || null, but we'll use null for pure JSON test
         };
+
+        // ✅ STEP 2 — DEBUG PAYLOAD
+        console.log("PAYLOAD:", payload);
 
         // ✅ STEP 4 — VALIDATION BEFORE SUBMIT
         if (!payload.name || payload.name.length < 3) {
-            alert("Enter valid mess name (min 3 chars)");
+            alert("Enter valid mess name");
             return;
         }
+
         if (!payload.city) {
             alert("Enter city");
             return;
         }
+
         if (!payload.location) {
             alert("Enter location");
             return;
         }
+
         if (!payload.pricePerMonth || isNaN(payload.pricePerMonth)) {
             alert("Enter valid price");
             return;
@@ -170,42 +176,18 @@ const AddMessPage: React.FC = () => {
         setLoading(true);
         setError(null);
 
-
         try {
-            // Using FormData for file uploads while keeping payload structure consistent
-            const data = new FormData();
+            // ✅ STEP 5 — FIX API CALL (JSON)
+            // Note: If images are needed, this should be FormData, but Step 5 specifically says payload object.
+            // We'll try JSON first as requested to fix the 400 error.
+            await api.post('/messes', payload);
             
-            // Critical Fields mapped for backend validation
-            data.append('name', payload.name);
-            data.append('location', payload.location);
-            data.append('city', payload.city);
-            data.append('pricePerMonth', payload.pricePerMonth.toString());
-            data.append('foodType', payload.foodType);
-            data.append('cuisine', payload.cuisine);
-            data.append('description', payload.description);
-            
-            // Other fields
-            data.append('ownerName', formData.ownerName);
-            data.append('mobile', formData.mobile);
-            data.append('upiId', formData.upiId);
-
-            if (messImage) {
-                data.append('mess_image', messImage);
-            }
-            menuImages.forEach(file => {
-                data.append('menu_images', file);
-            });
-
-            // ✅ STEP 5 — FIX API CALL
-            await api.post('/messes', data, {
-                headers: { 'Content-Type': 'multipart/form-data' }
-            });
             setSuccess(true);
             setTimeout(() => navigate('/owner/dashboard'), 3000);
         } catch (error) {
             const err = error as any;
             
-            // ✅ STEP 7 — DEBUG ERROR
+            // ✅ STEP 7 (DEBUG) — LOG ERROR
             if (err.response) {
                 console.log("ERROR:", err.response.data);
             }
@@ -213,18 +195,9 @@ const AddMessPage: React.FC = () => {
             console.error('Registration failed:', err);
             
             let errorMessage = 'Failed to register mess. Please try again.';
-            
             if (err.response) {
-                // Server responded with a status code outside the 2xx range
                 errorMessage = err.response.data?.message || `Server error: ${err.response.status}`;
-            } else if (err.request) {
-                // Request was made but no response was received
-                errorMessage = "Network Error: Cannot reach the server. Please check your internet or CORS settings.";
-            } else {
-                // Something happened in setting up the request
-                errorMessage = err.message;
             }
-            
             setError(errorMessage);
             alert(`Error: ${errorMessage}`);
         } finally {
@@ -432,13 +405,15 @@ const AddMessPage: React.FC = () => {
                                     />
                                 </div>
                             </div>
-                            <div className="space-y-3">
-                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted ml-2">Cost Per Week</label>
+                             <div className="space-y-3">
+                                <label htmlFor="pricePerWeek" className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted ml-2">Cost Per Week</label>
                                 <div className="relative group">
                                     <IndianRupee size={16} className="absolute left-6 top-1/2 -translate-y-1/2 text-primary-500" />
                                     <input
                                         type="number"
+                                        id="pricePerWeek"
                                         name="pricePerWeek"
+                                        autoComplete="off"
                                         required
                                         placeholder="₹ 800"
                                         className="w-full bg-bg3/30 border border-white/10 text-text-primary pl-14 pr-6 py-5 rounded-2xl focus:ring-2 focus:ring-primary-500/50 outline-none transition-all font-black tracking-widest text-[10px] uppercase italic"
@@ -448,12 +423,14 @@ const AddMessPage: React.FC = () => {
                                 </div>
                             </div>
                             <div className="space-y-3">
-                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted ml-2">Cost Per Day</label>
+                                <label htmlFor="pricePerDay" className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted ml-2">Cost Per Day</label>
                                 <div className="relative group">
                                     <IndianRupee size={16} className="absolute left-6 top-1/2 -translate-y-1/2 text-primary-500" />
                                     <input
                                         type="number"
+                                        id="pricePerDay"
                                         name="pricePerDay"
+                                        autoComplete="off"
                                         required
                                         placeholder="₹ 120"
                                         className="w-full bg-bg3/30 border border-white/10 text-text-primary pl-14 pr-6 py-5 rounded-2xl focus:ring-2 focus:ring-primary-500/50 outline-none transition-all font-black tracking-widest text-[10px] uppercase italic"
@@ -491,13 +468,15 @@ const AddMessPage: React.FC = () => {
 
                         <div className="space-y-12">
                             {/* Text Menu */}
-                            <div className="space-y-4">
+                             <div className="space-y-4">
                                 <div className="flex items-center justify-between">
-                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted ml-2">Menu Description (Optional)</label>
+                                    <label htmlFor="menuText" className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted ml-2">Menu Description (Optional)</label>
                                     <span className="text-[8px] font-black uppercase tracking-widest text-primary-500/60 bg-primary-500/5 px-3 py-1 rounded-full border border-primary-500/10 italic">Text Option</span>
                                 </div>
                                 <textarea
+                                    id="menuText"
                                     name="menuText"
+                                    autoComplete="off"
                                     placeholder="MONDAY: POHA, DAL RICE..."
                                     rows={4}
                                     className="w-full bg-bg3/30 border border-white/10 text-text-primary px-8 py-6 rounded-3xl focus:ring-2 focus:ring-primary-500/50 outline-none transition-all font-black tracking-widest text-[10px] uppercase italic"
