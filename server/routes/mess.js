@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../config/db');
 const Mess = require('../models/mess');
 const Subscription = require('../models/subscription');
 const { body } = require('express-validator');
