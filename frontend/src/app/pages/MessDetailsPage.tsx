@@ -270,9 +270,13 @@ const MessDetailsPage: React.FC = () => {
                 {/* Photos / Hero Section */}
                 <div className="relative h-[400px] md:h-[550px] rounded-[3rem] overflow-hidden mb-12 shadow-2xl group border border-white/5 bg-bg3">
                     {(() => {
-                        const imageUrl = mess.displayPhoto || "/default-mess.jpg";
-                        console.log("MESS DATA:", mess);
-                        console.log("HERO IMAGE URL:", imageUrl);
+                        // ✅ STEP 5 — FRONTEND FIX (LOGIC)
+                        const imageUrl = mess.displayPhoto && mess.displayPhoto !== ""
+                            ? mess.displayPhoto
+                            : "/default-mess.jpg";
+                        
+                        // ✅ STEP 6 — DEBUG FRONTEND
+                        console.log("FRONTEND IMAGE:", mess.displayPhoto);
                         
                         return (
                             <motion.div

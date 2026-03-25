@@ -106,11 +106,23 @@ router.put('/my', upload.fields([
 // Get single mess by ID
 router.get('/:id', async (req, res) => {
     try {
-        const mess = await Mess.findById(req.params.id);
-        if (!mess) {
+        const row = await Mess.findById(req.params.id);
+        if (!row) {
             return res.status(404).json({ message: 'Mess not found' });
         }
-        res.json({ data: mess });
+        
+        // ✅ STEP 3 — FIX API RESPONSE (EXACT MAPPING)
+        const responseData = {
+            id: row.id,
+            name: row.name,
+            location: row.address, // Mapping 'address' to 'location' as per requirements
+            city: row.city,
+            rating: row.rating,
+            displayPhoto: row.display_photo || row.image_url || null
+        };
+
+        console.log("API RESPONSE:", responseData); // ✅ STEP 4 — DEBUG API
+        res.json({ data: responseData });
     } catch (err) {
         console.error('Error fetching mess by ID:', err);
         res.status(500).json({ message: 'Error fetching mess details' });

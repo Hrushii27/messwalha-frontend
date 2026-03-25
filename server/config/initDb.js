@@ -152,8 +152,9 @@ const createTables = async () => {
         IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='mess_listings' AND column_name='upi_id') THEN
             ALTER TABLE mess_listings ADD COLUMN upi_id VARCHAR(100);
         END IF;
-        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='mess_listings' AND column_name='menu_images') THEN
-            ALTER TABLE mess_listings ADD COLUMN menu_images TEXT[] DEFAULT '{}';
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='mess_listings' AND column_name='display_photo') THEN
+            ALTER TABLE mess_listings ADD COLUMN display_photo TEXT;
+            UPDATE mess_listings SET display_photo = image_url WHERE display_photo IS NULL;
         END IF;
         IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='mess_listings' AND column_name='review_count') THEN
             ALTER TABLE mess_listings ADD COLUMN review_count INTEGER DEFAULT 0;

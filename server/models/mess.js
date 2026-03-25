@@ -3,12 +3,12 @@ const db = require('../config/db');
 function mapMessFields(mess) {
     if (!mess) return null;
     try {
-        const imageUrl = mess.image_url || mess.displayPhoto || null;
+        const photo = mess.display_photo || mess.image_url || null;
         return {
             ...mess,
             monthlyPrice: mess.monthly_price ? parseFloat(mess.monthly_price) : 0,
-            imageUrl: imageUrl,
-            displayPhoto: imageUrl, // Essential for frontend rendering
+            imageUrl: photo,
+            displayPhoto: photo, 
             isActive: mess.is_active,
             vegNonVeg: mess.veg_nonveg,
             collegeTags: mess.college_tags,
@@ -44,9 +44,10 @@ const Mess = {
         }
 
         if (imageUrl !== undefined || displayPhoto !== undefined) {
-            query += `, image_url = $${paramIdx}`;
-            values.push(displayPhoto || imageUrl);
-            paramIdx++;
+            const photoUrl = displayPhoto || imageUrl;
+            query += `, image_url = $${paramIdx}, display_photo = $${paramIdx + 1}`;
+            values.push(photoUrl, photoUrl);
+            paramIdx += 2;
         }
 
         if (upi_id !== undefined) {
