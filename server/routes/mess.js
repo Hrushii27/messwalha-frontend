@@ -85,7 +85,7 @@ router.put('/my', upload.fields([
             city: city !== undefined ? city : existing.city,
             vegNonveg: veg_nonveg || existing.vegNonVeg,
             college_tags: college_tags !== undefined ? college_tags : existing.collegeTags,
-            upi_id: upiId !== undefined ? upiId : existing.upiId,
+            upi_id: upi_id !== undefined ? upi_id : existing.upiId,
             monthlyPrice: pricePerMonth ? parseFloat(pricePerMonth) : existing.monthlyPrice,
             displayPhoto: displayPhoto || existing.displayPhoto, 
             menuImages: menuImages || existing.menuImages
@@ -107,7 +107,7 @@ router.put('/my', upload.fields([
 // WARNING: ONLY FOR DEVELOPMENT USE
 router.get('/reset-system/confirm', async (req, res) => {
     try {
-        await db.query("TRUNCATE TABLE mess_listings CASCADE");
+        await Mess.resetAll();
         res.json({ success: true, message: "System reset successfully. All mess data deleted." });
     } catch (err) {
         console.error('Error resetting system:', err);
@@ -160,8 +160,6 @@ router.post('/', upload.fields([
             name,
             location,
             pricePerMonth,
-            pricePerWeek,
-            pricePerDay,
             description,
             cuisine,
             city,
@@ -206,14 +204,4 @@ router.post('/', upload.fields([
     }
 });
 
-// TEMPORARY: Reset mess system (DELETE ALL DATA)
-// WARNING: ONLY FOR DEVELOPMENT USE
-router.get('/reset-system/confirm', async (req, res) => {
-    try {
-        await db.query("TRUNCATE TABLE mess_listings CASCADE");
-        res.json({ success: true, message: "System reset successfully. All mess data deleted." });
-    } catch (err) {
-        console.error('Error resetting system:', err);
-        res.status(500).json({ error: err.message });
-    }
-});
+module.exports = router;
