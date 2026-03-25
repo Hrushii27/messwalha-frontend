@@ -87,8 +87,8 @@ router.put('/my', upload.fields([
             college_tags: college_tags !== undefined ? college_tags : existing.collegeTags,
             upi_id: upiId !== undefined ? upiId : existing.upiId,
             monthlyPrice: pricePerMonth ? parseFloat(pricePerMonth) : existing.monthlyPrice,
-            displayPhoto: displayPhoto || existing.displayPhoto || existing.imageUrl, // Map to displayPhoto
-            menuImages: menuImages || existing.menuImages // Use Cloudinary URLs if provided
+            displayPhoto: displayPhoto || existing.displayPhoto, 
+            menuImages: menuImages || existing.menuImages
         };
 
         if (req.files && req.files['mess_image'] && req.files['mess_image'][0]) {
@@ -171,7 +171,7 @@ router.post('/', upload.fields([
             veg_nonveg || 'Veg',
             college_tags || '',
             upiId || null,
-            displayPhoto
+            displayPhoto || null
         );
         res.status(201).json({ success: true, data: mess });
     } catch (err) {

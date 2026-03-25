@@ -3,18 +3,18 @@ const db = require('../config/db');
 function mapMessFields(mess) {
     if (!mess) return null;
     try {
+        const imageUrl = mess.image_url || mess.displayPhoto || null;
         return {
             ...mess,
             monthlyPrice: mess.monthly_price ? parseFloat(mess.monthly_price) : 0,
-            imageUrl: mess.image_url,
-            displayPhoto: mess.image_url, // Map to displayPhoto for frontend consistency
+            imageUrl: imageUrl,
+            displayPhoto: imageUrl, // Essential for frontend rendering
             isActive: mess.is_active,
             vegNonVeg: mess.veg_nonveg,
             collegeTags: mess.college_tags,
             upiId: mess.upi_id,
             menuImages: mess.menu_images || [],
             reviewCount: mess.review_count ? parseInt(mess.review_count) : 0,
-            // Preserve other fields
         };
     } catch (err) {
         console.error('Error in mapMessFields:', err);
