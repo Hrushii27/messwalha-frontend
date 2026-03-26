@@ -1,6 +1,6 @@
 const { Client } = require('pg');
 
-async function cleanStaleData() {
+async function cleanAndVerify() {
     const client = new Client({
         connectionString: process.env.DATABASE_URL,
         ssl: { rejectUnauthorized: false }
@@ -10,25 +10,22 @@ async function cleanStaleData() {
         await client.connect();
         console.log('Connected.');
 
-        // Clear the hardcoded fallback strings that were saved to the DB
-        const result = await client.query(`
+        // Check what is currently in the DB
+        const before = await client.query(`SELECT id, owner_name, contact_number FROM mess_listings`);
+        console.log('BEFORE:', JSON.stringify(before.rows));
+
+        // Clear any row where stringified fallbacks were saved
+        await client.query(`
             UPDATE mess_listings
             SET
-                owner_name = CASE
-                    WHEN owner_name = 'Authorized Personnel' THEN NULL
-                    ELSE owner_name
-                END,
-                contact_number = CASE
-                    WHEN contact_number = 'Not Available' THEN NULL
-                    ELSE contact_number
-                END
-            WHERE owner_name = 'Authorized Personnel'
-               OR contact_number = 'Not Available'
-            RETURNING id, owner_name, contact_number;
+                owner_name = NULL,
+                contact_number = NULL
+            WHERE owner_name IN ('Authorized Personnel', 'Not Available')
+               OR contact_number IN ('Authorized Personnel', 'Not Available')
         `);
 
-        console.log('Cleaned rows:', result.rowCount);
-        console.log('After cleanup:', JSON.stringify(result.rows));
+        const after = await client.query(`SELECT id, owner_name, contact_number FROM mess_listings`);
+        console.log('AFTER:', JSON.stringify(after.rows));
 
     } catch (err) {
         console.error('Error:', err.message);
@@ -38,4 +35,4 @@ async function cleanStaleData() {
     }
 }
 
-cleanStaleData();
+cleanAndVerify();
