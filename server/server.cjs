@@ -35,6 +35,35 @@ const PORT = process.env.PORT || 5000;
 app.set('trust proxy', 1); // Required for Heroku to handle X-Forwarded-For correctly
 console.log('✅ Express initialized. Port:', PORT);
 
+// --- 0. CORS CONFIGURATION (CRITICAL FIX) ---
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:3000",
+  "https://findmess.me",
+  "https://www.findmess.me",
+  "https://api.findmess.me"
+];
+
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (origin && (allowedOrigins.includes(origin) || origin.endsWith(".vercel.app"))) {
+    res.header("Access-Control-Allow-Origin", origin);
+  } else if (!origin) {
+    // Internal/Simple request
+  } else {
+    res.header("Access-Control-Allow-Origin", "https://www.findmess.me");
+  }
+  
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+  res.header("Access-Control-Allow-Credentials", "true");
+  
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+  next();
+});
+
 // --- 1. Security Headers (Helmet) ---
 app.use(
   helmet({
@@ -51,46 +80,6 @@ app.use(
     },
   })
 );
-
-const allowedOrigins = [
-  "http://localhost:5173",
-  "http://localhost:3000",
-  "https://findmess.me",
-  "https://www.findmess.me",
-  "https://api.findmess.me"
-];
-
-const corsOptions = {
-  origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin) || origin.endsWith(".vercel.app")) {
-      callback(null, true);
-    } else {
-      callback(null, true); // Permissive for debugging
-    }
-  },
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With", "Accept", "Origin"]
-};
-
-app.use(cors(corsOptions));
-app.options("*", cors(corsOptions));
-
-// --- 2. Global CORS Header Middleware (Step 3 Fix) ---
-app.use((req, res, next) => {
-  const origin = req.headers.origin;
-  if (origin) {
-    res.header("Access-Control-Allow-Origin", origin);
-  }
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With, Accept, Origin");
-  res.header("Access-Control-Allow-Credentials", "true");
-  
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
-  next();
-});
 
 // --- 3. Body & Cookie Parsers ---
 app.use(express.json({ limit: '10kb' })); 

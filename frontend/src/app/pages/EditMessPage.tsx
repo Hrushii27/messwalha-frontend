@@ -202,13 +202,15 @@ const EditMessPage: React.FC = () => {
 
             const payload = {
                 name: formData.messName.trim(),
+                ownerName: formData.ownerName.trim(),
+                mobile: formData.mobile.trim(),
                 location: formData.address.trim(),
                 city: formData.city.trim(),
                 pricePerMonth: Number(formData.pricePerMonth),
                 pricePerWeek: Number(formData.pricePerWeek) || 0,
                 pricePerDay: Number(formData.pricePerDay) || 0,
                 description: formData.menuText || "",
-                upiId: formData.upiId,
+                upiId: formData.upiId || "",
                 displayPhoto: mess_image,
                 menuImages: menu_images.length > 0 ? menu_images : (existingMenuUrls.length > 0 ? existingMenuUrls : undefined)
             };

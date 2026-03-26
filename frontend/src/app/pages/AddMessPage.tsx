@@ -81,22 +81,19 @@ const AddMessPage: React.FC = () => {
         upiId: ''
     });
 
-    // Image states (currently unused in strict JSON flow)
-    // const [messImage, setMessImage] = useState<File | null>(null);
-    // const [menuImages, setMenuImages] = useState<File[]>([]);
-    /*
+    // Image states
+    const [messImage, setMessImage] = useState<File | null>(null);
+    const [menuImages, setMenuImages] = useState<File[]>([]);
     const [previews, setPreviews] = useState<{ mess: string | null; menus: string[] }>({
         mess: null,
         menus: []
     });
-    */
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    /* 
     const handleMessImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
@@ -127,88 +124,58 @@ const AddMessPage: React.FC = () => {
             menus: newFiles.map(f => URL.createObjectURL(f))
         }));
     };
-    */
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-
-        // ✅ STEP 1 — FIX PAYLOAD (JSON - CANONICAL)
-        const payload = {
-            name: formData.name?.trim(),
-            location: formData.location?.trim(),
-            city: formData.city?.trim(),
-            pricePerMonth: Number(formData.pricePerMonth),
-            pricePerWeek: Number(formData.pricePerWeek) || 0,
-            pricePerDay: Number(formData.pricePerDay) || 0,
-            foodType: "veg",
-            cuisine: "indian",
-            description: formData.description || "",
-            displayPhoto: null
-        };
-
-        // ✅ STEP 2 — DEBUG PAYLOAD
-        console.log("PAYLOAD:", payload);
-
-        // ✅ STEP 4 — VALIDATION BEFORE SUBMIT
-        if (!payload.name || payload.name.length < 3) {
-            alert("Enter valid mess name");
-            return;
-        }
-
-        if (!payload.city) {
-            alert("Enter city");
-            return;
-        }
-
-        if (!payload.location) {
-            alert("Enter location");
-            return;
-        }
-
-        if (!payload.pricePerMonth || isNaN(payload.pricePerMonth)) {
-            alert("Enter valid price");
-            return;
-        }
-
-        if (formData.ownerName.length < 2) {
-            setError("Owner Name must be at least 2 characters");
-            return;
-        }
-        if (!/^[0-9]{10}$/.test(formData.mobile)) {
-            setError("Mobile Number must be exactly 10 digits");
-            return;
-        }
-
         setLoading(true);
         setError(null);
 
         try {
-            // ✅ STEP 5 — FIX API CALL (JSON)
+            const { uploadToCloudinary } = await import('../utils/cloudinary');
+            
+            // 1. Upload Mess Image (Main Plate)
+            let displayPhotoUrl = null;
+            if (messImage) {
+                displayPhotoUrl = await uploadToCloudinary(messImage);
+            }
+
+            // 2. Upload Menu Images
+            const menuImageUrls = [];
+            for (const file of menuImages) {
+                const url = await uploadToCloudinary(file);
+                menuImageUrls.push(url);
+            }
+
+            // 3. Prepare Final Payload
+            const payload = {
+                name: formData.name.trim(),
+                ownerName: formData.ownerName.trim(),
+                mobile: formData.mobile.trim(),
+                location: formData.location.trim(),
+                city: formData.city.trim(),
+                pricePerMonth: Number(formData.pricePerMonth),
+                pricePerWeek: Number(formData.pricePerWeek) || 0,
+                pricePerDay: Number(formData.pricePerDay) || 0,
+                description: formData.description || "",
+                upiId: formData.upiId || "",
+                veg_nonveg: "Veg", 
+                foodType: "veg",
+                cuisine: "indian",
+                displayPhoto: displayPhotoUrl,
+                menuImages: menuImageUrls
+            };
+
+            // 4. API Request
             const response = await api.post('/messes', payload);
             console.log("SUCCESS:", response.data);
             
             setSuccess(true);
             setTimeout(() => navigate('/owner/dashboard'), 3000);
-        } catch (error) {
-            const err = error as any;
-            
-            // ✅ STEP 7 (DEBUG) — LOG ERROR
-            if (err.response) {
-                console.log("ERROR DATA:", err.response.data);
-                const backendMsg = err.response.data?.message;
-                const errors = err.response.data?.errors;
-                if (errors && errors.length > 0) {
-                    const firstError = errors[0].msg || errors[0].message;
-                    alert(`Validation Error: ${firstError} (${errors[0].path || errors[0].param})`);
-                } else {
-                    alert(`Error: ${backendMsg || "Server error"}`);
-                }
-            } else {
-                alert(`Error: ${err.message}`);
-            }
-            
+        } catch (err: any) {
             console.error('Registration failed:', err);
-            setError(err.response?.data?.message || err.message);
+            const msg = err.response?.data?.message || err.message || "Something went wrong";
+            setError(msg);
+            alert(`Error: ${msg}`);
         } finally {
             setLoading(false);
         }
@@ -502,19 +469,26 @@ const AddMessPage: React.FC = () => {
                                         onClick={() => document.getElementById('messImageInput')?.click()}
                                         className="h-64 border-2 border-dashed border-white/10 rounded-[2rem] flex flex-col items-center justify-center gap-4 hover:border-primary-500/50 hover:bg-bg3/30 cursor-pointer transition-all group overflow-hidden relative"
                                     >
-                                        <Upload size={32} className="text-text-muted group-hover:text-primary-500 transition-colors" />
-                                        <span className="text-[9px] font-black uppercase tracking-widest text-text-muted">Click to Upload</span>
+                                        {previews.mess ? (
+                                            <img src={previews.mess} alt="Preview" className="w-full h-full object-cover" />
+                                        ) : (
+                                            <>
+                                                <Upload size={32} className="text-text-muted group-hover:text-primary-500 transition-colors" />
+                                                <span className="text-[9px] font-black uppercase tracking-widest text-text-muted">Click to Upload</span>
+                                            </>
+                                        )}
                                         <input
                                             id="messImageInput"
                                             type="file"
                                             hidden
                                             accept="image/*"
+                                            onChange={handleMessImageChange}
                                         />
                                     </div>
                                     <div className="flex flex-col justify-center space-y-4 pr-8">
                                         <div className="flex items-center gap-3 text-primary-500">
                                             <ImageIcon size={16} />
-                                            <h4 className="text-[10px] font-black uppercase tracking-widest">Main Photo</h4>
+                                            <h4 className="text-[10px] font-black uppercase tracking-widest">Main Photo {messImage && "✅"}</h4>
                                         </div>
                                         <p className="text-[10px] font-medium leading-relaxed text-text-muted dark:text-white/30 italic">
                                             This will be the first image students see when browsing. We recommend a clear photo of your special meal plate.
@@ -530,20 +504,35 @@ const AddMessPage: React.FC = () => {
                                     <span className="text-[8px] font-black uppercase tracking-widest text-primary-500/60 bg-primary-500/5 px-3 py-1 rounded-full border border-primary-500/10 italic">Image Option</span>
                                 </div>
                                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-6">
-                                    <div
-                                        onClick={() => document.getElementById('menuImagesInput')?.click()}
-                                        className="aspect-square border-2 border-dashed border-white/10 rounded-2xl flex flex-col items-center justify-center gap-2 hover:border-primary-500/50 hover:bg-bg3/30 cursor-pointer transition-all group"
-                                    >
-                                        <Upload size={20} className="text-text-muted group-hover:text-primary-500" />
-                                        <span className="text-[8px] font-black uppercase tracking-widest text-text-muted">Add</span>
-                                        <input
-                                            id="menuImagesInput"
-                                            type="file"
-                                            multiple
-                                            hidden
-                                            accept="image/*"
-                                        />
-                                    </div>
+                                    {previews.menus.map((url, idx) => (
+                                        <div key={idx} className="aspect-square relative group rounded-2xl overflow-hidden border border-white/10">
+                                            <img src={url} alt="Menu" className="w-full h-full object-cover" />
+                                            <button 
+                                                type="button"
+                                                onClick={() => removeMenuImage(idx)}
+                                                className="absolute inset-0 bg-red-500/80 items-center justify-center hidden group-hover:flex"
+                                            >
+                                                <X className="text-white" />
+                                            </button>
+                                        </div>
+                                    ))}
+                                    {menuImages.length < 5 && (
+                                        <div
+                                            onClick={() => document.getElementById('menuImagesInput')?.click()}
+                                            className="aspect-square border-2 border-dashed border-white/10 rounded-2xl flex flex-col items-center justify-center gap-2 hover:border-primary-500/50 hover:bg-bg3/30 cursor-pointer transition-all group"
+                                        >
+                                            <Upload size={20} className="text-text-muted group-hover:text-primary-500" />
+                                            <span className="text-[8px] font-black uppercase tracking-widest text-text-muted">Add</span>
+                                            <input
+                                                id="menuImagesInput"
+                                                type="file"
+                                                multiple
+                                                hidden
+                                                accept="image/*"
+                                                onChange={handleMenuImagesChange}
+                                            />
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </div>
