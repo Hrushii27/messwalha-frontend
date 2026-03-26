@@ -46,20 +46,24 @@ const allowedOrigins = [
 
 app.use((req, res, next) => {
   const origin = req.headers.origin;
+  console.log(`[CORS DEBUG] Request from Origin: ${origin}, Method: ${req.method}, Path: ${req.path}`);
+
+  // Set headers regardless of origin for now to ensure visibility
   if (origin && (allowedOrigins.includes(origin) || origin.endsWith(".vercel.app"))) {
-    res.header("Access-Control-Allow-Origin", origin);
-  } else if (!origin) {
-    // Internal/Simple request
+    res.setHeader("Access-Control-Allow-Origin", origin);
   } else {
-    res.header("Access-Control-Allow-Origin", "https://www.findmess.me");
+    // Default to production domain if no origin or unlisted origin (allows simple requests)
+    res.setHeader("Access-Control-Allow-Origin", "https://www.findmess.me");
   }
   
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
-  res.header("Access-Control-Allow-Credentials", "true");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization, Range");
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  res.setHeader("Access-Control-Expose-Headers", "Content-Length, Content-Range");
   
   if (req.method === 'OPTIONS') {
-    return res.status(200).end();
+    console.log(`[CORS DEBUG] Handling Preflight for: ${req.path}`);
+    return res.sendStatus(204); // No content for preflight
   }
   next();
 });
