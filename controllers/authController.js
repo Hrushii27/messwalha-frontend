@@ -1,204 +1,310 @@
-const User = require('../models/user');
+const Owner = require('../models/owner');
 const Subscription = require('../models/subscription');
-const Mess = require('../models/mess');
-const { hashPassword, comparePassword } = require('../utils/bcrypt');
-const { generateToken } = require('../utils/jwt');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
+const crypto = require('crypto');
+const { sendResetPasswordEmail, sendOTPEmail } = require('../utils/emailService');
+const Otp = require('../models/otp');
+const { body, validationResult } = require('express-validator');
+const { logSecurityEvent } = require('../middleware/activityLogger');
+
+const { OAuth2Client } = require('google-auth-library');
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 const authController = {
     register: async (req, res) => {
         const { name, email, phone, password, role } = req.body;
+        
+        // 1. Check for Validation Errors
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ status: 'ERROR', errors: errors.array() });
+        }
+
+        console.log(`📝 Attempting registration for: ${email}, role: ${role || 'STUDENT'}`);
         try {
-            const existingUser = await User.findByEmail(email);
-            if (existingUser) {
-                return res.status(400).json({ success: false, message: 'User already exists' });
+            // Check if user exists by email
+            const existingEmail = await Owner.findByEmail(email);
+            if (existingEmail) {
+                console.warn(`⚠️ Registration failed: Email ${email} already exists`);
+                return res.status(400).json({ status: 'ERROR', message: 'Email already registered' });
             }
 
-            const passwordHash = await hashPassword(password);
-            const userRole = role || 'OWNER';
-            const user = await User.create(name, email, phone, passwordHash, userRole);
-
-            // Automatically assign 60-day trial for owners
-            let ownerSubscription = null;
-            if (userRole === 'OWNER') {
-                ownerSubscription = await Subscription.createTrial(user.id);
-            }
-
-            const token = generateToken(user.id, userRole);
-            res.status(201).json({
-                success: true,
-                message: 'Registration successful',
-                token,
-                user: {
-                    id: user.id,
-                    name: user.name,
-                    email: user.email,
-                    phone: user.phone,
-                    role: userRole,
-                    ownerSubscription
+            // Check if user exists by phone
+            if (phone) {
+                const existingPhone = await Owner.findByPhone(phone);
+                if (existingPhone) {
+                    console.warn(`⚠️ Registration failed: Phone ${phone} already exists`);
+                    return res.status(400).json({ status: 'ERROR', message: 'Phone number already registered' });
                 }
+            }
+
+            const userRole = role || 'STUDENT';
+
+            // Hash the password correctly
+            const saltRounds = 10;
+            const passwordHash = await bcrypt.hash(password, saltRounds);
+
+            // Create user
+            console.log('🔨 Creating database entry...');
+            const owner = await Owner.create(name, email, phone, passwordHash, userRole);
+            console.log(`✅ User created with ID: ${owner.id}`);
+
+            // Automatically assign 90-day trial only for OWNERS
+            if (userRole === 'OWNER') {
+                console.log('🎁 Creating 90-day trial subscription...');
+                await Subscription.createTrial(owner.id);
+            }
+
+            const token = jwt.sign({ id: owner.id, role: userRole }, process.env.JWT_SECRET, { expiresIn: '1d' });
+            res.status(201).json({
+                message: userRole === 'OWNER' ? 'Owner registered and 90-day trial started' : 'User registered successfully',
+                token,
+                user: owner
             });
         } catch (err) {
-            console.error('❌ Registration Error Full:', err);
-            res.status(500).json({
-                success: false,
-                message: 'Server error during registration',
-                error: err.message,
-                stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
-            });
+            console.error('❌ Registration Error:', err);
+            res.status(500).json({ message: `Server error during registration: ${err.message}` });
         }
     },
+    ownerRegister: async (req, res) => {
+        const { 
+            name, email, phone, password, 
+            messName, location, city, monthlyPrice
+        } = req.body;
+        
 
-    registerOwner: async (req, res) => {
-        const { ownerName, phone, email, password, messName, location } = req.body;
+        console.log(`📝 Attempting OWNER registration for: ${email}`);
         try {
-            if (!ownerName || !email || !password || !messName || !location) {
-                return res.status(400).json({ success: false, message: 'All fields are required' });
+            // Check if user exists by email
+            const existingEmail = await Owner.findByEmail(email);
+            if (existingEmail) {
+                console.warn(`⚠️ Owner Registration failed: Email ${email} already exists`);
+                return res.status(400).json({ status: 'ERROR', message: 'Email already registered' });
             }
 
-            const existingUser = await User.findByEmail(email);
-            if (existingUser) {
-                return res.status(400).json({ success: false, message: 'User already exists with this email' });
+            // Check if user exists by phone
+            const existingPhone = await Owner.findByPhone(phone);
+            if (existingPhone) {
+                console.warn(`⚠️ Owner Registration failed: Phone ${phone} already exists`);
+                return res.status(400).json({ status: 'ERROR', message: 'Phone number already registered' });
             }
 
-            const passwordHash = await hashPassword(password);
-            const user = await User.create(ownerName, email, phone || '', passwordHash, 'OWNER');
+            // Hash the password
+            const saltRounds = 10;
+            const passwordHash = await bcrypt.hash(password, saltRounds);
 
-            // Create 60-day trial
-            const ownerSubscription = await Subscription.createTrial(user.id);
+            // Create Owner user
+            console.log('🔨 Creating owner entry...');
+            const owner = await Owner.create(name, email, phone, passwordHash, 'OWNER');
+            
+            // Start 60-day Trial
+            console.log('🎁 Creating 60-day trial subscription...');
+            await Subscription.createTrial(owner.id);
 
-            // Create initial mess record
-            await Mess.create({
-                owner_id: user.id,
-                mess_name: messName,
-                owner_name: ownerName,
-                mobile: phone || '',
-                address: location,
-                city: location.split(',').pop()?.trim() || location,
-                cuisine: '',
-                price_per_month: 0,
-                price_per_week: 0,
-                price_per_day: 0,
-                menu_text: '',
-                mess_image: null,
-                menu_images: []
-            });
+            // Create Initial Mess Listing (Pending Status)
+            const Mess = require('../models/mess'); // Lazy load to avoid circular deps if any
+            console.log('🏠 Creating initial pending mess listing...');
+            
+            // Defaulting some fields until the owner fully fills them out in the dashboard
+            await Mess.create(
+                owner.id, 
+                messName, 
+                location, // using location as address
+                monthlyPrice || 0, 
+                'Newly registered mess. Details pending.', // description
+                'Indian', // default cuisine
+                city || 'Pune', 
+                'Both', // veg_nonveg
+                '' // college_tags
+            );
 
-            const token = generateToken(user.id, 'OWNER');
+            const token = jwt.sign({ id: owner.id, role: 'OWNER' }, process.env.JWT_SECRET, { expiresIn: '1d' });
             res.status(201).json({
-                success: true,
-                message: 'Owner registration successful! 60-day free trial activated.',
+                message: 'Owner registered, trial started, and mess listing created (pending approval).',
                 token,
-                user: {
-                    id: user.id,
-                    name: user.name,
-                    email: user.email,
-                    phone: user.phone,
-                    role: 'OWNER',
-                    ownerSubscription
-                }
+                user: owner
             });
         } catch (err) {
             console.error('❌ Owner Registration Error:', err);
-            res.status(500).json({
-                success: false,
-                message: 'Server error during owner registration',
-                error: err.message
-            });
+            res.status(500).json({ message: `Server error during owner registration: ${err.message}` });
         }
     },
-
     login: async (req, res) => {
         const { email, password } = req.body;
+
+        // 1. Check for Validation Errors
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ status: 'ERROR', errors: errors.array() });
+        }
+
+        console.log(`🔑 Login attempt for: ${email}`);
         try {
-            const user = await User.findByEmail(email);
+            const owner = await Owner.findByEmail(email);
+            if (!owner) {
+                console.warn(`❌ Login failed: No user found with email ${email}`);
+                return res.status(400).json({ message: 'Invalid credentials - no user' });
+            }
+
+            console.log('🔍 User found, verifying password...');
+            const isPasswordValid = await bcrypt.compare(password, owner.password_hash);
+            if (!isPasswordValid) {
+                console.warn('❌ Login failed: Incorrect password');
+                logSecurityEvent('AUTH_FAILURE', { email, reason: 'WRONG_PASSWORD', ip: req.ip });
+                return res.status(400).json({ message: 'Invalid credentials - password' });
+            }
+
+            console.log('✅ Password verified, generating token...');
+            const token = jwt.sign({ id: owner.id, role: owner.role }, process.env.JWT_SECRET, { expiresIn: '1d' });
+            res.json({ token, user: owner });
+        } catch (err) {
+            console.error('❌ Login Error:', err);
+            res.status(500).json({ message: `Server error during login: ${err.message}` });
+        }
+    },
+    forgotPassword: async (req, res) => {
+        const { email } = req.body;
+        console.log(`📧 Forgot password requested for: ${email}`);
+        try {
+            const owner = await Owner.findByEmail(email);
+            if (!owner) {
+                console.warn(`⚠️ Forgot password failed: No user found with email ${email}`);
+                return res.status(404).json({ message: 'No user found with that email address' });
+            }
+
+            const resetToken = crypto.randomBytes(32).toString('hex');
+            const resetExpires = new Date();
+            resetExpires.setHours(resetExpires.getHours() + 1);
+
+            await Owner.updateResetToken(email, resetToken, resetExpires);
+            await sendResetPasswordEmail(email, resetToken);
+
+            res.status(200).json({ success: true, message: 'Password reset email sent' });
+        } catch (err) {
+            console.error('❌ Forgot Password Error:', err);
+            res.status(500).json({ message: 'Server error' });
+        }
+    },
+    resetPassword: async (req, res) => {
+        const { token, password } = req.body;
+        console.log(`🔄 Resetting password with token: ${token.substring(0, 10)}...`);
+        try {
+            const owner = await Owner.findByResetToken(token);
+            if (!owner) {
+                console.warn(`⚠️ Reset password failed: Token invalid or expired`);
+                return res.status(400).json({ message: 'Password reset token is invalid or has expired' });
+            }
+
+            const saltRounds = 10;
+            const passwordHash = await bcrypt.hash(password, saltRounds);
+
+            await Owner.updatePassword(owner.id, passwordHash);
+            console.log(`✅ Password reset successful for user ID: ${owner.id}`);
+
+            res.status(200).json({ success: true, message: 'Password has been reset' });
+        } catch (err) {
+            console.error('❌ Reset Password Error:', err);
+            res.status(500).json({ message: 'Server error' });
+        }
+    },
+    sendOTP: async (req, res) => {
+        const { email } = req.body;
+        const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+        try {
+            await Otp.create(email, otpCode);
+            await sendOTPEmail(email, otpCode);
+            res.json({ success: true, message: 'OTP sent successfully' });
+        } catch (err) {
+            console.error('❌ Send OTP Error:', err);
+            res.status(500).json({ message: 'Failed to send OTP' });
+        }
+    },
+    verifyOTP: async (req, res) => {
+        const { email, otp } = req.body;
+        console.log(`[DEBUG] Verifying OTP for ${email}. Entered code: ${otp}`);
+
+        try {
+            const record = await Otp.verify(email, otp);
+            if (!record) {
+                console.warn(`[DEBUG] OTP verification failed for ${email}. Record not found or expired.`);
+                await Otp.incrementAttempts(email);
+                return res.status(400).json({ message: 'Invalid or expired OTP' });
+            }
+
+            console.log(`[DEBUG] OTP verified for ${email}. Stored record:`, record);
+
+            let user = await Owner.findByEmail(email);
             if (!user) {
-                return res.status(401).json({ success: false, message: 'Invalid credentials' });
+                console.log(`[DEBUG] Auto-registering new user via OTP: ${email}`);
+                // Auto-register as Student if not exists
+                user = await Owner.create(email.split('@')[0], email, '', 'OTP_AUTH_NO_PASSWORD', 'STUDENT');
             }
 
-            const isMatch = await comparePassword(password, user.password);
-            if (!isMatch) {
-                return res.status(401).json({ success: false, message: 'Invalid credentials' });
-            }
-
-            const token = generateToken(user.id, user.role);
-
-            let ownerSubscription = null;
-            if (user.role === 'OWNER') {
-                ownerSubscription = await Subscription.findByOwnerId(user.id);
-            }
-
-            res.status(200).json({
-                success: true,
-                token,
-                user: {
-                    id: user.id,
-                    name: user.name,
-                    email: user.email,
-                    phone: user.phone,
-                    role: user.role,
-                    ownerSubscription
-                }
-            });
-        } catch (err) {
-            console.error(err);
-            res.status(500).json({ success: false, message: 'Server error during login' });
-        }
-    },
-
-    firebaseAuth: async (req, res) => {
-        const { idToken, name, role } = req.body;
-        try {
-            const placeholderEmail = `user_${Date.now()}@firebase.test`;
-            const userRole = role || 'STUDENT';
-
-            const user = await User.create(
-                name || 'Firebase User',
-                placeholderEmail,
-                '',
-                'firebase-sync',
-                userRole
-            );
-
-            let ownerSubscription = null;
-            if (userRole === 'OWNER') {
-                ownerSubscription = await Subscription.createTrial(user.id);
-            }
-
-            const token = generateToken(user.id, userRole);
-
-            res.status(200).json({
-                success: true,
-                token,
+            const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1d' });
+            res.json({ 
+                token, 
                 user: {
                     id: user.id,
                     name: user.name,
                     email: user.email,
                     role: user.role,
-                    ownerSubscription
+                    phone: user.phone
                 }
             });
         } catch (err) {
-            console.error(err);
-            res.status(500).json({ success: false, message: 'Server error during firebase sync' });
+            console.error('❌ Verify OTP Error:', err);
+            res.status(500).json({ message: 'OTP verification failed' });
         }
     },
+    googleLogin: async (req, res) => {
+        const { token } = req.body;
+        console.log('🌐 Google login attempt...');
 
-    getProfile: async (req, res) => {
         try {
-            const ownerSubscription = await Subscription.findByOwnerId(req.owner.id);
-            res.status(200).json({
-                success: true,
+            const ticket = await client.verifyIdToken({
+                idToken: token,
+                audience: process.env.GOOGLE_CLIENT_ID
+            });
+            const payload = ticket.getPayload();
+            const { sub: googleId, email, name, picture } = payload;
+
+            console.log(`✅ Google token verified for: ${email}`);
+
+            let user = await Owner.findByGoogleId(googleId);
+            
+            if (!user) {
+                console.log(`🔍 User with Google ID ${googleId} not found. Checking by email...`);
+                user = await Owner.findByEmail(email);
+                
+                if (user) {
+                    console.log(`🔗 Linking existing user ${email} with Google ID`);
+                    await Owner.updateProfile(user.id, { google_id: googleId, profile_picture: picture });
+                } else {
+                    console.log(`🆕 Creating new user via Google: ${email}`);
+                    // Use a random placeholder for password since it's NOT NULL in DB
+                    const randomPassword = crypto.randomBytes(16).toString('hex');
+                    const passwordHash = await bcrypt.hash(randomPassword, 10);
+                    user = await Owner.create(name, email, '', passwordHash, 'STUDENT', googleId);
+                    await Owner.updateProfile(user.id, { profile_picture: picture });
+                }
+            }
+
+            const jwtToken = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1d' });
+            res.json({ 
+                token: jwtToken, 
                 user: {
-                    id: req.owner.id,
-                    name: req.owner.name,
-                    email: req.owner.email,
-                    phone: req.owner.phone,
-                    role: req.owner.role,
-                    ownerSubscription
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    role: user.role,
+                    phone: user.phone
                 }
             });
         } catch (err) {
-            res.status(500).json({ success: false, message: 'Server error fetching profile' });
+            console.error('❌ Google Login Error:', err);
+            res.status(401).json({ message: 'Google authentication failed' });
         }
     }
 };

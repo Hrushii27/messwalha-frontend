@@ -1,49 +1,41 @@
-const express = require("express");
-const cors = require("cors");
-const helmet = require("helmet");
-const morgan = require("morgan");
-const compression = require("compression");
-require("dotenv").config();
+const express = require('express');
+const cors = require('cors');
+const helmet = require('helmet');
+const cookieParser = require('cookie-parser');
+require('dotenv').config();
 
-const { createTables } = require("./config/initDb");
-const startScheduler = require("./utils/scheduler");
+// Configuration & Utils
+const db = require('./config/db');
+const { createTables } = require('./config/initDb');
+const startScheduler = require('./utils/scheduler');
+
+// Middleware
+const { setupSecurity } = require('./middleware/security');
+const authenticateToken = require('./middleware/auth');
+const { activityLogger } = require('./middleware/activityLogger');
 
 // Routes
-const authRoutes = require("./routes/authRoutes");
-const messRoutes = require("./routes/messRoutes");
-const paymentRoutes = require("./routes/paymentRoutes");
-const adminRoutes = require("./routes/adminRoutes");
-const subscriptionRoutes = require("./routes/subscriptionRoutes");
-const userRoutes = require("./routes/userRoutes");
-const reviewRoutes = require("./routes/reviewRoutes");
+const authRoutes = require('./routes/auth');
+const subscriptionRoutes = require('./routes/subscription');
+const messRoutes = require('./routes/mess');
+const adminRoutes = require('./routes/admin');
+const favoritesRoutes = require('./routes/favorites');
+const notificationsRoutes = require('./routes/notifications');
+const userRoutes = require('./routes/user');
+const activityRoutes = require('./routes/activity');
+const menuRoutes = require('./routes/menu');
+const orderRoutes = require('./routes/order');
+const reviewsRoutes = require('./routes/reviews');
+const googleAuthRoutes = require('./routes/googleAuth');
+const dashboardRoutes = require('./routes/dashboard');
 
+console.log('🚀 Server starting process...');
 const app = express();
 const PORT = process.env.PORT || 5000;
+app.set('trust proxy', 1); // Required for Heroku to handle X-Forwarded-For correctly
+console.log('✅ Express initialized. Port:', PORT);
 
-/* ===========================
-   SECURITY & MIDDLEWARE
-=========================== */
-
-app.set("trust proxy", 1); // required for Heroku
-
-app.use(
-  helmet({
-    contentSecurityPolicy: {
-      directives: {
-        defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "'unsafe-inline'", "https://*.google.com", "https://*.gstatic.com", "https://*.razorpay.com", "https://checkout.razorpay.com"],
-        frameSrc: ["'self'", "https://*.google.com", "https://recaptcha.google.com", "https://*.razorpay.com", "https://checkout.razorpay.com"],
-        connectSrc: ["'self'", "https://*.google.com", "https://*.gstatic.com", "https://api.findmess.me", "https://*.razorpay.com", "https://api.cloudinary.com"],
-        imgSrc: ["'self'", "data:", "blob:", "https://*.gstatic.com", "https://*.google.com", "https://res.cloudinary.com"],
-        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://accounts.google.com"],
-        fontSrc: ["'self'", "https://fonts.gstatic.com"],
-      },
-    },
-  })
-);
-app.use(compression());
-app.use(morgan("dev"));
-
+// --- 0. CORS CONFIGURATION (CRITICAL FIX) ---
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:3000",
@@ -52,153 +44,136 @@ const allowedOrigins = [
   "https://api.findmess.me"
 ];
 
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      if (!origin) return callback(null, true);
-      const isAllowed =
-        allowedOrigins.includes(origin) ||
-        origin.includes("vercel.app") ||
-        origin.includes("messwala.me") ||
-        origin.includes("localhost");
-
-      if (isAllowed) {
-        callback(null, true);
-      } else {
-        console.warn(`🛑 CORS blocked origin: ${origin}`);
-        callback(null, true); // Allow for now during debugging
-      }
-    },
-    credentials: true,
-  })
-);
-
-// --- Global CORS Header Middleware ---
 app.use((req, res, next) => {
   const origin = req.headers.origin;
-  if (origin && (allowedOrigins.includes(origin) || origin.includes("vercel.app"))) {
-    res.header("Access-Control-Allow-Origin", origin);
+  console.log(`[CORS DEBUG] Request from Origin: ${origin}, Method: ${req.method}, Path: ${req.path}`);
+
+  // Set headers regardless of origin for now to ensure visibility
+  if (origin && (allowedOrigins.includes(origin) || origin.endsWith(".vercel.app"))) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+  } else {
+    // Default to production domain if no origin or unlisted origin (allows simple requests)
+    res.setHeader("Access-Control-Allow-Origin", "https://www.findmess.me");
   }
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With, Accept, Origin");
-  res.header("Access-Control-Allow-Credentials", "true");
+  
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization, Range");
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  res.setHeader("Access-Control-Expose-Headers", "Content-Length, Content-Range");
   
   if (req.method === 'OPTIONS') {
-    return res.status(200).end();
+    console.log(`[CORS DEBUG] Handling Preflight for: ${req.path}`);
+    return res.sendStatus(204); // No content for preflight
   }
   next();
 });
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(express.static("public"));
-app.use("/uploads", express.static("uploads"));
+// --- 1. Security Headers (Helmet) ---
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "https://*.google.com", "https://*.gstatic.com", "https://*.razorpay.com", "https://checkout.razorpay.com"],
+        frameSrc: ["'self'", "https://*.google.com", "https://recaptcha.google.com", "https://*.razorpay.com", "https://checkout.razorpay.com"],
+        connectSrc: ["'self'", "https://*.google.com", "https://*.gstatic.com", "https://api.findmess.me", "https://*.razorpay.com", "https://api.cloudinary.com"],
+        imgSrc: ["'self'", "data:", "blob:", "https://*.gstatic.com", "https://*.google.com", "https://res.cloudinary.com", "https://images.unsplash.com"],
+        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://accounts.google.com"],
+        fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      },
+    },
+  })
+);
 
-/* ===========================
-   DATABASE INIT
-=========================== */
+// --- 3. Body & Cookie Parsers ---
+app.use(express.json({ limit: '10kb' })); 
+app.use(cookieParser());
+app.use('/uploads', express.static('uploads'));
 
-createTables();
-startScheduler();
+// --- 4. Custom Security Layer (Rate Limiting, XSS, HPP) ---
+setupSecurity(app);
 
-/* ===========================
-   ROUTES
-=========================== */
+// --- 5. Activity Logger (Monitor failed/suspicious requests) ---
+app.use(activityLogger);
 
-app.use("/api/auth", authRoutes);
-app.use("/api/messes", messRoutes);
-app.use("/api/mess", messRoutes); // User requested singular endpoint
-app.use("/api/payments", paymentRoutes);
-app.use("/api/admin", adminRoutes);
-app.use("/api/subscriptions", subscriptionRoutes);
-app.use("/api/users", userRoutes);
-app.use("/api/reviews", reviewRoutes);
-app.use("/api/owner", messRoutes); // Alias for owner mess management
+// --- 6. Authentication (Soft Auth) ---
+app.use(authenticateToken);
 
-// Placeholder for missing frontend routes
-app.get("/api/favorites", (req, res) => {
-  res.status(200).json({ success: true, data: [] });
+// Global Request Logger
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] 📡 ${req.method} ${req.url}`);
+  next();
 });
 
-/* ===========================
-   HEALTH CHECK
-=========================== */
+// --- Diagnostic Routes ---
+app.get('/api/ping', (req, res) => res.json({ status: 'OK', message: 'pong', time: new Date() }));
 
-app.get("/", (req, res) => {
-  res.status(200).json({
-    status: "OK",
-    message: "MessWalha Backend API is LIVE 🚀",
-  });
-});
-
-app.get('/api', (req, res) => {
-  res.status(200).json({ status: 'OK', message: 'MessWalha API endpoint is active. Use subroutes like /auth, /messes etc.' });
-});
-
-app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'OK', message: 'API is running' });
-});
-
-app.get("/diag", async (req, res) => {
+app.get('/api/health', async (req, res) => {
+  console.log('🔍 Health check requested');
   try {
-    const db = require("./config/db");
-    const tables = await db.query(`
-      SELECT table_name, column_name, data_type 
-      FROM information_schema.columns 
-      WHERE table_schema = 'public'
-      ORDER BY table_name, ordinal_position
-    `);
-    res.json({ status: "OK", schema: tables.rows });
-  } catch (err) {
-    res.status(500).json({ status: "ERROR", message: err.message });
-  }
-});
-
-app.get("/api/diag", async (req, res) => {
-  try {
-    const db = require("./config/db");
-    const usersCount = await db.query("SELECT COUNT(*) FROM users");
-    const tables = await db.query(`
-      SELECT table_name, column_name, data_type 
-      FROM information_schema.columns 
-      WHERE table_schema = 'public'
-      ORDER BY table_name, ordinal_position
-    `);
+    const dbResult = await db.query('SELECT NOW()');
     res.json({
-      status: "OK",
-      hasJwtSecret: !!process.env.JWT_SECRET,
-      usersCount: usersCount.rows[0].count,
-      schema: tables.rows
+      status: 'ok',
+      database: 'CONNECTED',
+      time: dbResult.rows[0].now
     });
   } catch (err) {
-    res.status(500).json({ status: "ERROR", message: err.message });
+    console.error('❌ Health check DB error:', err);
+    res.status(500).json({ status: 'DOWN', database: 'ERROR', message: err.message });
   }
 });
 
-/* ===========================
-   404 HANDLER
-=========================== */
+// Initialize Database
+console.log('🗄️ Initializing database...');
+createTables()
+  .then(() => console.log('✅ Database initialization attempted'))
+  .catch(err => console.error('❌ Database initialization error:', err));
 
-app.use((req, res) => {
-  res.status(404).json({ message: "Endpoint not found" });
-});
+// Start Scheduler
+console.log('⏰ Starting scheduler...');
+try {
+  startScheduler();
+  console.log('✅ Scheduler started');
+} catch (err) {
+  console.error('❌ Scheduler start error:', err);
+}
 
-/* ===========================
-   GLOBAL ERROR HANDLER
-=========================== */
+// --- API Routes ---
+app.use('/api/auth', authRoutes);
+app.use('/api/auth', googleAuthRoutes);
+app.use(['/api/subscription', '/api/subscriptions'], subscriptionRoutes);
+app.use(['/api/mess', '/api/messes'], messRoutes);
+app.use(['/api/notification', '/api/notifications'], notificationsRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/favorites', favoritesRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/activity', activityRoutes);
+app.use('/api/menu', menuRoutes);
+app.use('/api/orders', orderRoutes);
+app.use('/api/reviews', reviewsRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
-app.use((err, req, res, next) => {
-  console.error("🔥 Error:", err.stack);
-
-  res.status(err.status || 500).json({
-    message: err.message || "Internal Server Error",
+// Basic Route
+app.get('/', (req, res) => {
+  res.json({
+    status: 'OK',
+    message: 'MessWalha Production API is LIVE 🚀',
+    version: '1.2.3',
+    timestamp: new Date().toISOString()
   });
 });
 
-/* ===========================
-   START SERVER
-=========================== */
+// Start Server
+const server = app.listen(PORT, () => {
+  console.log(`✅ Server successfully listening on port ${PORT}`);
+});
 
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+// Error handling
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+});
+
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught Exception thrown:', err);
+  process.exit(1);
 });

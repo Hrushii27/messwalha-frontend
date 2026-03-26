@@ -2,10 +2,10 @@
   "name": "messwalha",
   "version": "1.0.0",
   "description": "PostgreSQL backend for MessWalha",
-  "main": "server/server.cjs",
+  "main": "server.js",
   "type": "commonjs",
   "scripts": {
-    "start": "node server/server.cjs",
+    "start": "node server.js",
     "build": "echo 'Building production API...'",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

@@ -1,0 +1,25 @@
+[2026-03-21T06:42:37.673Z] [SECURITY_EVENT:FAILED_REQUEST] {"method":"GET","url":"/api/favorites","status":401,"ip":"127.0.0.1","body":{}}
+[2026-03-21T06:42:37.687Z] [SECURITY_EVENT:FAILED_REQUEST] {"method":"GET","url":"/api/favorites","status":401,"ip":"127.0.0.1","body":{}}
+[2026-03-21T06:44:42.809Z] [SECURITY_EVENT:FAILED_REQUEST] {"method":"GET","url":"/api/favorites","status":401,"ip":"127.0.0.1","body":{}}
+[2026-03-21T06:44:42.819Z] [SECURITY_EVENT:FAILED_REQUEST] {"method":"GET","url":"/api/favorites","status":401,"ip":"127.0.0.1","body":{}}
+[2026-03-21T06:47:32.989Z] [SECURITY_EVENT:FAILED_REQUEST] {"method":"GET","url":"/api/favorites","status":401,"ip":"127.0.0.1","body":{}}
+[2026-03-21T06:47:32.997Z] [SECURITY_EVENT:FAILED_REQUEST] {"method":"GET","url":"/api/favorites","status":401,"ip":"127.0.0.1","body":{}}
+[2026-03-21T09:47:00.843Z] [SECURITY_EVENT:FAILED_REQUEST] {"method":"POST","url":"/api/auth/owner-register","status":500,"ip":"127.0.0.1","body":{"name":"Trial Tester","email":"trial-tester@example.com","phone":"9876543210","password":"[REDACTED]","confirmPassword":"Password123","messName":"Test Mess","location":"Kothrud","city":"Pune","recaptchaToken":"bypassed"}}
+[2026-03-21T09:48:26.007Z] [SECURITY_EVENT:FAILED_REQUEST] {"method":"POST","url":"/api/auth/login","status":500,"ip":"127.0.0.1","body":{"email":"trial-tester@example.com","password":"[REDACTED]","recaptchaToken":"bypassed"}}
+[2026-03-21T09:49:31.518Z] [SECURITY_EVENT:FAILED_REQUEST] {"method":"GET","url":"/api/status","status":404,"ip":"127.0.0.1","body":{}}
+[2026-03-21T09:49:37.976Z] [SECURITY_EVENT:FAILED_REQUEST] {"method":"GET","url":"/api/health","status":500,"ip":"127.0.0.1","body":{}}
+[2026-03-21T09:49:38.102Z] [SECURITY_EVENT:FAILED_REQUEST] {"method":"GET","url":"/favicon.ico","status":404,"ip":"127.0.0.1","body":{}}
+[2026-03-21T09:56:29.969Z] [SECURITY_EVENT:FAILED_REQUEST] {"method":"POST","url":"/api/auth/login","status":500,"ip":"127.0.0.1","body":{"email":"hrushikeshjagtap143@gmail.com","password":"[REDACTED]","recaptchaToken":"bypassed"}}
+[2026-03-21T13:07:16.692Z] [SECURITY_EVENT:FAILED_REQUEST] {"method":"GET","url":"/find-mess","status":404,"ip":"127.0.0.1","body":{}}
+[2026-03-21T15:38:40.461Z] [SECURITY_EVENT:FAILED_REQUEST] {"method":"GET","url":"/api/reviews/45","status":500,"ip":"127.0.0.1","body":{}}
+[2026-03-21T15:38:40.467Z] [SECURITY_EVENT:FAILED_REQUEST] {"method":"GET","url":"/api/messes/45","status":500,"ip":"127.0.0.1","body":{}}
+[2026-03-21T15:38:40.470Z] [SECURITY_EVENT:FAILED_REQUEST] {"method":"GET","url":"/api/notifications/45","status":500,"ip":"127.0.0.1","body":{}}
+[2026-03-21T15:39:00.050Z] [SECURITY_EVENT:FAILED_REQUEST] {"method":"GET","url":"/api/messes/45","status":500,"ip":"127.0.0.1","body":{}}
+[2026-03-21T15:39:00.230Z] [SECURITY_EVENT:FAILED_REQUEST] {"method":"GET","url":"/api/notifications/45","status":500,"ip":"127.0.0.1","body":{}}
+[2026-03-21T15:39:00.232Z] [SECURITY_EVENT:FAILED_REQUEST] {"method":"GET","url":"/api/reviews/45","status":500,"ip":"127.0.0.1","body":{}}
+[2026-03-21T15:40:14.439Z] [SECURITY_EVENT:FAILED_REQUEST] {"method":"GET","url":"/api/notifications/45","status":500,"ip":"127.0.0.1","body":{}}
+[2026-03-21T15:40:14.443Z] [SECURITY_EVENT:FAILED_REQUEST] {"method":"GET","url":"/api/reviews/45","status":500,"ip":"127.0.0.1","body":{}}
+[2026-03-21T15:40:14.448Z] [SECURITY_EVENT:FAILED_REQUEST] {"method":"GET","url":"/api/messes/45","status":500,"ip":"127.0.0.1","body":{}}
+[2026-03-21T15:40:34.117Z] [SECURITY_EVENT:FAILED_REQUEST] {"method":"GET","url":"/api/messes/45","status":500,"ip":"127.0.0.1","body":{}}
+[2026-03-21T15:40:34.270Z] [SECURITY_EVENT:FAILED_REQUEST] {"method":"GET","url":"/api/reviews/45","status":500,"ip":"127.0.0.1","body":{}}
+[2026-03-21T15:40:34.287Z] [SECURITY_EVENT:FAILED_REQUEST] {"method":"GET","url":"/api/notifications/45","status":500,"ip":"127.0.0.1","body":{}}

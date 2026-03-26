@@ -148,7 +148,7 @@ async function seedMesses() {
                 console.log(`Creating owner: ${data.owner_name}`);
                 const newOwner = await db.query(
                     "INSERT INTO mess_owners (name, email, phone, password_hash, role) VALUES ($1, $2, $3, $4, $5) RETURNING id",
-                    [data.owner_name, email, data.mobile, '$2b$10$dummyhashformigration', 'OWNER']
+                    [data.owner_name, email, data.mobile, 'BULK_IMPORT', 'OWNER']
                 );
                 ownerId = newOwner.rows[0].id;
             } else {
@@ -174,11 +174,11 @@ async function seedMesses() {
                 data.mess_name,
                 data.address,
                 city,
-                'Maharashtrian',
+                'Maharashtrian', // Default cuisine for this region
                 priceValue,
                 `Experience the authentic taste at ${data.mess_name}. Managed by ${data.owner_name}.`,
-                4.5,
-                true,
+                4.5, // Default rating
+                true, // Bulk imported as verified
                 true
             ]);
 

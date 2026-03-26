@@ -3,31 +3,23 @@ const Subscription = require('../models/subscription');
 const Mess = require('../models/mess');
 
 const startScheduler = () => {
-    // Run every day at midnight (00:00)
+    console.log('📅 Setting up daily trial expiry cron job...');
+    // Run daily at midnight
     cron.schedule('0 0 * * *', async () => {
-        console.log('🕒 Running daily subscription expiry check...');
+        console.log('Running daily trial expiry check...');
         try {
-            // Check expired trials
-            const expiredTrials = await Subscription.findExpiredTrials();
-            for (const sub of expiredTrials) {
+            const expiredSubscriptions = await Subscription.findExpiredTrials();
+            for (const sub of expiredSubscriptions) {
+                // Update subscription status to expired
                 await Subscription.updateStatus(sub.id, 'expired');
-                await Mess.deactivateByOwnerId(sub.owner_id);
-                console.log(`✅ Expired trial for owner ID ${sub.owner_id} and deactivated listings.`);
-            }
-
-            // Check expired paid subscriptions
-            const expiredSubs = await Subscription.findExpiredSubscriptions();
-            for (const sub of expiredSubs) {
-                await Subscription.updateStatus(sub.id, 'expired');
-                await Mess.deactivateByOwnerId(sub.owner_id);
-                console.log(`✅ Expired subscription for owner ID ${sub.owner_id} and deactivated listings.`);
+                // Disable mess listings for this owner
+                await Mess.updateVisibility(sub.mess_owner_id, false);
+                console.log(`Subscription for owner ${sub.mess_owner_id} expired. Listings disabled.`);
             }
         } catch (err) {
-            console.error('❌ Error in daily subscription expiry check:', err);
+            console.error('Error in trial expiry check job:', err);
         }
     });
-
-    console.log('🚀 Daily trial expiry scheduler initialized');
 };
 
 module.exports = startScheduler;
