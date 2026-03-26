@@ -10,6 +10,8 @@ const messValidation = [
     body('name').trim().notEmpty().escape().withMessage('Mess name is required (min 3 chars)').isLength({ min: 3 }),
     body('location').trim().notEmpty().escape().withMessage('Location is required (min 2 chars)').isLength({ min: 2 }),
     body('city').trim().notEmpty().escape().withMessage('City is required (min 2 chars)').isLength({ min: 2 }),
+    body('ownerName').trim().notEmpty().withMessage('Owner name is required'),
+    body('mobile').trim().notEmpty().isLength({ min: 10, max: 10 }).withMessage('10-digit mobile number is required'),
     body('pricePerMonth').isNumeric().withMessage('Invalid monthly price'),
     body('pricePerWeek').optional().isNumeric(),
     body('pricePerDay').optional().isNumeric(),

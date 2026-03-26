@@ -106,6 +106,9 @@ const Mess = {
         query += ` WHERE mess_owner_id = $${paramIdx} RETURNING *`;
         values.push(ownerId);
 
+        console.log('MESS UPDATE QUERY:', query);
+        console.log('MESS UPDATE VALUES:', values);
+
         const result = await db.query(query, values);
         return mapMessFields(result.rows[0]);
     },

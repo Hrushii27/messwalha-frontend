@@ -128,7 +128,21 @@ const AddMessPage: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
-        setError(null);
+        if (!formData.name || formData.name.trim().length < 3) {
+            setError("Mess Name must be at least 3 characters");
+            setLoading(false);
+            return;
+        }
+        if (!formData.ownerName || formData.ownerName.trim().length === 0) {
+            setError("Owner Name is required");
+            setLoading(false);
+            return;
+        }
+        if (!formData.mobile || !/^\d{10}$/.test(formData.mobile)) {
+            setError("10-digit Mobile Number is required");
+            setLoading(false);
+            return;
+        }
 
         try {
             const { uploadToCloudinary } = await import('../utils/cloudinary');
@@ -286,7 +300,7 @@ const AddMessPage: React.FC = () => {
                                 </div>
                             </div>
                             <div className="space-y-3">
-                                <label htmlFor="ownerName" className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted ml-2">Owner Name</label>
+                                <label htmlFor="ownerName" className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted ml-2">Owner Name (Required)</label>
                                 <div className="relative group">
                                     <User size={16} className="absolute left-6 top-1/2 -translate-y-1/2 text-primary-500" />
                                     <input
@@ -303,7 +317,7 @@ const AddMessPage: React.FC = () => {
                                 </div>
                             </div>
                             <div className="space-y-3">
-                                <label htmlFor="mobile" className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted ml-2">Mobile Number</label>
+                                <label htmlFor="mobile" className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted ml-2">Mobile Number (Required)</label>
                                 <div className="relative group">
                                     <Phone size={16} className="absolute left-6 top-1/2 -translate-y-1/2 text-primary-500" />
                                     <input
