@@ -65,9 +65,13 @@ router.put('/my', upload.fields([
 
         const {
             name,
+            ownerName,
+            mobile,
             location,
             city,
             pricePerMonth,
+            pricePerWeek,
+            pricePerDay,
             description,
             cuisine,
             veg_nonveg,
@@ -79,6 +83,8 @@ router.put('/my', upload.fields([
 
         const updateData = {
             name: name || existing.name,
+            ownerName: ownerName || existing.ownerName,
+            mobile: mobile || existing.mobile,
             address: location || existing.address,
             description: description !== undefined ? description : existing.description,
             cuisine: cuisine || existing.cuisine,
@@ -87,6 +93,8 @@ router.put('/my', upload.fields([
             college_tags: college_tags !== undefined ? college_tags : existing.collegeTags,
             upi_id: upiId || null,
             monthlyPrice: pricePerMonth ? parseFloat(pricePerMonth) : existing.monthlyPrice,
+            weeklyPrice: pricePerWeek ? parseFloat(pricePerWeek) : existing.weeklyPrice,
+            dailyPrice: pricePerDay ? parseFloat(pricePerDay) : existing.dailyPrice,
             displayPhoto: displayPhoto || existing.displayPhoto, 
             menuImages: menuImages || existing.menuImages
         };
@@ -148,8 +156,12 @@ router.post('/', upload.fields([
         // Map frontend fields (FormData or JSON) to backend expectations
         const {
             name,
+            ownerName,
+            mobile,
             location,
             pricePerMonth,
+            pricePerWeek,
+            pricePerDay,
             description,
             cuisine,
             city,
@@ -186,7 +198,12 @@ router.post('/', upload.fields([
             veg_nonveg || 'Veg',
             college_tags || '',
             upiId || null,
-            displayPhoto || null
+            displayPhoto || null,
+            [], // menuImages
+            pricePerWeek || 0,
+            pricePerDay || 0,
+            ownerName || '',
+            mobile || ''
         );
         res.status(201).json({ success: true, data: mess });
     } catch (err) {

@@ -138,6 +138,8 @@ const AddMessPage: React.FC = () => {
             location: formData.location?.trim(),
             city: formData.city?.trim(),
             pricePerMonth: Number(formData.pricePerMonth),
+            pricePerWeek: Number(formData.pricePerWeek) || 0,
+            pricePerDay: Number(formData.pricePerDay) || 0,
             foodType: "veg",
             cuisine: "indian",
             description: formData.description || "",

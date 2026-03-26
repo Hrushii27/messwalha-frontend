@@ -25,8 +25,17 @@ const subscriptionController = {
 
     getSubscribers: async (req, res) => {
         try {
-            // This is a stub for now as student subscriptions aren't fully in DB yet
-            res.json({ success: true, data: [] });
+            const ownerId = req.user.id;
+            const Mess = require('../models/mess');
+            const StudentSubscription = require('../models/studentSubscription');
+            
+            const mess = await Mess.findByOwnerId(ownerId);
+            if (!mess) {
+                return res.json({ success: true, data: [] });
+            }
+
+            const subscribers = await StudentSubscription.findByMessId(mess.id);
+            res.json({ success: true, data: subscribers });
         } catch (err) {
             console.error('Error fetching subscribers:', err);
             res.status(500).json({ message: 'Error fetching subscribers' });

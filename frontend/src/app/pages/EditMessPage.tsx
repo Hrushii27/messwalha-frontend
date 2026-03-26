@@ -88,8 +88,8 @@ const EditMessPage: React.FC = () => {
                         address: mess.address || '',
                         city: mess.city || '',
                         pricePerMonth: mess.monthlyPrice?.toString() || '',
-                        pricePerWeek: '',
-                        pricePerDay: '',
+                        pricePerWeek: mess.weeklyPrice?.toString() || '',
+                        pricePerDay: mess.dailyPrice?.toString() || '',
                         menuText: mess.description || '',
                         upiId: mess.upiId || ''
                     });

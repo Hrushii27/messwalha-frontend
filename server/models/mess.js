@@ -7,6 +7,11 @@ function mapMessFields(mess) {
         return {
             ...mess,
             monthlyPrice: mess.monthly_price ? parseFloat(mess.monthly_price) : 0,
+            weeklyPrice: mess.weekly_price ? parseFloat(mess.weekly_price) : 0,
+            dailyPrice: mess.daily_price ? parseFloat(mess.daily_price) : 0,
+            ownerName: mess.owner_name || mess.ownerName || 'Authorized Personnel',
+            mobile: mess.contact_number || mess.mobile || 'Not Available',
+            location: mess.location || mess.address,
             imageUrl: photo,
             displayPhoto: photo, 
             isActive: mess.is_active,
@@ -23,10 +28,10 @@ function mapMessFields(mess) {
 }
 
 const Mess = {
-    create: async (ownerId, name, address, monthlyPrice, description = '', cuisine = 'Indian', city = '', vegNonveg = 'Both', collegeTags = '', upiId = null, imageUrl = null, menuImages = []) => {
+    create: async (ownerId, name, address, monthlyPrice, description = '', cuisine = 'Indian', city = '', vegNonveg = 'Both', collegeTags = '', upiId = null, imageUrl = null, menuImages = [], weeklyPrice = 0, dailyPrice = 0, ownerName = '', contactNumber = '') => {
         const result = await db.query(
-            'INSERT INTO mess_listings (mess_owner_id, name, address, monthly_price, description, cuisine, city, veg_nonveg, college_tags, status, upi_id, image_url, display_photo, menu_images, is_active) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) RETURNING *',
-            [ownerId, name, address, monthlyPrice, description, cuisine, city, vegNonveg, collegeTags, 'approved', upiId, imageUrl, imageUrl, menuImages, true]
+            'INSERT INTO mess_listings (mess_owner_id, name, address, location, owner_name, contact_number, monthly_price, weekly_price, daily_price, description, cuisine, city, veg_nonveg, college_tags, status, upi_id, image_url, display_photo, menu_images, is_active) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20) RETURNING *',
+            [ownerId, name, address, address, ownerName, contactNumber, monthlyPrice, weeklyPrice, dailyPrice, description, cuisine, city, vegNonveg, collegeTags, 'approved', upiId, imageUrl, imageUrl, menuImages, true]
         );
         return mapMessFields(result.rows[0]);
     },
@@ -40,6 +45,18 @@ const Mess = {
         if (monthlyPrice !== undefined) {
             query += `, monthly_price = $${paramIdx}`;
             values.push(monthlyPrice);
+            paramIdx++;
+        }
+
+        if (data.weeklyPrice !== undefined) {
+            query += `, weekly_price = $${paramIdx}`;
+            values.push(data.weeklyPrice);
+            paramIdx++;
+        }
+
+        if (data.dailyPrice !== undefined) {
+            query += `, daily_price = $${paramIdx}`;
+            values.push(data.dailyPrice);
             paramIdx++;
         }
 
@@ -65,6 +82,24 @@ const Mess = {
         if (status) {
             query += `, status = $${paramIdx}`;
             values.push(status);
+            paramIdx++;
+        }
+
+        if (data.ownerName !== undefined) {
+            query += `, owner_name = $${paramIdx}`;
+            values.push(data.ownerName);
+            paramIdx++;
+        }
+
+        if (data.mobile !== undefined || data.contactNumber !== undefined) {
+            query += `, contact_number = $${paramIdx}`;
+            values.push(data.mobile || data.contactNumber);
+            paramIdx++;
+        }
+
+        if (address !== undefined) {
+            query += `, location = $${paramIdx}`;
+            values.push(address);
             paramIdx++;
         }
 
@@ -207,14 +242,27 @@ const Mess = {
     getDashboardStats: async (ownerId) => {
         const result = await db.query(`
             SELECT 
-                ml.rating, 
-                ml.review_count as "reviewCount",
+                COALESCE((SELECT AVG(rating)::numeric(3,1) FROM reviews WHERE mess_id = ml.id), 0.0)::float as "rating",
+                (SELECT COUNT(*) FROM reviews WHERE mess_id = ml.id) as "reviewCount",
                 (SELECT COUNT(*) FROM student_subscriptions WHERE mess_id = ml.id AND status = 'active') as "activeStudents",
-                (SELECT COALESCE(SUM(amount), 0) FROM payments WHERE mess_id = ml.id AND status = 'SUCCESS') as "totalRevenue"
+                (SELECT COALESCE(SUM(amount), 0) FROM payments WHERE mess_id = ml.id AND status = 'SUCCESS')::float as "totalRevenue"
             FROM mess_listings ml
             WHERE ml.mess_owner_id = $1
             LIMIT 1
         `, [ownerId]);
+        return result.rows[0];
+    },
+    getDashboardStatsById: async (messId) => {
+        const result = await db.query(`
+            SELECT 
+                COALESCE((SELECT AVG(rating)::numeric(3,1) FROM reviews WHERE mess_id = ml.id), 0.0)::float as "rating",
+                (SELECT COUNT(*) FROM reviews WHERE mess_id = ml.id) as "reviewCount",
+                (SELECT COUNT(*) FROM student_subscriptions WHERE mess_id = ml.id AND status = 'active') as "activeStudents",
+                (SELECT COALESCE(SUM(amount), 0) FROM payments WHERE mess_id = ml.id AND status = 'SUCCESS')::float as "totalRevenue"
+            FROM mess_listings ml
+            WHERE ml.id = $1
+            LIMIT 1
+        `, [messId]);
         return result.rows[0];
     },
     resetAll: async () => {
