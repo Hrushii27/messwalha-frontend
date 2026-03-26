@@ -598,7 +598,7 @@ const MessDetailsPage: React.FC = () => {
                                                     </div>
                                                     <div>
                                                         <p className="font-black text-text-muted uppercase tracking-[0.2em] text-[8px] mb-2 italic">Owner Name</p>
-                                                        <p className="text-sm font-black text-white uppercase tracking-widest italic">{mess.ownerName}</p>
+                                                        <p className="text-sm font-black text-white uppercase tracking-widest italic">{mess.ownerName || 'AUTHORIZED PERSONNEL'}</p>
                                                     </div>
                                                 </div>
                                                 <div className="flex items-center gap-6 group/info">
@@ -607,7 +607,7 @@ const MessDetailsPage: React.FC = () => {
                                                     </div>
                                                     <div>
                                                         <p className="font-black text-text-muted uppercase tracking-[0.2em] text-[8px] mb-2 italic">Contact Number</p>
-                                                        <p className="text-sm font-black text-white uppercase tracking-widest italic">{mess.mobile || mess.contactNumber}</p>
+                                                        <p className="text-sm font-black text-white uppercase tracking-widest italic">{mess.mobile || mess.contactNumber || 'NOT AVAILABLE'}</p>
                                                     </div>
                                                 </div>
                                                 <Button
