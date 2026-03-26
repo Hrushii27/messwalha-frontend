@@ -1,7 +1,7 @@
 const Owner = require('../models/owner');
 const Subscription = require('../models/subscription');
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const { sendResetPasswordEmail, sendOTPEmail } = require('../utils/emailService');
 const Otp = require('../models/otp');
