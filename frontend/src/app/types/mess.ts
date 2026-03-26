@@ -48,6 +48,7 @@ export interface Mess {
     upiId?: string;
     upi_id?: string;
     contact?: string;
+    contactNumber?: string;
     mobile?: string;
     menus?: Menu[];
     menuImages?: string[];
