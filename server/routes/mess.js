@@ -115,14 +115,11 @@ router.get('/:id', async (req, res) => {
         
         console.log("DB ROW:", row); // ✅ STEP 4 — DEBUG API
 
-        // ✅ STEP 3 — FIX API RESPONSE (EXACT MAPPING)
+        // ✅ STEP 3 — FIX API RESPONSE (COMPLETE DATA)
+        // Returning the whole row ensuring we have price, owner info, etc.
         const responseData = {
-            id: row.id,
-            name: row.name,
-            location: row.address, // Mapping 'address' to 'location' as per requirements
-            city: row.city,
-            rating: row.rating,
-            displayPhoto: row.display_photo || row.image_url || null
+            ...row,
+            location: row.address // Backward compatibility for any components expecting 'location'
         };
 
         console.log("API OUTPUT:", responseData); // ✅ STEP 4 — DEBUG API

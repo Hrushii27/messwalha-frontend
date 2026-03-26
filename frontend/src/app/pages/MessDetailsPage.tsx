@@ -598,7 +598,7 @@ const MessDetailsPage: React.FC = () => {
                                                     </div>
                                                     <div>
                                                         <p className="font-black text-text-muted uppercase tracking-[0.2em] text-[8px] mb-2 italic">Owner Name</p>
-                                                        <p className="text-sm font-black text-white uppercase tracking-widest italic">{mess.ownerName || mess.owner?.name || 'Authorized Personnel'}</p>
+                                                        <p className="text-sm font-black text-white uppercase tracking-widest italic">{mess.ownerName || 'Not Available'}</p>
                                                     </div>
                                                 </div>
                                                 <div className="flex items-center gap-6 group/info">
@@ -607,7 +607,7 @@ const MessDetailsPage: React.FC = () => {
                                                     </div>
                                                     <div>
                                                         <p className="font-black text-text-muted uppercase tracking-[0.2em] text-[8px] mb-2 italic">Contact Number</p>
-                                                        <p className="text-sm font-black text-white uppercase tracking-widest italic">{mess.contact || mess.mobile}</p>
+                                                        <p className="text-sm font-black text-white uppercase tracking-widest italic">{mess.mobile || mess.contact || 'Not Available'}</p>
                                                     </div>
                                                 </div>
                                                 <Button
@@ -644,9 +644,9 @@ const MessDetailsPage: React.FC = () => {
 
                             <div className="space-y-4 mb-12">
                                 {[
-                                    { title: 'Monthly Plan', price: `₹${mess.monthlyPrice || 2500}`, priceValue: mess.monthlyPrice || 2500, type: 'MONTHLY', period: '/month', popular: true, desc: '30 Days Access' },
-                                    { title: 'Weekly Plan', price: `₹${mess.weeklyPrice || (Math.round((mess.monthlyPrice || 2500) / 4))}`, priceValue: mess.weeklyPrice || (Math.round((mess.monthlyPrice || 2500) / 4)), type: 'WEEKLY', period: '/week', desc: '07 Days Access' },
-                                    { title: 'Daily Plan', price: `₹${mess.dailyPrice || 80}`, priceValue: mess.dailyPrice || 80, type: 'DAILY', period: '/day', desc: '01 Day Access' },
+                                    { title: 'Monthly Plan', price: `₹${mess.monthlyPrice || 0}`, priceValue: mess.monthlyPrice || 0, type: 'MONTHLY', period: '/month', popular: true, desc: '30 Days Access' },
+                                    { title: 'Weekly Plan', price: `₹${mess.weeklyPrice || (Math.round((mess.monthlyPrice || 0) / 4))}`, priceValue: mess.weeklyPrice || (Math.round((mess.monthlyPrice || 0) / 4)), type: 'WEEKLY', period: '/week', desc: '07 Days Access' },
+                                    { title: 'Daily Plan', price: `₹${mess.dailyPrice || 0}`, priceValue: mess.dailyPrice || 0, type: 'DAILY', period: '/day', desc: '01 Day Access' },
                                 ].map((plan) => (
                                     <button
                                         key={plan.title}
