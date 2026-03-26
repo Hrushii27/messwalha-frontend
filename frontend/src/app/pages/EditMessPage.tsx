@@ -223,6 +223,8 @@ const EditMessPage: React.FC = () => {
                 menuImages: menu_images.length > 0 ? menu_images : (existingMenuUrls.length > 0 ? existingMenuUrls : undefined)
             };
 
+            console.log("PAYLOAD BEING SENT:", payload);
+
             await api.put('/messes/my', payload);
             setSuccess(true);
             setTimeout(() => navigate('/owner/dashboard'), 3000);
@@ -349,7 +351,7 @@ const EditMessPage: React.FC = () => {
                                         placeholder="FULL NAME"
                                         className="w-full bg-bg3/30 border border-white/10 text-text-primary pl-14 pr-6 py-5 rounded-2xl focus:ring-2 focus:ring-primary-500/50 outline-none transition-all font-black tracking-widest text-[10px] uppercase italic"
                                         value={formData.ownerName}
-                                        onChange={handleInputChange}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, ownerName: e.target.value }))}
                                     />
                                 </div>
                             </div>

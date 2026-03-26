@@ -7,7 +7,9 @@ const validateRequest = (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         const errorArray = errors.array();
-        console.warn('⚠️ Validation failed for request:', req.originalUrl, errorArray);
+        console.warn('⚠️ Validation failed for request:', req.originalUrl);
+        console.warn('Body:', JSON.stringify(req.body, null, 2));
+        console.warn('Errors:', errorArray);
         
         // Return descriptive error for the first failure
         const firstError = errorArray[0];
