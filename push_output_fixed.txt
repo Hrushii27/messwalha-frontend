@@ -1,0 +1,103 @@
+remote: Updated 324 paths from 7392411        
+remote: Compressing source files... done.        
+remote: Building source:        
+remote: 
+remote: -----> Building on the Heroku-24 stack        
+remote: -----> Using buildpack: heroku/nodejs        
+remote: -----> Node.js app detected        
+remote:                
+remote: -----> Creating runtime environment        
+remote:                
+remote:        NPM_CONFIG_LOGLEVEL=error        
+remote:        NODE_JS_VERSION=20.x        
+remote:        NODE_VERBOSE=false        
+remote:        NODE_ENV=production        
+remote:        NODE_MODULES_CACHE=false        
+remote:                
+remote: -----> Installing binaries        
+remote:        engines.node (package.json):   20.x        
+remote:        engines.npm (package.json):    unspecified (use default)        
+remote:                
+remote:        Resolving node version 20.x...        
+remote:        Downloading and installing node 20.20.2...        
+remote:        Validating checksum        
+remote:        Using default npm version: 10.8.2        
+remote:                
+remote: -----> Restoring cache        
+remote:        Caching has been disabled because NODE_MODULES_CACHE=false        
+remote:                
+remote: -----> Installing dependencies        
+remote:        Installing node modules        
+remote:                
+remote:        added 629 packages, and audited 630 packages in 7s        
+remote:                
+remote:        80 packages are looking for funding        
+remote:          run `npm fund` for details        
+remote:                
+remote:        13 vulnerabilities (8 low, 5 high)        
+remote:                
+remote:        To address issues that do not require attention, run:        
+remote:          npm audit fix        
+remote:                
+remote:        To address all issues (including breaking changes), run:        
+remote:          npm audit fix --force        
+remote:                
+remote:        Run `npm audit` for details.        
+remote:        npm notice        
+remote:        npm notice New major version of npm available! 10.8.2 -> 11.12.0        
+remote:        npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.12.0        
+remote:        npm notice To update run: npm install -g npm@11.12.0        
+remote:        npm notice        
+remote:                
+remote: -----> Build        
+remote:        Running build        
+remote:                
+remote:        > messwalha@1.0.0 build        
+remote:        > echo 'Building production API...'        
+remote:                
+remote:        Building production API...        
+remote:                
+remote: -----> Pruning devDependencies        
+remote:                
+remote:        removed 1 package, and audited 352 packages in 1s        
+remote:                
+remote:        38 packages are looking for funding        
+remote:          run `npm fund` for details        
+remote:                
+remote:        12 vulnerabilities (8 low, 4 high)        
+remote:                
+remote:        To address issues that do not require attention, run:        
+remote:          npm audit fix        
+remote:                
+remote:        To address all issues (including breaking changes), run:        
+remote:          npm audit fix --force        
+remote:                
+remote:        Run `npm audit` for details.        
+remote:                
+remote: -----> Build succeeded!        
+remote: -----> Discovering process types        
+remote: 
+remote:  !     Push failed: cannot parse Procfile.        
+remote:  !     Please try pushing again.        
+remote:  !     If the problem persists, see https://help.heroku.com/ and provide Request ID 89e6fc1c-c9c8-6ed6-e386-c3f0e2b6093a.        
+remote: 
+remote: 
+remote:  !        
+remote:  ! ## Warning - The same version of this code has already been built: 210314e14c3a0c005e9c9b03088449cd0f74f690        
+remote:  !        
+remote:  ! We have detected that you have triggered a build from source code with version 210314e14c3a0c005e9c9b03088449cd0f74f690        
+remote:  ! at least twice. One common cause of this behavior is attempting to deploy code from a different branch.        
+remote:  !        
+remote:  ! If you are developing on a branch and deploying via git you must run:        
+remote:  !        
+remote:  !     git push heroku <branchname>:main        
+remote:  !        
+remote:  ! This article goes into details on the behavior:        
+remote:  !   https://devcenter.heroku.com/articles/duplicate-build-version        
+remote: 
+remote: 
+remote:  !     Push rejected to messwalha-api-pg.        
+remote: 
+To https://git.heroku.com/messwalha-api-pg.git
+ ! [remote rejected] main -> main (pre-receive hook declined)
+error: failed to push some refs to 'https://git.heroku.com/messwalha-api-pg.git'
