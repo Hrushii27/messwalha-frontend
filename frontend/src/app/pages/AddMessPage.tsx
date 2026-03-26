@@ -128,6 +128,7 @@ const AddMessPage: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
+        console.log("FORM STATE:", formData);
         if (!formData.name || formData.name.trim().length < 3) {
             setError("Mess Name must be at least 3 characters");
             setLoading(false);
@@ -179,7 +180,7 @@ const AddMessPage: React.FC = () => {
                 menuImages: menuImageUrls
             };
 
-            console.log("PAYLOAD BEING SENT (POST):", payload);
+            console.log("PAYLOAD:", payload);
 
             // 4. API Request
             const response = await api.post('/messes', payload);

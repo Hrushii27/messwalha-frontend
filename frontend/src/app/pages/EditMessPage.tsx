@@ -195,6 +195,7 @@ const EditMessPage: React.FC = () => {
 
         setLoading(true);
         setError(null);
+        console.log("FORM STATE:", formData);
 
         try {
             let mess_image = displayPhoto;
@@ -223,7 +224,7 @@ const EditMessPage: React.FC = () => {
                 menuImages: menu_images.length > 0 ? menu_images : (existingMenuUrls.length > 0 ? existingMenuUrls : undefined)
             };
 
-            console.log("PAYLOAD BEING SENT:", payload);
+            console.log("PAYLOAD:", payload);
 
             await api.put('/messes/my', payload);
             setSuccess(true);
