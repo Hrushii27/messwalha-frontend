@@ -85,7 +85,7 @@ router.put('/my', upload.fields([
             city: city !== undefined ? city : existing.city,
             vegNonveg: veg_nonveg || existing.vegNonVeg,
             college_tags: college_tags !== undefined ? college_tags : existing.collegeTags,
-            upi_id: upi_id !== undefined ? upi_id : existing.upiId,
+            upi_id: upiId || null,
             monthlyPrice: pricePerMonth ? parseFloat(pricePerMonth) : existing.monthlyPrice,
             displayPhoto: displayPhoto || existing.displayPhoto, 
             menuImages: menuImages || existing.menuImages

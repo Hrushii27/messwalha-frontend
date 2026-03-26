@@ -310,12 +310,14 @@ const EditMessPage: React.FC = () => {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div className="space-y-3">
-                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted ml-2">Mess Name</label>
+                                <label htmlFor="messName" className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted ml-2">Mess Name</label>
                                 <div className="relative group">
                                     <Utensils size={16} className="absolute left-6 top-1/2 -translate-y-1/2 text-primary-500" />
                                     <input
                                         type="text"
+                                        id="messName"
                                         name="messName"
+                                        autoComplete="organization"
                                         required
                                         placeholder="E.G. SAI DARBAR MESS"
                                         className="w-full bg-bg3/30 border border-white/10 text-text-primary pl-14 pr-6 py-5 rounded-2xl focus:ring-2 focus:ring-primary-500/50 outline-none transition-all font-black tracking-widest text-[10px] uppercase italic"
@@ -325,12 +327,14 @@ const EditMessPage: React.FC = () => {
                                 </div>
                             </div>
                             <div className="space-y-3">
-                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted ml-2">Owner Name (Optional)</label>
+                                <label htmlFor="ownerName" className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted ml-2">Owner Name (Optional)</label>
                                 <div className="relative group">
                                     <User size={16} className="absolute left-6 top-1/2 -translate-y-1/2 text-primary-500" />
                                     <input
                                         type="text"
+                                        id="ownerName"
                                         name="ownerName"
+                                        autoComplete="name"
                                         placeholder="FULL NAME"
                                         className="w-full bg-bg3/30 border border-white/10 text-text-primary pl-14 pr-6 py-5 rounded-2xl focus:ring-2 focus:ring-primary-500/50 outline-none transition-all font-black tracking-widest text-[10px] uppercase italic opacity-70"
                                         value={formData.ownerName}
@@ -339,12 +343,14 @@ const EditMessPage: React.FC = () => {
                                 </div>
                             </div>
                             <div className="space-y-3">
-                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted ml-2">Mobile Number (Optional)</label>
+                                <label htmlFor="mobile" className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted ml-2">Mobile Number (Optional)</label>
                                 <div className="relative group">
                                     <Phone size={16} className="absolute left-6 top-1/2 -translate-y-1/2 text-primary-500" />
                                     <input
                                         type="tel"
+                                        id="mobile"
                                         name="mobile"
+                                        autoComplete="tel"
                                         placeholder="10 DIGIT NUMBER"
                                         className="w-full bg-bg3/30 border border-white/10 text-text-primary pl-14 pr-6 py-5 rounded-2xl focus:ring-2 focus:ring-primary-500/50 outline-none transition-all font-black tracking-widest text-[10px] uppercase italic opacity-70"
                                         value={formData.mobile}
@@ -353,12 +359,14 @@ const EditMessPage: React.FC = () => {
                                 </div>
                             </div>
                             <div className="space-y-3">
-                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted ml-2">Mess Address</label>
+                                <label htmlFor="address" className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted ml-2">Mess Address</label>
                                 <div className="relative group">
                                     <MapPin size={16} className="absolute left-6 top-1/2 -translate-y-1/2 text-primary-500" />
                                     <input
                                         type="text"
+                                        id="address"
                                         name="address"
+                                        autoComplete="address-line1"
                                         required
                                         placeholder="AREA / NEAR COLLEGE"
                                         className="w-full bg-bg3/30 border border-white/10 text-text-primary pl-14 pr-6 py-5 rounded-2xl focus:ring-2 focus:ring-primary-500/50 outline-none transition-all font-black tracking-widest text-[10px] uppercase italic"
@@ -368,12 +376,14 @@ const EditMessPage: React.FC = () => {
                                 </div>
                             </div>
                             <div className="space-y-3">
-                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted ml-2">City</label>
+                                <label htmlFor="city" className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted ml-2">City</label>
                                 <div className="relative group">
                                     <MapPin size={16} className="absolute left-6 top-1/2 -translate-y-1/2 text-primary-500" />
                                     <input
                                         type="text"
+                                        id="city"
                                         name="city"
+                                        autoComplete="address-level2"
                                         required
                                         placeholder="E.G. PUNE"
                                         className="w-full bg-bg3/30 border border-white/10 text-text-primary pl-14 pr-6 py-5 rounded-2xl focus:ring-2 focus:ring-primary-500/50 outline-none transition-all font-black tracking-widest text-[10px] uppercase italic"
@@ -394,11 +404,12 @@ const EditMessPage: React.FC = () => {
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                             <div className="space-y-3">
-                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted ml-2">Cost Per Month</label>
+                                <label htmlFor="pricePerMonth" className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted ml-2">Cost Per Month</label>
                                 <div className="relative group">
                                     <IndianRupee size={16} className="absolute left-6 top-1/2 -translate-y-1/2 text-primary-500" />
                                     <input
                                         type="number"
+                                        id="pricePerMonth"
                                         name="pricePerMonth"
                                         required
                                         placeholder="₹ 3000"
@@ -409,11 +420,12 @@ const EditMessPage: React.FC = () => {
                                 </div>
                             </div>
                             <div className="space-y-3">
-                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted ml-2">Cost Per Week (Optional)</label>
+                                <label htmlFor="pricePerWeek" className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted ml-2">Cost Per Week (Optional)</label>
                                 <div className="relative group">
                                     <IndianRupee size={16} className="absolute left-6 top-1/2 -translate-y-1/2 text-primary-500" />
                                     <input
                                         type="number"
+                                        id="pricePerWeek"
                                         name="pricePerWeek"
                                         placeholder="₹ 800"
                                         className="w-full bg-bg3/30 border border-white/10 text-text-primary pl-14 pr-6 py-5 rounded-2xl focus:ring-2 focus:ring-primary-500/50 outline-none transition-all font-black tracking-widest text-[10px] uppercase italic opacity-70"
@@ -423,11 +435,12 @@ const EditMessPage: React.FC = () => {
                                 </div>
                             </div>
                             <div className="space-y-3">
-                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted ml-2">Cost Per Day (Optional)</label>
+                                <label htmlFor="pricePerDay" className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted ml-2">Cost Per Day (Optional)</label>
                                 <div className="relative group">
-                                    <IndianRupee size={16} className="absolute left-6 top-1/2 -translate-y-1/2 text-primary-500" />
+                                    <IndianRupee size={16} className="absolute left-1/2 top-1/2 -translate-y-1/2 text-primary-500" />
                                     <input
                                         type="number"
+                                        id="pricePerDay"
                                         name="pricePerDay"
                                         placeholder="₹ 120"
                                         className="w-full bg-bg3/30 border border-white/10 text-text-primary pl-14 pr-6 py-5 rounded-2xl focus:ring-2 focus:ring-primary-500/50 outline-none transition-all font-black tracking-widest text-[10px] uppercase italic opacity-70"
@@ -438,12 +451,14 @@ const EditMessPage: React.FC = () => {
                             </div>
                             {/* UPI ID Field */}
                             <div className="space-y-3 md:col-span-3">
-                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted ml-2">UPI ID for Payments</label>
+                                <label htmlFor="upiId" className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted ml-2">UPI ID for Payments</label>
                                 <div className="relative group">
                                     <Zap size={16} className="absolute left-6 top-1/2 -translate-y-1/2 text-primary-500" />
                                     <input
                                         type="text"
+                                        id="upiId"
                                         name="upiId"
+                                        autoComplete="off"
                                         placeholder="e.g. 9876543210@paytm"
                                         className="w-full bg-bg3/30 border border-white/10 text-text-primary pl-14 pr-6 py-5 rounded-2xl focus:ring-2 focus:ring-primary-500/50 outline-none transition-all font-black tracking-widest text-[10px] uppercase italic"
                                         value={formData.upiId}
@@ -465,10 +480,11 @@ const EditMessPage: React.FC = () => {
                             {/* Text Menu */}
                             <div className="space-y-4">
                                 <div className="flex items-center justify-between">
-                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted ml-2">Menu Description</label>
+                                    <label htmlFor="menuText" className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted ml-2">Menu Description</label>
                                     <span className="text-[8px] font-black uppercase tracking-widest text-primary-500/60 bg-primary-500/5 px-3 py-1 rounded-full border border-primary-500/10 italic">Text Option</span>
                                 </div>
                                 <textarea
+                                    id="menuText"
                                     name="menuText"
                                     placeholder="MONDAY: POHA, DAL RICE..."
                                     rows={4}
