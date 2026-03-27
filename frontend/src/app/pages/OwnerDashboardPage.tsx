@@ -869,8 +869,10 @@ const OwnerDashboardPage: React.FC = () => {
                                     <div className="h-[2px] w-8 bg-primary-500 rounded-full" />
                                     <span className="text-[10px] font-black uppercase tracking-[0.4em] italic">{mess?.name || 'Inbound'}</span>
                                 </div>
-                                <h1 className="text-5xl md:text-8xl font-black italic tracking-tighter leading-none">
-                                    OWNER <br /> <span className="text-primary-500">DASHBOARD</span>
+                                <h1 className="text-white text-6xl md:text-8xl font-black italic tracking-tighter leading-[0.9] uppercase transition-all duration-700 hover:scale-[1.02] cursor-default drop-shadow-2xl">
+                                    OWNER <br />
+                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-500 via-primary-400 to-orange-400 animate-gradient-x select-none">DASHBOARD</span>
+                                    <span className="ml-4 text-[10px] opacity-10 font-mono italic">v1.2.5</span>
                                 </h1>
                             </div>
                             <div className="flex flex-wrap justify-center gap-4">

@@ -38,11 +38,11 @@ const subscriptionController = {
             res.json({ success: true, data: subscribers });
         } catch (err) {
             console.error('❌ ERROR in getSubscribers:', err);
-            console.error('Stack:', err.stack);
             res.status(500).json({ 
                 success: false, 
                 message: 'Error fetching subscribers',
-                debug: err.message 
+                debug: err.message,
+                stack: err.stack 
             });
         }
     },

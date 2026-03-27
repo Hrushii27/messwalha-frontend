@@ -159,7 +159,8 @@ app.get('/', (req, res) => {
   res.json({
     status: 'OK',
     message: 'MessWalha Production API is LIVE 🚀',
-    version: '1.2.3',
+    version: '1.2.5',
+    build: '2026-03-27-1908',
     timestamp: new Date().toISOString()
   });
 });
