@@ -79,9 +79,27 @@ const getUserReviews = async (req, res) => {
     }
 };
 
+const checkUserReviewStatus = async (req, res) => {
+    try {
+        const { messId } = req.query;
+        const userId = req.user.id;
+
+        if (!messId) {
+            return res.status(400).json({ message: 'Mess ID is required' });
+        }
+
+        const existing = await Review.checkExistingReview(messId, userId);
+        res.json({ success: true, alreadyReviewed: !!existing });
+    } catch (err) {
+        console.error('Error checking review status:', err);
+        res.status(500).json({ message: 'Error checking status' });
+    }
+};
+
 module.exports = {
     addReview,
     getReviewsByMess,
     respondToReview,
-    getUserReviews
+    getUserReviews,
+    checkUserReviewStatus
 };

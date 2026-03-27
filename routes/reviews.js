@@ -1,11 +1,16 @@
 const express = require('express');
 const router = express.Router();
-const { addReview, getReviewsByMess, respondToReview, getUserReviews } = require('../controllers/reviewController');
+const { addReview, getReviewsByMess, respondToReview, getUserReviews, checkUserReviewStatus } = require('../controllers/reviewController');
 
 router.get('/my', (req, res, next) => {
     if (!req.user) return res.status(401).json({ message: 'Unauthorized' });
     next();
 }, getUserReviews);
+
+router.get('/check', (req, res, next) => {
+    if (!req.user) return res.status(401).json({ message: 'Unauthorized' });
+    next();
+}, checkUserReviewStatus);
 
 router.get('/:messId', getReviewsByMess);
 router.post('/', (req, res, next) => {

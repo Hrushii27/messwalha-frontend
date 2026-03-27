@@ -56,6 +56,7 @@ const MessDetailsPage: React.FC = () => {
     const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
     const [subscribing, setSubscribing] = useState(false);
     const [reviewForm, setReviewForm] = useState({ rating: 5, comment: '', show: false });
+    const [alreadyReviewed, setAlreadyReviewed] = useState(false);
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
     const { isFavorite, toggleFavorite } = useFavorites();
     const { user } = useAppSelector((state: RootState) => state.auth);
@@ -74,6 +75,11 @@ const MessDetailsPage: React.FC = () => {
                 setNotifications(notifRes.data.data || []);
                 setReviews(reviewsRes.data.data || []);
 
+                if (user && user.role === 'STUDENT') {
+                    const checkRes = await api.get(`/reviews/check?messId=${id}`);
+                    setAlreadyReviewed(checkRes.data.alreadyReviewed);
+                }
+
                 if (messRes.data.data) {
                     const m = messRes.data.data;
                     const history = JSON.parse(localStorage.getItem('recentlyViewed') || '[]');
@@ -91,7 +97,7 @@ const MessDetailsPage: React.FC = () => {
         };
 
         fetchDetails();
-    }, [id]);
+    }, [id, user]);
 
     useEffect(() => {
         if (section && (section === 'menu' || section === 'reviews' || section === 'about')) {
@@ -193,6 +199,7 @@ const MessDetailsPage: React.FC = () => {
             if (data.success) {
                 toast.success('Review submitted successfully!');
                 setReviewForm({ rating: 5, comment: '', show: false });
+                setAlreadyReviewed(true);
                 
                 // Re-fetch mess and reviews to update stats instantly
                 const [messRes, reviewsRes] = await Promise.all([
@@ -205,6 +212,9 @@ const MessDetailsPage: React.FC = () => {
         } catch (error: any) {
             console.error('Review submission failed', error);
             const msg = error.response?.data?.message || 'Failed to submit review.';
+            if (msg.toLowerCase().includes('already reviewed')) {
+                setAlreadyReviewed(true);
+            }
             toast.error(msg);
         }
     };
@@ -507,8 +517,9 @@ const MessDetailsPage: React.FC = () => {
                                                                 <button
                                                                     key={num}
                                                                     type="button"
+                                                                    disabled={alreadyReviewed}
                                                                     onClick={() => setReviewForm({ ...reviewForm, rating: num })}
-                                                                    className={`transition-all hover:scale-125 ${reviewForm.rating >= num ? 'text-primary-500' : 'text-text-muted/40'}`}
+                                                                    className={`transition-all ${!alreadyReviewed ? 'hover:scale-125' : 'opacity-50 cursor-not-allowed'} ${reviewForm.rating >= num ? 'text-primary-500' : 'text-text-muted/40'}`}
                                                                 >
                                                                     <Star size={32} fill={reviewForm.rating >= num ? 'currentColor' : 'none'} />
                                                                 </button>
@@ -519,13 +530,25 @@ const MessDetailsPage: React.FC = () => {
                                                         <label className="text-[10px] font-black uppercase tracking-[0.3em] text-text-secondary ml-4 italic">Your Review</label>
                                                         <textarea
                                                             required
+                                                            disabled={alreadyReviewed}
                                                             value={reviewForm.comment}
                                                             onChange={(e) => setReviewForm({ ...reviewForm, comment: e.target.value })}
-                                                            placeholder="Share your experience about the food..."
-                                                            className="w-full bg-bg3/50 border border-white/10 text-white px-8 py-6 rounded-[2rem] focus:ring-2 focus:ring-primary-500/50 outline-none transition-all font-medium text-sm min-h-[160px] leading-relaxed"
+                                                            placeholder={alreadyReviewed ? "You have already reviewed this mess." : "Share your experience about the food..."}
+                                                            className={`w-full bg-bg3/50 border border-white/10 text-white px-8 py-6 rounded-[2rem] outline-none transition-all font-medium text-sm min-h-[160px] leading-relaxed ${alreadyReviewed ? 'opacity-50 cursor-not-allowed italic' : 'focus:ring-2 focus:ring-primary-500/50'}`}
                                                         />
+                                                        {alreadyReviewed && (
+                                                            <p className="text-orange-500 text-[10px] font-black uppercase tracking-widest ml-4 italic">
+                                                                Note: You can only submit one review per mess.
+                                                            </p>
+                                                        )}
                                                     </div>
-                                                    <Button type="submit" className="w-full h-20 rounded-3xl font-black uppercase tracking-[0.3em] text-xs shadow-2xl shadow-primary-500/30 bg-primary-500 text-white italic">Submit Review</Button>
+                                                    <Button 
+                                                        type="submit" 
+                                                        disabled={alreadyReviewed}
+                                                        className={`w-full h-20 rounded-3xl font-black uppercase tracking-[0.3em] text-xs shadow-2xl italic ${alreadyReviewed ? 'bg-bg3 text-text-muted cursor-not-allowed' : 'shadow-primary-500/30 bg-primary-500 text-white'}`}
+                                                    >
+                                                        {alreadyReviewed ? 'ALREADY REVIEWED' : 'SUBMIT REVIEW'}
+                                                    </Button>
                                                 </form>
                                             </Card>
                                         )}
