@@ -41,6 +41,8 @@ const OwnerDashboardPage: React.FC = () => {
     const [menus, setMenus] = useState<Menu[]>([]);
     const [revenue, setRevenue] = useState<number>(0);
     const [activeStudentsCount, setActiveStudentsCount] = useState<number>(0);
+    const [avgRating, setAvgRating] = useState<number>(0);
+    const [reviewCount, setReviewCount] = useState<number>(0);
     const [loading, setLoading] = useState(true);
     const [updating, setUpdating] = useState(false);
     const [savingMenu, setSavingMenu] = useState(false);
@@ -77,6 +79,8 @@ const OwnerDashboardPage: React.FC = () => {
                     const messData = messRes.data.data;
                     setMess(messData);
                     setMenus(messData?.menus || []);
+                    setAvgRating(messData?.avgRating || 0);
+                    setReviewCount(messData?.reviewCount || 0);
                     
                     if (messData?.id) {
                         const reviewsRes = await api.get(`/reviews/${messData.id}`);
@@ -129,25 +133,19 @@ const OwnerDashboardPage: React.FC = () => {
                 const response = await api.get('/dashboard/owner/stats');
                 if (response.data.success) {
                     const stats = response.data.data;
-                    console.log("DASHBOARD POLLING:", stats);
+                    console.log("DASHBOARD POLLING [FLATTENED]:", stats);
                     
-                    // Update mess state with rating/count
-                    setMess(prev => {
-                        if (prev) {
-                            return { 
-                                ...prev, 
-                                avgRating: stats.avgRating, 
-                                reviewCount: stats.reviewCount 
-                            };
-                        }
-                        // If mess was null (maybe due to failed initial load), 
-                        // create a partial object including the ID found by stats.
-                        return { 
-                            id: stats.mess_id,
-                            avgRating: stats.avgRating, 
-                            reviewCount: stats.reviewCount 
-                        } as any;
-                    });
+                    setAvgRating(stats.avgRating);
+                    setReviewCount(stats.reviewCount);
+                    setRevenue(stats.totalRevenue);
+                    setActiveStudentsCount(stats.activeStudents);
+                    
+                    // Also sync back to mess if it exists
+                    setMess(prev => prev ? { 
+                        ...prev, 
+                        avgRating: stats.avgRating, 
+                        reviewCount: stats.reviewCount 
+                    } : prev);
                     
                     setRevenue(stats.totalRevenue);
                     setActiveStudentsCount(stats.activeStudents);
@@ -301,7 +299,7 @@ const OwnerDashboardPage: React.FC = () => {
                 {[
                     { label: 'Total Revenue', value: `₹${revenue.toLocaleString()}`, trend: '+12%', icon: <TrendingUp className="text-primary-500" /> },
                     { label: 'Active Students', value: activeStudentsCount.toString(), trend: '+5', icon: <Users className="text-indigo-400" /> },
-                    { label: 'Avg Rating', value: mess?.avgRating ? Number(mess.avgRating).toFixed(1) : '0.0', trend: 'Global', icon: <Star className="text-orange-400" /> },
+                    { label: 'Avg Rating', value: avgRating ? Number(avgRating).toFixed(1) : '0.0', trend: 'Global', icon: <Star className="text-orange-400" /> },
                 ].map((stat, i) => (
                     <Card key={i} className="p-8 bg-bg2/40 backdrop-blur-3xl border-white/10 rounded-[2.5rem] hover:border-primary-500/30 transition-all group overflow-hidden relative">
                         <div className="absolute top-0 right-0 w-24 h-24 bg-primary-500/5 rounded-full blur-3xl -mr-8 -mt-8" />
@@ -644,7 +642,7 @@ const OwnerDashboardPage: React.FC = () => {
                     </div>
                     <div className="flex items-center gap-5 px-8 py-5 bg-bg3/50 rounded-2xl border border-white/10">
                         <Star size={24} className="text-orange-400 fill-orange-400" />
-                        <span className="text-white font-black text-2xl md:text-3xl italic tracking-tighter">{mess?.avgRating ? Number(mess.avgRating).toFixed(1) : '0.0'}</span>
+                        <span className="text-white font-black text-2xl md:text-3xl italic tracking-tighter">{avgRating ? Number(avgRating).toFixed(1) : '0.0'}</span>
                         <div className="h-8 w-px bg-white/10 mx-2" />
                         <span className="text-text-muted text-[10px] font-black uppercase tracking-widest">Overall</span>
                     </div>

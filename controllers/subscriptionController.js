@@ -37,8 +37,13 @@ const subscriptionController = {
             const subscribers = await StudentSubscription.findByMessId(mess.id);
             res.json({ success: true, data: subscribers });
         } catch (err) {
-            console.error('Error fetching subscribers:', err);
-            res.status(500).json({ message: 'Error fetching subscribers' });
+            console.error('❌ ERROR in getSubscribers:', err);
+            console.error('Stack:', err.stack);
+            res.status(500).json({ 
+                success: false, 
+                message: 'Error fetching subscribers',
+                debug: err.message 
+            });
         }
     },
 
