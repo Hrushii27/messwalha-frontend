@@ -245,17 +245,25 @@ const Mess = {
         return mapMessFields(result.rows[0]);
     },
     getDashboardStats: async (ownerId) => {
-        const result = await db.query(`
-            SELECT 
-                COALESCE((SELECT AVG(rating)::numeric(3,1) FROM reviews WHERE mess_id = ml.id), 0.0)::float as "avgRating",
-                (SELECT COUNT(*) FROM reviews WHERE mess_id = ml.id) as "reviewCount",
-                (SELECT COUNT(*) FROM student_subscriptions WHERE mess_id = ml.id AND status = 'active') as "activeStudents",
-                (SELECT COALESCE(SUM(amount), 0) FROM payments WHERE mess_id = ml.id AND status = 'SUCCESS')::float as "totalRevenue"
-            FROM mess_listings ml
-            WHERE ml.mess_owner_id = $1
-            LIMIT 1
-        `, [ownerId]);
-        return result.rows[0];
+        try {
+            const result = await db.query(`
+                SELECT 
+                    ml.id as "mess_id",
+                    COALESCE((SELECT AVG(rating)::numeric(3,1) FROM reviews WHERE mess_id = ml.id), 0.0)::float as "avgRating",
+                    (SELECT COUNT(*) FROM reviews WHERE mess_id = ml.id) as "reviewCount",
+                    (SELECT COUNT(*) FROM student_subscriptions WHERE mess_id = ml.id AND status = 'active') as "activeStudents",
+                    (SELECT COALESCE(SUM(amount), 0) FROM payments WHERE mess_id = ml.id AND status = 'SUCCESS')::float as "totalRevenue"
+                FROM mess_listings ml
+                WHERE ml.mess_owner_id = $1
+                LIMIT 1
+            `, [ownerId]);
+            
+            console.log(`[MODEL DEBUG] getDashboardStats for owner ${ownerId}:`, result.rows[0]);
+            return result.rows[0];
+        } catch (err) {
+            console.error('Error in getDashboardStats model:', err);
+            throw err;
+        }
     },
     getDashboardStatsById: async (messId) => {
         const result = await db.query(`
