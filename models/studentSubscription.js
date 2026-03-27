@@ -25,8 +25,7 @@ const StudentSubscription = {
             `SELECT ss.*, mo.name as user_name, mo.email as user_email 
              FROM student_subscriptions ss
              JOIN mess_owners mo ON ss.user_id = mo.id
-             WHERE ss.mess_id = $1
-             ORDER BY ss.created_at DESC`,
+             WHERE ss.mess_id = $1`,
             [messId]
         );
         return result.rows;

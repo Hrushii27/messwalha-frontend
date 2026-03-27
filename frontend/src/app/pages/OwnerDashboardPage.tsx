@@ -1,3 +1,4 @@
+// v1.0.1 - Flat Stats & Rating Fix
 import React, { useState, useEffect } from 'react';
 import { Layout } from '../components/layout/Layout';
 import { Card } from '../components/common/Card';
@@ -42,7 +43,6 @@ const OwnerDashboardPage: React.FC = () => {
     const [revenue, setRevenue] = useState<number>(0);
     const [activeStudentsCount, setActiveStudentsCount] = useState<number>(0);
     const [avgRating, setAvgRating] = useState<number>(0);
-    const [reviewCount, setReviewCount] = useState<number>(0);
     const [loading, setLoading] = useState(true);
     const [updating, setUpdating] = useState(false);
     const [savingMenu, setSavingMenu] = useState(false);
@@ -80,7 +80,6 @@ const OwnerDashboardPage: React.FC = () => {
                     setMess(messData);
                     setMenus(messData?.menus || []);
                     setAvgRating(messData?.avgRating || 0);
-                    setReviewCount(messData?.reviewCount || 0);
                     
                     if (messData?.id) {
                         const reviewsRes = await api.get(`/reviews/${messData.id}`);
@@ -136,7 +135,6 @@ const OwnerDashboardPage: React.FC = () => {
                     console.log("DASHBOARD POLLING [FLATTENED]:", stats);
                     
                     setAvgRating(stats.avgRating);
-                    setReviewCount(stats.reviewCount);
                     setRevenue(stats.totalRevenue);
                     setActiveStudentsCount(stats.activeStudents);
                     
