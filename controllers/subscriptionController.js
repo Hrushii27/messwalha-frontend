@@ -25,24 +25,34 @@ const subscriptionController = {
 
     getSubscribers: async (req, res) => {
         try {
+            if (!req.user || !req.user.id) {
+                return res.status(401).json({ success: false, message: 'Unauthorized: No user session found' });
+            }
+
             const ownerId = req.user.id;
             const Mess = require('../models/mess');
             const StudentSubscription = require('../models/studentSubscription');
             
             const mess = await Mess.findByOwnerId(ownerId);
             if (!mess) {
-                return res.json({ success: true, data: [] });
+                console.warn(`[getSubscribers] No mess found for owner ${ownerId}`);
+                return res.json({ success: true, data: [], message: 'No mess listing found for this owner' });
             }
 
             const subscribers = await StudentSubscription.findByMessId(mess.id);
-            res.json({ success: true, data: subscribers });
+            
+            // Add extra meta info if needed by frontend
+            res.json({ 
+                success: true, 
+                data: subscribers || [],
+                totalSubscribers: subscribers?.length || 0
+            });
         } catch (err) {
             console.error('❌ ERROR in getSubscribers:', err);
             res.status(500).json({ 
                 success: false, 
                 message: 'Error fetching subscribers',
-                debug: err.message,
-                stack: err.stack 
+                error: err.message
             });
         }
     },
