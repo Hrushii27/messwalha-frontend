@@ -59,7 +59,7 @@ const OwnerDashboardPage: React.FC = () => {
         description: '',
         address: '',
         cuisine: '',
-        contact: '',
+        contactNumber: '',
         city: '',
         veg_nonveg: 'Veg',
         college_tags: '',
@@ -92,7 +92,7 @@ const OwnerDashboardPage: React.FC = () => {
                         description: messRes.data.data.description || '',
                         address: messRes.data.data.address || '',
                         cuisine: messRes.data.data.cuisine || '',
-                        contact: messRes.data.data.contact || messRes.data.data.mobile || '',
+                        contactNumber: messRes.data.data.contactNumber || messRes.data.data.mobile || messRes.data.data.contact || '',
                         city: messRes.data.data.city || '',
                         veg_nonveg: messRes.data.data.vegNonVeg || 'Veg',
                         college_tags: messRes.data.data.collegeTags || '',
@@ -759,8 +759,8 @@ const OwnerDashboardPage: React.FC = () => {
                             />
                             <Input
                                 label="Phone Number"
-                                value={messForm.contact}
-                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMessForm({ ...messForm, contact: e.target.value })}
+                                value={messForm.contactNumber}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMessForm({ ...messForm, contactNumber: e.target.value })}
                                 placeholder="+91 XXXX"
                                 className="h-14 md:h-16"
                                 id="mess-contact-input"

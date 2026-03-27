@@ -11,7 +11,7 @@ const messValidation = [
     body('location').trim().notEmpty().escape().withMessage('Location is required (min 2 chars)').isLength({ min: 2 }),
     body('city').trim().notEmpty().escape().withMessage('City is required (min 2 chars)').isLength({ min: 2 }),
     body('ownerName').trim().notEmpty().withMessage('Owner name is required'),
-    body('mobile').trim().notEmpty().isLength({ min: 10, max: 10 }).withMessage('10-digit mobile number is required'),
+    body('contactNumber').trim().notEmpty().isLength({ min: 10, max: 10 }).withMessage('10-digit mobile number is required'),
     body('pricePerMonth').isNumeric().withMessage('Invalid monthly price'),
     body('pricePerWeek').optional().isNumeric(),
     body('pricePerDay').optional().isNumeric(),
@@ -68,7 +68,7 @@ router.put('/my', upload.fields([
         const {
             name,
             ownerName,
-            mobile,
+            contactNumber,
             location,
             city,
             pricePerMonth,
@@ -86,7 +86,7 @@ router.put('/my', upload.fields([
         const updateData = {
             name: name || existing.name,
             ownerName: ownerName || existing.ownerName,
-            mobile: mobile || existing.mobile,
+            contactNumber: contactNumber || existing.contactNumber || existing.mobile,
             address: location || existing.address,
             description: description !== undefined ? description : existing.description,
             cuisine: cuisine || existing.cuisine,
@@ -159,7 +159,7 @@ router.post('/', upload.fields([
         const {
             name,
             ownerName,
-            mobile,
+            contactNumber,
             location,
             pricePerMonth,
             pricePerWeek,
@@ -205,7 +205,7 @@ router.post('/', upload.fields([
             pricePerWeek || 0,
             pricePerDay || 0,
             ownerName || '',
-            mobile || ''
+            contactNumber || ''
         );
         res.status(201).json({ success: true, data: mess });
     } catch (err) {

@@ -11,6 +11,7 @@ function mapMessFields(mess) {
             dailyPrice: mess.daily_price ? parseFloat(mess.daily_price) : 0,
             ownerName: mess.owner_name || mess.ownerName || null,
             mobile: mess.contact_number || mess.mobile || null,
+            contactNumber: mess.contact_number || mess.contactNumber || mess.mobile || null,
             location: mess.location || mess.address,
             imageUrl: photo,
             displayPhoto: photo, 
