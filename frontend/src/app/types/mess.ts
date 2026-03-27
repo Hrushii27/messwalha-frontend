@@ -29,6 +29,7 @@ export interface Mess {
     vegNonVeg: string;
     collegeTags: string;
     rating: number;
+    avgRating?: number;
     reviewCount?: number;
     images: string[];
     imageUrl?: string;

@@ -21,6 +21,7 @@ function mapMessFields(mess) {
             upiId: mess.upi_id,
             menuImages: mess.menu_images || [],
             reviewCount: mess.review_count ? parseInt(mess.review_count) : 0,
+            avgRating: mess.rating ? parseFloat(mess.rating) : 0,
         };
     } catch (err) {
         console.error('Error in mapMessFields:', err);
@@ -246,7 +247,7 @@ const Mess = {
     getDashboardStats: async (ownerId) => {
         const result = await db.query(`
             SELECT 
-                COALESCE((SELECT AVG(rating)::numeric(3,1) FROM reviews WHERE mess_id = ml.id), 0.0)::float as "rating",
+                COALESCE((SELECT AVG(rating)::numeric(3,1) FROM reviews WHERE mess_id = ml.id), 0.0)::float as "avgRating",
                 (SELECT COUNT(*) FROM reviews WHERE mess_id = ml.id) as "reviewCount",
                 (SELECT COUNT(*) FROM student_subscriptions WHERE mess_id = ml.id AND status = 'active') as "activeStudents",
                 (SELECT COALESCE(SUM(amount), 0) FROM payments WHERE mess_id = ml.id AND status = 'SUCCESS')::float as "totalRevenue"
@@ -259,7 +260,7 @@ const Mess = {
     getDashboardStatsById: async (messId) => {
         const result = await db.query(`
             SELECT 
-                COALESCE((SELECT AVG(rating)::numeric(3,1) FROM reviews WHERE mess_id = ml.id), 0.0)::float as "rating",
+                COALESCE((SELECT AVG(rating)::numeric(3,1) FROM reviews WHERE mess_id = ml.id), 0.0)::float as "avgRating",
                 (SELECT COUNT(*) FROM reviews WHERE mess_id = ml.id) as "reviewCount",
                 (SELECT COUNT(*) FROM student_subscriptions WHERE mess_id = ml.id AND status = 'active') as "activeStudents",
                 (SELECT COALESCE(SUM(amount), 0) FROM payments WHERE mess_id = ml.id AND status = 'SUCCESS')::float as "totalRevenue"
