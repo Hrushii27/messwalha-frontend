@@ -70,37 +70,54 @@ const OwnerDashboardPage: React.FC = () => {
         const fetchOwnerData = async () => {
             try {
                 setLoading(true);
-                const [messRes, subsRes, subStatusRes] = await Promise.all([
-                    api.get('/messes/my'),
-                    api.get('/subscriptions/subscribers'),
-                    api.get('/subscriptions/status')
-                ]);
-
-                setMess(messRes.data.data);
-                setMenus(messRes.data.data?.menus || []);
-                setSubscribers(subsRes.data.data);
-                setRevenue(subsRes.data.totalRevenue || 0);
-                setActiveStudentsCount(subsRes.data.data.length);
-                setSubscription(subStatusRes.data.data);
                 
-                if (messRes.data.data?.id) {
-                    const reviewsRes = await api.get(`/reviews/${messRes.data.data.id}`);
-                    setOwnerReviews(reviewsRes.data.data || []);
+                // Fetch mess details first
+                try {
+                    const messRes = await api.get('/messes/my');
+                    const messData = messRes.data.data;
+                    setMess(messData);
+                    setMenus(messData?.menus || []);
                     
-                    setMessForm({
-                        name: messRes.data.data.name || '',
-                        description: messRes.data.data.description || '',
-                        address: messRes.data.data.address || '',
-                        cuisine: messRes.data.data.cuisine || '',
-                        contactNumber: messRes.data.data.contactNumber || messRes.data.data.mobile || messRes.data.data.contact || '',
-                        city: messRes.data.data.city || '',
-                        veg_nonveg: messRes.data.data.vegNonVeg || 'Veg',
-                        college_tags: messRes.data.data.collegeTags || '',
-                        images: messRes.data.data.images || []
-                    });
+                    if (messData?.id) {
+                        const reviewsRes = await api.get(`/reviews/${messData.id}`);
+                        setOwnerReviews(reviewsRes.data.data || []);
+                        
+                        setMessForm({
+                            name: messData.name || '',
+                            description: messData.description || '',
+                            address: messData.address || '',
+                            cuisine: messData.cuisine || '',
+                            contactNumber: messData.contactNumber || messData.mobile || messData.contact || '',
+                            city: messData.city || '',
+                            veg_nonveg: messData.vegNonVeg || 'Veg',
+                            college_tags: messData.collegeTags || '',
+                            images: messData.images || []
+                        });
+                    }
+                } catch (err) {
+                    console.error('Error fetching mess profile:', err);
                 }
+
+                // Fetch subscribers separately
+                try {
+                    const subsRes = await api.get('/subscriptions/subscribers');
+                    setSubscribers(subsRes.data.data || []);
+                    setRevenue(subsRes.data.totalRevenue || 0);
+                    setActiveStudentsCount(subsRes.data.data?.length || 0);
+                } catch (err) {
+                    console.error('Error fetching subscribers:', err);
+                }
+
+                // Fetch subscription status separately
+                try {
+                    const subStatusRes = await api.get('/subscriptions/status');
+                    setSubscription(subStatusRes.data.data);
+                } catch (err) {
+                    console.error('Error fetching subscription status:', err);
+                }
+
             } catch (error) {
-                console.error('Error fetching owner data:', error);
+                console.error('General error fetching owner data:', error);
                 toast.error('Failed to load dashboard data');
             } finally {
                 setLoading(false);
@@ -112,12 +129,26 @@ const OwnerDashboardPage: React.FC = () => {
                 const response = await api.get('/dashboard/owner/stats');
                 if (response.data.success) {
                     const stats = response.data.data;
-                    console.log("DASHBOARD:", stats);
-                    setMess(prev => prev ? { 
-                        ...prev, 
-                        avgRating: stats.avgRating, 
-                        reviewCount: stats.reviewCount 
-                    } : null);
+                    console.log("DASHBOARD POLLING:", stats);
+                    
+                    // Update mess state with rating/count
+                    setMess(prev => {
+                        if (prev) {
+                            return { 
+                                ...prev, 
+                                avgRating: stats.avgRating, 
+                                reviewCount: stats.reviewCount 
+                            };
+                        }
+                        // If mess was null (maybe due to failed initial load), 
+                        // create a partial object including the ID found by stats.
+                        return { 
+                            id: stats.mess_id,
+                            avgRating: stats.avgRating, 
+                            reviewCount: stats.reviewCount 
+                        } as any;
+                    });
+                    
                     setRevenue(stats.totalRevenue);
                     setActiveStudentsCount(stats.activeStudents);
                 }

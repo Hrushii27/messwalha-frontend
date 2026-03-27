@@ -173,6 +173,11 @@ const createTables = async () => {
                 RAISE NOTICE 'Could not add unique_owner_mess constraint, possibly due to existing duplicates.';
             END;
         END IF;
+
+        -- student_subscriptions migrations
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='student_subscriptions' AND column_name='created_at') THEN
+            ALTER TABLE student_subscriptions ADD COLUMN created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP;
+        END IF;
     END $$;
     `;
 
