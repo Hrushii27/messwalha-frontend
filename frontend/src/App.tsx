@@ -64,6 +64,14 @@ const App: React.FC = () => {
                   <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
                   <Route path="/find-mess" element={<FindMessesPage />} />
                   <Route path="/find-messes" element={<Navigate to="/find-mess" replace />} />
+                  <Route path="/how-it-works" element={<Navigate to="/about" replace />} />
+                  <Route path="/pricing" element={<Navigate to="/faq" replace />} />
+                  <Route path="/blog" element={<Navigate to="/" replace />} />
+                  <Route path="/partner" element={<Navigate to="/mess-owner-register" replace />} />
+                  <Route path="/careers" element={<Navigate to="/about" replace />} />
+                  <Route path="/contact" element={<Navigate to="/about" replace />} />
+                  <Route path="/refund" element={<Navigate to="/refund-policy" replace />} />
+                  <Route path="/privacy" element={<Navigate to="/terms" replace />} />
                   <Route path="/mess/:id/:section?" element={<MessDetailsPage />} />
                   <Route path="/invoice/:id" element={<ProtectedRoute><InvoicePage /></ProtectedRoute>} />
                   <Route path="/dashboard" element={<ProtectedRoute allowedRoles={['STUDENT']}><UserDashboard /></ProtectedRoute>} />

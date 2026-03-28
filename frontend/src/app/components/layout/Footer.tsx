@@ -4,9 +4,9 @@ import { Utensils, Github, Twitter, Instagram } from 'lucide-react';
 
 export const Footer: React.FC = () => {
     return (
-        <footer className="bg-bg2 text-text-primary border-t border-white/5">
+        <footer className="relative z-[100] bg-bg2 text-text-primary border-t border-white/5 pointer-events-auto">
             <div className="container mx-auto px-4 py-12 sm:py-20">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 sm:gap-16">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 sm:gap-16">
                     <div className="space-y-6">
                         <Link to="/" className="flex items-center space-x-3 group" aria-label="FindMess Home">
                             <div className="w-10 h-10 bg-primary-500 rounded-xl flex items-center justify-center text-white shadow-lg shadow-primary-500/20 group-hover:scale-110 transition-transform">
@@ -35,11 +35,28 @@ export const Footer: React.FC = () => {
                                 </a>
                             ))}
                         </div>
+
+                        <div className="pt-4 border-t border-white/5">
+                            <ul className="space-y-3">
+                                <li className="flex items-center space-x-3 text-[10px] font-black uppercase tracking-widest text-text-muted">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-primary-500"></span>
+                                    <span>Trusted by 1000+ students</span>
+                                </li>
+                                <li className="flex items-center space-x-3 text-[10px] font-black uppercase tracking-widest text-text-muted">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-primary-500"></span>
+                                    <span>Secure payments</span>
+                                </li>
+                                <li className="flex items-center space-x-3 text-[10px] font-black uppercase tracking-widest text-text-muted">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-primary-500"></span>
+                                    <span>Verified mess owners</span>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
 
                     <div>
                         <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-text-secondary mb-6 sm:mb-8">Platform</h4>
-                        <ul className="space-y-4 text-sm font-black uppercase tracking-widest text-text-muted">
+                        <ul className="space-y-4 text-sm font-black uppercase tracking-widest text-text-muted pointer-events-auto">
                             <li><Link to="/find-mess" className="hover:text-primary-500 transition-colors duration-300">Find Mess</Link></li>
                             <li><Link to="/how-it-works" className="hover:text-primary-500 transition-colors duration-300">How it Works</Link></li>
                             <li><Link to="/pricing" className="hover:text-primary-500 transition-colors duration-300">Pricing</Link></li>
@@ -49,7 +66,7 @@ export const Footer: React.FC = () => {
 
                     <div>
                         <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-text-secondary mb-6 sm:mb-8">Business</h4>
-                        <ul className="space-y-4 text-sm font-black uppercase tracking-widest text-text-muted">
+                        <ul className="space-y-4 text-sm font-black uppercase tracking-widest text-text-muted pointer-events-auto">
                             <li><Link to="/partner" className="hover:text-primary-500 transition-colors duration-300">Partner With Us</Link></li>
                             <li><Link to="/careers" className="hover:text-primary-500 transition-colors duration-300">Careers</Link></li>
                             <li><Link to="/contact" className="hover:text-primary-500 transition-colors duration-300">Contact Us</Link></li>
@@ -58,32 +75,13 @@ export const Footer: React.FC = () => {
 
                     <div>
                         <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-text-secondary mb-6 sm:mb-8">Legal</h4>
-                        <ul className="space-y-4 text-sm font-black uppercase tracking-widest text-text-muted">
+                        <ul className="space-y-4 text-sm font-black uppercase tracking-widest text-text-muted pointer-events-auto">
                             <li><Link to="/terms" className="hover:text-primary-500 transition-colors duration-300">Terms & Conditions</Link></li>
                             <li><Link to="/refund" className="hover:text-primary-500 transition-colors duration-300">Refund Policy</Link></li>
                             <li><Link to="/privacy" className="hover:text-primary-500 transition-colors duration-300">Privacy Policy</Link></li>
                         </ul>
                     </div>
 
-                    <div className="space-y-8">
-                        <div>
-                            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-text-secondary mb-6 sm:mb-8">Trust & Safety</h4>
-                            <ul className="space-y-4 text-sm font-black uppercase tracking-widest text-text-muted">
-                                <li className="flex items-center space-x-2">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-primary-500"></span>
-                                    <span>Trusted by 1000+ students</span>
-                                </li>
-                                <li className="flex items-center space-x-2">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-primary-500"></span>
-                                    <span>Secure payments</span>
-                                </li>
-                                <li className="flex items-center space-x-2">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-primary-500"></span>
-                                    <span>Verified mess owners</span>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
                 </div>
 
                 <div className="mt-12 sm:mt-20 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4">
