@@ -108,6 +108,19 @@ const messData = [
     }
 ];
 
+const foodImages = [
+    'https://images.unsplash.com/photo-1589302168068-964664d93dc0?q=80&w=800&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1626074353765-517a681e40be?q=80&w=800&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=800&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=800&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1515516969-d4008cc6241a?q=80&w=800&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1585937421612-70a008356fbe?q=80&w=800&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1541014741259-df549fa9ba6f?q=80&w=800&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1610192244261-3f33de3f55e4?q=80&w=800&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1565557623262-b51c2513a641?q=80&w=800&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1601050690597-df056fb4ce78?q=80&w=800&auto=format&fit=crop'
+];
+
 async function seedMesses() {
     try {
         console.log('🚀 Starting Bulk Mess Insertion...');
@@ -155,30 +168,38 @@ async function seedMesses() {
                 ownerId = ownerCheck.rows[0].id;
             }
 
+            const randomImage = foodImages[Math.floor(Math.random() * foodImages.length)];
+
             // 5. Insert Mess Listing
             await db.query(`
         INSERT INTO mess_listings (
           mess_owner_id, 
           name, 
           address, 
+          location,
           city,
           cuisine, 
           monthly_price, 
           description, 
           rating, 
           verified, 
+          display_photo,
+          image_url,
           is_active
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
       `, [
                 ownerId,
                 data.mess_name,
                 data.address,
+                data.address, // location = address
                 city,
                 'Maharashtrian', // Default cuisine for this region
                 priceValue,
                 `Experience the authentic taste at ${data.mess_name}. Managed by ${data.owner_name}.`,
                 4.5, // Default rating
                 true, // Bulk imported as verified
+                randomImage,
+                randomImage,
                 true
             ]);
 

@@ -282,7 +282,7 @@ const MessDetailsPage: React.FC = () => {
                     {(() => {
                         // ✅ STEP 5 — FRONTEND FIX (LOGIC)
                         const imageUrl = mess.displayPhoto && mess.displayPhoto !== ""
-                            ? mess.displayPhoto
+                            ? getImageUrl(mess.displayPhoto)
                             : "/default-mess.jpg";
                         
                         // ✅ STEP 5 — DEBUG

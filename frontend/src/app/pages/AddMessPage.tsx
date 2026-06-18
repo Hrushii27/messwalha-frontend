@@ -21,6 +21,7 @@ import { motion } from 'framer-motion';
 import api from '../api/axiosInstance';
 import { useNavigate, Link } from 'react-router-dom';
 import Seo from '../components/common/Seo';
+import { MessCard } from '../components/mess/MessCard';
 import { useEffect } from 'react';
 
 const AddMessPage: React.FC = () => {
@@ -88,6 +89,29 @@ const AddMessPage: React.FC = () => {
         mess: null,
         menus: []
     });
+
+    const [suggestions, setSuggestions] = useState<any[]>([]);
+    const [fetchingSuggestions, setFetchingSuggestions] = useState(false);
+
+    const handleLocationChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const val = e.target.value;
+        setFormData(prev => ({ ...prev, location: val }));
+        
+        if (val.trim().length >= 3) {
+            try {
+                setFetchingSuggestions(true);
+                const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(val)}&countrycodes=in&limit=5`);
+                const data = await res.json();
+                setSuggestions(data);
+            } catch (err) {
+                console.error("Suggestions fetch error:", err);
+            } finally {
+                setFetchingSuggestions(false);
+            }
+        } else {
+            setSuggestions([]);
+        }
+    };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -272,12 +296,13 @@ const AddMessPage: React.FC = () => {
             </div>
 
             <div className="container mx-auto px-4 py-24">
-                <motion.form
-                    initial={{ y: 40, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    onSubmit={handleSubmit}
-                    className="max-w-4xl mx-auto space-y-12"
-                >
+                <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
+                    <motion.form
+                        initial={{ y: 40, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        onSubmit={handleSubmit}
+                        className="lg:col-span-2 space-y-12"
+                    >
                     {error && (
                         <div className="bg-red-500/10 border border-red-500/20 text-red-500 p-6 rounded-2xl text-xs font-black uppercase tracking-widest">
                             {error}
@@ -373,8 +398,47 @@ const AddMessPage: React.FC = () => {
                                         placeholder="AREA / NEAR COLLEGE"
                                         className="w-full bg-bg3/30 border border-white/10 text-text-primary pl-14 pr-6 py-5 rounded-2xl focus:ring-2 focus:ring-primary-500/50 outline-none transition-all font-black tracking-widest text-[10px] uppercase italic"
                                         value={formData.location}
-                                        onChange={handleInputChange}
+                                        onChange={handleLocationChange}
                                     />
+                                    {fetchingSuggestions && (
+                                        <div className="absolute right-6 top-1/2 -translate-y-1/2 z-10">
+                                            <Loader2 className="w-4 h-4 text-primary-500 animate-spin" />
+                                        </div>
+                                    )}
+                                    {suggestions.length > 0 && (
+                                        <div className="absolute left-0 right-0 top-full mt-2 bg-bg2 border border-white/10 rounded-2xl shadow-3xl overflow-hidden z-50 divide-y divide-white/5">
+                                            {suggestions.map((sug, idx) => (
+                                                <div
+                                                    key={idx}
+                                                    onClick={() => {
+                                                        let city = '';
+                                                        const parts = sug.display_name.split(',');
+                                                        const knownCities = ['kolhapur', 'pune', 'mumbai', 'goa', 'nashik'];
+                                                        for (const part of parts) {
+                                                            const p = part.trim().toLowerCase();
+                                                            if (knownCities.includes(p)) {
+                                                                city = part.trim();
+                                                                break;
+                                                            }
+                                                        }
+                                                        if (!city && parts.length > 2) {
+                                                            city = parts[parts.length - 3]?.trim() || '';
+                                                        }
+                                                        
+                                                        setFormData(prev => ({
+                                                            ...prev,
+                                                            location: sug.display_name,
+                                                            city: city || prev.city
+                                                        }));
+                                                        setSuggestions([]);
+                                                    }}
+                                                    className="px-6 py-4 hover:bg-primary-500/20 cursor-pointer transition-colors text-text-primary text-[9px] font-black uppercase tracking-widest italic"
+                                                >
+                                                    {sug.display_name}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -580,6 +644,28 @@ const AddMessPage: React.FC = () => {
                         </Button>
                     </div>
                 </motion.form>
+
+                {/* Live Preview Sidebar */}
+                <div className="lg:col-span-1 lg:sticky lg:top-32 space-y-6 bg-bg2/50 p-8 rounded-[2rem] border border-white/10 backdrop-blur-2xl">
+                    <div className="flex items-center justify-between">
+                        <h3 className="text-[10px] font-black uppercase tracking-widest text-text-primary italic">Live Card Preview</h3>
+                        <span className="text-[8px] font-black uppercase tracking-widest text-green-500 bg-green-500/10 px-3 py-1 rounded-full border border-green-500/20 animate-pulse">Real-Time</span>
+                    </div>
+                    <div className="w-full max-w-sm mx-auto">
+                        <MessCard mess={{
+                            id: 'preview',
+                            name: formData.name || 'Your Premium Mess',
+                            description: formData.description || 'Excellent quality food with authentic taste and hygienic preparation.',
+                            address: formData.location || 'Your Mess Address',
+                            rating: 4.5,
+                            imageUrl: previews.mess || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+                            monthlyPrice: Number(formData.pricePerMonth) || 2500,
+                            verified: true,
+                            cuisine: 'Indian'
+                        }} />
+                    </div>
+                </div>
+            </div>
             </div>
         </Layout>
     );
