@@ -44,16 +44,6 @@ const UserDashboard: React.FC = () => {
         }
     }, [user, authLoading, navigate]);
 
-    if (authLoading || !user) {
-        return (
-            <Layout>
-                <div className="min-h-screen bg-bg flex items-center justify-center">
-                    <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary-500"></div>
-                </div>
-            </Layout>
-        );
-    }
-
     useEffect(() => {
         const fetchDashboardData = async () => {
             try {
@@ -88,6 +78,16 @@ const UserDashboard: React.FC = () => {
             loadRecentlyViewed();
         }
     }, [user]);
+
+    if (authLoading || !user) {
+        return (
+            <Layout>
+                <div className="min-h-screen bg-bg flex items-center justify-center">
+                    <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary-500"></div>
+                </div>
+            </Layout>
+        );
+    }
 
     const handleLogout = () => {
         localStorage.removeItem('token');

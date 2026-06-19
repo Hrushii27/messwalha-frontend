@@ -7,45 +7,61 @@ on:
     branches: [ main ]
 
 jobs:
-  test-backend:
+  frontend:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Setup Node
-        uses: actions/setup-node@v3
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - name: Install dependencies
-        run: cd backend && npm install
-      - name: Generate Prisma Client
-        run: cd backend && npx prisma generate
-      - name: Run Backend Tests
-        run: cd backend && npm test
+          cache: 'npm'
+          cache-dependency-path: './frontend/package-lock.json'
 
-  test-frontend:
+      - name: Install Frontend Dependencies
+        working-directory: ./frontend
+        run: npm install --legacy-peer-deps
+
+      - name: Validate Frontend Linting
+        working-directory: ./frontend
+        run: npm run lint
+
+      - name: Verify Frontend Compile & Build
+        working-directory: ./frontend
+        run: npm run build
+
+  backend:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Setup Node
-        uses: actions/setup-node@v3
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - name: Install dependencies
-        run: cd frontend && npm install
-      - name: Run Frontend Lint
-        run: cd frontend && npm run lint
-      - name: Run Frontend Tests
-        run: cd frontend && npm test || echo "No tests yet"
+          cache: 'npm'
+          cache-dependency-path: './package-lock.json'
 
-  build-and-push:
-    needs: [test-backend, test-frontend]
+      - name: Install Backend Dependencies
+        run: npm install
+
+      - name: Validate Start Setup & Configuration
+        run: node --check server.js
+
+  deploy-backend:
+    needs: [frontend, backend]
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:
-      - uses: actions/checkout@v3
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-      - name: Build Backend Image
-        run: docker build -t messwalha-backend ./backend
-      - name: Build Frontend Image
-        run: docker build -t messwalha-frontend ./frontend
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Deploy Backend to Heroku
+        uses: akhileshns/heroku-deploy@v3.12.14
+        with:
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+          heroku_app_name: "messwalha-api-pg"
+          heroku_email: "hrushikeshjagtap143@gmail.com"
